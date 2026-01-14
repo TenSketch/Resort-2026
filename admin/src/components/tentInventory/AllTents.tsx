@@ -58,6 +58,8 @@ export default function AllTentsTable() {
   const [editNoOfChildren, setEditNoOfChildren] = useState<number>(0);
   const [editRate, setEditRate] = useState<number>(0);
   const [editTentCount, setEditTentCount] = useState<number>(1);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [deletingImage, setDeletingImage] = useState<string | null>(null);
 
   // Fetch tents from backend
   useEffect(() => {
@@ -153,6 +155,7 @@ export default function AllTentsTable() {
     setEditNoOfChildren(tent.noOfChildren);
     setEditRate(tent.rate);
     setEditTentCount(tent.tentCount);
+    setNewImages([]);
     setSheetMode('view')
     setIsDetailSheetOpen(true);
   };
@@ -239,6 +242,15 @@ export default function AllTentsTable() {
       render: (_data: any, _type: any, row: Tent) => {
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}"
+              style="background: #10b981; color: white; border: none; padding: 6px 12px;
+                border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;"
+              title="View Tent Details"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -260,6 +272,13 @@ export default function AllTentsTable() {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
       const button = target.closest('button') as HTMLElement | null
+      if (button?.classList.contains('view-btn')) {
+        event.stopPropagation()
+        const tentId = button.getAttribute('data-id') || ''
+        const tent = tentsRef.current.find(t => t.id === tentId)
+        if (tent) openForView(tent)
+        return
+      }
       if (button?.classList.contains('edit-btn')) {
         event.stopPropagation()
         const tentId = button.getAttribute('data-id') || ''
@@ -282,6 +301,55 @@ export default function AllTentsTable() {
     return () => document.removeEventListener("click", handleClick);
   }, []);
 
+  const handleDeleteImage = async (publicId: string) => {
+    if (!perms.canEdit) return;
+    if (!selectedTent) {
+      alert('No tent selected.');
+      return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+    
+    setDeletingImage(publicId);
+    try {
+      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('admin_token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const res = await fetch(`${apiBase}/api/tents/${selectedTent.id}/image`, {
+        method: 'DELETE',
+        headers,
+        body: JSON.stringify({ public_id: publicId })
+      });
+      
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error((data && data.error) || res.statusText);
+      
+      // Update local state
+      if (data && data.tent) {
+        const updatedImages = data.tent.images || [];
+        setSelectedTent(prev => prev ? { ...prev, images: updatedImages } : prev);
+        setTents(prev => prev.map(t => 
+          t.id === selectedTent.id ? { ...t, images: updatedImages } : t
+        ));
+      }
+      
+      alert('Image deleted successfully!');
+    } catch (e: any) {
+      console.error(e);
+      alert('Failed to delete image: ' + e.message);
+    } finally {
+      setDeletingImage(null);
+    }
+  };
+
   const handleSaveEdit = async () => {
     if (!perms.canEdit || !selectedTent) return;
     
@@ -289,43 +357,82 @@ export default function AllTentsTable() {
       const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
       const token = localStorage.getItem('admin_token');
       
-      const updateData = {
-        noOfGuests: editNoOfGuests,
-        noOfChildren: editNoOfChildren,
-        rate: editRate,
-        tentCount: editTentCount,
-      };
-
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
+      const headers: Record<string, string> = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${apiBase}/api/tents/${selectedTent.id}`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(updateData),
-      });
+      // Use FormData if there are new images
+      if (newImages.length > 0) {
+        const formData = new FormData();
+        newImages.forEach((file) => {
+          formData.append('images', file);
+        });
+        
+        // Append other fields
+        formData.append('noOfGuests', String(editNoOfGuests));
+        formData.append('noOfChildren', String(editNoOfChildren));
+        formData.append('rate', String(editRate));
+        formData.append('tentCount', String(editTentCount));
 
-      const data = await response.json();
+        const response = await fetch(`${apiBase}/api/tents/${selectedTent.id}`, {
+          method: 'PUT',
+          headers,
+          body: formData,
+        });
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update tent');
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to update tent');
+        }
+
+        // Update local state with new images
+        if (data && data.tent) {
+          const updatedImages = data.tent.images || [];
+          setSelectedTent(prev => prev ? { ...prev, images: updatedImages, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount } : prev);
+          setTents(prev => prev.map(t =>
+            t.id === selectedTent.id
+              ? { ...t, images: updatedImages, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount }
+              : t
+          ));
+        }
+      } else {
+        // No new images, use JSON
+        const updateData = {
+          noOfGuests: editNoOfGuests,
+          noOfChildren: editNoOfChildren,
+          rate: editRate,
+          tentCount: editTentCount,
+        };
+
+        const response = await fetch(`${apiBase}/api/tents/${selectedTent.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: JSON.stringify(updateData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to update tent');
+        }
+
+        // Update local state
+        setTents((prev) =>
+          prev.map((t) =>
+            t.id === selectedTent.id
+              ? { ...t, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount }
+              : t
+          )
+        );
       }
-
-      // Update local state
-      setTents((prev) =>
-        prev.map((t) =>
-          t.id === selectedTent.id
-            ? { ...t, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount }
-            : t
-        )
-      );
       
       setSheetMode('view');
-      setIsDetailSheetOpen(false);
+      setNewImages([]);
       alert('Tent updated successfully!');
     } catch (err: any) {
       console.error('Failed to update tent:', err);
@@ -403,7 +510,7 @@ export default function AllTentsTable() {
               { targets: 7, width: '80px' }, // Tent Count
               { targets: 8, width: '100px' }, // Images
               { targets: 9, width: '80px' }, // Status
-              { targets: 10, width: '160px', orderable: false, searchable: false }, // Actions
+              { targets: 10, width: '180px', orderable: false, searchable: false }, // Actions
               { targets: '_all', visible: true },
             ],
           }}
@@ -508,23 +615,71 @@ export default function AllTentsTable() {
 
                 <div>
                   <Label>Images</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                  <div className="mt-1 space-y-2">
+                    {/* Display existing images */}
                     {selectedTent.images && selectedTent.images.length > 0 ? (
                       <div className="space-y-2">
-                        <span className="text-green-600">✓ {selectedTent.images.length} image(s) uploaded</span>
+                        <span className="text-green-600 text-sm">✓ {selectedTent.images.length} image(s) uploaded</span>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           {selectedTent.images.map((img, idx) => (
-                            <img 
-                              key={idx} 
-                              src={img.url} 
-                              alt={`Tent ${idx + 1}`}
-                              className="w-full h-24 object-cover rounded border"
-                            />
+                            <div key={idx} className="relative group">
+                              <img 
+                                src={img.url} 
+                                alt={`Tent ${idx + 1}`}
+                                className="w-full h-32 object-cover rounded-md border"
+                              />
+                              {sheetMode === 'edit' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteImage(img.public_id)}
+                                  disabled={deletingImage === img.public_id}
+                                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                                  title="Delete image"
+                                >
+                                  {deletingImage === img.public_id ? (
+                                    <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  )}
+                                </button>
+                              )}
+                            </div>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <span className="text-red-600">✗ No images uploaded</span>
+                      <span className="text-red-600 text-sm">✗ No images uploaded</span>
+                    )}
+                    
+                    {/* Upload new images in edit mode */}
+                    {sheetMode === 'edit' && (
+                      <div className="mt-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = e.target.files;
+                            if (files) {
+                              setNewImages(Array.from(files));
+                            }
+                          }}
+                          className="w-full p-2 text-sm border rounded-md"
+                        />
+                        {newImages.length > 0 && (
+                          <p className="text-xs text-green-600 mt-1">
+                            {newImages.length} new image(s) selected
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Select new images to add (will be appended to existing images)
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>

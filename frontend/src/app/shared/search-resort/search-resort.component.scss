@@ -1,0 +1,53 @@
+@use "/src/scss/base/" as *;
+
+.modal-searchbar {
+    height: fit-content;
+    width: clamp(90%, 400px, 25dvw);
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+// .modal-dialog {
+//     box-shadow: 0 1px 3px rgb(0, 128, 0);
+
+// }   
+
+// .modal-backdrop {
+//     display: none !important;
+// }
+#ageDropdowns{
+    @media(min-width: 600px){
+        columns: 2;
+    }
+}
+.input-group{
+    border: 1px solid $clr-secondary;
+    border-radius: 5px; 
+    .form-control{
+        border: none;
+        &:focus{
+            box-shadow: none;
+        }
+    }
+}
+
+// material datepicker
+// .mat-form-field {
+//   display: inline-flex;
+// }
+
+// .mat-form-field-infix {
+//   display: inline-flex !important;
+//   align-items: baseline;
+//   padding: 0 16px;
+// }
+
+// .mat-mdc-form-field-infix {
+//   width: 100px !important;
+// }
+
+// .mat-mdc-form-field-subscript-wrapper,
+// .mat-mdc-form-field-bottom-align::before {
+//   display: none !important;
+// }

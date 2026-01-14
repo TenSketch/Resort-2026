@@ -1,0 +1,208 @@
+<app-layout>
+  <div class="main">
+    <app-loader *ngIf="showLoader"></app-loader>
+    <!-- successfull booking -->
+    <div class="reservation-details" *ngIf="bookingStatus == 'success'">
+      <!-- <div class="reservation-details" > -->
+
+      <section class="page-banner d-grid place-items-center d-none">
+        <h1 class="display-3 text-center">
+          About {{ reservationDetails.resortName }}
+        </h1>
+      </section>
+      <section class="booking-status my-5 pt-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+              <h2 class="mb-3">Booking Confirmation</h2>
+              <img src="assets/images/icons/verified.png" class="icon-big">
+
+              <h1 class="display-5 congo mb-4">
+                Congratulations, Your booking is successful!
+              </h1>
+            </div>
+          </div>
+          <div class="card d-flex justify-content-center align-items-center" >
+            
+            <div class="row w-100">
+              <!-- <div class="col-md-6 text-center">
+                <img src="assets/img/Jungle_Star-reception.jpg" alt="Resort Name" class="img-fluid rounded-3">
+              </div> -->
+              <div class="col-md-6 text-center mx-auto" >
+                <h3 class="mb-3">
+                  <strong>Resort:</strong> {{ reservationDetails.resortName }}
+                </h3>
+                <h3>
+
+                  <!-- <strong>Status :  <i class="fa fa-check" style="color: #4d9900;" aria-hidden="true"></i> </strong> -->
+                </h3>
+                <div class="my-3">
+                  <p>
+                    <strong>Guest Name:</strong>
+                    {{ reservationDetails.guestName }}
+                  </p>
+                  <p>
+                    <strong>Email:</strong>
+                    {{ reservationDetails.email }}
+                  </p>
+                  <p>
+                    <strong>Booking ID:</strong>
+                    {{ reservationDetails.bookingId }}
+                  </p>
+                  <p *ngIf="reservationDetails.transactionId">
+                    <strong>Transaction Id:</strong>
+                    {{ reservationDetails.transactionId }}
+                  </p>
+                  <p>
+                    <strong>Check-in:</strong>
+                    {{ reservationDetails.checkInDate }}
+                  </p>
+                  <p>
+                    <strong>Check-out:</strong>
+                    {{ reservationDetails.checkOutDate }}
+                  </p>
+                  <p>
+                    <strong>Duration of Stay:</strong
+                    >{{ reservationDetails.stayDuration }}
+                  </p>
+                  <strong>Rooms Booked:</strong>
+                  <p *ngFor="let room of reservationDetails.rooms">
+                    {{ room.room_name }} ({{ room.cottage_type }})
+                  </p>
+                  <p>
+                    <strong>Guests:</strong
+                    >{{ reservationDetails.totalGuest }}
+                  </p>
+                  <p>
+                    <strong>Extra Guests:</strong
+                    >{{ reservationDetails.totalExtraGuests }}
+                  </p>
+                  <p>
+                    <strong>Children:</strong
+                    >{{ reservationDetails.totalChildren }}
+                  </p>
+
+                  <img
+                *ngIf="reservationDetails.rooms && reservationDetails.rooms[0]"
+                src="{{ getRoomImages(reservationDetails.rooms[0].room_name)[0] }}"
+                class="img-fluid"
+                alt="Room Image"
+              />
+                  <!-- <p><strong>Number of Children:</strong></p> -->
+                </div>
+                <div class="mb-4">
+                  <p>
+                    If you have any inquiries about your stay or need
+                    information on nearby attractions, please feel free to
+                    contact:
+                  </p>
+                  <p><strong>Mr. Veerababu</strong></p>
+                  <p><i class="fas fa-phone-alt"></i> Mobile: +919494151617</p>
+                  <p>
+                    <i class="fas fa-envelope"></i> Email: info@vanavihari.com
+                  </p>
+                </div>
+                <p class="">
+                  Your invoice and booking details have been sent to your email
+                  at
+                  <strong>{{ reservationDetails.email }}</strong>
+                </p>
+                <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                  <a class="text-decoration-none" href="/#/my-account/my-bookings">Go to : <strong>My Bookings</strong> </a>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- failed booking -->
+    <div *ngIf="bookingStatus == 'failed'">
+      <div class="container" style="margin-top: 200px; min-height: 50vh">
+        <div class="col-md-6 mx-auto text-center">
+          
+          <div class="justify-content-center my-2">
+            <div class="d-flex flex-column justify-content-center align-items-center w-100">
+              <h3> <strong>Status : <i class="fa-solid fa-xmark" style="color: #4d9900;"></i>
+              </strong></h3>
+              <a class="text-decoration-none" href="/#/my-account/my-bookings">Go to : <strong>My Bookings</strong> </a>
+          </div>
+          </div>
+          <p>Dear {{ reservationDetails.guestName }},</p>
+          <p>
+            We apologize for the inconvenience, but it seems there was an issue
+            processing your payment.
+          </p>
+          <p>
+            If any amount was debited, rest assured it will be refunded to your
+            account within 5 to 7 working days.
+          </p>
+          <p>
+            For reference, please use Booking ID:
+            {{ reservationDetails.bookingId }}.
+          </p>
+          <p>
+            Should you encounter any further difficulties, please don't hesitate
+            to reach out to us for assistance.
+          </p>
+          <p>{{ reservationDetails.resortName }}</p>
+          
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="reservationDetails.resortName == 'Jungle Star, Valamuru' && bookingStatus == 'success'">
+      <div class="container mt-4">
+        <div class="row justify-content-center">
+          <div class="col-md-8 text-center"><img class="title-image my-5" src="assets/images/junglestar.jpeg" alt="junglestar logo"></div>
+          <div class="col-md-8 mx-auto">
+            <h3 class="text-center mb-4">Jungle Star tentative food menu</h3>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr class="bg-primary fw-bold">
+                    <th class="text-center">Day</th>
+                    <th>Meal</th>
+                    <th>Time</th>
+                    <th>Items</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="3" class="align-middle text-center fw-bold">Day 1</td>
+                    <td>Lunch</td>
+                    <td>1:00 PM to 2:30 PM</td>
+                    <td>Pulihora (Complimentary), White Rice, Veg. Curry, Dal, Veg. Fry, Sambar, Curd, Pickle, Papad,
+                      Sweet/Banana</td>
+                  </tr>
+                  <tr>
+                    <td>Evening refreshments</td>
+                    <td>5:00 PM to 5:30 PM</td>
+                    <td>Onion Pakoda with Tea</td>
+                  </tr>
+                  <tr>
+                    <td>Dinner</td>
+                    <td>8:00 PM to 9:00 PM</td>
+                    <td>Raita, Veg. Dum Biryani, Chicken Curry, Mixed Veg. Curry, White Rice, Curd, Rasam</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" class="align-middle text-center fw-bold">Day 2</td>
+                    <td>Morning refreshments</td>
+                    <td>6:30 AM at Canteen</td>
+                    <td>Coffee</td>
+                  </tr>
+                  <tr>
+                    <td>Breakfast</td>
+                    <td>7:30 AM to 8:30 AM</td>
+                    <td>Idly, Vada, Tea</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+  </div>
+</app-layout>

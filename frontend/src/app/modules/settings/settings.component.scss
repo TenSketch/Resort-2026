@@ -1,0 +1,34 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+    display: none;
+
+    &.active {
+      @media(min-width:991px) {
+        display: block;
+      }
+    }
+  }
+
+
+  input:read-only {
+    // padding: 2%;
+    // background-color: grey;
+    cursor: not-allowed;
+  }
+
+  .read-only{
+    padding: 18px 10px 0px 10px;
+    background-color:#e0e2ec !important;
+  }
+
+  .mat-form-field .mat-icon-button {
+    margin-left: -40px;
+    margin-right: 8px;
+  }
+  

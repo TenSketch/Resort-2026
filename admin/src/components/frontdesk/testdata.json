@@ -1,0 +1,62 @@
+[
+  {
+    "bookingId": "BK1001",
+    "guestName": "Ravi Kumar",
+    "phone": "9876543210",
+    "checkInDate": "2025-08-05",
+    "checkOutDate": "2025-08-08",
+    "rooms": ["Room 101", "Room 102"],
+    "numberOfGuests": 4,
+    "isAlreadyCheckedIn": false,
+    "isCancelled": false,
+    "status": "Booked"
+  },
+  {
+    "bookingId": "BK1002",
+    "guestName": "Neha Sharma",
+    "phone": "9123456780",
+    "checkInDate": "2025-08-06",
+    "checkOutDate": "2025-08-10",
+    "rooms": ["Room 103"],
+    "numberOfGuests": 2,
+    "isAlreadyCheckedIn": true,
+    "isCancelled": false,
+    "status": "Checked In"
+  },
+  {
+    "bookingId": "BK1003",
+    "guestName": "Amit Roy",
+    "phone": "9988776655",
+    "checkInDate": "2025-08-01",
+    "checkOutDate": "2025-08-04",
+    "rooms": ["Room 104"],
+    "numberOfGuests": 1,
+    "isAlreadyCheckedIn": false,
+    "isCancelled": true,
+    "status": "Cancelled"
+  },
+  {
+    "bookingId": "BK1004",
+    "guestName": "Priya Desai",
+    "phone": "9012345678",
+    "checkInDate": "2025-08-02",
+    "checkOutDate": "2025-08-05",
+    "rooms": ["Room 105", "Room 106"],
+    "numberOfGuests": 3,
+    "isAlreadyCheckedIn": true,
+    "isCancelled": false,
+    "status": "Checked Out"
+  },
+  {
+    "bookingId": "BK1005",
+    "guestName": "Karan Malhotra",
+    "phone": "9823345612",
+    "checkInDate": "2025-08-07",
+    "checkOutDate": "2025-08-09",
+    "rooms": ["Room 107"],
+    "numberOfGuests": 2,
+    "isAlreadyCheckedIn": false,
+    "isCancelled": false,
+    "status": "Booked"
+  }
+]

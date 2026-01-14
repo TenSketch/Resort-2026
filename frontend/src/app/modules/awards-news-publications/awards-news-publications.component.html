@@ -1,0 +1,66 @@
+<app-layout>
+    <div class="main">
+      <app-loader *ngIf="showLoader"></app-loader>
+      <section class="page-banner d-grid place-items-center">
+        <h1 class="display-3 text-center">{{ title }}</h1>
+      </section>
+      <section class="my-5">
+        <div class="container">
+          <div class="row w-100">
+            <div class="col-lg-8 mx-auto">
+              <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="collapse navbar-collapse show" id="navbarSupportedContent">
+                  <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex justify-content-center align-items-center w-100 nav-tabs">
+                    <li class="nav-item m-0 p-0 nav-justified">
+                      <a
+                        class="nav-link m-0 p-2 text-decoration-none"
+                        (click)="showAwards = true; showNews = false; switchTitle()"
+                        [class.active]="showAwards"
+                        >Awards</a
+                      >
+                    </li>
+                    <li class="nav-item ms-5 nav-justified">
+                      <a
+                        class="nav-link m-0 p-2 text-decoration-none"
+                        (click)="showNews = true; showAwards = false; switchTitle()"
+                        [class.active]="showNews"
+                        >News Articles</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+              
+              <div *ngIf="showAwards">
+                <ul class="list-unstyled">
+                  <li class="mb-3" *ngFor="let item of awards">
+                    <p><strong>{{item.header}}:</strong></p>
+                    <p>{{item.content}}</p>
+                    <img [src]="item.image" alt="Eco-Friendly Tourism Award Image">
+                </li>
+               
+                  <!-- Other awards content -->
+                </ul>
+              </div>
+              <div *ngIf="showNews">
+               <div class="col-md-12">
+                  <div class="masonry-layout" id="vanavihari-gallery">
+  
+                 
+                    <div class="gallerize-example">
+                     
+                      <p class="" gallerize>
+                        <img *ngFor="let img of imageFilenames;let i= index"  (click)="openLightbox(i, 'vanavihari')"     
+                        [src]="img" class="gallery-image">
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </app-layout>
+  

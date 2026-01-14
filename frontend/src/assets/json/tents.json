@@ -1,0 +1,86 @@
+{
+  "vanavihari": [
+    {
+      "id": "v-tent-2p",
+      "name": "2 person tent",
+      "subtitle": "Decathlon",
+      "brand": "Decathlon",
+      "tentBase": "Concrete",
+      "description": "Tent accommodation",
+      "image": "/assets/img/tent/Vanavihari/tent1.jpg",
+      "capacity": 2,
+      "price": 1500,
+      "amenities": [
+        "2 Beds",
+        "2 Pillows",
+        "2 Bed sheets",
+        "2 Comforters",
+        "Hanging light",
+        "2 Towels",
+        "2 Chairs",
+        "Center table"
+      ]
+    },
+    {
+      "id": "v-tent-4p",
+      "name": "4 person tent",
+      "subtitle": "Decathlon",
+      "brand": "Decathlon",
+      "tentBase": "Concrete",
+      "description": "Tent accommodation",
+      "image": "/assets/img/tent/Vanavihari/tent2.jpg",
+      "capacity": 4,
+      "price": 3000,
+      "amenities": [
+        "4 Beds",
+        "4 Pillows",
+        "4 Bed sheets",
+        "4 Comforters",
+        "Hanging light",
+        "4 Towels",
+        "2 Chairs",
+        "Center table"
+      ]
+    }
+  ],
+  "karthikavanm": [
+    {
+      "id": "k-tent-2p",
+      "name": "2 person tent",
+      "subtitle": "from decathlon",
+      "description": "Tent accommodation",
+      "capacity": 2,
+      "price": 1500,
+      "amenities": [
+        "2 Beds",
+        "2 Pillows",
+        "2 Bed sheets",
+        "2 Comforters",
+        "Hanging light",
+        "2 Towels",
+        "2 Chairs",
+        "Center table"
+      ],
+      "image": "/assets/img/tent/Karthikavanm/tent1.jpg"
+    },
+    {
+      "id": "k-tent-4p",
+      "name": "4 person tent",
+      "subtitle": "from decathlon",
+      "description": "Tent accommodation",
+      "capacity": 4,
+      "price": 3000,
+      "amenities": [
+        "4 Beds",
+        "4 Pillows",
+        "4 Bed sheets",
+        "4 Comforters",
+        "Hanging light",
+        "4 Towels",
+        "2 Chairs",
+        "Center table"
+      ],
+      "image": "/assets/img/tent/Karthikavanm/tent2.jpg"
+    }
+  ]
+}

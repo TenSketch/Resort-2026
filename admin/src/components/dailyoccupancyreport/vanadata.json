@@ -1,0 +1,60 @@
+[
+  {
+    "roomName": "Peacock",
+    "bookingId": "BK1023",
+    "guestName": "John Doe",
+    "paidAmount": 12500,
+    "guests": 2,
+    "extraGuests": 1,
+    "children": 1,
+    "totalGuests": 4,
+    "totalFoods": 8,
+    "noOfDays": 3,
+    "remainingDays": 1
+  },
+  {
+    "roomName": "Prakruti",
+    "bookingId": "BK1024",
+    "guestName": "Jane Smith",
+    "paidAmount": 15000,
+    "guests": 2,
+    "extraGuests": 0,
+    "children": 2,
+    "totalGuests": 4,
+    "totalFoods": 10,
+    "noOfDays": 5,
+    "remainingDays": 2
+  },
+  {
+    "roomName": "Red Jungle Fowl",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Agathi",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Vennela",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Jabilli",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Avani",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Ambara",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Aditya",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Vanya",
+    "status": "No Booking"
+  }
+]

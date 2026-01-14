@@ -1,0 +1,413 @@
+<app-layout>
+  <div class="main">
+    <app-loader *ngIf="showLoader"></app-loader>
+    <div class="count-down-timer">
+      <p>5 mins to review booking</p>
+      <div class="wrapper">
+        <div class="title">
+          <p>mins</p>
+          <p>secs</p>
+        </div>
+        <div class="times">
+          <p #minutes></p>
+          <p #seconds></p>
+        </div>
+      </div>
+    </div>
+
+    <section class="booking-summary pb-5 mt-5">
+      <div class="container" style="margin-top: 25px">
+        <h2 class="mb-3">
+          Booking Summary
+          <!-- <span (click)="generateJWSToken()">Test </span> -->
+        </h2>
+        <div class="row gap-4">
+          <div class="col-md-4">
+            <div class="card">
+              <h5><strong>Resort name:</strong> {{ resortName }}</h5>
+
+              <address *ngIf="resortName == 'Vanavihari, Maredumilli'">
+                <i class="fa-solid fa-location-dot"></i>
+
+                Vanavihari Eco-tourism Complex, Maredumilli, AP-533295.
+              </address>
+              <address *ngIf="resortName == 'Jungle Star, Valamuru'">
+                <i class="fa-solid fa-location-dot"></i>
+                Jungle Star ECO Camp, Valamuru, AP-533295.
+              </address>
+              <div class="map-container" *ngIf="resortName == 'Vanavihari, Maredumilli'">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
+                  width="400" height="300" style="border: 0" allowfullscreen="" loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+              <div class="map-container" *ngIf="resortName == 'Jungle Star, Valamuru'">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
+                  width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+              <p><strong>Rating:</strong> 4.5/5</p>
+              <h5>Room & Guests Details</h5>
+              <div class="pb-4">
+                <!-- room name and no.of guests -->
+
+                <div class="pt-2" *ngFor="let roomId of cardData">
+                  <h6 class="fst-italic">
+                    <strong>Cottage Type:</strong><span> {{ roomId.Cottage_Type }}</span>
+                  </h6>
+                  <h6 class="">
+                    <strong>Room Name:</strong><span> {{ roomId.Room_Name }}</span>
+                  </h6>
+                </div>
+                <!-- <hr> -->
+                <h6>
+                  <strong>Number of room(s): </strong><span id="totalRooms">{{ noofrooms }}</span>
+                </h6>
+                <p class="mb-1">
+                  <strong>Guest(s): </strong><span>{{ totalGuests }}</span>
+                </p>
+                <!-- <small>
+                  <strong>Cottage Type:</strong> {{ findRoomById(roomId).Cottage_Type }}
+                </small> -->
+
+                <p class="mb-1"><strong>Extra Guest(s):</strong> {{ extra_guests }}</p>
+                <p class="mb-1">
+                  <strong>Children: </strong><span>{{ extra_children }}</span>
+                </p>
+                <hr class="my-2">
+                <h6><strong>Total Guests: </strong>{{totalGuests + extra_guests + extra_children}}</h6>
+                <a class="font-weight-bold" title="go back to rooms to change selection" (click)="triggerModal()">Change
+                  your selection</a>
+              </div>
+
+              <!-- <p>
+                                Amenities:
+                                <span class="icon">📶</span> Wifi
+                                <span class="icon">✈️</span> Airport Shuttle
+                                <span class="icon">🍽️</span> Restaurant
+                            </p> -->
+            </div>
+            <!-- Booking Details Card -->
+            <div class="card">
+              <h5>Your booking details</h5>
+
+              <div class="d-flex">
+                <div class="col">
+                  <p class="mb-0">Check-in</p>
+                  <!-- <h6>{{ checkInDate }}</h6> -->
+                  <span class="day display-5">{{
+                    formattedCheckinDate.day
+                    }}</span><br />
+                  <span class="month font-weight-bold">{{
+                    formattedCheckinDate.month
+                    }}</span>
+                  <span class="year"> {{ formattedCheckinDate.year }}</span>
+                  <!-- <p>10:00 AM IST</p> -->
+                </div>
+                <div class="col">
+                  <p class="mb-0">Check-out</p>
+                  <span class="day display-5">{{
+                    formattedCheckoutDate.day
+                    }}</span><br />
+                  <span class="month font-weight-bold">{{
+                    formattedCheckoutDate.month
+                    }}</span>
+                  <span class="year"> {{ formattedCheckoutDate.year }}</span>
+                  <!-- <p>09:00 AM IST</p> -->
+                </div>
+              </div>
+              <p class="mt-1">
+                <strong>Duration of stay: </strong>{{ calculateDurationOfStay() }} night(s)
+              </p>
+            </div>
+            <!-- <div class="card">
+              
+            </div> -->
+            <div class="card">
+              <h5>Payment details</h5>
+              <!-- <p>
+                <strong>Total Room Charges:</strong>
+                {{ calculateTotalPrice() * calculateDurationOfStay() }}
+              </p> -->
+              <!-- <p>Total room tarri: 5400</p> -->
+              <!-- <p>
+                <strong>GST @12%:</strong>
+                {{ calculateTotalGSTPrice() }}
+              </p> -->
+              <h4>
+                <strong>Grand Total: </strong>
+                INR {{ calculateGrandTotal() }}
+              </h4>
+            </div>
+            <!-- card for Cancellation fees -->
+            <div class="card">
+              <h5>Cancellation Policy</h5>
+              <strong>Cancellation and Refund:</strong>
+              <div class="table-responsive">
+                <table class="table table-hover mt-3">
+                  <thead>
+                    <tr>
+                      <th>Cancellation Timeframe</th>
+                      <th>Refund Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>48 to 72 hours prior</td>
+                      <td>90%</td>
+                    </tr>
+                    <tr>
+                      <td>24 to 48 hours prior</td>
+                      <td>80%</td>
+                    </tr>
+                    <tr>
+                      <td>Within 24 hours</td>
+                      <td>No refund</td>
+
+                      
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 me-auto mt-5 mt-md-0">
+            <h5 class="mb-4" *ngIf="isLoggedIn(); else loginNotify" style="line-height: 1.5">
+              Check the details we have fetched from your user account
+              {{ getFullUser }}!
+            </h5>
+            <ng-template #loginNotify>
+              <h5 class="mb-4" style="line-height: 1.5">
+                Better Experience to use this app please
+                <a (click)="gotToLogin()">Sign-in</a>
+              </h5>
+            </ng-template>
+            <!-- <h3>User Details</h3> -->
+            <form [formGroup]="form">
+              <mat-form-field appearance="outline">
+                <mat-label>Guest Name</mat-label>
+                <input type="text" matInput required formControlName="gname" placeholder="Enter Full Name" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Mobile no.</mat-label>
+                <input type="text" matInput required placeholder="Enter Mobile Number" formControlName="gphone" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Email</mat-label>
+                <input type="email" matInput required placeholder="Enter Email Address" formControlName="gemail" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Address</mat-label>
+                <input type="text" matInput required placeholder="Enter your address" formControlName="gaddress" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>City</mat-label>
+                <input type="text" matInput required placeholder="Enter your city" formControlName="gcity" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>State</mat-label>
+                <input type="text" matInput required placeholder="Enter your state" formControlName="gstate" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Pincode</mat-label>
+                <input type="number" matInput required placeholder="Enter your pincode" formControlName="gpincode" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Country</mat-label>
+                <input type="text" matInput required placeholder="Enter your country" formControlName="gcountry" />
+              </mat-form-field>
+
+              <!-- <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>GST Number</mat-label>
+                <input matInput placeholder="Enter GST Number" formControlName="gstnumber" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mt-3">
+                <mat-label>Company Name</mat-label>
+                <input matInput placeholder="Enter Company Name" formControlName="companyname" />
+              </mat-form-field> -->
+
+              <mat-form-field appearance="outline" class="mt-3" *ngIf="selectedResort == 'Jungle Star, Valamuru'"
+                required>
+                <mat-label>Food Preference</mat-label>
+
+                <mat-select formControlName="foodpreference">
+                  <mat-option value="vegetarian">Vegetarian</mat-option>
+                  <mat-option value="nonvegetarian">Non-Vegetarian</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-raised-button color="primary" class=" w-100"
+                (click)="triggerInfoModal()" [disabled]="!form.valid">
+                Confirm and Pay
+              </button>
+              <br><br>
+              <section class="booking-terms mt-4">
+                <p>
+                  🛑 Avoid closing or returning to the previous page
+                  before completing payment.
+                </p>
+                <p>
+                  💳 If payment isn't successful, you won't receive an invoice
+                  via email. However, you'll still get booking details. Contact
+                  support with your booking ID to confirm your reservation.
+                </p>
+                <h5 class="mb-3">Review the terms before booking.</h5>
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                  <div class="col">
+                    <div class="card h-100">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-bookmark"></i> Booking and
+                          Reservation
+                        </h6>
+                        <ul>
+                          <li>
+                            All bookings are contingent upon availability.
+                          </li>
+                          <li>
+                            Reservation confirmation necessitates a valid
+                            Government ID.
+                          </li>
+                          <li>
+                            Room bookings are non-transferable; reservations are
+                            exclusive to the original booker or group.
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-money-bill-wave"></i> Payment and
+                          Pricing
+                        </h6>
+                        <ul>
+                          <li>
+                            Full payment is required upon reservation, with
+                            accepted modes including cash, credit & debit cards,
+                            net banking, UPI, etc.
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-clock"></i> Check-in and Check-out
+                        </h6>
+                        <ul>
+                          <li>Check-in Time: Morning 10:00 AM (IST)</li>
+                          <li>Check-out Time: Morning 09:00 AM (IST)</li>
+                          <li>
+                            Early check-in and late check-out are subject to
+                            availability and may incur additional charges.
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card h-100">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-users"></i> Guest Conduct
+                        </h6>
+                        <ul>
+                          <li>
+                            Guests are expected to conduct themselves with
+                            respect towards other guests and staff.
+                          </li>
+                          <li>
+                            Smoking and alcohol consumption are strictly
+                            prohibited within accommodation areas.
+                          </li>
+                          <li>
+                            Any disruptive behavior may lead to eviction without
+                            refund.
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- <button mat-raised-button color="primary" class="w-100 mt-3">Pay now</button> -->
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</app-layout>
+
+<!-- Add this HTML structure to your component's template -->
+<div class="modal" tabindex="-1" *ngIf="isModalVisible" style="display: block">
+  <div class="modal-overlay" [ngClass]="{ 'dark-overlay': isDarkMode }"></div>
+  <!-- Light/Dark overlay -->
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to modify booking?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary text-bg-secondary" (click)="onCancel()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onConfirm()">
+          Go Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" *ngIf="isInfoModalVisible" [ngStyle]="getModalStyles()">
+  <div class="modal-overlay" [ngClass]="{ 'dark-overlay': isDarkMode }"></div>
+  <!-- Light/Dark overlay -->
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">  
+        <ul>  
+            <li>🛑 <strong>Payment Instructions:</strong>  
+                <ul>  
+                    <li>Avoid refreshing, closing, or returning to the previous page before completing payment.</li>  
+                    <li>Avoid swapping apps manually from the payment UPI app to the browser after completing payment. Wait until you are automatically redirected to the browser (this usually takes up to 2 minutes).</li>  
+                </ul>  
+            </li>  
+            <li>💳 <strong>Booking Confirmation</strong>:  
+                <ul>  
+                    <li>If you do not receive booking confirmation immediately after the payment is debited, you will receive it within 10 to 15 minutes.</li>  
+                    <li>Do not attempt rebooking, as the room will stay blocked for 10 to 15 minutes.</li>  
+                    <li>If not confirmed, it means your payment is either pending or failed.</li>  
+                    <li>For payments successful after 15 minutes from booking, the amount will be auto-refunded to your account in 7 days.</li>  
+                    <li>If the payment is not debited, then you can rebook.</li>  
+                </ul>  
+            </li>  
+            <li>⚠️ <strong>Payment Issues:</strong>  
+                <ul>  
+                    <li>If the payment page doesn't open or fails, do not attempt rebooking.</li>  
+                    <li>Contact the support team with the booking ID (check the "My Bookings" page under your profile).</li>  
+                </ul>  
+            </li>  
+        </ul>  
+    </div>
+      <div class="modal-footer justify-content-center">
+        <button mat-raised-button color="primary" class="font-weight-bold w-25" (click)="onOk()"> OK </button>
+      </div>
+    </div>
+  </div>
+</div>

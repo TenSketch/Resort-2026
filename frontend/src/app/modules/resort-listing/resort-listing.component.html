@@ -1,0 +1,165 @@
+<app-layout>
+    <div class="main">
+        <section class="page-banner d-grid place-items-center">
+            <h1 class="display-3 text-center">Vanavihari, Maredumilli</h1>
+        </section>
+
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <!-- <li class="breadcrumb-item"><a href="#">Resorts</a></li> -->
+                    <li class="breadcrumb-item active" aria-current="page">Resorts > Vanavihari, Maredumilli</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- section for search bar - with inputs given in home page search, and user can modify -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="filter-options sticky-sidebar">
+                        <div class="d-flex justify-content-around">
+                            <span><i class="filter-icon fas fa-sliders-h me-2 d-md-none" (click)="toggleSidebar()"></i>Filter & Sort</span>
+                            <span><i class="fa-solid fa-map-location-dot me-2" data-bs-toggle="modal" data-bs-target="#modalId"></i>Map</span>
+                        </div>
+                        <div class="filter-options d-none d-md-block">
+                            <h3>Cottage Type</h3><br>
+                            <mat-checkbox id="hilltop">Hilltop Guest House</mat-checkbox><br>
+                            <mat-checkbox id="pre-fabricated">Pre-Fabricated Cottages</mat-checkbox><br>
+                            <mat-checkbox id="wooden">Wooden Cottages</mat-checkbox><br>
+                            <mat-checkbox id="deluxe">Deluxe Rooms</mat-checkbox><br>
+                            <mat-checkbox id="tented">Tented Cottages</mat-checkbox><br><br><br>
+
+                            <h3>Sort by Price</h3><br>
+                            <mat-radio-group name="priceSort">
+                                <mat-radio-button id="lowToHigh">Low to High</mat-radio-button>
+                                <mat-radio-button id="highToLow">High to Low</mat-radio-button>
+                            </mat-radio-group>
+                            <button mat-raised-button color="primary" class="w-100 mt-1">Apply Filters</button>
+                       
+                        </div>
+                        <!-- <h3><span class="d-none">Filter Options</span></h3> -->
+                        <div id="sidebar" class="sidebar" *ngIf="isSidebarOpen">
+                            <button class="close-button" (click)="closeSidebar()">&times;</button>
+                            <h3>Cottage Type</h3><br>
+                            <mat-checkbox id="hilltop">Hilltop Guest House</mat-checkbox><br>
+                            <mat-checkbox id="pre-fabricated">Pre-Fabricated Cottages</mat-checkbox><br>
+                            <mat-checkbox id="wooden">Wooden Cottages</mat-checkbox><br>
+                            <mat-checkbox id="deluxe">Deluxe Rooms</mat-checkbox><br>
+                            <mat-checkbox id="tented">Tented Cottages</mat-checkbox><br><br><br>
+
+                            <h3>Sort by Price</h3><br>
+                            <mat-radio-group name="priceSort">
+                                <mat-radio-button id="lowToHigh">Low to High</mat-radio-button>
+                                <mat-radio-button id="highToLow">High to Low</mat-radio-button>
+                            </mat-radio-group>
+                            <button mat-raised-button color="primary" class="w-100 mt-1">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8" *ngIf="!isSidebarOpen">
+                    <div class="card mb-3 p-1">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="assets/img/jungle.jpeg" class="card-img" alt="Resort 1 Image">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+
+
+                                    <div class="row">
+                                        <div class="col-6 text-start details-left">
+                                            <p class="mb-0"><span class="me-2"><strong>Room name:</strong></span>Chital</p>
+                                            <p class="mb-0"><span class="me-2"><strong>Cottage type:</strong></span>Pre-fabricated Cottage</p>
+                                            <p><span class="me-2"><strong>Bed type:</strong></span>1 King Size double bed</p>
+                                            <div class="d-flex gap-2">
+                                                <!-- <span><i class="fa-solid fa-wifi me-2"></i> Free WiFi</span> -->
+                                                
+                                                <span><i class="fas fa-snowflake me-2"></i>AC</span>
+                                                <span><i class="fa-solid fa-shower me-2"></i>Geyser</span>
+                                                <span><i class="fa-solid fa-toilet me-2"></i>Western</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-6 details-right text-end">
+
+                                            <div class="star-rating"></div>
+                                            <h5>Good</h5>
+                                            <p class="card-text"><small class="text-muted"> 1 night, 3 adults, 1 child
+                                                    <br>5600 INR + GST @ 18% <br>Extra bed @ 1500 INR</small></p>
+                                            <button class="btn btn-primary" (click)="addRoom()">Add room</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-3 p-2">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="assets/img/jungle.jpeg" class="card-img" alt="Resort 2 Image">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-6 text-start details-left">
+                                            <p>Panther</p>
+                                            <p>Hill Top Guest House</p>
+                                            <p>Double Bed</p>
+                                            <span><i class="fa-solid fa-wifi"></i>&nbsp;Wifi</span>
+                                            <i class="ac-icon fas fa-snowflake"></i>&nbsp;<span>AC</span>
+
+                                        </div>
+                                        <div class="col-6 details-right text-end">
+                                            <div class="star-rating"></div>
+                                            <h5>Good</h5>
+                                            <p class="card-text"><small class="text-muted">2 night, 3 adults, 1 child
+                                                    <br>7600 INR + GST @ 18% <br>Extra bed @ 1500 INR</small></p>
+
+                                            <button class="btn btn-primary" (click)="addRoom()">Add room</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 
+                </div>
+                <div class="booking-summary-bar" *ngIf="showBookingSummary">
+                    <div class="row">
+                        <div class="col-4">
+                            <p>No. Of. Rooms</p>
+                            <p>1</p>
+                        </div>
+                        <div class="col-4">
+                            <p>Total Price</p>
+                            <p> 5600 INR + GST @ 18%</p>
+                            <p></p>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-primary float-end" (click)="goToBooking()">Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>
+
+<div class="modal fade" id="modalId" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- map iframe -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2096.9750517228763!2d81.70766415859167!3d17.600715928141202!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1706798767875!5m2!1sen!2sin"
+                width="100%" height="300" frameborder="0" style="border:0;" allowfullscreen=""
+                aria-hidden="false" tabindex="0"></iframe>
+
+            </div>
+            
+        </div>
+    </div>
+</div>

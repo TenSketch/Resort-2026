@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "cottageName": "Bison Cottages",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "Spacious cottage with modern amenities and forest view",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  },
+  {
+    "id": "2",
+    "cottageName": "Permanent Cottage",
+    "resort": "Jungle Star, Valamuru",
+    "description": "Permanent Cottage at Jungle Start Eco Camp in Valamuru district, AP, offers a unique blend of sturdy construction and eco-conscious design. Built with concrete walls for durability, its distinguishing feature is the roof crafted from thick, waterproof, fireproof, and heat-resistant cloth. This innovative design ensures a comfortable and safe stay amidst the natural surroundings, allowing guests to immerse themselves in the wilderness while enjoying modern comforts.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western", "Food"]
+  },
+  {
+    "id": "3",
+    "cottageName": "Tented Cottage",
+    "resort": "Jungle Star, Valamuru",
+    "description": "The Tented Cottage at Jungle Start Eco Camp in Valamuru district, AP, offers a charming retreat for nature enthusiasts. Nestled amidst the lush greenery, these cottages feature a sturdy framework draped with weather-resistant canvas tents. Inside, guests can enjoy cozy interiors appointed with comfortable furnishings, providing a rustic yet comfortable accommodation experience. With the sounds of nature as your soundtrack and the fresh breeze flowing through the tent flaps, the Tented Cottages offer a serene escape from the hustle and bustle of everyday life.",
+    "roomAmenities": ["Western", "Air Coniditioning", "Geyser", "Food"]
+  },
+  {
+    "id": "4",
+    "cottageName": "Vihari",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "The 'Vihari' Cottage at Vanavihari, Maredumilli district, AP, offers a premium stay with two rooms, Pamuleru and Sokuleru, in a single building. Elegantly designed and nestled in nature, each room provides a luxurious yet serene retreat for guests seeking tranquillity and comfort amidst the lush wilderness.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  },
+  {
+    "id": "5",
+    "cottageName": "Deluxe Rooms",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "The Deluxe Cottage at Vanavihari, situated behind the reception, features three rooms named Narmada, Bahuda, and Tapathi, all at an affordable price of 2500 rupees. This cozy accommodation offers a perfect blend of comfort and economy, allowing guests to enjoy a tranquil stay amidst the natural beauty of the Maredumilli district, AP.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  },
+  {
+    "id": "6",
+    "cottageName": "Wooden Cottages",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "The Wooden Cottages at Vanavihari offer a rustic yet charming retreat in the heart of Maredumilli district, AP. Nestled amidst the lush greenery, these cottages boast traditional wooden construction, exuding warmth and authenticity. Each cottage is thoughtfully designed to provide a cozy and comfortable stay, allowing guests to immerse themselves in the serene ambiance of the forest. With modern amenities seamlessly integrated into the rustic charm, the Wooden Cottages offer a delightful blend of nature and comfort for a truly memorable getaway.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  },
+  {
+    "id": "7",
+    "cottageName": "Pre-Fabricated Cottages",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "The Pre-Fabricated Cottages at Vanavihari offer a contemporary accommodation option amidst the natural beauty of Maredumilli district, AP. These cottages feature modern, modular construction, providing a sleek and comfortable retreat for guests. Each cottage is designed with efficiency and sustainability in mind, offering a cozy yet eco-friendly space to unwind. With thoughtful amenities and stylish interiors, the prefabricated cottages offer a refreshing stay, allowing guests to relax and recharge in harmony with nature.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  },
+  {
+    "id": "8",
+    "cottageName": "Hill Top Guest House",
+    "resort": "Vanavihari, Maredumilli",
+    "description": "Perched atop the serene hills of Vanavihari resort in Maredumilli district, AP, the Hill Top Guest House offers breathtaking panoramic views of the surrounding landscape. This exclusive accommodation boasts spacious and elegantly appointed rooms, providing a luxurious retreat for discerning guests. With its secluded location and tranquil ambience, the Hill Top Guest House provides the perfect setting for relaxation and rejuvenation amidst nature's splendour. Whether enjoying a quiet moment on the private balcony or exploring the nearby trails, guests are sure to experience an unforgettable stay in this idyllic mountain retreat.",
+    "roomAmenities": ["Air Conditioning", "Geyser", "Western"]
+  }
+]

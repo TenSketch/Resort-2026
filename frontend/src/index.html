@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Vanavihari | Community based Eco-Tourism | Maredumilli Range</title>
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+    content="Explore Vanavihari, an eco-tourism initiative by the Government of Andhra Pradesh, promoting responsible tourism, empowering local communities, and fostering conservation. Learn about its sustainable practices and community-based approach." />
+  <meta name="keywords"
+    content="Vanavihari, Andhra Pradesh Forest Department, eco-tourism, community-based, responsible tourism, conservation, sustainable development, indigenous communities, nature, wildlife conservation, tourism initiative, resort booking, resorts in Andhra Pradesh, Jungle Star, Jungle Star Eco Camp, Maredumilli, Valamuru, Amruthadhara Falls, Rampa Falls, Jalatharangani, campsite, bamboo resort, bamboo biriyani, bamboo forest, medicinal plants, hotels in Andhra Pradesh, Resorts in AP, Rampachodavaram, animal conservation, coffee plantations." />
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
+
+  <link rel="icon" type="image/x-icon" href="./assets/img/favicon-vana.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <app-root></app-root>
+</body>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js'></script>
+
+<script>
+
+
+  setTimeout(() => {
+
+    gsap.set("svg", { visibility: "visible" });
+    gsap.to("#headStripe", {
+      y: 0.5,
+      rotation: 1,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      duration: 1
+    });
+
+    gsap.to("#spaceman", {
+      y: 0.5,
+      rotation: 1,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      duration: 1
+    });
+
+    gsap.to("#craterSmall", {
+      x: -3,
+      yoyo: true,
+      repeat: -1,
+      duration: 1,
+      ease: "sine.inOut"
+    });
+
+    gsap.to("#craterBig", {
+      x: 3,
+      yoyo: true,
+      repeat: -1,
+      duration: 1,
+      ease: "sine.inOut"
+    });
+
+    gsap.to("#planet", {
+      rotation: -2,
+      yoyo: true,
+      repeat: -1,
+      duration: 1,
+      ease: "sine.inOut",
+      transformOrigin: "50% 50%"
+    });
+
+
+    gsap.to("#starsBig g", {
+      rotation: "random(-30,30)",
+      transformOrigin: "50% 50%",
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut"
+    });
+
+    gsap.fromTo(
+      "#starsSmall g",
+      { scale: 0, transformOrigin: "50% 50%" },
+      { scale: 1, transformOrigin: "50% 50%", yoyo: true, repeat: -1, stagger: 0.1 });
+
+    gsap.to("#circlesSmall circle", {
+      y: -4,
+      yoyo: true,
+      duration: 1,
+      ease: "sine.inOut",
+      repeat: -1
+    });
+
+    gsap.to("#circlesBig circle", {
+      y: -2,
+      yoyo: true,
+      duration: 1,
+      ease: "sine.inOut",
+      repeat: -1
+    });
+
+
+    gsap.set("#glassShine", { x: -68 });
+
+    gsap.to("#glassShine", {
+      x: 80,
+      duration: 2,
+      rotation: -30,
+      ease: "expo.inOut",
+      transformOrigin: "50% 50%",
+      repeat: -1,
+      repeatDelay: 8,
+      delay: 2
+    });
+
+  }, 800);
+
+  const burger = document.querySelector('.burger');
+  const nav = document.querySelector('nav');
+
+  burger.addEventListener('click', e => {
+    burger.dataset.state === 'closed' ? burger.dataset.state = "open" : burger.dataset.state = "closed";
+    nav.dataset.state === "closed" ? nav.dataset.state = "open" : nav.dataset.state = "closed";
+  });
+</script>
+
+</html>

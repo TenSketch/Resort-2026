@@ -1,0 +1,54 @@
+<app-layout>
+  <div class="main py-5">
+    <div class="container d-flex justify-content-center align-items-center my-5">
+      <div class="card shadow-sm" style="max-width: 500px; width: 100%;">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Resend Verification Email</h2>
+          <p class="text-center text-muted mb-4">
+            Enter your email address and we'll send you a new verification link.
+          </p>
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                formControlName="email_id"
+                placeholder="Enter your email"
+                [class.is-invalid]="form.get('email_id')?.invalid && form.get('email_id')?.touched"
+              >
+              <div class="invalid-feedback" *ngIf="form.get('email_id')?.invalid && form.get('email_id')?.touched">
+                Please enter a valid email address.
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn btn-success w-100 mb-3"
+              [disabled]="isLoading || form.invalid || cooldownSeconds > 0"
+            >
+              <span *ngIf="!isLoading && cooldownSeconds === 0">Resend Verification Email</span>
+              <span *ngIf="cooldownSeconds > 0">Wait {{ cooldownSeconds }}s</span>
+              <span *ngIf="isLoading && cooldownSeconds === 0">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Sending...
+              </span>
+            </button>
+
+            <div *ngIf="cooldownSeconds > 0" class="alert alert-info text-center" role="alert">
+              Please wait {{ cooldownSeconds }} seconds before requesting another email.
+            </div>
+
+            <div class="text-center">
+              <a href="javascript:void(0)" (click)="goToLogin()" class="text-decoration-none">
+                Back to Login
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

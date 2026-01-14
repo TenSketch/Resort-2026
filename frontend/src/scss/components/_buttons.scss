@@ -1,0 +1,35 @@
+@use '/src/scss/base/' as *;
+
+// button{
+//     height: unset!important;
+//     border-radius: 100px!important;
+//     font-size: 1rem!important;
+//     padding: 0.5em 2em!important;
+// }
+
+.btn-primary{
+    background-color: $clr-primary;
+    border: none;
+    color: $white;
+}
+.btn-secondary{
+    border: 2px solid $clr-primary;
+    background-color: transparent;
+}
+.mdc-button{
+    height: fit-content!important;
+    // border-radius: 100px!important;
+    font-size: 0.9rem!important;
+    padding: 0.5em 2em!important;
+}
+.mdc-button.mat-primary{
+    background-color: $clr-primary!important;   
+   }
+   .mat-mdc-outlined-button.mat-secondary{
+    border: 2px solid $clr-primary!important;
+}
+.mat-mdc-raised-button[disabled]{
+    background-color: lightgray!important;
+    cursor: not-allowed!important;
+    pointer-events: unset!important;
+}

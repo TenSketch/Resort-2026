@@ -1,0 +1,87 @@
+[
+  {
+    "roomName": "Peacock",
+    "bookingId": "BK1035",
+    "guestName": "Arjun Mehta",
+    "paidAmount": 18000,
+    "guests": 3,
+    "extraGuests": 0,
+    "children": 2,
+    "totalGuests": 5,
+    "totalFoods": 12,
+    "noOfDays": 4,
+    "remainingDays": 2
+  },
+  {
+    "roomName": "Prakruti",
+    "bookingId": "BK1036",
+    "guestName": "Meena Iyer",
+    "paidAmount": 9500,
+    "guests": 1,
+    "extraGuests": 1,
+    "children": 0,
+    "totalGuests": 2,
+    "totalFoods": 5,
+    "noOfDays": 2,
+    "remainingDays": 1
+  },
+  {
+    "roomName": "Red Jungle Fowl",
+    "bookingId": "BK1037",
+    "guestName": "Rahul Kulkarni",
+    "paidAmount": 22000,
+    "guests": 4,
+    "extraGuests": 2,
+    "children": 1,
+    "totalGuests": 7,
+    "totalFoods": 18,
+    "noOfDays": 5,
+    "remainingDays": 3
+  },
+  {
+    "roomName": "Agathi",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Vennela",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Jabilli",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Avani",
+    "bookingId": "BK1038",
+    "guestName": "Pooja Reddy",
+    "paidAmount": 11000,
+    "guests": 2,
+    "extraGuests": 1,
+    "children": 0,
+    "totalGuests": 3,
+    "totalFoods": 6,
+    "noOfDays": 3,
+    "remainingDays": 2
+  },
+  {
+    "roomName": "Ambara",
+    "status": "No Booking"
+  },
+  {
+    "roomName": "Aditya",
+    "bookingId": "BK1039",
+    "guestName": "Vikram Singh",
+    "paidAmount": 13000,
+    "guests": 2,
+    "extraGuests": 0,
+    "children": 1,
+    "totalGuests": 3,
+    "totalFoods": 7,
+    "noOfDays": 2,
+    "remainingDays": 1
+  },
+  {
+    "roomName": "Vanya",
+    "status": "No Booking"
+  }
+]

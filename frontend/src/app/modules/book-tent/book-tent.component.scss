@@ -1,0 +1,261 @@
+@use "/src/scss/base/" as *;
+
+aside {
+  position: sticky;
+  background-color: $clr-primary-lighter;
+  padding-bottom: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  top: $nav-bar-height;
+
+  @media (min-width: 991px) {
+    overflow-y: auto;
+    bottom: 0;
+    height: 90vh;
+    padding: 20px;
+    z-index: unset;
+  }
+
+  .booking-summary-bar {
+    &--title {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        content: "\f0f3";
+        font-family: "Font Awesome 6 Free";
+        font-size: 18px;
+        color: hsl(90, 100%, 30%);
+        top: 50%;
+        transform: translateY(-50%);
+        right: -22%;
+      }
+    }
+  }
+}
+
+.booking-summary-bar {
+  // background: hsl(90, 100%, 90%); // Removed to match resort page which uses inherited background or specific styling
+  // padding: 20px; // Handled by aside padding in desktop
+  // z-index: 1020; // Handled by aside
+  // position: sticky; // Handled by aside
+  // top: var(--booking-summary-top, 100px); // Handled by aside
+}
+
+.page-banner {
+  padding: 3rem 0;
+  background-image: url('/assets/img/home-gallery/vanavihari-home-gallery-1.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Brand title styling - make Decathlon stand out */
+.page-banner h1 {
+  color: #ffffff;
+  /* dark green */
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-variant: small-caps;
+  text-shadow: 0 2px 10px rgba(11, 90, 43, 0.12);
+}
+
+/* Breadcrumb / resort title smaller variant for other places */
+.breadcrumb .breadcrumb-item.active {
+  color: #0b5a2b;
+  font-weight: 700;
+}
+
+.policy-section {
+  background: hsl(90, 100%, 85%);
+  /* light green similar to other pages */
+  padding: 18px;
+  margin: 18px 0;
+  border-radius: 2px;
+
+  h4 {
+    color: #5b2f00;
+    /* darker brown for headings like screenshot */
+    font-weight: 700;
+  }
+
+  ul {
+    margin-top: 8px;
+
+    li {
+      margin-bottom: 6px;
+      color: #222;
+    }
+  }
+}
+
+/* gallery styles to match resort rooms slider */
+.containerg {
+  position: relative;
+
+  .card-containerg {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    align-items: center;
+    position: relative;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      flex: 1 0 auto;
+      border: 0;
+      box-shadow: unset;
+      padding-left: 0;
+
+      img {
+        width: 280px;
+        height: 280px;
+        object-fit: cover;
+        border-radius: 12px;
+        scroll-snap-align: center;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .scroll-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+    color: yellow;
+
+    &.left {
+      left: 8px;
+    }
+
+    &.right {
+      right: 8px;
+    }
+  }
+}
+
+.tent-amenities {
+  background: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+
+  h6 {
+    font-size: 0.95rem;
+    color: #0b5a2b;
+    font-weight: 700;
+  }
+
+  .amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 8px;
+  }
+
+  .amenity-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #1b3f2b;
+    font-size: 0.9rem;
+
+    i {
+      color: #0b5a2b;
+      font-size: 0.85rem;
+    }
+
+    .amenity-logo {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      object-fit: contain;
+    }
+
+    .amenity-text {
+      line-height: 1;
+    }
+  }
+}
+
+/* ensure amenities block takes full width of its column */
+.tent-amenities {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tent details block: match resort page room card styling */
+.tent-details {
+  background: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+
+  .detail-row {
+    font-size: 1.1rem;
+    /* Slightly larger to match h5/h6 */
+    color: $clr-secondary;
+    /* Brown color for values */
+    padding: 2px 0;
+    font-weight: 500;
+
+    strong {
+      color: $clr-primary-dark;
+      /* Green color for labels */
+      margin-right: 6px;
+      font-weight: 600;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .detail-row {
+      font-size: 1rem;
+    }
+  }
+}
+
+.amenities-line {
+  color: #333;
+  font-size: 1rem;
+  margin: 0;
+  white-space: normal;
+}
+
+.tent-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.tent-guests {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Booking summary form fields - matching rooms component */
+.custom-dropdown {
+  mat-form-field {
+    width: 100%;
+  }
+
+  .mat-small {
+    font-size: 0.9rem;
+  }
+}
+
+.booked-spot {
+  .fa-trash {
+    color: #0b5a2b;
+    cursor: pointer;
+
+    &:hover {
+      color: #dc3545;
+    }
+  }
+}

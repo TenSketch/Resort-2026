@@ -1,0 +1,76 @@
+<section class="search-tents">
+  <form [formGroup]="searchForm">
+    <div class="row align-items-center justify-content-center gap-3 gap-lg-0">
+      <div class="col-md-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Select Tent Spot</mat-label>
+          <mat-select 
+            formControlName="selectedTentSpot"
+            (selectionChange)="onTentSpotChange()"
+            required>
+            <mat-option *ngFor="let spot of tentSpots" [value]="spot._id">
+              {{ spot.spotName }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="searchForm.get('selectedTentSpot')?.invalid">
+            Tent spot is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Check-in date</mat-label>
+          <input 
+            matInput 
+            [min]="minDate" 
+            [max]="maxDate" 
+            [matDatepicker]="picker" 
+            (click)="picker.open()" 
+            placeholder="Check-in date"
+            formControlName="checkinDate"
+            [disabled]="!searchForm.get('selectedTentSpot')?.value"
+            required />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="searchForm.get('checkinDate')?.invalid">
+            Check-in date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Check-out date</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="picker1" 
+            (click)="picker1.open()" 
+            placeholder="Check-out date"
+            formControlName="checkoutDate"
+            [min]="setMinCheckoutDate()"
+            [disabled]="!searchForm.get('selectedTentSpot')?.value || !searchForm.get('checkinDate')?.value"
+            required />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+          <mat-error *ngIf="searchForm.get('checkoutDate')?.invalid">
+            Check-out date is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          class="w-100" 
+          [disabled]="!searchForm.valid" 
+          (click)="submitSearch()">
+          Search
+        </button>
+      </div>
+    </div>
+  </form>
+</section>

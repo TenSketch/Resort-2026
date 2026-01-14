@@ -1,0 +1,226 @@
+<app-layout>
+  <div class="main">
+    <section class="page-banner d-grid place-items-center">
+      <div class="hero-slideshow" aria-hidden="false">
+        <div class="slides">
+          <!-- Images referenced from assets/TOURIST-PLACES (can be adjusted in the component TS) -->
+          <img *ngFor="let img of heroImages; let i = index"
+               [src]="img"
+               [class.active]="i === activeSlide"
+               class="slide-img" alt="Tourist place image {{i + 1}}" />
+        </div>
+
+        <!-- Overlay title -->
+        <div class="hero-overlay">
+          <h1 class="display-4 text-center">Book Tourist Spots</h1>
+        </div>
+
+        <!-- Dots / manual navigation -->
+        <div class="hero-dots">
+          <button *ngFor="let img of heroImages; let i = index"
+                  class="dot"
+                  [class.active]="i === activeSlide"
+                  (click)="goToSlide(i)"
+                  [attr.aria-label]="'Show slide ' + (i + 1)">
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="container-fluid my-5">
+      <div class="row g-4">
+  <!-- Filters (narrow) -->
+  <div class="col-lg-2 order-lg-1 order-2" *ngIf="false">
+          <div class="filters-card sticky-top" style="top: 100px;">
+            <div class="card shadow">
+              <div class="card-header bg-secondary text-white" (click)="toggleFilters()" style="cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <h5 class="mb-0">
+                      <i class="fa-solid fa-filter me-2"></i>
+                      Filters
+                    </h5>
+                    <button class="btn btn-sm btn-light ms-2" (click)="clearFilters(); $event.stopPropagation()" *ngIf="hasActiveFilters()">
+                      <i class="fa-solid fa-times me-1"></i>
+                      Clear
+                    </button>
+                  </div>
+                  <i class="fa-solid fa-chevron-down toggle-icon" [class.rotated]="!isFiltersExpanded"></i>
+                </div>
+              </div>
+              <div class="card-body accordion-content" [class.collapsed]="!isFiltersExpanded">
+                <!-- Category Filters -->
+                <div class="filter-group mb-4">
+                  <h6 class="filter-title mb-3">
+                    <i class="fa-solid fa-layer-group me-2"></i>
+                    Categories
+                  </h6>
+                  <div class="form-check" *ngFor="let cat of categoryFilters">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      [id]="'category-' + cat.value"
+                      [(ngModel)]="cat.selected"
+                      (change)="applyFilters()">
+                    <label class="form-check-label" [for]="'category-' + cat.value">
+                      {{ cat.label }}
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Time Filters -->
+                <div class="filter-group">
+                  <h6 class="filter-title mb-3">
+                    <i class="fa-solid fa-clock me-2"></i>
+                    Time Duration
+                  </h6>
+                  <div class="form-check" *ngFor="let time of timeFilters">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="timeFilter"
+                      [id]="'time-' + time.value"
+                      [value]="time.value"
+                      [(ngModel)]="selectedTimeFilter"
+                      (change)="applyFilters()">
+                    <label class="form-check-label" [for]="'time-' + time.value">
+                      {{ time.label }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  <!-- Middle - Tourist Spot Selection (wider) -->
+  <div class="col-lg-7 order-lg-3 order-3">
+          <div class="tourist-spots-list">
+            <!-- No Results Message -->
+            <div *ngIf="filteredCategories.length === 0 || !hasAnySpots()" class="alert alert-info">
+              <i class="fa-solid fa-info-circle me-2"></i>
+              No tourist spots match your selected filters. Try adjusting your filter criteria.
+            </div>
+
+            <!-- Filtered Categories -->
+            <div *ngFor="let category of filteredCategories" class="mb-5">
+              <div class="d-flex align-items-center mb-3" *ngIf="category.spots.length > 0">
+                <h2 class="h4 mb-0">{{ category.icon }} {{ category.title }}</h2>
+                <div class="flex-grow-1 border-top ms-3" style="opacity:.3"></div>
+              </div>
+              <div *ngFor="let spot of category.spots" class="tourist-spot-card mb-4" [attr.id]="spot.id">
+                <div class="card shadow-sm">
+                <div class="card-body">
+                    <app-tourist-spot-selection
+                      [name]="spot.name"
+                      [location]="spot.location"
+                      [type]="spot.typeLabel"
+                      [category]="spot.category"
+                      [images]="spot.images"
+                      [fees]="spot.fees"
+                      [addOns]="spot.addOns"
+                      [detailsLink]="['/tourist-destination']"
+                      [detailsFragment]="spot.detailsFragment || spot.id"
+                      (addToBooking)="onAddTouristBooking($event, spot.id)">
+                    </app-tourist-spot-selection>
+                    <div *ngIf="spot.category === 'Trek'" class="small text-muted mt-2 d-flex flex-wrap gap-3">
+                      <span *ngIf="spot.difficulty">Difficulty: {{ spot.difficulty }}</span>
+                      <span *ngIf="spot.distanceKm">Distance: {{ spot.distanceKm }} km</span>
+                      <span *ngIf="spot.elevationGainM">Elevation Gain: {{ spot.elevationGainM }} m</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  <!-- Left Side - Booking Summary (25%) -->
+  <div class="col-lg-3 order-lg-1 order-1">
+          <ng-template #bookingSummaryContent>
+            <ng-container *ngIf="bookedSpots.length > 0; else noBookings">
+              <hr class="my-2">
+              <!-- Booked spots list -->
+              <div class="booked-spots">
+                <div *ngFor="let spot of bookedSpots; let i = index" class="booked-spot mb-3">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="mb-1">{{ spot.name }}</h6>
+                    <button class="btn btn-sm btn-outline-danger" (click)="removeSpot(i)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                  
+                  <div class="fee-breakdown small">
+                    <div class="d-flex justify-content-between" *ngIf="spot.breakdown.entry > 0">
+                      <span>Entry Fee: ₹{{ spot.unitPrices.entry }} × {{ spot.peopleCount }} people</span>
+                      <span>₹{{ spot.breakdown.entry }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between" *ngIf="spot.breakdown.parking > 0">
+                      <span>Parking: ₹{{ spot.unitPrices.parking }} × {{ spot.counts.vehicles }} vehicles</span>
+                      <span>₹{{ spot.breakdown.parking }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between" *ngIf="spot.breakdown.camera > 0">
+                      <span>Camera: ₹{{ spot.unitPrices.camera }} × {{ spot.counts.cameras }} cameras</span>
+                      <span>₹{{ spot.breakdown.camera }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between" *ngIf="spot.breakdown.addOns > 0">
+                      <span>Add-ons</span>
+                      <span>₹{{ spot.breakdown.addOns }}</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between fw-bold">
+                      <span>Spot Total:</span>
+                      <span>₹{{ spot.total }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grand Total -->
+              <div class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5">
+                <span class="mb-0">Grand Total</span>
+                <span>₹{{ grandTotal }}</span>
+              </div>
+            </ng-container>
+            <button mat-raised-button color="primary" class="w-100 mt-3" *ngIf="bookedSpots.length > 0" (click)="proceedToCheckout()">
+              Proceed
+            </button>
+          </ng-template>
+
+          <!-- Desktop Layout -->
+          <div *ngIf="!isMobile" class="booking-summary-bar text-dark rounded-3">
+            <h4 class="mt-2 mb-0 pb-1 font-weight-bold">Booking Summary</h4>
+            <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
+          </div>
+
+          <!-- Mobile Layout -->
+          <mat-accordion *ngIf="isMobile">
+            <div class="mt-2">
+              <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <div class="booking-summary-bar text-dark rounded-3">
+                      <h5 class="m-0 font-weight-bold">
+                        Booking Summary
+                      </h5>
+                    </div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div [ngClass]="{ 'accordion-body': bookedSpots.length > 0 }">
+                  <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
+                </div>
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion>
+
+          <ng-template #noBookings>
+            <div class="d-flex my-2 p-3 align-items-center justify-content-around">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+              <p class="m-0">Add your preferred rooms</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

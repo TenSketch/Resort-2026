@@ -1,0 +1,146 @@
+<app-layout>
+  <div class="main">
+    <div class="container my-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <!-- Success Message -->
+          <div class="text-center mb-5">
+            <div class="success-icon mb-4">
+              <i class="fa-solid fa-check-circle fa-5x text-success"></i>
+            </div>
+            <h1 class="display-4 text-success mb-3">Payment Successful!</h1>
+            <p class="lead text-muted">Your tourist spots booking has been confirmed</p>
+          </div>
+
+          <!-- Transaction Details -->
+          <div class="card shadow-sm mb-4" *ngIf="transactionData">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">
+                <i class="fa-solid fa-receipt me-2"></i>
+                Transaction Details
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="text-muted mb-3">Transaction Information</h6>
+                  <ul class="list-unstyled">
+                    <li><strong>Transaction ID:</strong> {{ transactionData.transactionId }}</li>
+                    <li><strong>Payment Date:</strong> {{ transactionData.paymentDate | date:'medium' }}</li>
+                    <li><strong>Payment Method:</strong> {{ getPaymentMethodName(transactionData.payment.method) }}</li>
+                    <li><strong>Amount Paid:</strong> <span class="text-success">₹{{ transactionData.payment.amount }}</span></li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-muted mb-3">Customer Information</h6>
+                  <ul class="list-unstyled">
+                    <li><strong>Name:</strong> {{ transactionData.customer.fullName }}</li>
+                    <li><strong>Email:</strong> {{ transactionData.customer.email }}</li>
+                    <li><strong>Phone:</strong> {{ transactionData.customer.phone }}</li>
+                    <li><strong>Visit Date:</strong> {{ transactionData.customer.visitDate | date:'mediumDate' }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booked Spots -->
+          <div class="card shadow-sm mb-4" *ngIf="transactionData?.booking?.spots">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">
+                <i class="fa-solid fa-mountain-sun me-2"></i>
+                Booked Tourist Spots
+              </h5>
+            </div>
+            <div class="card-body">
+              <div *ngFor="let spot of transactionData.booking.spots; let i = index" class="spot-booking mb-3 p-3 border rounded">
+                <div class="row">
+                  <div class="col-md-8">
+                    <h6 class="text-primary mb-2">{{ spot.name }}, {{ spot.location }}</h6>
+                    <div class="visitor-details">
+                      <!-- Show Guests (adults) — children input is hidden at selection time -->
+                      <span class="badge bg-light text-dark me-2">{{ spot.counts.adults }} Guests</span>
+                      <span class="badge bg-light text-dark me-2" *ngIf="spot.counts.vehicles > 0">{{ spot.counts.vehicles }} Vehicles</span>
+                      <span class="badge bg-light text-dark me-2" *ngIf="spot.counts.cameras > 0">{{ spot.counts.cameras }} Cameras</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 text-md-end">
+                    <h6 class="text-success mb-0">₹{{ spot.total }}</h6>
+                    <small class="text-muted">Spot Total</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Important Information -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+              <h5 class="mb-0">
+                <i class="fa-solid fa-info-circle me-2"></i>
+                Important Information
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>What to bring:</h6>
+                  <ul class="small">
+                    <li>Valid photo ID proof</li>
+                    <li>This booking confirmation</li>
+                    <li>Comfortable walking shoes</li>
+                    <li>Water bottle and snacks</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6>Guidelines:</h6>
+                  <ul class="small">
+                    <li>Arrive 30 minutes before entry time</li>
+                    <li>Follow all safety instructions</li>
+                    <li>Keep the environment clean</li>
+                    <li>Photography rules apply as per booking</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="text-center">
+            <button class="btn btn-primary btn-lg me-3" (click)="downloadReceipt()">
+              <i class="fa-solid fa-download me-2"></i>
+              Download Receipt
+            </button>
+            <button class="btn btn-outline-secondary btn-lg me-3" (click)="sendEmailConfirmation()">
+              <i class="fa-solid fa-envelope me-2"></i>
+              Email Confirmation
+            </button>
+            <button class="btn btn-success btn-lg" routerLink="/home">
+              <i class="fa-solid fa-home me-2"></i>
+              Back to Home
+            </button>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="alert alert-info mt-4">
+            <h6 class="alert-heading">
+              <i class="fa-solid fa-headset me-2"></i>
+              Need Help?
+            </h6>
+            <p class="mb-2">For any queries regarding your booking, please contact us:</p>
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa-solid fa-phone me-2"></i>
+                <strong>Phone:</strong> +91 7382151617
+              </div>
+              <div class="col-md-6">
+                <i class="fa-solid fa-envelope me-2"></i>
+                <strong>Email:</strong> info@vanavihari.com
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

@@ -1,0 +1,42 @@
+@use './colors' as *;
+@use './mixins' as *;
+$nav-bar-height: 8vh;
+
+
+.text-warning{
+    color: hsl(32, 95%, 44%)!important
+
+}
+.text-success{
+    color: $clr-secondary!important
+}
+
+.text-primary{
+    color: $clr-primary!important
+}
+.text-secondary{
+    color: $clr-secondary!important
+}
+.text-primary-dark{
+    color: $clr-primary-dark!important
+}
+.border-primary{
+    border-color: $clr-primary!important
+}
+
+.text-dark{
+    color: $clr-dark!important
+}
+
+.place-items-center{
+    place-items: center
+}
+.place-content-center{
+    place-content: center
+}
+.border-radius-1rem{
+    @include border-radius;
+}
+.bg-primary{
+    background-color: $clr-primary!important
+  }

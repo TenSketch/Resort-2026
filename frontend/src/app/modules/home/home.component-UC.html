@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Under Maintenance</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #556B2F, #8B4513);
+    }
+
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .spin-slow {
+      animation: spin 4s linear infinite;
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center h-screen w-screen m-0 p-4">
+
+  <div class="bg-green-700 text-white rounded-lg shadow-2xl p-6 sm:p-8 max-w-md w-full fade-in">
+    <div class="flex justify-center mb-4">
+      <svg class="w-12 h-12 text-white spin-slow" fill="none" stroke="currentColor" stroke-width="1.5"
+        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.232 5.232a3 3 0 114.242 4.242l-6.364 6.364a3 3 0 01-4.242 0l-2.121-2.121a3 3 0 010-4.242l6.364-6.364z"></path>
+      </svg>
+    </div>
+    <h2 class="text-lg sm:text-xl font-bold mb-3 text-center">VANAVIHARI.COM is under maintenance</h2>
+    <div class="flex justify-center mb-4">
+      <img src="assets/images/under-maintenance.png" alt="Under Maintenance Image" class="w-2/3">
+    </div>
+    <h3 class="text-base sm:text-lg mb-3 text-center">We regret the inconvenience</h3>
+    <p class="text-sm sm:text-md mb-4 text-center">For reservations, please contact <b>Mr. Balachandiran</b> at:</p>
+    <div class="flex flex-col items-center mb-4">
+      <a class="text-white text-lg hover:text-gray-200 transition duration-300 ease-in-out mb-1"
+        href="tel:9840167444" title="Call Balachandiran">9840167444</a>
+    </div>
+    <p class="text-sm sm:text-md text-center"><strong>Working hours:</strong> 10:00 AM - 08:00 PM</p>
+  </div>
+
+</body>
+
+</html>

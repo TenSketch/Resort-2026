@@ -1,0 +1,5 @@
+RewirteEngine on
+RewirteCond %{REQUEST_FILENAME} -s [OR]
+RewirteCond %{REQUEST_FILENAME} -l [OR]
+RewirteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*) /index.html [NC,L]

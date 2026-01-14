@@ -1,0 +1,422 @@
+/* You can add global styles to this file, and also import other style files */
+@use "./scss/base/" as *;
+@use "./scss/components/" as *;
+
+html {
+  font-size: 15px !important;
+
+  @media (min-width: 600px) {
+    font-size: 14px;
+  }
+}
+
+body {
+  // background-color: $clr-light;
+  // <uniquifier>: Use a unique and descriptive class name
+  // <weight>: Use a value from 100 to 900
+
+  // .noto-sans-<uniquifier> {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  // font-weight: <weight>;
+  // font-style: normal;
+  // font-variation-settings:
+  //   "wdth" 100;
+  // }
+  overflow-x: hidden;
+  line-height: 1.6;
+
+  &.dark-theme {
+    background-color: $clr-dark;
+    color: $clr-light;
+  }
+}
+
+a {
+  // cursor: pointer;
+  color: $clr-primary-dark !important;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $clr-secondary;
+}
+
+// li{
+//   margin-top: 1rem;
+// }
+
+// .container,
+// .container-fluid {
+//   @media (max-width: 576px) {
+//     padding-inline: 2rem;
+//   }
+// }
+
+.logo {
+  width: min(65%, 200px);
+}
+
+.fa-solid,
+.fa-regular {
+  font-size: 1.1rem !important;
+  // margin-right: 5px;
+}
+
+.dropdown-item {
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:active {
+    // background-color: hsl($hue-primary, $saturation-primary, 85%);
+    box-shadow: inset 0 0 4px 0px hsla(0, 0%, 91%, 0.637);
+    border-radius: 5px;
+  }
+}
+
+.icon {
+  width: 30px;
+  // display: block;
+}
+
+.breadcrumb-item {
+
+  // The separator between breadcrumbs (by default, a forward-slash: "/")
+  +.breadcrumb-item {
+
+    //   padding-left: var(--#{$prefix}breadcrumb-item-padding-x);
+    &::before {
+      // float: left; // Suppress inline spacings and underlining of the separator
+      // padding-right: var(--#{$prefix}breadcrumb-item-padding-x);
+      color: $clr-dark;
+      content: url(assets/images/icons/breadcrumbs-right-arrow.svg);
+    }
+  }
+
+  // &.active {
+  //   color: var(--#{$prefix}breadcrumb-item-active-color);
+  // }
+}
+
+.card {
+  // background: rgba(255, 255, 255, 0.4);
+  // box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15), inset 0px 1px 0px #ffffff;
+  // backdrop-filter: blur(8px);
+  // -webkit-backdrop-filter: blur(8px);
+  border-radius: 12px;
+  // border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 1rem;
+}
+
+.form-control {
+  border: none;
+  border-bottom: 2px solid $clr-secondary;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.page-banner {
+  background: rgba(0, 0, 0, 0.508) fixed center / cover;
+  background-blend-mode: overlay;
+  color: white;
+  height: 70vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    color: $clr-light;
+  }
+}
+
+.breadcrumb {
+  padding: 1rem 1.9rem;
+}
+
+.main-title {
+  padding: $pad-main-title;
+  line-height: 1;
+}
+
+.mat-mdc-form-field {
+  width: -webkit-fill-available;
+  width: -moz-available;
+}
+
+.custom-form-no-stretch {
+
+  // background-color: transparent !important;
+  @media (min-width: 600px) {
+    width: unset !important;
+  }
+}
+
+.font-weight-bold {
+  font-weight: 600 !important;
+}
+
+.accordion-button {
+  // padding-block: 0.5em !important;
+  color: $clr-dark;
+  // font-size: 0.9rem;
+}
+
+.info-heading {
+  font-weight: bold;
+}
+
+.icon-small {
+  width: 18px;
+}
+
+.icon-big {
+  width: 15%;
+}
+
+.banner {
+  // background: rgba(0, 0, 0, 0.5) url(assets/img/vihari-room.jpg) center / cover no-repeat fixed;
+  background-blend-mode: multiply;
+  min-height: 50vh;
+}
+
+// search
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+// label {
+//   display: block;
+//   font-weight: bold;
+// }
+
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  /* Aspect ratio 16:9 */
+  height: 0;
+
+  iframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+}
+
+.mat-checkbox-layout {
+  background-color: #4d9900;
+}
+
+.custom-dropdown .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  padding: 5px !important;
+}
+
+.custom-dropdown .mat-mdc-form-field .mat-mdc-form-field-infix {
+  min-height: 33px !important;
+}
+
+.mat-mdc-form-field .mat-mdc-icon-button.mat-mdc-button-base {
+  height: 0px;
+}
+
+.mat-mdc-form-field .mdc-text-field .mdc-floating-label {
+  top: 50% !important;
+}
+
+.mat-mdc-form-field .mat-mdc-icon-button {
+  padding: 0px !important;
+}
+
+.custom-dropdown .mat-mdc-option {
+  min-height: 31px !important;
+}
+
+.mat-mdc-form-field-hint-wrapper {
+  padding: 5px 0px !important;
+}
+
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  padding: 0px !important;
+}
+
+.loader {
+  z-index: 9999;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10%;
+  transform: translate(-50%, -50%);
+}
+
+// masonry layout
+.masonry-layout {
+  column-count: 3;
+  gap: 0.5em;
+}
+
+.masonry-layout-item {
+  display: inline-block;
+  // background: #eee;
+  margin: 0 0 0.5em;
+  width: 100%;
+  box-shadow: 0 0 3px 5px rgba(199, 199, 199, 0.699);
+
+  img {
+    border-radius: 5px;
+
+  }
+}
+
+mat-hint {
+  font-style: italic;
+}
+
+.modal-dialog-centered {
+  top: 50%;
+}
+
+// .cdk-overlay-pane {
+//   display: flex !important;
+
+// }
+
+// .mdc-snackbar .mat-mdc-snack-bar-container .mdc-snackbar--open .ng-tns-c3293340843-2 .ng-trigger .ng-trigger-state .center-snackbar .ng-star-inserted{
+
+//   position: fixed !important;
+//   top: 30% !important;
+//   left: 50% !important;
+// }
+
+gallery-thumbs {
+  display: none !important;
+
+}
+
+.modal-dialog {
+  z-index: 1000 !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 500 !important;
+}
+
+.btn:disabled {
+  background-color: #97a786;
+
+}
+
+@media only screen and (max-width: 430px) {
+  .g-btn-close {
+    right: 1em !important;
+    top: 4.7em !important;
+  }
+
+  .g-counter {
+    top: 69px !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .g-btn-close {
+    right: 1em !important;
+    top: 5em !important;
+  }
+
+  .g-counter {
+    top: 75px !important;
+  }
+}
+
+@media only screen and (min-width: 481px) {
+  .g-btn-close {
+    right: 1em !important;
+    top: 2.2em !important;
+  }
+
+  .g-counter {
+    top: 70px !important;
+  }
+}
+
+.table {
+  background-color: unset !important;
+  --bs-table-bg: transparent !important;
+}
+
+.dropdown-item {
+
+  &.active,
+  &:active {
+    background-color: $clr-primary-lighter !important;
+  }
+}
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  padding-top: 56.25%;
+  /* 16:9 ratio for responsiveness */
+  overflow: hidden;
+
+  // display: none;
+  .responsive-iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+  }
+}
+
+/* Sidebar accordion arrow fix: ensure collapsed = right, expanded = down
+   Scoped to the sidebar to avoid affecting other accordions */
+#sidebar .accordion-button::after,
+.sidebar-content .accordion-button::after {
+  transition: transform 0.18s ease;
+  transform-origin: center;
+}
+
+/* When the button has the `collapsed` class (Bootstrap's collapsed state) show the arrow pointing right */
+// #sidebar .accordion-button.collapsed::after,
+// .sidebar-content .accordion-button.collapsed::after {
+//   transform: rotate(90deg) !important;
+// }
+
+/* When the button is expanded (no `.collapsed` class) show the arrow pointing down */
+#sidebar .accordion-button:not(.collapsed)::after,
+.sidebar-content .accordion-button:not(.collapsed)::after {
+  transform: rotate(180deg) !important;
+}

@@ -1,0 +1,47 @@
+.search-tourist-spots {
+
+  padding: 2rem;
+  border-radius: 8px;
+
+  margin-bottom: 2rem;
+
+  form {
+    max-width: 800px;
+    margin: 0 auto;
+    
+    .row {
+      margin: 0;
+      justify-content: center;
+      align-items: center;
+    }
+
+    mat-form-field {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    button {
+      height: 56px;
+      font-size: 1rem;
+      font-weight: 500;
+      min-width: 150px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search-tourist-spots {
+    padding: 1rem;
+
+    form {
+      mat-form-field {
+        max-width: 100%;
+      }
+      
+      button {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+    }
+  }
+}

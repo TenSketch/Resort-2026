@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Payment...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+        }
+        .loader {
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            margin: 10px 0;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .debug {
+            color: white;
+            font-size: 12px;
+            margin-top: 20px;
+            max-width: 600px;
+            word-break: break-all;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .debug p {
+            margin: 5px 0;
+            font-family: monospace;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <h2>Redirecting to BillDesk Payment Gateway...</h2>
+        <p>Please wait while we securely redirect you to complete your payment.</p>
+        <p style="font-size: 14px; margin-top: 20px;">⚠️ Do not close this window or press the back button.</p>
+        <div class="debug" id="debug"></div>
+    </div>
+
+    <form id="paymentForm" name="sdklaunch" method="POST" style="display: none;"></form>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderData = urlParams.get('data');
+        const debugDiv = document.getElementById('debug');
+
+        if (orderData) {
+            try {
+                const data = JSON.parse(decodeURIComponent(orderData));
+                const form = document.getElementById('paymentForm');
+                form.action = data.action;
+
+                debugDiv.innerHTML = `<p><strong>Payment Gateway:</strong> ${data.action}</p>`;
+
+                // Add all parameters
+                Object.keys(data.parameters).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.id = key;
+                    input.name = key;
+                    input.value = data.parameters[key];
+                    form.appendChild(input);
+
+                    // Show in debug (truncate long values)
+                    const displayValue = input.value.length > 50 
+                        ? input.value.substring(0, 50) + '...' 
+                        : input.value;
+                    debugDiv.innerHTML += `<p><strong>${key}:</strong> ${displayValue}</p>`;
+                });
+
+                // Log form submission
+                console.log('Payment form data:', data);
+                console.log('Form action:', form.action);
+                console.log('Form fields:', data.parameters);
+
+                // Submit form after 2 seconds
+                setTimeout(() => {
+                    console.log('Submitting payment form to BillDesk...');
+                    form.submit();
+                }, 2000);
+
+            } catch (e) {
+                console.error('Payment redirect error:', e);
+                document.body.innerHTML = `
+                    <div style="color: white; text-align: center; padding: 20px;">
+                        <h2>❌ Payment Error</h2>
+                        <div class="error">
+                            <p><strong>Error:</strong> Invalid payment data</p>
+                            <p>${e.message}</p>
+                        </div>
+                        <p style="margin-top: 20px;">
+                            <a href="/" style="color: white; text-decoration: underline;">
+                                Return to Home
+                            </a>
+                        </p>
+                    </div>
+                `;
+            }
+        } else {
+            console.error('No payment data provided');
+            document.body.innerHTML = `
+                <div style="color: white; text-align: center; padding: 20px;">
+                    <h2>❌ Payment Error</h2>
+                    <div class="error">
+                        <p>No payment data provided</p>
+                    </div>
+                    <p style="margin-top: 20px;">
+                        <a href="/" style="color: white; text-decoration: underline;">
+                            Return to Home
+                        </a>
+                    </p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

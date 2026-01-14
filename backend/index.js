@@ -88,7 +88,7 @@ app.get('/api/admin/me', adminAuth, (req, res) => {
 
 // ---------------- HEALTH CHECK ----------------
 app.get('/', (req, res) => {
-  res.send('Vanaavihari API Working')
+  res.send('Vanaavihari API Working 2')
 })
 
 // ---------------- START SERVER ----------------

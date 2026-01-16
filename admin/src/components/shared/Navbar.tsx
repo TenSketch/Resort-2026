@@ -1,5 +1,5 @@
 
-import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Globe, Users, FileText, Home } from "lucide-react";
+import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router";
 import Breadcrumb from "./Breadcrumb";

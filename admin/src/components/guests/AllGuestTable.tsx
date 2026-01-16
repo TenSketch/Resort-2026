@@ -110,6 +110,7 @@ const exportToExcel = (guestsParam: Guest[]) => {
 };
 
 export default function GuestTable() {
+  const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
   const tableRef = useRef(null);
   const perms = usePermissions()
   const permsRef = useRef(perms)
@@ -163,7 +164,7 @@ export default function GuestTable() {
         const token = localStorage.getItem('admin_token')
         const headers: any = { 'Content-Type': 'application/json' }
         if (token) headers['Authorization'] = `Bearer ${token}`
-        const response = await fetch(`/api/user/${deletingGuest.id}`, {
+        const response = await fetch(`${apiBase}/api/user/${deletingGuest.id}`, {
           method: 'DELETE',
           headers
         });
@@ -224,7 +225,7 @@ export default function GuestTable() {
         if (formData.pincode) updatePayload.pincode = formData.pincode;
         if (formData.country) updatePayload.country = formData.country;
         
-        const response = await fetch(`/api/user/${editingGuest.id}`, {
+        const response = await fetch(`${apiBase}/api/user/${editingGuest.id}`, {
           method: 'PUT',
           headers,
           body: JSON.stringify(updatePayload)
@@ -290,7 +291,7 @@ export default function GuestTable() {
         const token = localStorage.getItem('admin_token')
         const headers: any = {}
         if (token) headers['Authorization'] = `Bearer ${token}`
-        const res = await fetch('/api/user/all', { headers });
+        const res = await fetch(`${apiBase}/api/user/all`, { headers });
         const json = await res.json();
         if (json && json.success && Array.isArray(json.users)) {
           const mappedGuests = json.users.map((g: any) => ({

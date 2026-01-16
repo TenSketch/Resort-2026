@@ -5,11 +5,11 @@
         <img class="" src="assets/img/logo-vana.png" alt="logo-vana" />
       </a>
       <ul class="navbar-nav d-flex flex-row gap-2 gap-lg-3">
-        <li class="nav-item d-none d-lg-block">
+        <!-- <li class="nav-item d-none d-lg-block">
           <a class="nav-link" routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">
             <i class="fa-solid fa-home me-2"></i>Home
           </a>
-        </li>
+        </li> -->
         <li class="nav-item dropdown d-none d-lg-block">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
@@ -89,7 +89,7 @@
     <div class="sidebar-content">
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
-        <li class="sidebar-item d-flex mt-0">
+        <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAboutUs()">
             <i class="fa-solid fa-info-circle"></i><span class="ms-3">About Us</span>
           </a>
@@ -129,7 +129,7 @@
             </div>
           </div>
         </li>
-        <li class="sidebar-item d-flex">
+        <li class="sidebar-item d-flex d-lg-none">
           <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/tourist-places">
             <i class="fa-regular fa-compass"></i><span class="ms-3">Book Tourist Spots</span>
           </a>

@@ -496,7 +496,15 @@ export default function RoomsTable() {
   }, []);
 
   const columns = [
-  { data: "id", title: "ID" },
+    { 
+      data: null,
+      title: "S.No",
+      orderable: false,
+      searchable: false,
+      render: (_data: any, _type: any, _row: any, meta: any) => {
+        return meta.row + 1;
+      }
+    },
     { data: "resort", title: "Resort" },
     { data: "cottageType", title: "Cottage Type" },
     { data: "roomId", title: "Room ID" },

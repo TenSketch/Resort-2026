@@ -129,6 +129,17 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
         {/* Right side - reduced spacing for mobile */}
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+          
+          {/* Guests Button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="flex items-center h-8 sm:h-9 px-1.5 sm:px-2"
+            onClick={() => navigate('/guests/all')}
+          >
+            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden md:inline text-sm ml-1">Guests</span>
+          </Button>
           {/* View Type Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -159,8 +170,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
           <NotificationDropdown/>
 
+
           {/* Global top-bar menu */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="flex items-center h-8 sm:h-9 px-1.5 sm:px-2">
                 <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -168,21 +180,16 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate('/guests/all')}>
-                <Users className="mr-2 h-4 w-4" />
-                Guests
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/log-reports/all')}>
                 <FileText className="mr-2 h-4 w-4" />
                 Logs
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate('/settings')}>
                 <Home className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           {/* Account dropdown */}
           <DropdownMenu>

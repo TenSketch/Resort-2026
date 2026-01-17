@@ -1,10 +1,18 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="showLoader"></app-loader>
-    <section id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <section
+      id="carouselExampleFade"
+      class="carousel slide carousel-fade"
+      data-bs-ride="carousel"
+    >
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="assets/img/Vihari-outer.jpg" class="d-block w-100" alt="..." />
+          <img
+            src="assets/img/Vihari-outer.jpg"
+            class="d-block w-100"
+            alt="..."
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Vanavihari</h1>
@@ -16,7 +24,11 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/Vanavihari-reception.jpg" class="d-block w-100" alt="..." />
+          <img
+            src="assets/img/Vanavihari-reception.jpg"
+            class="d-block w-100"
+            alt="..."
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Vanavihari</h1>
@@ -28,7 +40,11 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/home-gallery-junglestar/junglestar-home-gallery-5.jpg" class="d-block w-100" alt="..." />
+          <img
+            src="assets/img/home-gallery-junglestar/junglestar-home-gallery-5.jpg"
+            class="d-block w-100"
+            alt="..."
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Jungle Star</h1>
@@ -51,7 +67,11 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/amruthadhara.jpg" class="d-block w-100" alt="..." />
+          <img
+            src="assets/img/amruthadhara.jpg"
+            class="d-block w-100"
+            alt="..."
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Amruthadhara Falls</h1>
@@ -63,7 +83,11 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/Rampa-falls.jpg" class="d-block w-100" alt="..." />
+          <img
+            src="assets/img/Rampa-falls.jpg"
+            class="d-block w-100"
+            alt="..."
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Rampa Falls</h1>
@@ -75,11 +99,21 @@
           </div>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselExampleFade"
+        data-bs-slide="prev"
+      >
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselExampleFade"
+        data-bs-slide="next"
+      >
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
@@ -121,7 +155,11 @@
         <div class="row justify-content-around">
           <div class="col-md-4">
             <div class="card border-0">
-              <img src="assets/img/Vanavihari-reception.jpg" class="card-img-top" alt="Vanavihari, Maredumilli" />
+              <img
+                src="assets/img/Vanavihari-reception.jpg"
+                class="card-img-top"
+                alt="Vanavihari, Maredumilli"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title">Vanavihari, Maredumilli</h5>
                 <p class="card-text">
@@ -133,14 +171,26 @@
                   outside reveals a heavenly experience.
                 </p>
               </div>
-              <div class="card-footer d-grid place-items-center border-0 bg-transparent">
-                <button mat-raised-button color="primary" (click)="goToVanavihari()">View details</button>
+              <div
+                class="card-footer d-grid place-items-center border-0 bg-transparent"
+              >
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="goToVanavihari()"
+                >
+                  View details
+                </button>
               </div>
             </div>
           </div>
           <div class="col-md-4 mt-3 mt-md-0">
             <div class="card border-0 mt-4 mt-md-0">
-              <img src="assets/img/Jungle_Star-reception-1.jpg" class="card-img-top" alt="Jungle Star, Valamuru" />
+              <img
+                src="assets/img/Jungle_Star-reception-1.jpg"
+                class="card-img-top"
+                alt="Jungle Star, Valamuru"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title">Jungle Star, Valamuru</h5>
                 <p class="card-text">
@@ -154,8 +204,16 @@
                   promising an unforgettable stay in nature.
                 </p>
               </div>
-              <div class="card-footer d-grid place-items-center border-0 bg-transparent">
-                <button mat-raised-button color="primary" (click)="goToJungleStar()">View details</button>
+              <div
+                class="card-footer d-grid place-items-center border-0 bg-transparent"
+              >
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="goToJungleStar()"
+                >
+                  View details
+                </button>
               </div>
             </div>
           </div>
@@ -168,29 +226,60 @@
         <div class="row justify-content-around">
           <div class="col-md-4">
             <div class="card border-0">
-              <img src="assets/img/tent/Vanavihari/tent1.jpg" class="card-img-top" alt="Vanavihari Tents" style="height: 250px; object-fit: cover;" />
+              <img
+                src="assets/img/tent/Vanavihari/tent1.jpg"
+                class="card-img-top"
+                alt="Vanavihari Tents"
+                style="height: 250px; object-fit: cover"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title">Vanavihari Tents, Maredumilli</h5>
                 <p class="card-text">
-                  Experience the thrill of camping in the heart of nature. Our tents at Vanavihari offer a perfect blend of adventure and comfort, surrounded by lush greenery and the soothing sounds of the forest.
+                  Experience the thrill of camping in the heart of nature. Our
+                  tents at Vanavihari offer a perfect blend of adventure and
+                  comfort, surrounded by lush greenery and the soothing sounds
+                  of the forest.
                 </p>
               </div>
-              <div class="card-footer d-grid place-items-center border-0 bg-transparent">
-                <button mat-raised-button color="primary" (click)="goToTents()">View details</button>
+              <div
+                class="card-footer d-grid place-items-center border-0 bg-transparent"
+              >
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="goToTents()"
+                >
+                  View details
+                </button>
               </div>
             </div>
           </div>
           <div class="col-md-4 mt-3 mt-md-0">
             <div class="card border-0 mt-4 mt-md-0">
-              <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg" class="card-img-top" alt="Karthikavanam Tents" style="height: 250px; object-fit: cover;" />
+              <img
+                src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg"
+                class="card-img-top"
+                alt="Karthikavanam Tents"
+                style="height: 250px; object-fit: cover"
+              />
               <div class="card-body text-center">
                 <h5 class="card-title">Karthikavanam Tents</h5>
                 <p class="card-text">
-                  Enjoy a serene getaway at Karthikavanam. Our well-maintained tent accommodations provide a peaceful retreat for nature lovers and families looking to unwind in a beautiful setting.
+                  Enjoy a serene getaway at Karthikavanam. Our well-maintained
+                  tent accommodations provide a peaceful retreat for nature
+                  lovers and families looking to unwind in a beautiful setting.
                 </p>
               </div>
-              <div class="card-footer d-grid place-items-center border-0 bg-transparent">
-                <button mat-raised-button color="primary" (click)="goToKarthikavanamTents()">View details</button>
+              <div
+                class="card-footer d-grid place-items-center border-0 bg-transparent"
+              >
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="goToKarthikavanamTents()"
+                >
+                  View details
+                </button>
               </div>
             </div>
           </div>
@@ -205,17 +294,20 @@
           <div class="col-md-8">
             <h2 class="mb-3 text-center">Gallery</h2>
             <div class="masonry-layout" id="vanavihari-gallery">
-
               <!-- <lightgallery [settings]="settings">
                 <a *ngFor="let item of imageFilenames" className="gallery-item" [attr.href]="item">
                   <img className="img-responsive" src="{{ item }}" />
                 </a>
               </lightgallery> -->
-           
+
               <div class="gallerize-example">
-               
                 <p class="" gallerize>
-                  <img *ngFor="let img of imageFilenames;let i= index" [src]="img" (click)="openLightbox(i, 'vanavihari')" class="gallery-image">
+                  <img
+                    *ngFor="let img of imageFilenames; let i = index"
+                    [src]="img"
+                    (click)="openLightbox(i, 'vanavihari')"
+                    class="gallery-image"
+                  />
                 </p>
               </div>
             </div>
@@ -229,8 +321,13 @@
             <div class="map-container">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-                width="400" height="300" style="border: 0" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                width="400"
+                height="300"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
             <div class="table-responsive">
               <table class="table table-hover">
@@ -243,12 +340,18 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><i class="fa-solid fa-train me-2"></i>Rajahmundry Railway Station</td>
+                    <td>
+                      <i class="fa-solid fa-train me-2"></i>Rajahmundry Railway
+                      Station
+                    </td>
                     <td>84 km</td>
                     <td>2 hours</td>
                   </tr>
                   <tr>
-                    <td><i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry Airport</td>
+                    <td>
+                      <i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry
+                      Airport
+                    </td>
                     <td>69.7 km</td>
                     <td>1 hour 30 minutes</td>
                   </tr>
@@ -267,12 +370,16 @@
           <div class="col-md-8">
             <h2 class="mb-3 text-center">Gallery</h2>
             <div class="masonry-layout" id="jungle-star-gallery">
-            <div class="gallerize-example">
-               
-              <p class="" gallerize>
-                <img *ngFor="let img of imageFilenames1;let i= index" [src]="img" (click)="openLightbox(i, 'jungle-star')" class="gallery-image">
-              </p>
-            </div>
+              <div class="gallerize-example">
+                <p class="" gallerize>
+                  <img
+                    *ngFor="let img of imageFilenames1; let i = index"
+                    [src]="img"
+                    (click)="openLightbox(i, 'jungle-star')"
+                    class="gallery-image"
+                  />
+                </p>
+              </div>
             </div>
           </div>
           <div class="col-md-4 mt-3 mt-md-0">
@@ -284,8 +391,13 @@
             <div class="map-container">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
-                width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                width="600"
+                height="450"
+                style="border: 0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
             <div class="table-responsive">
               <table class="table table-hover">
@@ -298,12 +410,18 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><i class="fa-solid fa-train me-2"></i>Rajahmundry Railway Station</td>
+                    <td>
+                      <i class="fa-solid fa-train me-2"></i>Rajahmundry Railway
+                      Station
+                    </td>
                     <td>94.7 km</td>
                     <td>2 hours 24 minutes</td>
                   </tr>
                   <tr>
-                    <td><i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry Airport</td>
+                    <td>
+                      <i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry
+                      Airport
+                    </td>
                     <td>79.4 km</td>
                     <td>1 hour 52 minutes</td>
                   </tr>
@@ -321,65 +439,105 @@
       <div class="container">
         <h2 class="text-center mb-5">Explore Tourist Spots</h2>
         <div class="row g-4">
-     
           <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm tourist-spot-card">
-              <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" class="card-img-top" alt="Soft Trek" style="height: 250px; object-fit: cover;">
+              <img
+                src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+                class="card-img-top"
+                alt="Soft Trek"
+                style="height: 250px; object-fit: cover"
+              />
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">🥾 Soft Trek</h5>
                 <p class="card-text text-muted small">Maredumilli</p>
-                <p class="card-text flex-grow-1">Guided Easy Trek from Jalatarangini to G.M. Valasa. Perfect for beginners and nature enthusiasts.</p>
+                <p class="card-text flex-grow-1">
+                  Guided Easy Trek from Jalatarangini to G.M. Valasa. Perfect
+                  for beginners and nature enthusiasts.
+                </p>
                 <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹800/person</small><br>
+                  <small class="text-primary">Entry: ₹800/person</small><br />
                   <small class="text-muted">Parking: ₹0/vehicle</small>
                 </div>
               </div>
               <div class="card-footer bg-transparent border-0 pt-0">
-                <button class="btn btn-outline-primary btn-sm w-100" routerLink="/tourist-places">Book Now</button>
+                <button
+                  class="btn btn-outline-primary btn-sm w-100"
+                  routerLink="/tourist-places"
+                >
+                  Book Now
+                </button>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm tourist-spot-card">
-              <img src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" class="card-img-top" alt="Very Hard Trek" style="height: 250px; object-fit: cover;">
+              <img
+                src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
+                class="card-img-top"
+                alt="Very Hard Trek"
+                style="height: 250px; object-fit: cover"
+              />
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">🧗 Very Hard Trek</h5>
                 <p class="card-text text-muted small">Maredumilli</p>
-                <p class="card-text flex-grow-1">Experienced Trek: Jungle Star Eco Camp to Nellore (Tribal Village). A challenging adventure deep in the forest.</p>
+                <p class="card-text flex-grow-1">
+                  Experienced Trek: Jungle Star Eco Camp to Nellore (Tribal
+                  Village). A challenging adventure deep in the forest.
+                </p>
                 <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹1200/person</small><br>
+                  <small class="text-primary">Entry: ₹1200/person</small><br />
                   <small class="text-muted">Parking: ₹0/vehicle</small>
                 </div>
               </div>
               <div class="card-footer bg-transparent border-0 pt-0">
-                <button class="btn btn-outline-primary btn-sm w-100" routerLink="/tourist-places">Book Now</button>
+                <button
+                  class="btn btn-outline-primary btn-sm w-100"
+                  routerLink="/tourist-places"
+                >
+                  Book Now
+                </button>
               </div>
             </div>
           </div>
 
           <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm tourist-spot-card">
-              <img src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" class="card-img-top" alt="Gudisa View Point" style="height: 250px; object-fit: cover;">
+              <img
+                src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg"
+                class="card-img-top"
+                alt="Gudisa View Point"
+                style="height: 250px; object-fit: cover"
+              />
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">� Gudisa View Point</h5>
                 <p class="card-text text-muted small">Gudisa Hills</p>
-                <p class="card-text flex-grow-1">Experience scenic sunrises and sunsets from the breathtaking Gudisa Hills view point.</p>
+                <p class="card-text flex-grow-1">
+                  Experience scenic sunrises and sunsets from the breathtaking
+                  Gudisa Hills view point.
+                </p>
                 <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹100/person</small><br>
+                  <small class="text-primary">Entry: ₹100/person</small><br />
                   <small class="text-muted">Parking: ₹300/vehicle</small>
                 </div>
               </div>
               <div class="card-footer bg-transparent border-0 pt-0">
-                <button class="btn btn-outline-primary btn-sm w-100" routerLink="/tourist-places">Book Now</button>
+                <button
+                  class="btn btn-outline-primary btn-sm w-100"
+                  routerLink="/tourist-places"
+                >
+                  Book Now
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        
         <div class="text-center mt-5">
-          <button class="btn btn-primary btn-lg px-5" routerLink="/tourist-places">
+          <button
+            class="btn btn-primary btn-lg px-5"
+            routerLink="/tourist-places"
+          >
             <i class="fa-solid fa-mountain-sun me-2"></i>
             View More Tourist Spots
           </button>
@@ -387,12 +545,15 @@
       </div>
     </section>
 
-
     <!-- testimonials -->
     <section class="testimonials">
       <div class="container mt-5">
         <h2 class="text-center mb-4">Guest Reviews</h2>
-        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div
+          id="testimonialCarousel"
+          class="carousel slide"
+          data-bs-ride="carousel"
+        >
           <div class="carousel-inner">
             <div class="carousel-item active">
               <blockquote class="blockquote text-center">
@@ -416,13 +577,21 @@
             </div>
             <!-- Add more carousel items as needed -->
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel"
-            data-bs-slide="prev">
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#testimonialCarousel"
+            data-bs-slide="prev"
+          >
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel"
-            data-bs-slide="next">
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#testimonialCarousel"
+            data-bs-slide="next"
+          >
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>

@@ -35,13 +35,19 @@ aside {
   }
 }
 
-.booking-summary-bar {
-  // background: hsl(90, 100%, 90%); // Removed to match resort page which uses inherited background or specific styling
-  // padding: 20px; // Handled by aside padding in desktop
-  // z-index: 1020; // Handled by aside
-  // position: sticky; // Handled by aside
-  // top: var(--booking-summary-top, 100px); // Handled by aside
+
+.alert-info {
+  background-color: $clr-brown-light-bg;
+  color: $clr-secondary; // Dark brown text
+  border-color: rgba($clr-secondary, 0.2);
+  
+  .fas, .fa-info-circle {
+    color: $clr-secondary;
+  }
 }
+
+
+
 
 .page-banner {
   padding: 3rem 0;

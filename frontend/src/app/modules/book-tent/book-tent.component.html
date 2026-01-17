@@ -1,15 +1,120 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="false"></app-loader>
-    <section class="page-banner d-grid place-items-center" *ngIf="selectedResortInfo">
-      <h1 class="display-3 text-center">{{ selectedResortInfo.title }}</h1>
-    </section>
+    <div
+      id="tentCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      *ngIf="selectedResortInfo"
+    >
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#tentCarousel"
+          data-bs-slide-to="0"
+          class="active"
+          aria-current="true"
+          aria-label="Slide 1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#tentCarousel"
+          data-bs-slide-to="1"
+          aria-label="Slide 2"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#tentCarousel"
+          data-bs-slide-to="2"
+          aria-label="Slide 3"
+        ></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active" style="height: 70vh">
+          <img
+            src="assets/img/tent/Vanavihari/tent1.jpg"
+            class="d-block w-100"
+            alt="Tent View 1"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              {{ selectedResortInfo.title }}
+            </h1>
+          </div>
+        </div>
+        <div class="carousel-item" style="height: 70vh">
+          <img
+            src="assets/img/tent/Vanavihari/tent2.jpg"
+            class="d-block w-100"
+            alt="Tent View 2"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              {{ selectedResortInfo.title }}
+            </h1>
+          </div>
+        </div>
+        <div class="carousel-item" style="height: 70vh">
+          <img
+            src="assets/img/tent/Vanavihari/tent3.jpg"
+            class="d-block w-100"
+            alt="Tent View 3"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              {{ selectedResortInfo.title }}
+            </h1>
+          </div>
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#tentCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#tentCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
 
     <div class="container-fluid">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a routerLink="/home">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ selectedResortInfo?.title }}</li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ selectedResortInfo?.title }}
+          </li>
         </ol>
       </nav>
 
@@ -18,14 +123,24 @@
           <div class="map-container" *ngIf="resortKey === 'vanavihari'">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-              width="400" height="300" style="border: 0" allowfullscreen="" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+              width="400"
+              height="300"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
           <div class="map-container" *ngIf="resortKey === 'karthikavanm'">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
-              width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+              width="600"
+              height="450"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
         <div class="col-md-8 mt-4 mt-lg-0">
@@ -38,7 +153,10 @@
         <div class="col-md-3">
           <h4 class="">Guest Policies & Accommodation</h4>
           <ul>
-            <li><strong>Occupancy:</strong> 2 guests (for 2-person tent), 4 guests (for 4-person tent)</li>
+            <li>
+              <strong>Occupancy:</strong> 2 guests (for 2-person tent), 4 guests
+              (for 4-person tent)
+            </li>
           </ul>
         </div>
         <div class="col-md-3">
@@ -59,7 +177,6 @@
         <div class="col-md-3">
           <h4 class="">Common Amenities:</h4>
           <ul>
-
             <li>1-HANING LIGHT led</li>
             <li>1-CENTER TABLE</li>
           </ul>
@@ -69,70 +186,123 @@
 
     <div class="container mt-3">
       <h2 class="text-center mb-3 mt-5">Search availability</h2>
-      <app-search-tent 
+      <app-search-tent
         [preselectedTentSpotId]="selectedTentSpotId"
-        (searchSubmitted)="onSearchSubmitted($event)">
+        (searchSubmitted)="onSearchSubmitted($event)"
+      >
       </app-search-tent>
 
       <div class="row mt-3">
-  <aside class="col-md-4">
+        <aside class="col-md-4">
           <ng-template #bookingSummaryContent>
             <ng-container *ngIf="bookedTents.length > 0; else noBookings">
               <div class="border-top pt-2">
-                <div *ngFor="let t of bookedTents; let i = index" class="booked-spot mb-3">
-                  <a href="javascript:void(0)" class="float-end" (click)="removeTent(i)"><i class="fa fa-trash"></i></a>
-                  <div>
+                <div
+                  *ngFor="let t of bookedTents; let i = index"
+                  class="booked-spot mb-3"
+                >
+                  <a
+                    href="javascript:void(0)"
+                    class="float-end"
+                    (click)="removeTent(i)"
+                    ><i class="fa fa-trash"></i
+                  ></a>
+                  <div class="mb-2">
                     <strong class="me-2">{{ t.name }}</strong>
                   </div>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column gap-2">
                     <small>
                       <strong>Capacity:</strong> {{ t.capacity }} person
                     </small>
-                    <small>
-                      <strong>Price:</strong> ₹{{ t.price }}
-                    </small>
+                    <small> <strong>Price:</strong> ₹{{ t.price }} </small>
                   </div>
 
-                  <div class="custom-dropdown mt-4">
+                  <div class="custom-dropdown mt-5">
                     <mat-form-field appearance="outline" class="mat-small">
                       <mat-label>No. of Guests</mat-label>
-                      <mat-select [(ngModel)]="selectedGuestsValues[t.id]" (selectionChange)="onGuestsChange(t.id, $event.value)" size="small" required>
-                        <mat-option *ngFor="let num of getGuestOptions(t)" [value]="num">{{ num }}</mat-option>
+                      <mat-select
+                        [(ngModel)]="selectedGuestsValues[t.id]"
+                        (selectionChange)="onGuestsChange(t.id, $event.value)"
+                        size="small"
+                        required
+                      >
+                        <mat-option
+                          *ngFor="let num of getGuestOptions(t)"
+                          [value]="num"
+                          >{{ num }}</mat-option
+                        >
                       </mat-select>
-                      <mat-hint class="px-0">Adults/Child over 5 yrs (Max: {{ t.capacity }})</mat-hint>
+                      <mat-hint class="px-0"
+                        >Adults/Child over 5 yrs (Max:
+                        {{ t.capacity }})</mat-hint
+                      >
                     </mat-form-field>
 
-                    <div class="custom-dropdown mt-3">
+                    <div class="custom-dropdown mt-4">
                       <mat-form-field appearance="outline" class="mat-small">
                         <mat-label>No. of Children</mat-label>
-                        <mat-select [(ngModel)]="selectedChildrenValues[t.id]" (selectionChange)="onChildrenChange(t.id, $event.value)" size="small">
-                          <mat-option *ngFor="let num of getChildrenOptions(t)" [value]="num">{{ num }}</mat-option>
+                        <mat-select
+                          [(ngModel)]="selectedChildrenValues[t.id]"
+                          (selectionChange)="
+                            onChildrenChange(t.id, $event.value)
+                          "
+                          size="small"
+                        >
+                          <mat-option
+                            *ngFor="let num of getChildrenOptions(t)"
+                            [value]="num"
+                            >{{ num }}</mat-option
+                          >
                         </mat-select>
-                        <mat-hint class="px-0">Up to 5 years (Max: {{ t.maxChildren || t.capacity }})</mat-hint>
+                        <mat-hint class="px-0"
+                          >Up to 5 years (Max:
+                          {{ t.maxChildren || t.capacity }})</mat-hint
+                        >
                       </mat-form-field>
                     </div>
                   </div>
                 </div>
               </div>
-              <hr class="my-1" />
+              <hr class="my-3" />
               <div class="d-flex justify-content-between pt-1">
                 <span>
-                  Tent Total<br>
-                  <small class="fst-italic">{{ bookedTents.length }} tent<span *ngIf="bookedTents.length > 1">s</span></small>
+                  Tent Total<br />
+                  <small class="fst-italic"
+                    >{{ bookedTents.length }} tent<span
+                      *ngIf="bookedTents.length > 1"
+                      >s</span
+                    ></small
+                  >
                 </span>
                 <span>₹{{ grandTotal }}</span>
               </div>
-              <div class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5">
+              <div
+                class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5"
+              >
                 <span class="mb-0">Grand Total</span>
                 <span>₹{{ grandTotal }}</span>
               </div>
             </ng-container>
-            <button mat-raised-button color="primary" class="w-100 mt-3" *ngIf="bookedTents.length > 0" (click)="proceedToCheckout()" [disabled]="isGuestSelectEmpty()">Proceed</button>
+            <button
+              mat-raised-button
+              color="primary"
+              class="w-100 mt-3"
+              *ngIf="bookedTents.length > 0"
+              (click)="proceedToCheckout()"
+              [disabled]="isGuestSelectEmpty()"
+            >
+              Proceed
+            </button>
           </ng-template>
 
-          <div *ngIf="!isMobile" class="booking-summary-bar text-dark rounded-3 p-3">
+          <div
+            *ngIf="!isMobile"
+            class="booking-summary-bar text-dark rounded-3 p-3"
+          >
             <h4 class="m-0 pb-1 font-weight-bold">Booking Summary</h4>
-            <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
+            <ng-container
+              *ngTemplateOutlet="bookingSummaryContent"
+            ></ng-container>
           </div>
 
           <mat-accordion *ngIf="isMobile">
@@ -144,43 +314,65 @@
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div [ngClass]="{ 'accordion-body': bookedTents.length > 0 }">
-                  <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
+                  <ng-container
+                    *ngTemplateOutlet="bookingSummaryContent"
+                  ></ng-container>
                 </div>
               </mat-expansion-panel>
             </div>
           </mat-accordion>
 
           <ng-template #noBookings>
-            <div class="d-flex my-2 p-3 align-items-center justify-content-around">
+            <div
+              class="d-flex my-2 p-3 align-items-center justify-content-around"
+            >
               <i class="fa fa-plus" aria-hidden="true"></i>
               <p class="m-0">Add your preferred tent</p>
             </div>
           </ng-template>
         </aside>
 
-  <main class="rooms-listing col-md-8">
+        <main class="rooms-listing col-md-8">
           <div *ngIf="isLoadingTents" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem">
+            <div
+              class="spinner-border text-primary"
+              role="status"
+              style="width: 4rem; height: 4rem"
+            >
               <span class="visually-hidden">Loading...</span>
             </div>
             <p class="mt-3">Loading available tents...</p>
           </div>
 
-          <div *ngIf="!isSearchPerformed && !isLoadingTents && tents.length === 0" class="card mb-3 text-center p-4">
+          <div
+            *ngIf="!isSearchPerformed && !isLoadingTents && tents.length === 0"
+            class="card mb-3 text-center p-4"
+          >
             <i class="fas fa-search fa-3x text-muted mb-3"></i>
             <h5>Select a tent spot and dates to view available tents</h5>
             <p class="text-muted">Use the search form above to get started</p>
           </div>
 
-          <div *ngIf="!isSearchPerformed && !isLoadingTents && tents.length > 0" class="alert alert-info text-center">
+          <div
+            *ngIf="!isSearchPerformed && !isLoadingTents && tents.length > 0"
+            class="alert alert-info text-center"
+          >
             <i class="fas fa-info-circle me-2"></i>
-            <strong>Select check-in and check-out dates to enable booking</strong>
+            <strong
+              >Select check-in and check-out dates to enable booking</strong
+            >
           </div>
 
-          <div *ngIf="isSearchPerformed && !isLoadingTents && tents.length === 0" class="card mb-3 text-center p-4">
+          <div
+            *ngIf="isSearchPerformed && !isLoadingTents && tents.length === 0"
+            class="card mb-3 text-center p-4"
+          >
             <i class="fas fa-exclamation-circle fa-3x text-warning mb-3"></i>
             <h5>No tents available</h5>
-            <p class="text-muted">Sorry, no tents are available for the selected dates. Try different dates.</p>
+            <p class="text-muted">
+              Sorry, no tents are available for the selected dates. Try
+              different dates.
+            </p>
           </div>
 
           <div *ngIf="tents.length > 0 && !isLoadingTents">
@@ -189,11 +381,19 @@
                 <div class="col-md-5">
                   <div class="containerg">
                     <div class="card-containerg" #cardContainer>
-                      <div class="card py-0" *ngFor="let img of tent.images; let i = index">
-                        <img class="img-responsive" [src]="img" alt="" (click)="openLightbox(i, tent.id)" />
+                      <div
+                        class="card py-0"
+                        *ngFor="let img of tent.images; let i = index"
+                      >
+                        <img
+                          class="img-responsive"
+                          [src]="img"
+                          alt=""
+                          (click)="openLightbox(i, tent.id)"
+                        />
                       </div>
                     </div>
-                    
+
                     <div class="scroll-icon left" (click)="scrollLeft(ti)">
                       <i class="fas fa-chevron-left"></i>
                     </div>
@@ -207,20 +407,40 @@
                     <!-- New compact tent details block -->
                     <div class="tent-details mt-2">
                       <div class="row">
-                        <div class="col-12 detail-row"><strong>Tent Name:</strong> {{ tent.name || '2 Person tent' }}</div>
-                        <div class="col-12 detail-row"><strong>Accommodation Type:</strong> {{ tent.accommodationType || 'Camping Tent' }}</div>
-                        <div class="col-12 detail-row"><strong>Brand Name:</strong> {{ tent.brand || 'Decathlon' }}</div>
-                        <div class="col-12 detail-row"><strong>Tent Base:</strong> {{ tent.tentBase || 'Concrete' }}</div>
-                        <div class="col-12 detail-row"><strong>Resort:</strong> {{ selectedResortInfo?.title || 'Vanavihari' }}</div>
+                        <div class="col-12 detail-row">
+                          <strong>Tent Name:</strong>
+                          {{ tent.name || "2 Person tent" }}
+                        </div>
+                        <div class="col-12 detail-row">
+                          <strong>Accommodation Type:</strong>
+                          {{ tent.accommodationType || "Camping Tent" }}
+                        </div>
+                        <div class="col-12 detail-row">
+                          <strong>Brand Name:</strong>
+                          {{ tent.brand || "Decathlon" }}
+                        </div>
+                        <div class="col-12 detail-row">
+                          <strong>Tent Base:</strong>
+                          {{ tent.tentBase || "Concrete" }}
+                        </div>
+                        <div class="col-12 detail-row">
+                          <strong>Resort:</strong>
+                          {{ selectedResortInfo?.title || "Vanavihari" }}
+                        </div>
                       </div>
                     </div>
                     <!-- Amenities: show counts based on tent.capacity (default 2) -->
                     <div class="tent-amenities mt-2">
-                      <h6 class="m-0 mb-1">Amenities ({{ tent.capacity || 2 }} each of)</h6>
+                      <h6 class="m-0 mb-1">
+                        Amenities ({{ tent.capacity || 2 }} each of)
+                      </h6>
                       <div class="amenities-list">
-                        <span *ngFor="let item of getAmenityItems(tent)" class="amenity-item">
+                        <span
+                          *ngFor="let item of getAmenityItems(tent)"
+                          class="amenity-item"
+                        >
                           <ng-container *ngIf="item.img; else faIcon">
-                            <img class="amenity-logo" [src]="item.img" alt=""/>
+                            <img class="amenity-logo" [src]="item.img" alt="" />
                           </ng-container>
                           <ng-template #faIcon>
                             <i [class]="item.icon"></i>
@@ -230,22 +450,33 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4 row d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0">
-                        <div class="col-auto">
-                          <h6 class="p-0 m-0 text-success tent-price"><strong>INR ₹{{ tent.price | number:'1.0-0' }}</strong></h6>
-                          <small class="text-muted d-block tent-guests">{{ tent.capacity || 2 }} x guest</small>
-                        </div>
+                  <div
+                    class="col-md-4 row d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0"
+                  >
+                    <div class="col-auto">
+                      <h6 class="p-0 m-0 text-success tent-price">
+                        <strong>INR ₹{{ tent.price | number: "1.0-0" }}</strong>
+                      </h6>
+                      <small class="text-muted d-block tent-guests"
+                        >{{ tent.capacity || 2 }} x guest</small
+                      >
+                    </div>
                   </div>
                   <div class="col my-2 pe-0">
-                        <button 
-                          mat-raised-button 
-                          color="primary" 
-                          class="float-end float-md-start" 
-                          [disabled]="!isSearchPerformed"
-                          [title]="!isSearchPerformed ? 'Select dates to enable booking' : 'Add this tent to your booking'"
-                          (click)="addTentToBooking(tent)">
-                          Add tent
-                        </button>
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      class="float-end float-md-start"
+                      [disabled]="!isSearchPerformed"
+                      [title]="
+                        !isSearchPerformed
+                          ? 'Select dates to enable booking'
+                          : 'Add this tent to your booking'
+                      "
+                      (click)="addTentToBooking(tent)"
+                    >
+                      Add tent
+                    </button>
                   </div>
                 </div>
               </div>

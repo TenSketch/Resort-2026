@@ -27,10 +27,10 @@ const createRoom = async (req, res) => {
       if (resort && resort.roomIdPrefix) {
         const prefix = resort.roomIdPrefix
         // Find the last room with this prefix
-        const lastRoom = await Room.findOne({ 
-          roomId: new RegExp(`^${prefix}\\d+$`) 
+        const lastRoom = await Room.findOne({
+          roomId: new RegExp(`^${prefix}\\d+$`)
         }).sort({ createdAt: -1 })
-        
+
         let nextNumber = 1
         if (lastRoom && lastRoom.roomId) {
           const match = lastRoom.roomId.match(/\d+$/)
@@ -88,7 +88,7 @@ const createRoom = async (req, res) => {
             // Disk storage - upload from file path
             result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/rooms' })
           }
-          
+
           if (result) {
             images.push({ url: result.secure_url, public_id: result.public_id })
           }
@@ -117,15 +117,15 @@ const createRoom = async (req, res) => {
 const listRooms = async (req, res) => {
   try {
     const { resortSlug } = req.query
-    
+
     let query = {}
-    
+
     // Check if this is an admin request (has req.admin from adminAuth middleware)
     // Admin routes can see all rooms, public routes exclude disabled rooms
     if (!req.admin) {
       query.status = { $ne: 'disabled' }
     }
-    
+
     // If resortSlug is provided, filter by resort
     if (resortSlug) {
       const resort = await Resort.findOne({ slug: resortSlug })
@@ -134,7 +134,7 @@ const listRooms = async (req, res) => {
       }
       query.resort = resort._id
     }
-    
+
     const rooms = await Room.find(query).sort({ createdAt: -1 }).populate('resort').populate('cottageType')
     res.json({ rooms })
   } catch (error) {
@@ -146,52 +146,52 @@ const listRooms = async (req, res) => {
 const listAvailableRooms = async (req, res) => {
   try {
     const { resortSlug, checkin, checkout } = req.query
-    
+
     if (!resortSlug) {
       return res.status(400).json({ error: 'Resort slug is required' })
     }
-    
+
     // Find the resort
     const resort = await Resort.findOne({ slug: resortSlug })
     if (!resort) {
       return res.status(404).json({ error: 'Resort not found' })
     }
-    
+
     // Get all rooms for this resort (exclude disabled rooms)
-    const allRooms = await Room.find({ 
+    const allRooms = await Room.find({
       resort: resort._id,
       status: { $ne: 'disabled' } // Exclude disabled rooms
     })
       .sort({ createdAt: -1 })
       .populate('resort')
       .populate('cottageType')
-    
+
     // If no dates provided, return all rooms but mark them as not bookable
     if (!checkin || !checkout) {
       const roomsWithAvailability = allRooms.map(room => ({
         ...room.toObject(),
         isAvailable: false,
         canBook: false,
-        message: 'Please select check-in and check-out dates'
+        message: 'Select check-in and check-out dates'
       }))
       return res.json({ rooms: roomsWithAvailability, allRooms: true })
     }
-    
+
     // Parse dates - set time to start of day for accurate comparison
     const checkInDate = new Date(checkin)
     checkInDate.setHours(0, 0, 0, 0)
     const checkOutDate = new Date(checkout)
     checkOutDate.setHours(0, 0, 0, 0)
-    
+
     // Validate dates
     if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
       return res.status(400).json({ error: 'Invalid date format' })
     }
-    
+
     if (checkInDate >= checkOutDate) {
       return res.status(400).json({ error: 'Check-out date must be after check-in date' })
     }
-    
+
     // Find all reservations that overlap with the requested dates
     // A reservation overlaps if the date ranges intersect
     // Two date ranges [A1, A2] and [B1, B2] overlap if: A1 < B2 AND A2 > B1
@@ -208,9 +208,9 @@ const listAvailableRooms = async (req, res) => {
       checkIn: { $lt: checkOutDate },
       checkOut: { $gt: checkInDate }
     })
-    
+
     console.log(`Found ${overlappingReservations.length} overlapping reservations (pending/reserved/confirmed) for dates ${checkInDate.toISOString()} to ${checkOutDate.toISOString()}`)
-    
+
     // Build a Set of all reserved room IDs from overlapping reservations
     const reservedRoomIds = new Set()
     overlappingReservations.forEach(reservation => {
@@ -221,30 +221,30 @@ const listAvailableRooms = async (req, res) => {
         })
       }
     })
-    
+
     console.log(`Reserved room IDs:`, Array.from(reservedRoomIds))
-    
+
     // Filter available rooms - exclude reserved ones
     const availableRooms = allRooms.filter(room => {
       const roomId = room._id.toString()
       const roomIdAlt = room.roomId
-      
+
       // Check if this room is in any overlapping reservation
-      const isReserved = reservedRoomIds.has(roomId) || 
-                        reservedRoomIds.has(roomIdAlt) ||
-                        reservedRoomIds.has(room.roomName)
-      
+      const isReserved = reservedRoomIds.has(roomId) ||
+        reservedRoomIds.has(roomIdAlt) ||
+        reservedRoomIds.has(room.roomName)
+
       return !isReserved && room.status === 'available'
     })
-    
+
     // Map rooms with availability info
     const roomsWithAvailability = availableRooms.map(room => ({
       ...room.toObject(),
       isAvailable: true,
       canBook: true
     }))
-    
-    res.json({ 
+
+    res.json({
       rooms: roomsWithAvailability,
       totalRooms: allRooms.length,
       availableRooms: roomsWithAvailability.length,
@@ -271,16 +271,16 @@ const updateRoom = async (req, res) => {
     }
     // fallback: allow updating by roomId or roomNumber for legacy/static data IDs
     if (!existing) {
-      existing = await Room.findOne({ $or: [ { roomId: id }, { roomNumber: id } ] })
+      existing = await Room.findOne({ $or: [{ roomId: id }, { roomNumber: id }] })
     }
     if (!existing) return res.status(404).json({ error: 'Room not found' })
 
     // Map updatable scalar fields
-    const scalarUpdates = ['roomNumber','roomId','roomName','status','price','weekdayRate','weekendRate','guests','extraGuests','children','bedChargeWeekday','bedChargeWeekend','resort','cottageType','notes']
+    const scalarUpdates = ['roomNumber', 'roomId', 'roomName', 'status', 'price', 'weekdayRate', 'weekendRate', 'guests', 'extraGuests', 'children', 'bedChargeWeekday', 'bedChargeWeekend', 'resort', 'cottageType', 'notes']
     for (const f of scalarUpdates) {
       if (body[f] !== undefined && body[f] !== null && body[f] !== '') {
         // number coercion for numeric fields
-        if (['price','weekdayRate','weekendRate','guests','extraGuests','children','bedChargeWeekday','bedChargeWeekend'].includes(f)) {
+        if (['price', 'weekdayRate', 'weekendRate', 'guests', 'extraGuests', 'children', 'bedChargeWeekday', 'bedChargeWeekend'].includes(f)) {
           existing[f] = Number(body[f])
         } else {
           existing[f] = body[f]
@@ -316,7 +316,7 @@ const updateRoom = async (req, res) => {
             // Disk storage - upload from file path
             result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/rooms' })
           }
-          
+
           if (result) {
             images.push({ url: result.secure_url, public_id: result.public_id })
           }
@@ -346,7 +346,7 @@ const updateRoom = async (req, res) => {
 const getNextRoomId = async (req, res) => {
   try {
     const { resortId } = req.params
-    
+
     if (!resortId) {
       return res.status(400).json({ error: 'Resort ID is required' })
     }
@@ -363,11 +363,11 @@ const getNextRoomId = async (req, res) => {
 
     const prefix = resort.roomIdPrefix
     // Find the last room with this prefix
-    const lastRoom = await Room.findOne({ 
+    const lastRoom = await Room.findOne({
       roomId: new RegExp(`^${prefix}\\d+$`),
       resort: resortId
     }).sort({ createdAt: -1 })
-    
+
     let nextNumber = 1
     if (lastRoom && lastRoom.roomId) {
       const match = lastRoom.roomId.match(/\d+$/)
@@ -375,7 +375,7 @@ const getNextRoomId = async (req, res) => {
         nextNumber = parseInt(match[0]) + 1
       }
     }
-    
+
     const nextRoomId = `${prefix}${nextNumber}`
     res.json({ nextRoomId, prefix })
   } catch (error) {
@@ -388,7 +388,7 @@ const getNextRoomId = async (req, res) => {
 const deleteRoomImage = async (req, res) => {
   try {
     const { id, publicId } = req.params
-    
+
     if (!publicId) {
       return res.status(400).json({ error: 'Image public_id is required' })
     }
@@ -423,7 +423,7 @@ const deleteRoomImage = async (req, res) => {
     room.images.splice(imageIndex, 1)
     await room.save()
 
-    res.json({ 
+    res.json({
       message: 'Image deleted successfully',
       room: room
     })

@@ -359,7 +359,7 @@ export class BookTentComponent implements OnInit {
 
   addTentToBooking(tent: any) {
     if (!this.isSearchPerformed) {
-      alert('Please select a tent spot and dates first');
+      alert('Select a tent spot and dates first');
       return;
     }
 
@@ -449,7 +449,7 @@ export class BookTentComponent implements OnInit {
   proceedToCheckout() {
     if (this.bookedTents.length === 0) return;
     if (this.isGuestSelectEmpty()) {
-      alert('Please select number of guests for all tents');
+      alert('Select number of guests for all tents');
       return;
     }
     

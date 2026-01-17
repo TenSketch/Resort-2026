@@ -1,3 +1,5 @@
+@use "/src/scss/base/" as *;
+
 .main {
   min-height: 100vh;
   padding-top: 80px;
@@ -151,10 +153,6 @@ aside {
   }
 }
 
-.booking-summary-bar {
-  // Styling handled by aside
-}
-
 // Booking summary form fields - matching tent component
 .custom-dropdown {
   mat-form-field {
@@ -232,7 +230,18 @@ aside {
   }
 }
 
+
 .accordion-body {
   height: 50dvh;
   overflow-y: scroll;
+}
+
+.alert-info {
+  background-color: $clr-brown-light-bg;
+  color: $clr-secondary; // Dark brown text
+  border-color: rgba($clr-secondary, 0.2);
+  
+  .fas, .fa-info-circle {
+    color: $clr-secondary;
+  }
 }

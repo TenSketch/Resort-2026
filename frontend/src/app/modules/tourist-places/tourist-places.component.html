@@ -1,33 +1,148 @@
 <app-layout>
   <div class="main">
-    <section class="page-banner d-grid place-items-center">
-      <h1 class="display-4 text-center">Nearby tourist attractions</h1>
-    </section>
-    <div id="jalatarangini-waterfall" class="container my-5 border rounded shadow-sm bg-light">
+    <div id="touristCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#touristCarousel"
+          data-bs-slide-to="0"
+          class="active"
+          aria-current="true"
+          aria-label="Slide 1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#touristCarousel"
+          data-bs-slide-to="1"
+          aria-label="Slide 2"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#touristCarousel"
+          data-bs-slide-to="2"
+          aria-label="Slide 3"
+        ></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active" style="height: 70vh">
+          <img
+            src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg"
+            class="d-block w-100"
+            alt="Jalatarangini Waterfalls"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              Nearby tourist attractions
+            </h1>
+          </div>
+        </div>
+        <div class="carousel-item" style="height: 70vh">
+          <img
+            src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg"
+            class="d-block w-100"
+            alt="Amruthadhara Waterfalls"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              Nearby tourist attractions
+            </h1>
+          </div>
+        </div>
+        <div class="carousel-item" style="height: 70vh">
+          <img
+            src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg"
+            class="d-block w-100"
+            alt="Karthikavanam Picnic Spot"
+            style="object-fit: cover; height: 100%"
+          />
+          <div
+            class="carousel-caption d-flex justify-content-center align-items-center h-100"
+            style="top: 0; bottom: 0; left: 0; right: 0"
+          >
+            <h1
+              class="display-3 text-center text-white"
+              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
+            >
+              Nearby tourist attractions
+            </h1>
+          </div>
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#touristCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#touristCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    <div
+      id="jalatarangini-waterfall"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
       <h2 class="mb-4 text-primary">🌊 JALATARANGINI WATERFALL</h2>
 
       <!-- Location -->
       <p><strong>📍Location:</strong></p>
       <div class="iframe-container">
-        <iframe class="responsive-iframe"
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.6307719820206!2d81.6609907!3d17.6202596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724efa9ce126f%3A0x3bc3a36a8f5276ac!2sJalatarangini%20Water%20Fall!5e0!3m2!1sen!2sin!4v1754652808056!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos & Videos -->
       <div class="row my-4 gap-4">
         <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
       </div>
 
@@ -35,19 +150,24 @@
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 7 km from Maredumilli Bus Stand, Jalatharangini is a picturesque waterfall situated on the
-          Rajahmundry-Bhadrachalam Highway in Maredumilli village, East Godavari district, Andhra Pradesh. It is a
-          seasonal waterfall and also one of the must-visit places in Maredumilli.
+          At a distance of 7 km from Maredumilli Bus Stand, Jalatharangini is a
+          picturesque waterfall situated on the Rajahmundry-Bhadrachalam Highway
+          in Maredumilli village, East Godavari district, Andhra Pradesh. It is
+          a seasonal waterfall and also one of the must-visit places in
+          Maredumilli.
         </p>
         <p>
-          Jalatharangini Waterfalls is a cascade of running water amidst the lush forest and rocky terrain. This is a
-          multi-tier waterfall. During monsoon season, this small waterfall is full of gush and would be a heaven for
-          nature lovers. The water of the fall is crystal clear.
+          Jalatharangini Waterfalls is a cascade of running water amidst the
+          lush forest and rocky terrain. This is a multi-tier waterfall. During
+          monsoon season, this small waterfall is full of gush and would be a
+          heaven for nature lovers. The water of the fall is crystal clear.
         </p>
         <p>
-          One needs to walk 150 m to reach the falls from the entry point, which takes 30 minutes. The trekking path is
-          slippery and a little strenuous. The waterfall is maintained by local tribes, and they maintain the area by
-          making steps and preparing an easy jungle path with side barricade supports. There is ample parking space for
+          One needs to walk 150 m to reach the falls from the entry point, which
+          takes 30 minutes. The trekking path is slippery and a little
+          strenuous. The waterfall is maintained by local tribes, and they
+          maintain the area by making steps and preparing an easy jungle path
+          with side barricade supports. There is ample parking space for
           vehicles.
         </p>
       </div>
@@ -82,7 +202,7 @@
           <tr>
             <th>⚠️ Rules</th>
             <td>
-              Plastic is completely prohibited<br>
+              Plastic is completely prohibited<br />
               Smoking and alcohol consumption is prohibited
             </td>
           </tr>
@@ -118,56 +238,74 @@
       </table>
     </div>
 
-
-    <div id="amruthadhara-waterfall" class="container my-5 border rounded shadow-sm bg-light">
+    <div
+      id="amruthadhara-waterfall"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
       <h2 class="mb-4 text-primary">💧 AMRUTHADHARA WATERFALL</h2>
 
       <!-- Location -->
-      <div class="iframe-container"><strong>📍 Location:</strong>
+      <div class="iframe-container">
+        <strong>📍 Location:</strong>
 
-
-        <iframe class="responsive-iframe"
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.235178402612!2d81.612572!3d17.639017000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725d190325c67%3A0x48ed1479e1ced87b!2sAMRUTHADHARA%20WATER%20FALL!5e0!3m2!1sen!2sin!4v1754669329545!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos -->
       <div class="row my-4 gap-4">
         <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg" class="rounded" alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
-
       </div>
 
       <!-- Description -->
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 15 km from Maredumilli Bus Stand, Amruthadhara is a beautiful waterfall situated on the
-          Rajahmundry–Bhadrachalam Highway near Maredumilli in Alluri Sitarama Raju district of Andhra Pradesh. It is a
-          perennial waterfall and one of the must-visit places in Maredumilli.
+          At a distance of 15 km from Maredumilli Bus Stand, Amruthadhara is a
+          beautiful waterfall situated on the Rajahmundry–Bhadrachalam Highway
+          near Maredumilli in Alluri Sitarama Raju district of Andhra Pradesh.
+          It is a perennial waterfall and one of the must-visit places in
+          Maredumilli.
         </p>
         <p>
-          Amruthadhara is formed over a seasonal stream amidst forest and steep rocks. During monsoon, this small
-          waterfall
-          is in full gush and would be a heaven for nature lovers. The waterfall is in two stages and is not comfortable
-          for bathing.
+          Amruthadhara is formed over a seasonal stream amidst forest and steep
+          rocks. During monsoon, this small waterfall is in full gush and would
+          be a heaven for nature lovers. The waterfall is in two stages and is
+          not comfortable for bathing.
         </p>
         <p>
-          Visitors need to climb down a steep 1 km pathway from the entrance to reach the waterfalls, which takes about
-          1 hour.
-          The trekking path is slippery and strenuous. The waterfall is maintained by local tribes, who have made steps
-          and prepared
-          an easy jungle path with side barricade supports. There is ample space for vehicle parking.
+          Visitors need to climb down a steep 1 km pathway from the entrance to
+          reach the waterfalls, which takes about 1 hour. The trekking path is
+          slippery and strenuous. The waterfall is maintained by local tribes,
+          who have made steps and prepared an easy jungle path with side
+          barricade supports. There is ample space for vehicle parking.
         </p>
       </div>
 
@@ -201,8 +339,8 @@
           <tr>
             <th>⚠️ Rules</th>
             <td>
-              Plastic is completely prohibited<br>
-              Consumption of smoking and alcohol is prohibited<br>
+              Plastic is completely prohibited<br />
+              Consumption of smoking and alcohol is prohibited<br />
               Please co-operate with CBET People
             </td>
           </tr>
@@ -238,48 +376,62 @@
       </table>
     </div>
 
-    <div id="karthikavanam-picnic-spot" class="container my-5 border rounded shadow-sm bg-light">
+    <div
+      id="karthikavanam-picnic-spot"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
       <h2 class="mb-4 text-success">🏞️ KARTHIKAVANAM PICNIC SPOT</h2>
 
       <!-- Location -->
-      <div class="iframe-container"><strong>📍 Location:</strong>
-        <iframe class="responsive-iframe"
+      <div class="iframe-container">
+        <strong>📍 Location:</strong>
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3895466.2121816296!2d73.58540031250001!3d17.547271000000013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb8fe746215047%3A0x19635d7cad2a8ee1!2sKarthika%20Vanam!5e0!3m2!1sen!2sin!4v1754669557872!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos -->
       <div class="row my-4 gap-4">
         <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg" class="rounded"
-            alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <!-- <div class="col-md-3">
           <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-02.jpg" class="rounded"
             alt="Jalatharangini image" />
         </div> -->
-
-
       </div>
 
       <!-- Description -->
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 10 km from Maredumilli Bus Stand, Karthikavanam is a beautiful picnic spot situated on the
-          Rajahmundry–Bhadrachalam Highway near Maredumilli in Alluri Sitarama Raju district of Andhra Pradesh.
+          At a distance of 10 km from Maredumilli Bus Stand, Karthikavanam is a
+          beautiful picnic spot situated on the Rajahmundry–Bhadrachalam Highway
+          near Maredumilli in Alluri Sitarama Raju district of Andhra Pradesh.
         </p>
         <p>
-          The Forest Department has developed a scenic wildlife viewing area here, known as Karthikavanam, featuring
-          tropical
-          viewpoints, golden bamboo groves, and pine trees along the Pamuleru River. The place is frequented by wild
-          animals
-          like tiger, panther, bison, peacocks, red jungle fowl, and other bird species, along with a variety of
+          The Forest Department has developed a scenic wildlife viewing area
+          here, known as Karthikavanam, featuring tropical viewpoints, golden
+          bamboo groves, and pine trees along the Pamuleru River. The place is
+          frequented by wild animals like tiger, panther, bison, peacocks, red
+          jungle fowl, and other bird species, along with a variety of
           butterflies.
         </p>
       </div>
@@ -319,8 +471,8 @@
           <tr>
             <th>⚠️ Rules</th>
             <td>
-              Plastic is completely prohibited<br>
-              Smoking and alcohol consumption is prohibited<br>
+              Plastic is completely prohibited<br />
+              Smoking and alcohol consumption is prohibited<br />
               Please co-operate with CBET People
             </td>
           </tr>
@@ -347,27 +499,53 @@
         </tbody>
       </table>
     </div>
-    <div id="medicinal-plants-conservation-area-mpca-picnic-spot" class="container my-5 border rounded shadow-sm bg-light">
-      <h2 class="mb-4 text-success">🌿 MEDICINAL PLANTS CONSERVATION AREA (MPCA) PICNIC SPOT</h2>
+    <div
+      id="medicinal-plants-conservation-area-mpca-picnic-spot"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
+      <h2 class="mb-4 text-success">
+        🌿 MEDICINAL PLANTS CONSERVATION AREA (MPCA) PICNIC SPOT
+      </h2>
 
       <!-- Location -->
-      <div class="iframe-container"><strong>📍 Location:</strong>
-        <iframe class="responsive-iframe"
+      <div class="iframe-container">
+        <strong>📍 Location:</strong>
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.343934074646!2d81.650173!3d17.626803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724f2d6f3c2e1%3A0x8a7f8e7a6f423cfb!2sMedicinal%20Plants%20Conservation%20Area%20(MPCA)!5e0!3m2!1sen!2sin!4v1754652808056!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
 
-        <iframe src="" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe
+          src=""
+          width="600"
+          height="450"
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos -->
       <div class="row my-4 gap-4">
         <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/MPCA.jpg" class="rounded" alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/MPCA.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/MPCA-01.jpg" class="rounded" alt="Jalatharangini image" />
+          <img
+            src="assets/img/TOURIST-PLACES/MPCA-01.jpg"
+            class="rounded"
+            alt="Jalatharangini image"
+          />
         </div>
       </div>
 
@@ -375,14 +553,16 @@
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 4 km from Maredumilli Bus Stand, the Medicinal Plants Conservation Area (MPCA) is a
-          beautiful botanical preservation site situated along the Rajahmundry–Bhadrachalam Highway near Maredumilli
+          At a distance of 4 km from Maredumilli Bus Stand, the Medicinal Plants
+          Conservation Area (MPCA) is a beautiful botanical preservation site
+          situated along the Rajahmundry–Bhadrachalam Highway near Maredumilli
           in Alluri Sitarama Raju district of Andhra Pradesh.
         </p>
         <p>
-          The flora here was identified using the belt transect method. So far, 203 species have been identified,
-          recorded, and documented. Out of these, 83 species are in the RET (Rare, Endangered, and Threatened) list,
-          and 3 are endemic species unique to the region.
+          The flora here was identified using the belt transect method. So far,
+          203 species have been identified, recorded, and documented. Out of
+          these, 83 species are in the RET (Rare, Endangered, and Threatened)
+          list, and 3 are endemic species unique to the region.
         </p>
       </div>
 
@@ -416,8 +596,8 @@
           <tr>
             <th>⚠️ Rules</th>
             <td>
-              Plastic is completely prohibited<br>
-              Smoking and alcohol consumption is prohibited<br>
+              Plastic is completely prohibited<br />
+              Smoking and alcohol consumption is prohibited<br />
               Please co-operate with CBET People
             </td>
           </tr>
@@ -445,18 +625,26 @@
       </table>
     </div>
 
-
     <!-- TREKKING DETAILS STARTS HERE -->
     <!-- Soft Trek Section -->
-    <div id="soft-trek-jalatarangi-to-gmvalasa" class="container my-5 border rounded shadow-sm bg-light">
+    <div
+      id="soft-trek-jalatarangi-to-gmvalasa"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
       <h2 class="mb-4 text-success">🥾 Soft Trek: Jalatarangi to G.M.Valasa</h2>
 
       <!-- Location -->
-      <div class="iframe-container"><strong>📍 Location:</strong>
+      <div class="iframe-container">
+        <strong>📍 Location:</strong>
 
-        <iframe class="responsive-iframe"
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.6307719820206!2d81.6609907!3d17.6202596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724efa9ce126f%3A0x3bc3a36a8f5276ac!2sJalatarangini%20Water%20Fall!5e0!3m2!1sen!2sin!4v1754829062548!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos -->
@@ -465,15 +653,25 @@
         <div class="row my-4 gap-4">
           <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg" class="rounded"
-              alt="Jalatharangini image" />
+            <img
+              src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg"
+              class="rounded"
+              alt="Jalatharangini image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" class="rounded" alt="Jalatharangini image" />
+            <img
+              src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+              class="rounded"
+              alt="Jalatharangini image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg" class="rounded"
-              alt="Jalatharangini image" />
+            <img
+              src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg"
+              class="rounded"
+              alt="Jalatharangini image"
+            />
           </div>
         </div>
       </div>
@@ -482,16 +680,19 @@
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 7 km from Maredumilli Bus Stand, Jalatharangini is a picturesque waterfall situated on the
-          Rajahmundry - Bhadrachalam Highway at Maredumilli village of East Godavari district in Andhra Pradesh.
-          It is a seasonal waterfall and one of the must-visit places in Maredumilli.
+          At a distance of 7 km from Maredumilli Bus Stand, Jalatharangini is a
+          picturesque waterfall situated on the Rajahmundry - Bhadrachalam
+          Highway at Maredumilli village of East Godavari district in Andhra
+          Pradesh. It is a seasonal waterfall and one of the must-visit places
+          in Maredumilli.
         </p>
         <p>
-          Jalatharangini Waterfalls is a cascade of running water amidst the forest and rocks. This is a multi-tier
-          waterfall.
-          During the monsoon, it’s full of gush and a heaven for nature lovers. The water is crystal clear. The trek is
-          about 150 m from the entry point, taking around 30 minutes.
-          The path is maintained by local tribes with steps and jungle path barricades.
+          Jalatharangini Waterfalls is a cascade of running water amidst the
+          forest and rocks. This is a multi-tier waterfall. During the monsoon,
+          it’s full of gush and a heaven for nature lovers. The water is crystal
+          clear. The trek is about 150 m from the entry point, taking around 30
+          minutes. The path is maintained by local tribes with steps and jungle
+          path barricades.
         </p>
       </div>
 
@@ -510,8 +711,8 @@
           <tr>
             <th>🅿️ Parking Fee</th>
             <td>
-              Two-wheeler: Rs. 20/-<br>
-              Four-wheeler: Rs. 50/-<br>
+              Two-wheeler: Rs. 20/-<br />
+              Four-wheeler: Rs. 50/-<br />
               Bus: Rs. 100/-
             </td>
           </tr>
@@ -555,31 +756,40 @@
             <th>🕒 Trek Timings</th>
             <td>
               <ol>
-                <li>6:00 AM to 9:00 AM </li>
+                <li>6:00 AM to 9:00 AM</li>
                 <li>3:00 PM to 6:00 PM</li>
               </ol>
             </td>
-
           </tr>
           <tr>
             <th>💵 Fee</th>
             <td>
               <ol>
-                <li>Rs. 800/- per person (Vanavari/Jungle Star stay) with snacks<< /li>
+                <li>
+                  Rs. 800/- per person (Vanavari/Jungle Star stay) with snacks<<
+                  /li>
+                </li>
                 <li>Rs. 1,200/- per person (outsiders)</li>
               </ol>
             </td>
           </tr>
           <tr>
             <th>🌿 Flora</th>
-            <td>Xylia xylocarpa, Terminalia tomentosa, Haldinia cordifolia, Mitragyna parviflora, Ficus species, Bombax
-              ceiba, Zanthoxylum rhetsa, Bridelia retusa, Tree fern, Wild banana, Bamboo species, Wild turmeric, Wild
-              rice, Wild curry leaf, Wild mango</td>
+            <td>
+              Xylia xylocarpa, Terminalia tomentosa, Haldinia cordifolia,
+              Mitragyna parviflora, Ficus species, Bombax ceiba, Zanthoxylum
+              rhetsa, Bridelia retusa, Tree fern, Wild banana, Bamboo species,
+              Wild turmeric, Wild rice, Wild curry leaf, Wild mango
+            </td>
           </tr>
           <tr>
             <th>🐾 Fauna</th>
-            <td>Green keelback, Bamboo pit viper, Cobras, Monitor lizard, Pangolin, Indian giant squirrel, Hornbills,
-              Jungle fowl, Peacock, Woodpeckers, Indian guar, Leopard, Deer, Wild boar, Porcupine, Wild dogs</td>
+            <td>
+              Green keelback, Bamboo pit viper, Cobras, Monitor lizard,
+              Pangolin, Indian giant squirrel, Hornbills, Jungle fowl, Peacock,
+              Woodpeckers, Indian guar, Leopard, Deer, Wild boar, Porcupine,
+              Wild dogs
+            </td>
           </tr>
           <tr>
             <th>🥾Trekking Requirements</th>
@@ -624,8 +834,12 @@
 
           <tr>
             <th><strong>EMC Penalty:</strong></th>
-            <td><span class="text-decoration-underline mb-3">Environmental Maintenance Charges (EMC) Penalty: <strong>Rs
-                  500/-</strong> for violations of the below rules:</span>
+            <td>
+              <span class="text-decoration-underline mb-3"
+                >Environmental Maintenance Charges (EMC) Penalty:
+                <strong>Rs 500/-</strong> for violations of the below
+                rules:</span
+              >
               <ul>
                 <li>No alcohol consumption.</li>
                 <li>No smoking.</li>
@@ -635,15 +849,12 @@
                 <li>Do not damage flora or fauna.</li>
               </ul>
             </td>
-
-
           </tr>
-
 
           <tr>
             <th>🚑 Emergency Contact</th>
             <td>
-              Forest Range Officer: 7901295688<br>
+              Forest Range Officer: 7901295688<br />
               Co-ordinator: 9494151617
             </td>
           </tr>
@@ -652,15 +863,25 @@
     </div>
 
     <!-- Very Hard Trek Section -->
-    <div id="very-hard-trek-jungle-star-eco-camp-to-nellore-tribal-village" class="container my-5 border rounded shadow-sm bg-light">
-      <h2 class="mb-4 text-success">⛰️ Very Hard Trek: Jungle Star Eco Camp to Nellore (Tribal Village)</h2>
+    <div
+      id="very-hard-trek-jungle-star-eco-camp-to-nellore-tribal-village"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
+      <h2 class="mb-4 text-success">
+        ⛰️ Very Hard Trek: Jungle Star Eco Camp to Nellore (Tribal Village)
+      </h2>
 
       <!-- Location -->
-      <div class="iframe-container"><strong>📍 Location:</strong>
-        <iframe class="responsive-iframe"
+      <div class="iframe-container">
+        <strong>📍 Location:</strong>
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.3213805344762!2d81.6330505!3d17.634931299999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1754829265303!5m2!1sen!2sin"
-          style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
 
       <!-- Photos -->
@@ -671,19 +892,39 @@
           <!-- photos of jungle star to be added -->
 
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" class="rounded" alt="junglestar-trek image" />
+            <img
+              src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
+              class="rounded"
+              alt="junglestar-trek image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg" class="rounded" alt="junglestar-trek image" />
+            <img
+              src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg"
+              class="rounded"
+              alt="junglestar-trek image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg" class="rounded" alt="junglestar-trek image" />
+            <img
+              src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg"
+              class="rounded"
+              alt="junglestar-trek image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/junglestar-trek-04.jpg" class="rounded" alt="junglestar-trek image" />
+            <img
+              src="assets/img/TOURIST-PLACES/junglestar-trek-04.jpg"
+              class="rounded"
+              alt="junglestar-trek image"
+            />
           </div>
           <div class="col-md-3">
-            <img src="assets/img/TOURIST-PLACES/junglestar-trek-05.jpg" class="rounded" alt="junglestar-trek image" />
+            <img
+              src="assets/img/TOURIST-PLACES/junglestar-trek-05.jpg"
+              class="rounded"
+              alt="junglestar-trek image"
+            />
           </div>
         </div>
       </div>
@@ -692,14 +933,15 @@
       <div class="mb-4">
         <h5>📝 Description</h5>
         <p>
-          At a distance of 10 km from Maredumilli Bus Stand, Jungle Star Eco Camp is located like an island surrounded
-          by water. It has about 10 cottages atop a hillock, accessible only via a bridge.
+          At a distance of 10 km from Maredumilli Bus Stand, Jungle Star Eco
+          Camp is located like an island surrounded by water. It has about 10
+          cottages atop a hillock, accessible only via a bridge.
         </p>
         <p>
-          Cars are left at the parking area; visitors walk a short distance, cross the bridge, and climb to the
-          cottages.
-          The trekking path is slippery and strenuous, suited for experienced trekkers or those with strong fitness
-          levels.
+          Cars are left at the parking area; visitors walk a short distance,
+          cross the bridge, and climb to the cottages. The trekking path is
+          slippery and strenuous, suited for experienced trekkers or those with
+          strong fitness levels.
         </p>
       </div>
 
@@ -754,22 +996,32 @@
             <th>💵 Fee</th>
             <td>
               <ol>
-                <li>Rs. 800/- per person (Vanavari/Jungle Star stay) with snacks<< /li>
+                <li>
+                  Rs. 800/- per person (Vanavari/Jungle Star stay) with snacks<<
+                  /li>
+                </li>
                 <li>Rs. 1,200/- per person (outsiders)</li>
               </ol>
             </td>
           </tr>
           <tr>
             <th>🌿 Flora</th>
-            <td>Xylia xylocarpa, Terminalia tomentosa, Haldinia cordifolia, Mitragyna parviflora, Ficus species, Bombax
-              ceiba, Zanthoxylum rhetsa, Bridelia retusa, Tree fern, Wild banana, Bamboo species, Wild turmeric, Wild
-              rice, Wild curry leaf, Wild mango, Xantolis retusa, Rapidophora</td>
+            <td>
+              Xylia xylocarpa, Terminalia tomentosa, Haldinia cordifolia,
+              Mitragyna parviflora, Ficus species, Bombax ceiba, Zanthoxylum
+              rhetsa, Bridelia retusa, Tree fern, Wild banana, Bamboo species,
+              Wild turmeric, Wild rice, Wild curry leaf, Wild mango, Xantolis
+              retusa, Rapidophora
+            </td>
           </tr>
           <tr>
             <th>🐾 Fauna</th>
-            <td>Green keelback, Bamboo pit viper, Cobras, Monitor lizard, Pangolin, Indian giant squirrel, Hornbills,
-              Jungle fowl, Peacock, Alexandrine parakeet, Woodpeckers, Indian guar, Leopard, Deer, Wild boar, Porcupine,
-              Wild dogs, Sloth bear, Crocodile</td>
+            <td>
+              Green keelback, Bamboo pit viper, Cobras, Monitor lizard,
+              Pangolin, Indian giant squirrel, Hornbills, Jungle fowl, Peacock,
+              Alexandrine parakeet, Woodpeckers, Indian guar, Leopard, Deer,
+              Wild boar, Porcupine, Wild dogs, Sloth bear, Crocodile
+            </td>
           </tr>
           <tr>
             <th>🥾Trekking Requirements</th>
@@ -814,8 +1066,12 @@
 
           <tr>
             <th><strong>EMC Penalty:</strong></th>
-            <td><span class="text-decoration-underline mb-3">Environmental Maintenance Charges (EMC) Penalty: <strong>Rs
-                  500/-</strong> for violations of the below rules:</span>
+            <td>
+              <span class="text-decoration-underline mb-3"
+                >Environmental Maintenance Charges (EMC) Penalty:
+                <strong>Rs 500/-</strong> for violations of the below
+                rules:</span
+              >
               <ul>
                 <li>No alcohol consumption.</li>
                 <li>No smoking.</li>
@@ -825,13 +1081,11 @@
                 <li>Do not damage flora or fauna.</li>
               </ul>
             </td>
-
-
           </tr>
           <tr>
             <th>🚑 Emergency Contact</th>
             <td>
-              Forest Range Officer: 7901295688<br>
+              Forest Range Officer: 7901295688<br />
               Co-ordinator: 7382151617
             </td>
           </tr>
@@ -840,43 +1094,71 @@
     </div>
 
     <!-- GUDISA -->
-    <div id="gudisa-view-point" class="container my-5 border rounded shadow-sm bg-light">
+    <div
+      id="gudisa-view-point"
+      class="container my-5 border rounded shadow-sm bg-light"
+    >
       <h2 class="mb-4 text-success">⛰️ GUDISA VIEW POINT</h2>
-
 
       <!-- Location -->
       <div class="iframe-container">
         <strong>📍 Location:</strong>
-        <iframe class="responsive-iframe"
+        <iframe
+          class="responsive-iframe"
           src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7598.71286350315!2d81.693937!3d17.774938!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3731c48301f107%3A0x1ee53ed9481524bf!2sGudisa%20View%20point!5e0!3m2!1sen!2sin!4v1754838945890!5m2!1sen!2sin"
-          style="border: 0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
-
 
       <!-- Photos -->
       <div class="row my-4 gap-4">
         <!-- <label class="form-label"><strong>🖼️ Photos:</strong></label> -->
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-4.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-4.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-5.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-5.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
         <div class="col-md-3">
-          <img src="assets/img/TOURIST-PLACES/gudisa-hills-6.jpg" class="rounded" alt="gudisa-hill" />
+          <img
+            src="assets/img/TOURIST-PLACES/gudisa-hills-6.jpg"
+            class="rounded"
+            alt="gudisa-hill"
+          />
         </div>
-        
       </div>
-
 
       <!-- Description -->
       <div class="mb-4">
@@ -902,26 +1184,40 @@
           Threatened) list, and 3 are endemic species unique to the region.
         </p> -->
 
-        <p>Gudisa View Point, nestled in the Gudisa Hill range of Andhra Pradesh, offers breathtaking panoramic views of
-          the Eastern Ghats. Famous for its sweeping grasslands, lush valleys, dense forests, and mist-covered hills, it
-          is a paradise for nature lovers, trekkers, and photographers.</p>
+        <p>
+          Gudisa View Point, nestled in the Gudisa Hill range of Andhra Pradesh,
+          offers breathtaking panoramic views of the Eastern Ghats. Famous for
+          its sweeping grasslands, lush valleys, dense forests, and mist-covered
+          hills, it is a paradise for nature lovers, trekkers, and
+          photographers.
+        </p>
 
-        <p>The journey includes a challenging 12 km stretch along the Gudisa Ghat Road, with sharp bends and unpaved
-          paths, leading to open grasslands atop hills over 1,235 meters in altitude. These unique high-altitude
-          ecosystems feature sparse, stunted vegetation, semi-evergreen forests, and rich biodiversity, including
-          several Rare, Endangered, and Threatened (RET) species—three of which are found only here. Streams meandering
-          through rocky terrains add to the charm, especially during sunrise and sunset.</p>
+        <p>
+          The journey includes a challenging 12 km stretch along the Gudisa Ghat
+          Road, with sharp bends and unpaved paths, leading to open grasslands
+          atop hills over 1,235 meters in altitude. These unique high-altitude
+          ecosystems feature sparse, stunted vegetation, semi-evergreen forests,
+          and rich biodiversity, including several Rare, Endangered, and
+          Threatened (RET) species—three of which are found only here. Streams
+          meandering through rocky terrains add to the charm, especially during
+          sunrise and sunset.
+        </p>
 
-        <p>Located within the Maredumilli Range of the Rampachodavaram Division Reserve Forests, Gudisa Hills is also
-          home to the Konda Reddy tribe. Visitors can explore preserved tribal arts, crafts, and traditional knowledge,
-          along with guided tours covering trekking trails, birdwatching spots (including the rare Green Munia), and
-          nature education programs.</p>
+        <p>
+          Located within the Maredumilli Range of the Rampachodavaram Division
+          Reserve Forests, Gudisa Hills is also home to the Konda Reddy tribe.
+          Visitors can explore preserved tribal arts, crafts, and traditional
+          knowledge, along with guided tours covering trekking trails,
+          birdwatching spots (including the rare Green Munia), and nature
+          education programs.
+        </p>
 
-        <p>Tourism here is regulated to protect the fragile ecosystem—plastic is banned, overnight stays are prohibited,
-          and sustainable practices are encouraged to ensure its beauty endures for generations.</p>
-
+        <p>
+          Tourism here is regulated to protect the fragile ecosystem—plastic is
+          banned, overnight stays are prohibited, and sustainable practices are
+          encouraged to ensure its beauty endures for generations.
+        </p>
       </div>
-
 
       <!-- Info Table -->
       <table class="table table-bordered table-striped">
@@ -938,7 +1234,6 @@
                 <li>Sun Set: 4:00 to 6:00 PM</li>
               </ul>
             </td>
-
           </tr>
           <tr>
             <th>🚗 Vehicle Parking</th>
@@ -946,13 +1241,15 @@
           </tr>
           <tr>
             <th>🛻 Transport Options</th>
-            <td>Bolero Vehicles
+            <td>
+              Bolero Vehicles
 
-              <p><strong>NOTE:</strong> Only locally hired vehicles that are registered with the
-                Forest Department are permitted. Two-wheelers and private vehicles
-                are not allowed..</p>
+              <p>
+                <strong>NOTE:</strong> Only locally hired vehicles that are
+                registered with the Forest Department are permitted.
+                Two-wheelers and private vehicles are not allowed..
+              </p>
             </td>
-
           </tr>
           <tr>
             <th>🛣️ Travel Plan</th>
@@ -995,8 +1292,12 @@
           </tr>
           <tr>
             <th><strong>EMC Penalty:</strong></th>
-            <td><span class="text-decoration-underline mb-3">Environmental Maintenance Charges (EMC) Penalty: <strong>Rs
-                  500/-</strong> for violations of the below rules:</span>
+            <td>
+              <span class="text-decoration-underline mb-3"
+                >Environmental Maintenance Charges (EMC) Penalty:
+                <strong>Rs 500/-</strong> for violations of the below
+                rules:</span
+              >
               <ul>
                 <li>No alcohol consumption.</li>
                 <li>No smoking.</li>
@@ -1006,8 +1307,6 @@
                 <li>Do not damage flora or fauna.</li>
               </ul>
             </td>
-
-
           </tr>
           <tr>
             <th>🏥 Closest Medical Help</th>
@@ -1016,10 +1315,5 @@
         </tbody>
       </table>
     </div>
-
-
-
-
-
   </div>
 </app-layout>

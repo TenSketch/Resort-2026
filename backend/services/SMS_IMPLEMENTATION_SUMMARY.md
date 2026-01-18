@@ -59,13 +59,17 @@ SMS_TMID=1101485850000078016,1602100000000009244
 
 ## 📋 Template Configuration
 
-### Vanavihari Resort
-- Source ID: `VANVHR`
-- Template ID: `1107171542954805556`
+### Common Template for Room & Tent Reservations
 
-### Jungle Star Resort
+**Vanavihari Resort:**
+- Source ID: `VANVHR`
+- Template ID: `1107176807116645251`
+- Message: "Dear {Name}, Your VANAVIHARI stay is booked! ID: {BookingId}, Check-in: {Date}, Check-out: {Date}, Paid: INR {Amount}. More info emailed. Enjoy your visit! -VANAVIHARI"
+
+**Jungle Star Resort:**
 - Source ID: `JUNSTR`
-- Template ID: `1107171543004186036`
+- Template ID: `1107176807164037326`
+- Message: "Dear {Name}, Your JungleStar stay is booked! ID: {BookingId}, Check-in: {Date}, Check-out: {Date}, Paid: INR {Amount}. More info emailed. Enjoy your visit! -JUNGLE STAR"
 
 ## 🚀 Next Steps
 

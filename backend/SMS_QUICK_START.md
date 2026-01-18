@@ -13,6 +13,10 @@ SMS_ENTITY_ID=1101485850000078016
 SMS_TMID=1101485850000078016,1602100000000009244
 ```
 
+**Note:** Template IDs are now in the code:
+- VANAVIHARI: `1107176807116645251`
+- JUNGLE STAR: `1107176807164037326`
+
 ### Step 2: Restart Your Server
 ```bash
 # Stop your backend server (Ctrl+C)
@@ -26,7 +30,7 @@ Make a test booking and check the console logs for:
 📱 Preparing room reservation SMS for booking: VANA1234
 📱 Sending SMS to: 919384318546
 📱 Resort: vanavihari
-📱 Source: VANVHR, Template ID: 1107171542954805556
+📱 Source: VANVHR, Template ID: 1107176807116645251
 ✅ Room reservation SMS sent successfully to 919384318546
 ```
 
@@ -63,23 +67,17 @@ User receives confirmation SMS
 ### Change SMS Template
 Edit `backend/config/smsTemplates.js`:
 ```javascript
-ROOM_VANAVIHARI: {
+VANAVIHARI: {
   source: 'VANVHR',
-  tempid: '1107171542954805556',
+  tempid: '1107176807116645251',
   getMessage: (data) => `Your custom message here...`
 }
-```
-
-### Change Support Number
-In `backend/config/smsTemplates.js`, update:
-```javascript
-Call 9840166419 for support  // Change this number
 ```
 
 ### Add New Resort
 In `backend/config/smsTemplates.js`, add:
 ```javascript
-ROOM_NEWRESORT: {
+NEWRESORT: {
   source: 'NEWSRC',
   tempid: 'NEW_TEMPLATE_ID',
   getMessage: (data) => `Your message...`

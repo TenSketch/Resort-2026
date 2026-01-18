@@ -38,32 +38,21 @@ SMS is sent from 1 location:
 
 ## SMS Templates
 
-### Room Reservation SMS Format
-```
-Dear {Name},
-Your room booking is confirmed.
-ID: {BookingId}
-Check-in: {Date}
-Check-out: {Date}
-GUESTS: {Count}
-ROOM: {RoomNames}
-COTTAGE: {CottageNames}
-Amount paid: INR {Amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful stay! Thank you for choosing our resort -{ResortName}
-```
+### Common Template for Both Room & Tent Reservations
 
-### Tent Reservation SMS Format
+**VANAVIHARI:**
+- Template ID: `1107176807116645251`
+- Header: `VANVHR`
+- Message: `Dear {Name}, Your VANAVIHARI stay is booked! ID: {BookingId}, Check-in: {Date}, Check-out: {Date}, Paid: INR {Amount}. More info emailed. Enjoy your visit! -VANAVIHARI`
+
+**JUNGLE STAR:**
+- Template ID: `1107176807164037326`
+- Header: `JUNSTR`
+- Message: `Dear {Name}, Your JungleStar stay is booked! ID: {BookingId}, Check-in: {Date}, Check-out: {Date}, Paid: INR {Amount}. More info emailed. Enjoy your visit! -JUNGLE STAR`
+
+### Example SMS Output
 ```
-Dear {Name},
-Your tent booking is confirmed.
-ID: {BookingId}
-Check-in: {Date}
-Check-out: {Date}
-GUESTS: {Count}
-TENT SPOT: {SpotName}
-TENTS: {TentList}
-Amount paid: INR {Amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful camping experience! Thank you for choosing -{ResortName}
+Dear Balaji, Your VANAVIHARI stay is booked! ID: VANA8891, Check-in: 15-Jan-2026, Check-out: 17-Jan-2026, Paid: INR 4500.00. More info emailed. Enjoy your visit! -VANAVIHARI
 ```
 
 ## Configuration
@@ -83,11 +72,13 @@ SMS_TMID=1101485850000078016,1602100000000009244
 
 **Vanavihari:**
 - Source: `VANVHR`
-- Template ID: `1107171542954805556`
+- Template ID: `1107176807116645251`
 
 **Jungle Star:**
 - Source: `JUNSTR`
-- Template ID: `1107171543004186036`
+- Template ID: `1107176807164037326`
+
+**Note:** Same template is used for both room and tent reservations.
 
 ## Features
 

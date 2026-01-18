@@ -1,8 +1,6 @@
 import axios from 'axios';
 import Resort from '../models/resortModel.js';
-import Room from '../models/roomModel.js';
 import TentSpot from '../models/tentSpotModel.js';
-import Tent from '../models/tentModel.js';
 import { SMS_TEMPLATES, SMS_CONFIG } from '../config/smsTemplates.js';
 
 /**
@@ -92,32 +90,15 @@ export async function sendRoomReservationSMS(reservation, paymentTransaction) {
       return { success: false, error: 'No valid phone number' };
     }
 
-    // Fetch resort details
-    let resortData = null;
+    // Get resort slug
     let resortSlug = reservation.resortSlug;
     
-    if (reservation.resort) {
-      resortData = await Resort.findById(reservation.resort).lean();
-      if (resortData && !resortSlug) {
+    if (!resortSlug && reservation.resort) {
+      const resortData = await Resort.findById(reservation.resort).lean();
+      if (resortData) {
         resortSlug = resortData.slug;
       }
     }
-
-    // Fetch room details
-    let roomsData = [];
-    if (reservation.rooms && Array.isArray(reservation.rooms)) {
-      roomsData = await Room.find({ _id: { $in: reservation.rooms } }).lean();
-    }
-
-    // Extract room and cottage names
-    const roomNames = [...new Set(roomsData.map(r => r.roomName || r.roomNumber).filter(Boolean))].join(', ') || 'N/A';
-    const cottageNames = [...new Set(roomsData.map(r => r.cottageName).filter(Boolean))].join(', ') || 'N/A';
-
-    // Calculate total guests
-    const totalGuests = 
-      Number(reservation.adults || 0) + 
-      Number(reservation.guests || 0) + 
-      Number(reservation.children || 0);
 
     // Prepare SMS data
     const smsData = {
@@ -125,19 +106,18 @@ export async function sendRoomReservationSMS(reservation, paymentTransaction) {
       bookingId: reservation.bookingId,
       checkIn: formatDate(reservation.checkIn),
       checkOut: formatDate(reservation.checkOut),
-      totalGuests,
-      roomNames,
-      cottageNames,
       amount: reservation.totalPayable?.toFixed(2) || reservation.amount?.toFixed(2) || '0.00'
     };
 
     // Select template based on resort slug
     let template;
     if (resortSlug === 'jungle-star' || resortSlug === 'junglestar') {
-      template = SMS_TEMPLATES.ROOM_JUNGLESTAR;
+      template = SMS_TEMPLATES.JUNGLESTAR;
+    } else if (resortSlug === 'karthikavanam-valamuru' || resortSlug === 'karthikavanam') {
+      template = SMS_TEMPLATES.KARTHIKAVANAM;
     } else {
       // Default to Vanavihari
-      template = SMS_TEMPLATES.ROOM_VANAVIHARI;
+      template = SMS_TEMPLATES.VANAVIHARI;
     }
 
     const message = template.getMessage(smsData);
@@ -183,30 +163,15 @@ export async function sendTentReservationSMS(reservation, paymentTransaction) {
       return { success: false, error: 'No valid phone number' };
     }
 
-    // Fetch tent spot details
-    let tentSpotData = null;
+    // Get resort slug
     let resortSlug = reservation.resortSlug;
     
-    if (reservation.tentSpot) {
-      tentSpotData = await TentSpot.findById(reservation.tentSpot).lean();
-      if (tentSpotData && !resortSlug) {
+    if (!resortSlug && reservation.tentSpot) {
+      const tentSpotData = await TentSpot.findById(reservation.tentSpot).lean();
+      if (tentSpotData) {
         resortSlug = tentSpotData.slug;
       }
     }
-
-    // Fetch tent details
-    let tentsData = [];
-    if (reservation.tents && Array.isArray(reservation.tents)) {
-      tentsData = await Tent.find({ _id: { $in: reservation.tents } }).lean();
-    }
-
-    const tentSpotName = tentSpotData?.spotName || 'Tent Spot';
-    const tentList = tentsData.map(t => t.tentId || t.name || 'Tent').join(', ') || 'N/A';
-
-    // Calculate total guests
-    const totalGuests = 
-      Number(reservation.guests || 0) + 
-      Number(reservation.children || 0);
 
     // Prepare SMS data
     const smsData = {
@@ -214,19 +179,18 @@ export async function sendTentReservationSMS(reservation, paymentTransaction) {
       bookingId: reservation.bookingId,
       checkIn: formatDate(reservation.checkinDate),
       checkOut: formatDate(reservation.checkoutDate),
-      totalGuests,
-      tentSpotName,
-      tentList,
       amount: reservation.totalPayable?.toFixed(2) || reservation.amount?.toFixed(2) || '0.00'
     };
 
     // Select template based on resort slug
     let template;
     if (resortSlug === 'jungle-star' || resortSlug === 'junglestar') {
-      template = SMS_TEMPLATES.TENT_JUNGLESTAR;
+      template = SMS_TEMPLATES.JUNGLESTAR;
+    } else if (resortSlug === 'karthikavanam-valamuru' || resortSlug === 'karthikavanam') {
+      template = SMS_TEMPLATES.KARTHIKAVANAM;
     } else {
       // Default to Vanavihari
-      template = SMS_TEMPLATES.TENT_VANAVIHARI;
+      template = SMS_TEMPLATES.VANAVIHARI;
     }
 
     const message = template.getMessage(smsData);
@@ -234,7 +198,7 @@ export async function sendTentReservationSMS(reservation, paymentTransaction) {
     const tempid = template.tempid;
 
     console.log(`📱 Sending SMS to: ${mobile}`);
-    console.log(`📱 Tent Spot: ${tentSpotName}`);
+    console.log(`📱 Resort: ${resortSlug || 'vanavihari'}`);
     console.log(`📱 Source: ${source}, Template ID: ${tempid}`);
 
     // Send SMS

@@ -1,70 +1,29 @@
 // SMS Templates for Room and Tent Reservations
+// Using common template for both room and tent bookings
 
 export const SMS_TEMPLATES = {
-  // Room Reservation Templates
-  ROOM_VANAVIHARI: {
+  // VANAVIHARI - Common template for both Room and Tent
+  VANAVIHARI: {
     source: 'VANVHR',
-    tempid: '1107171542954805556',
+    tempid: '1107176807116645251',
     getMessage: (data) => 
-      `Dear ${data.fullName},
-Your room booking is confirmed.
-ID: ${data.bookingId}
-Check-in: ${data.checkIn}
-Check-out: ${data.checkOut}
-GUESTS: ${data.totalGuests}
-ROOM: ${data.roomNames}
-COTTAGE: ${data.cottageNames}
-Amount paid: INR ${data.amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful stay! Thank you for choosing our resort -VANAVIHARI`
+      `Dear ${data.fullName}, Your VANAVIHARI stay is booked! ID: ${data.bookingId}, Check-in: ${data.checkIn}, Check-out: ${data.checkOut}, Paid: INR ${data.amount}. More info emailed. Enjoy your visit! -VANAVIHARI`
   },
 
-  ROOM_JUNGLESTAR: {
+  // JUNGLE STAR - Common template for both Room and Tent
+  JUNGLESTAR: {
     source: 'JUNSTR',
-    tempid: '1107171543004186036',
+    tempid: '1107176807164037326',
     getMessage: (data) => 
-      `Dear ${data.fullName},
-Your room booking is confirmed.
-ID: ${data.bookingId}
-Check-in: ${data.checkIn}
-Check-out: ${data.checkOut}
-GUESTS: ${data.totalGuests}
-ROOM: ${data.roomNames}
-COTTAGE: ${data.cottageNames}
-Amount paid: INR ${data.amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful stay! Thank you for choosing our resort -JUNGLE STAR`
+      `Dear ${data.fullName}, Your JungleStar stay is booked! ID: ${data.bookingId}, Check-in: ${data.checkIn}, Check-out: ${data.checkOut}, Paid: INR ${data.amount}. More info emailed. Enjoy your visit! -JUNGLE STAR`
   },
 
-  // Tent Reservation Templates
-  TENT_VANAVIHARI: {
-    source: 'VANVHR',
-    tempid: '1107171542954805556', // Update with actual tent template ID if different
+  // KARTHIKAVANAM - Tent booking template (TODO: Add template ID when available)
+  KARTHIKAVANAM: {
+    source: 'KRTVNM', // TODO: Update with actual source ID from SMS provider
+    tempid: 'PENDING_TEMPLATE_ID', // TODO: Update with actual template ID
     getMessage: (data) => 
-      `Dear ${data.fullName},
-Your tent booking is confirmed.
-ID: ${data.bookingId}
-Check-in: ${data.checkIn}
-Check-out: ${data.checkOut}
-GUESTS: ${data.totalGuests}
-TENT SPOT: ${data.tentSpotName}
-TENTS: ${data.tentList}
-Amount paid: INR ${data.amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful camping experience! Thank you for choosing -VANAVIHARI`
-  },
-
-  TENT_JUNGLESTAR: {
-    source: 'JUNSTR',
-    tempid: '1107171543004186036', // Update with actual tent template ID if different
-    getMessage: (data) => 
-      `Dear ${data.fullName},
-Your tent booking is confirmed.
-ID: ${data.bookingId}
-Check-in: ${data.checkIn}
-Check-out: ${data.checkOut}
-GUESTS: ${data.totalGuests}
-TENT SPOT: ${data.tentSpotName}
-TENTS: ${data.tentList}
-Amount paid: INR ${data.amount}
-Full details are in your email. Call 9840166419 for support. Wish you a wonderful camping experience! Thank you for choosing -JUNGLE STAR`
+      `Dear ${data.fullName}, Your Karthikavanam tent booking is confirmed! ID: ${data.bookingId}, Check-in: ${data.checkIn}, Check-out: ${data.checkOut}, Paid: INR ${data.amount}. More info emailed. Enjoy your visit! -KARTHIKAVANAM`
   }
 };
 

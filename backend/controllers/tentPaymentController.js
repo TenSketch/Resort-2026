@@ -2,6 +2,7 @@ import { encryptRequest, signEncryptedRequest, decryptResponse, verifySignature 
 import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
+import { sendTentReservationSMS } from "../services/reservationSmsService.js";
 import TentReservation from "../models/tentReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import TentSpot from "../models/tentSpotModel.js";
@@ -342,6 +343,11 @@ export const handleTentPaymentCallback = async (req, res) => {
         sendTentReservationEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Tent booking emails sent'))
           .catch(err => console.error('❌ Tent email sending failed:', err.message));
+        
+        // Send SMS asynchronously (don't wait for completion)
+        sendTentReservationSMS(reservation, paymentTransaction)
+          .then(() => console.log('✅ Tent booking SMS sent'))
+          .catch(err => console.error('❌ Tent SMS sending failed:', err.message));
       }
 
       // Redirect based on status

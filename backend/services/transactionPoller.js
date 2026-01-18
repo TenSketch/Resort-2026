@@ -1,5 +1,6 @@
 import { retrieveTransaction } from './retrieveTransaction.js';
 import { sendReservationSuccessEmails } from './reservationEmailService.js';
+import { sendRoomReservationSMS } from './reservationSmsService.js';
 import Reservation from '../models/reservationModel.js';
 import PaymentTransaction from '../models/paymentTransactionModel.js';
 
@@ -149,6 +150,17 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           }
         })
         .catch(err => console.error(`❌ Email sending error: ${err.message}`));
+      
+      // Send SMS asynchronously (don't wait for completion)
+      sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
+        .then((result) => {
+          if (result.success) {
+            console.log(`✅ Room reservation SMS sent successfully`);
+          } else {
+            console.error(`❌ SMS sending failed: ${result.error}`);
+          }
+        })
+        .catch(err => console.error(`❌ SMS sending error: ${err.message}`));
       
     } else if (authStatus === '0399') {
       // Payment failed

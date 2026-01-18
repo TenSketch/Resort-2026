@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 
 const dummyNotifications = [
   { id: 1, title: "New Reservation", message: "Booking for Jungle Star.", time: "2m ago", read: false },
-  { id: 2, title: "System Alert", message: "Server restarted successfully.", time: "1h ago", read: true },
 ];
 
 const NotificationDropdown = () => {

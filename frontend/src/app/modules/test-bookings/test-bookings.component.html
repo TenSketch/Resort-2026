@@ -172,7 +172,7 @@
                 </li>
                 <li>
                   <button class="dropdown-item" (click)="sendWhatsApp(item)">
-                    <i class='fab fa-whatsapp-square'></i>
+                    <i class="fab fa-whatsapp-square"></i>
                     WhatsApp
                   </button>
                 </li>
@@ -180,7 +180,8 @@
                   <button
                     class="dropdown-item btn-outline-danger"
                     *ngIf="
-                      item.pay_status == 'Paid' && item.status != 'Canceled'"
+                      item.pay_status == 'Paid' && item.status != 'Canceled'
+                    "
                     (click)="InitiateCancel(item)"
                   >
                     <i class="fa fa-times" aria-hidden="true"></i> Cancel

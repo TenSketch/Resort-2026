@@ -28,7 +28,8 @@ interface Reservation {
 
 export default function DailyOccupancyReport() {
   const tableRef = useRef(null);
-  const apiUrl = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000';
+  const apiUrl =
+    (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
   const [reservationData, setReservationData] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,16 +38,18 @@ export default function DailyOccupancyReport() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${apiUrl}/api/reports/daily-occupancy/slug/jungle-star`);
+        const response = await fetch(
+          `${apiUrl}/api/reports/daily-occupancy/slug/jungle-star`,
+        );
         const result = await response.json();
-        
+
         if (result.success) {
           setReservationData(result.data || []);
         } else {
-          console.error('Failed to fetch report data:', result.error);
+          console.error("Failed to fetch report data:", result.error);
         }
       } catch (error) {
-        console.error('Error fetching report data:', error);
+        console.error("Error fetching report data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -88,7 +91,7 @@ export default function DailyOccupancyReport() {
             row.totalFoods ?? "",
             row.noOfDays ?? "",
             row.remainingDays ?? "",
-          ].join(",")
+          ].join(","),
         ),
     ];
 
@@ -101,12 +104,25 @@ export default function DailyOccupancyReport() {
     link.click();
   };
 
-  const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const d = new Date();
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = months[d.getMonth()];
+  const day = String(d.getDate()).padStart(2, "0");
+  const year = d.getFullYear();
+  const today = `${day}/${month}/${year}`;
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -278,15 +294,28 @@ export default function DailyOccupancyReport() {
           onClick={exportToExcel}
           className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           Export to Excel
         </button>
       </div>
 
       <div className="overflow-auto" style={{ position: "relative" }}>
-        <div ref={tableRef} style={{ position: "relative", minWidth: "max-content" }}>
+        <div
+          ref={tableRef}
+          style={{ position: "relative", minWidth: "max-content" }}
+        >
           <DataTable
             data={reservationData}
             columns={columns}

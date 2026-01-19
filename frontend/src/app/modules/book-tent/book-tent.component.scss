@@ -35,23 +35,20 @@ aside {
   }
 }
 
-
 .alert-info {
   background-color: $clr-brown-light-bg;
   color: $clr-secondary; // Dark brown text
   border-color: rgba($clr-secondary, 0.2);
-  
-  .fas, .fa-info-circle {
+
+  .fas,
+  .fa-info-circle {
     color: $clr-secondary;
   }
 }
 
-
-
-
 .page-banner {
   padding: 3rem 0;
-  background-image: url('/assets/img/home-gallery/vanavihari-home-gallery-1.jpg');
+  background-image: url("/assets/img/home-gallery/vanavihari-home-gallery-1.jpg");
   background-size: cover;
   background-position: center;
 }
@@ -264,4 +261,9 @@ aside {
       color: #dc3545;
     }
   }
+}
+
+.btn-proceed {
+  background-color: $clr-secondary !important;
+  color: $white !important;
 }

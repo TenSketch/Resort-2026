@@ -1,6 +1,29 @@
 import React, { useState } from "react";
 import bookings from "./testdata.json";
 
+const formatDateForDisplay = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 const todayStr = new Date().toISOString().split("T")[0];
 
 const CheckoutPanel = () => {
@@ -60,7 +83,7 @@ const CheckoutPanel = () => {
   const handleCheckout = () => {
     if (!formData) return;
     alert(
-      `${formData.guestName} checked out.\nPayment: ₹${pendingAmount} via ${paymentMode}\nNotes: ${notes}`
+      `${formData.guestName} checked out.\nPayment: ₹${pendingAmount} via ${paymentMode}\nNotes: ${notes}`,
     );
   };
 
@@ -83,26 +106,48 @@ const CheckoutPanel = () => {
       {formData && (
         <div className="mt-6 space-y-4 border rounded-md p-4 bg-gray-50">
           <div className="text-sm space-y-1">
-            <p><strong>Guest:</strong> {formData.guestName}</p>
-            <p><strong>Room(s):</strong> {formData.rooms.join(", ")}</p>
-            <p><strong>Check-In:</strong> {formData.checkInDate}</p>
-            <p><strong>Planned Check-Out:</strong> {formData.checkOutDate}</p>
-            <p><strong>Today:</strong> {todayStr}</p>
+            <p>
+              <strong>Guest:</strong> {formData.guestName}
+            </p>
+            <p>
+              <strong>Room(s):</strong> {formData.rooms.join(", ")}
+            </p>
+            <p>
+              <strong>Check-In:</strong>{" "}
+              {formatDateForDisplay(formData.checkInDate)}
+            </p>
+            <p>
+              <strong>Planned Check-Out:</strong>{" "}
+              {formatDateForDisplay(formData.checkOutDate)}
+            </p>
+            <p>
+              <strong>Today:</strong> {formatDateForDisplay(todayStr)}
+            </p>
             {formData.earlyLate && (
               <p className="text-orange-600 font-medium">
-                ⚠ Guest is checking out {new Date(todayStr) < new Date(formData.checkOutDate) ? "early" : "late"}!
+                ⚠ Guest is checking out{" "}
+                {new Date(todayStr) < new Date(formData.checkOutDate)
+                  ? "early"
+                  : "late"}
+                !
               </p>
             )}
           </div>
 
           <div className="border-t pt-4 space-y-2">
             <h4 className="font-medium text-base">Payment Summary</h4>
-            <p><strong>Paid:</strong> ₹{formData.paidAmount}</p>
-            <p><strong>Pending Dues:</strong> ₹{pendingAmount}</p>
+            <p>
+              <strong>Paid:</strong> ₹{formData.paidAmount}
+            </p>
+            <p>
+              <strong>Pending Dues:</strong> ₹{pendingAmount}
+            </p>
 
             {pendingAmount > 0 && (
               <>
-                <label className="block text-sm font-medium">Payment Mode:</label>
+                <label className="block text-sm font-medium">
+                  Payment Mode:
+                </label>
                 <select
                   value={paymentMode}
                   onChange={(e) => setPaymentMode(e.target.value)}
@@ -115,7 +160,9 @@ const CheckoutPanel = () => {
                   <option value="Online">Online</option>
                 </select>
 
-                <label className="block text-sm font-medium">Transaction ID (if any):</label>
+                <label className="block text-sm font-medium">
+                  Transaction ID (if any):
+                </label>
                 <input
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}

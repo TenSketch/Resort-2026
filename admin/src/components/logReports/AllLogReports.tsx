@@ -1,11 +1,11 @@
 import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import "datatables.net-dt/css/dataTables.dataTables.css";
-import 'datatables.net-buttons-dt/css/buttons.dataTables.css';
-import 'datatables.net-buttons';
-import 'datatables.net-buttons/js/buttons.colVis.js';
-import 'datatables.net-columncontrol-dt';
-import 'datatables.net-columncontrol-dt/css/columnControl.dataTables.css';
+import "datatables.net-buttons-dt/css/buttons.dataTables.css";
+import "datatables.net-buttons";
+import "datatables.net-buttons/js/buttons.colVis.js";
+import "datatables.net-columncontrol-dt";
+import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
 import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
@@ -41,6 +41,28 @@ interface LogEntry {
   logEntryDate: string; // ISO date string
 }
 
+const formatDateForDisplay = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 export default function LogsTable() {
   const tableRef = useRef(null);
@@ -57,7 +79,7 @@ export default function LogsTable() {
   const handleEdit = (log: LogEntry) => {
     setEditingLog(log);
     setFormData({ ...log });
-  setIsEditSheetOpen(true);
+    setIsEditSheetOpen(true);
   };
 
   const handleDisable = (log: LogEntry) => {
@@ -72,8 +94,8 @@ export default function LogsTable() {
 
   const confirmDisable = () => {
     if (disablingLog) {
-      console.log('Disabling log:', disablingLog.bookingId);
-      setDisabledLogs(prev => new Set([...prev, disablingLog.bookingId]));
+      console.log("Disabling log:", disablingLog.bookingId);
+      setDisabledLogs((prev) => new Set([...prev, disablingLog.bookingId]));
       setIsConfirmDisableOpen(false);
       setDisablingLog(null);
     }
@@ -86,38 +108,49 @@ export default function LogsTable() {
 
   const handleUpdate = () => {
     if (editingLog && formData) {
-      console.log('Updating log:', formData);
-      const payload: any = { ...formData }
-      if (payload.logEntryDate && typeof payload.logEntryDate === 'string') {
-        payload.logEntryDate = new Date(payload.logEntryDate)
+      console.log("Updating log:", formData);
+      const payload: any = { ...formData };
+      if (payload.logEntryDate && typeof payload.logEntryDate === "string") {
+        payload.logEntryDate = new Date(payload.logEntryDate);
       }
 
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
       fetch(`${apiBase}/api/logs/${encodeURIComponent(editingLog.bookingId)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
         .then(async (res) => {
-          const parsed = await res.json().catch(() => null)
-          if (!res.ok) throw new Error((parsed && parsed.error) || res.statusText)
-          return parsed
+          const parsed = await res.json().catch(() => null);
+          if (!res.ok)
+            throw new Error((parsed && parsed.error) || res.statusText);
+          return parsed;
         })
         .then((data) => {
           if (data && data.success && data.log) {
-            setRows(prev => prev.map(r => r.bookingId === data.log.bookingId ? ({
-              ...data.log,
-              logEntryDate: data.log.logEntryDate ? new Date(data.log.logEntryDate).toISOString().slice(0,16) : ''
-            }) : r))
+            setRows((prev) =>
+              prev.map((r) =>
+                r.bookingId === data.log.bookingId
+                  ? {
+                      ...data.log,
+                      logEntryDate: data.log.logEntryDate
+                        ? new Date(data.log.logEntryDate)
+                            .toISOString()
+                            .slice(0, 16)
+                        : "",
+                    }
+                  : r,
+              ),
+            );
           }
           setIsEditSheetOpen(false);
           setEditingLog(null);
           setFormData({});
         })
         .catch((err) => {
-          console.error('Update log error', err)
-          alert('Failed to update log: ' + err.message)
-        })
+          console.error("Update log error", err);
+          alert("Failed to update log: " + err.message);
+        });
     }
   };
 
@@ -128,9 +161,9 @@ export default function LogsTable() {
   };
 
   const handleInputChange = (field: keyof LogEntry, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -234,16 +267,24 @@ export default function LogsTable() {
 
     const handleButtonClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const logId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
-      const log = rows.find(l => l.bookingId === logId);
-      
+      const logId =
+        target.getAttribute("data-id") ||
+        target.closest("button")?.getAttribute("data-id");
+      const log = rows.find((l) => l.bookingId === logId);
+
       if (log) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
-        
-        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
+
+        if (
+          target.classList.contains("edit-btn") ||
+          target.closest(".edit-btn")
+        ) {
           handleEdit(log);
-        } else if (target.classList.contains('disable-btn') || target.closest('.disable-btn')) {
+        } else if (
+          target.classList.contains("disable-btn") ||
+          target.closest(".disable-btn")
+        ) {
           handleDisable(log);
         }
       }
@@ -251,14 +292,14 @@ export default function LogsTable() {
 
     const handleTableRowClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger row click if a button was clicked
-      if (target.closest('.edit-btn, .disable-btn')) {
+      if (target.closest(".edit-btn, .disable-btn")) {
         return;
       }
-      
-      const row = target.closest('tr');
-      if (row && row.parentElement?.tagName === 'TBODY') {
+
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
         const rowIndex = Array.from(row.parentElement.children).indexOf(row);
         const log = rows[rowIndex];
         if (log) {
@@ -279,35 +320,37 @@ export default function LogsTable() {
       scrollContainer.addEventListener("scroll", handleScroll);
     }
 
-    document.addEventListener('click', handleButtonClick);
-    document.addEventListener('click', handleTableRowClick);
+    document.addEventListener("click", handleButtonClick);
+    document.addEventListener("click", handleTableRowClick);
 
     return () => {
       document.head.removeChild(style);
       if (scrollContainer) {
         scrollContainer.removeEventListener("scroll", handleScroll);
       }
-      document.removeEventListener('click', handleButtonClick);
-      document.removeEventListener('click', handleTableRowClick);
+      document.removeEventListener("click", handleButtonClick);
+      document.removeEventListener("click", handleTableRowClick);
     };
   }, []);
 
   // fetch logs from backend on mount
   useEffect(() => {
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
     fetch(`${apiBase}/api/logs`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.success && Array.isArray(data.logs)) {
           const normalized = data.logs.map((l: any) => ({
             ...l,
-            logEntryDate: l.logEntryDate ? new Date(l.logEntryDate).toISOString().slice(0,16) : ''
-          }))
-          setRows(normalized)
+            logEntryDate: l.logEntryDate
+              ? new Date(l.logEntryDate).toISOString().slice(0, 16)
+              : "",
+          }));
+          setRows(normalized);
         }
       })
-      .catch((err) => console.error('fetch logs error', err))
-  }, [])
+      .catch((err) => console.error("fetch logs error", err));
+  }, []);
 
   const columns = [
     {
@@ -317,7 +360,7 @@ export default function LogsTable() {
         return meta.row + 1 + meta.settings._iDisplayStart;
       },
       orderable: false,
-      searchable: false
+      searchable: false,
     },
     { data: "username", title: "Username" },
     { data: "bookingId", title: "Booking ID" },
@@ -327,9 +370,8 @@ export default function LogsTable() {
       data: "logEntryDate",
       title: "Log Entry Date",
       render: (data: string) => {
-        const date = new Date(data);
-        return date.toLocaleString();
-      }
+        return formatDateForDisplay(data);
+      },
     },
     {
       data: null,
@@ -355,7 +397,7 @@ export default function LogsTable() {
                 cursor: pointer;
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                ${isDisabled ? 'opacity: 0.5;' : ''}
+                ${isDisabled ? "opacity: 0.5;" : ""}
               "
               onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
               onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
@@ -365,29 +407,29 @@ export default function LogsTable() {
             <button 
               class="disable-btn" 
               data-id="${row.bookingId}" 
-              title="${isDisabled ? 'Already Disabled' : 'Disable Record'}"
+              title="${isDisabled ? "Already Disabled" : "Disable Record"}"
               style="
-                background: ${isDisabled ? '#6b7280' : '#dc2626'};
+                background: ${isDisabled ? "#6b7280" : "#dc2626"};
                 color: white;
                 border: none;
                 padding: 6px 12px;
                 border-radius: 6px;
                 font-size: 12px;
                 font-weight: 500;
-                cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
+                cursor: ${isDisabled ? "not-allowed" : "pointer"};
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
               "
-              ${isDisabled ? 'disabled' : ''}
-              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ''}"
-              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ''}"
+              ${isDisabled ? "disabled" : ""}
+              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ""}"
+              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ""}"
             >
-              ${isDisabled ? 'Disabled' : 'Disable'}
+              ${isDisabled ? "Disabled" : "Disable"}
             </button>
           </div>
         `;
       },
-    }
+    },
   ];
 
   return (
@@ -404,7 +446,7 @@ export default function LogsTable() {
             options={{
               pageLength: 10,
               lengthMenu: [5, 10, 25, 50, 100],
-              order: [[0, 'desc']], // Updated index for date column
+              order: [[0, "desc"]], // Updated index for date column
               searching: true,
               paging: true,
               info: true,
@@ -412,24 +454,27 @@ export default function LogsTable() {
               scrollY: "400px",
               scrollCollapse: true,
               layout: {
-                topStart: 'buttons',
-                topEnd: 'search',
-                bottomStart: 'pageLength',
-                bottomEnd: 'paging'
+                topStart: "buttons",
+                topEnd: "search",
+                bottomStart: "pageLength",
+                bottomEnd: "paging",
               },
               buttons: [
                 {
-                  extend: 'colvis',
-                  text: 'Column Visibility',
-                  collectionLayout: 'fixed two-column'
-                }
+                  extend: "colvis",
+                  text: "Column Visibility",
+                  collectionLayout: "fixed two-column",
+                },
               ],
-              columnControl: ['order', ['orderAsc', 'orderDesc', 'spacer', 'search']],
+              columnControl: [
+                "order",
+                ["orderAsc", "orderDesc", "spacer", "search"],
+              ],
               rowCallback: (row: any, data: any) => {
                 if (disabledLogs.has(data.bookingId)) {
-                  row.classList.add('disabled-row');
+                  row.classList.add("disabled-row");
                 } else {
-                  row.classList.remove('disabled-row');
+                  row.classList.remove("disabled-row");
                 }
                 return row;
               },
@@ -443,7 +488,9 @@ export default function LogsTable() {
         <SheetContent className="w-[420px] sm:w-[520px] lg:w-[640px] flex flex-col">
           <SheetHeader className="flex-shrink-0">
             <SheetTitle>Edit Log Entry</SheetTitle>
-            <SheetDescription>Make changes to the log entry details below.</SheetDescription>
+            <SheetDescription>
+              Make changes to the log entry details below.
+            </SheetDescription>
           </SheetHeader>
 
           {formData && (
@@ -452,8 +499,10 @@ export default function LogsTable() {
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  value={formData.username || ''}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  value={formData.username || ""}
+                  onChange={(e) =>
+                    handleInputChange("username", e.target.value)
+                  }
                 />
               </div>
 
@@ -461,8 +510,10 @@ export default function LogsTable() {
                 <Label htmlFor="bookingId">Booking ID</Label>
                 <Input
                   id="bookingId"
-                  value={formData.bookingId || ''}
-                  onChange={(e) => handleInputChange('bookingId', e.target.value)}
+                  value={formData.bookingId || ""}
+                  onChange={(e) =>
+                    handleInputChange("bookingId", e.target.value)
+                  }
                   disabled
                   className="bg-gray-100"
                 />
@@ -472,8 +523,8 @@ export default function LogsTable() {
                 <Label htmlFor="logType">Log Type</Label>
                 <Input
                   id="logType"
-                  value={formData.logType || ''}
-                  onChange={(e) => handleInputChange('logType', e.target.value)}
+                  value={formData.logType || ""}
+                  onChange={(e) => handleInputChange("logType", e.target.value)}
                 />
               </div>
 
@@ -481,8 +532,10 @@ export default function LogsTable() {
                 <Label htmlFor="logMessage">Log Message</Label>
                 <Input
                   id="logMessage"
-                  value={formData.logMessage || ''}
-                  onChange={(e) => handleInputChange('logMessage', e.target.value)}
+                  value={formData.logMessage || ""}
+                  onChange={(e) =>
+                    handleInputChange("logMessage", e.target.value)
+                  }
                 />
               </div>
 
@@ -491,8 +544,10 @@ export default function LogsTable() {
                 <Input
                   id="logEntryDate"
                   type="datetime-local"
-                  value={formData.logEntryDate || ''}
-                  onChange={(e) => handleInputChange('logEntryDate', e.target.value)}
+                  value={formData.logEntryDate || ""}
+                  onChange={(e) =>
+                    handleInputChange("logEntryDate", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -502,23 +557,25 @@ export default function LogsTable() {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleUpdate}>
-              Update
-            </Button>
+            <Button onClick={handleUpdate}>Update</Button>
           </div>
         </SheetContent>
       </Sheet>
 
       {/* Confirmation Dialog for Disable Action */}
-      <Dialog open={isConfirmDisableOpen} onOpenChange={setIsConfirmDisableOpen}>
+      <Dialog
+        open={isConfirmDisableOpen}
+        onOpenChange={setIsConfirmDisableOpen}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Confirm Disable</DialogTitle>
             <DialogDescription>
-              Are you sure you want to disable this log entry? This action will hide the record from the database.
+              Are you sure you want to disable this log entry? This action will
+              hide the record from the database.
             </DialogDescription>
           </DialogHeader>
-          
+
           {disablingLog && (
             <div className="py-4">
               <p className="text-sm text-gray-600">
@@ -532,7 +589,7 @@ export default function LogsTable() {
               </p>
             </div>
           )}
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={cancelDisable}>
               Cancel
@@ -553,79 +610,112 @@ export default function LogsTable() {
               Complete information about the selected log entry
             </SheetDescription>
           </SheetHeader>
-          
+
           {selectedLog && (
             <>
               {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Booking ID</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Booking ID
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                      <span className="text-sm text-gray-900 font-mono">{selectedLog.bookingId}</span>
+                      <span className="text-sm text-gray-900 font-mono">
+                        {selectedLog.bookingId}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Username</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Username
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                      <span className="text-sm text-gray-900">{selectedLog.username}</span>
+                      <span className="text-sm text-gray-900">
+                        {selectedLog.username}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Log Type</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Log Type
+                    </Label>
                     <div className="mt-1">
-                      <Badge 
-                        variant={selectedLog.logType === 'ERROR' ? "destructive" : 
-                               selectedLog.logType === 'WARNING' ? "secondary" : "default"}
+                      <Badge
+                        variant={
+                          selectedLog.logType === "ERROR"
+                            ? "destructive"
+                            : selectedLog.logType === "WARNING"
+                              ? "secondary"
+                              : "default"
+                        }
                         className="px-2 py-1"
                       >
                         {selectedLog.logType}
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Log Message</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Log Message
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[100px]">
-                      <span className="text-sm text-gray-900 whitespace-pre-wrap">{selectedLog.logMessage}</span>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Log Entry Date</Label>
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                      <span className="text-sm text-gray-900">
-                        {new Date(selectedLog.logEntryDate).toLocaleString()}
+                      <span className="text-sm text-gray-900 whitespace-pre-wrap">
+                        {selectedLog.logMessage}
                       </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Timestamp (ISO)</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Log Entry Date
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                      <span className="text-sm text-gray-900 font-mono break-all">{selectedLog.logEntryDate}</span>
+                      <span className="text-sm text-gray-900">
+                        {formatDateForDisplay(selectedLog.logEntryDate)}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Status</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Timestamp (ISO)
+                    </Label>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      <span className="text-sm text-gray-900 font-mono break-all">
+                        {selectedLog.logEntryDate}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Status
+                    </Label>
                     <div className="mt-1">
-                      <Badge 
-                        variant={disabledLogs.has(selectedLog.bookingId) ? "destructive" : "default"}
+                      <Badge
+                        variant={
+                          disabledLogs.has(selectedLog.bookingId)
+                            ? "destructive"
+                            : "default"
+                        }
                         className="px-2 py-1"
                       >
-                        {disabledLogs.has(selectedLog.bookingId) ? "Disabled" : "Active"}
+                        {disabledLogs.has(selectedLog.bookingId)
+                          ? "Disabled"
+                          : "Active"}
                       </Badge>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {/* Fixed Action Buttons */}
               <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
-                <Button 
+                <Button
                   onClick={() => {
                     setIsDetailSheetOpen(false);
                     handleEdit(selectedLog);
@@ -635,8 +725,8 @@ export default function LogsTable() {
                 >
                   Edit Log
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   onClick={() => {
                     setIsDetailSheetOpen(false);
                     handleDisable(selectedLog);

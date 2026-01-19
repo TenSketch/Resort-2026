@@ -38,7 +38,7 @@ SMS is sent from 1 location:
 
 ## SMS Templates
 
-### Common Template for Both Room & Tent Reservations
+### Room Booking Templates (Resort-Specific)
 
 **VANAVIHARI:**
 - Template ID: `1107176807116645251`
@@ -50,9 +50,24 @@ SMS is sent from 1 location:
 - Header: `JUNSTR`
 - Message: `Dear {Name}, Your JungleStar stay is booked! ID: {BookingId}, Check-in: {Date}, Check-out: {Date}, Paid: INR {Amount}. More info emailed. Enjoy your visit! -JUNGLE STAR`
 
+### Tent Booking Template (Common for All Tent Spots)
+
+**TENT_COMMON:**
+- Template ID: `1107176882804274771`
+- Header: `VANVHR`
+- Message: `Dear {Name}, Enjoy your Tent stay at {TentSpotName}! ID: {BookingId}, Check-in: {Date}. More info emailed.`
+- **Used for:** All tent bookings (Vanavihari, Jungle Star, Karthikavanam, etc.)
+
 ### Example SMS Output
+
+**Room Booking:**
 ```
 Dear Balaji, Your VANAVIHARI stay is booked! ID: VANA8891, Check-in: 15-Jan-2026, Check-out: 17-Jan-2026, Paid: INR 4500.00. More info emailed. Enjoy your visit! -VANAVIHARI
+```
+
+**Tent Booking:**
+```
+Dear Balaji, Enjoy your Tent stay at Karthikavanam Valamuru! ID: TENT5678, Check-in: 25-Jan-2026. More info emailed.
 ```
 
 ## Configuration
@@ -70,15 +85,13 @@ SMS_TMID=1101485850000078016,1602100000000009244
 
 ### Template IDs by Resort
 
-**Vanavihari:**
-- Source: `VANVHR`
-- Template ID: `1107176807116645251`
+**Room Bookings:**
+- Vanavihari: Source `VANVHR`, Template ID `1107176807116645251`
+- Jungle Star: Source `JUNSTR`, Template ID `1107176807164037326`
 
-**Jungle Star:**
-- Source: `JUNSTR`
-- Template ID: `1107176807164037326`
-
-**Note:** Same template is used for both room and tent reservations.
+**Tent Bookings (All Tent Spots):**
+- Common Template: Source `VANVHR`, Template ID `1107176882804274771`
+- Works for all tent spots: Vanavihari, Jungle Star, Karthikavanam, etc.
 
 ## Features
 

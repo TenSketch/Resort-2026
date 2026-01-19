@@ -33,7 +33,7 @@ sendRoomReservationSMS(testRoomReservation, testTransaction)
     console.error('❌ Room SMS test error:', err.message, '\n');
   });
 
-// Test Tent Reservation SMS - Jungle Star
+// Test Tent Reservation SMS - Common template (works for all tent spots)
 setTimeout(() => {
   const testTentReservation = {
     fullName: "Balaji",
@@ -42,10 +42,10 @@ setTimeout(() => {
     checkinDate: "2026-01-20",
     checkoutDate: "2026-01-22",
     totalPayable: 3500,
-    resortSlug: "jungle-star"
+    tentSpot: null // Will show "Tent Spot" as default
   };
 
-  console.log('📱 Testing Tent Reservation SMS (Jungle Star)...');
+  console.log('📱 Testing Tent Reservation SMS (Common Template)...');
   sendTentReservationSMS(testTentReservation, testTransaction)
     .then(result => {
       if (result.success) {
@@ -58,32 +58,5 @@ setTimeout(() => {
       console.error('❌ Tent SMS test error:', err.message, '\n');
     });
 }, 2000);
-
-// Test Karthikavanam (with placeholder template)
-setTimeout(() => {
-  const testKarthikavanamReservation = {
-    fullName: "Balaji",
-    bookingId: "KRTV5678",
-    phone: "9384318546",
-    checkinDate: "2026-01-25",
-    checkoutDate: "2026-01-27",
-    totalPayable: 2500,
-    resortSlug: "karthikavanam-valamuru" // or "karthikavanam"
-  };
-
-  console.log('📱 Testing Tent Reservation SMS (Karthikavanam - Placeholder)...');
-  console.log('⚠️  Note: This will fail until you add the actual template ID\n');
-  sendTentReservationSMS(testKarthikavanamReservation, testTransaction)
-    .then(result => {
-      if (result.success) {
-        console.log('✅ Karthikavanam SMS test completed successfully\n');
-      } else {
-        console.log('❌ Karthikavanam SMS test failed (expected until template added):', result.error, '\n');
-      }
-    })
-    .catch(err => {
-      console.error('❌ Karthikavanam SMS test error:', err.message, '\n');
-    });
-}, 4000);
 
 console.log('⏳ Tests running... (check logs above)\n');

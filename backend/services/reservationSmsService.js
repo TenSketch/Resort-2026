@@ -163,13 +163,13 @@ export async function sendTentReservationSMS(reservation, paymentTransaction) {
       return { success: false, error: 'No valid phone number' };
     }
 
-    // Get resort slug
-    let resortSlug = reservation.resortSlug;
+    // Get tent spot name
+    let tentSpotName = 'Tent Spot';
     
-    if (!resortSlug && reservation.tentSpot) {
+    if (reservation.tentSpot) {
       const tentSpotData = await TentSpot.findById(reservation.tentSpot).lean();
       if (tentSpotData) {
-        resortSlug = tentSpotData.slug;
+        tentSpotName = tentSpotData.spotName || 'Tent Spot';
       }
     }
 
@@ -178,27 +178,18 @@ export async function sendTentReservationSMS(reservation, paymentTransaction) {
       fullName: reservation.fullName || 'Guest',
       bookingId: reservation.bookingId,
       checkIn: formatDate(reservation.checkinDate),
-      checkOut: formatDate(reservation.checkoutDate),
-      amount: reservation.totalPayable?.toFixed(2) || reservation.amount?.toFixed(2) || '0.00'
+      tentSpotName: tentSpotName
     };
 
-    // Select template based on resort slug
-    let template;
-    if (resortSlug === 'jungle-star' || resortSlug === 'junglestar') {
-      template = SMS_TEMPLATES.JUNGLESTAR;
-    } else if (resortSlug === 'karthikavanam-valamuru' || resortSlug === 'karthikavanam') {
-      template = SMS_TEMPLATES.KARTHIKAVANAM;
-    } else {
-      // Default to Vanavihari
-      template = SMS_TEMPLATES.VANAVIHARI;
-    }
+    // Use common tent template for all tent bookings
+    const template = SMS_TEMPLATES.TENT_COMMON;
 
     const message = template.getMessage(smsData);
     const source = template.source;
     const tempid = template.tempid;
 
     console.log(`📱 Sending SMS to: ${mobile}`);
-    console.log(`📱 Resort: ${resortSlug || 'vanavihari'}`);
+    console.log(`📱 Tent Spot: ${tentSpotName}`);
     console.log(`📱 Source: ${source}, Template ID: ${tempid}`);
 
     // Send SMS

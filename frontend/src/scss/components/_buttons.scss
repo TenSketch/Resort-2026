@@ -1,35 +1,165 @@
 @use '/src/scss/base/' as *;
 
-// button{
-//     height: unset!important;
-//     border-radius: 100px!important;
-//     font-size: 1rem!important;
-//     padding: 0.5em 2em!important;
-// }
+// ============================================
+// BUTTON SYSTEM - Resort Website Design System
+// ============================================
 
-.btn-primary{
+// Base button reset & common properties
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: $btn-padding-md;
+  font-size: $btn-font-md;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: $radius-md;
+  transition: all $transition-normal;
+  
+  &:focus {
+    outline: 2px solid $clr-primary-light;
+    outline-offset: 2px;
+  }
+  
+  &:disabled,
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #97a786;
+  }
+}
+
+// ============================================
+// PRIMARY BUTTON
+// ============================================
+.btn-primary {
+  background-color: $clr-primary;
+  border: 2px solid $clr-primary;
+  color: $white;
+
+  &:hover {
+    background-color: $clr-primary-dark;
+    border-color: $clr-primary-dark;
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(77, 153, 0, 0.3);
+  }
+}
+
+// ============================================
+// SECONDARY BUTTON (Outlined)
+// ============================================
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid $clr-primary;
+  color: $clr-primary;
+
+  &:hover {
     background-color: $clr-primary;
-    border: none;
     color: $white;
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
-.btn-secondary{
-    border: 2px solid $clr-primary;
-    background-color: transparent;
+
+// ============================================
+// OUTLINE PRIMARY BUTTON
+// ============================================
+.btn-outline-primary {
+  background-color: transparent;
+  border: 2px solid $clr-primary;
+  color: $clr-primary;
+
+  &:hover {
+    background-color: $clr-primary;
+    border-color: $clr-primary;
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
-.mdc-button{
-    height: fit-content!important;
-    // border-radius: 100px!important;
-    font-size: 0.9rem!important;
-    padding: 0.5em 2em!important;
+
+// ============================================
+// OUTLINE SECONDARY BUTTON
+// ============================================
+.btn-outline-secondary {
+  background-color: transparent;
+  border: 2px solid $clr-secondary;
+  color: $clr-secondary;
+
+  &:hover {
+    background-color: $clr-secondary;
+    color: $white;
+  }
 }
-.mdc-button.mat-primary{
-    background-color: $clr-primary!important;   
-   }
-   .mat-mdc-outlined-button.mat-secondary{
-    border: 2px solid $clr-primary!important;
+
+// ============================================
+// BUTTON SIZES
+// ============================================
+.btn-sm {
+  padding: $btn-padding-sm;
+  font-size: $btn-font-sm;
+  border-radius: $radius-sm;
 }
-.mat-mdc-raised-button[disabled]{
-    background-color: lightgray!important;
-    cursor: not-allowed!important;
-    pointer-events: unset!important;
+
+.btn-lg {
+  padding: $btn-padding-lg;
+  font-size: $btn-font-lg;
+  border-radius: $radius-md;
+}
+
+// ============================================
+// ANGULAR MATERIAL BUTTON OVERRIDES
+// ============================================
+.mdc-button {
+  height: fit-content !important;
+  font-size: 0.9rem !important;
+  padding: 0.5em 2em !important;
+}
+
+.mdc-button.mat-primary {
+  background-color: $clr-primary !important;
+}
+
+.mat-mdc-outlined-button.mat-secondary {
+  border: 2px solid $clr-primary !important;
+}
+
+.mat-mdc-raised-button[disabled] {
+  background-color: lightgray !important;
+  cursor: not-allowed !important;
+  pointer-events: unset !important;
+}
+
+// ============================================
+// ICON BUTTON
+// ============================================
+.btn-icon {
+  padding: 0.5rem;
+  border-radius: $radius-full;
+  
+  &:hover {
+    background-color: $clr-primary-lighter;
+  }
 }

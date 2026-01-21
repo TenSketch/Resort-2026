@@ -1,5 +1,7 @@
 @use './colors' as *;
 @use './mixins' as *;
+@use './variables' as *;
+
 $nav-bar-height: 8vh;
 
 
@@ -39,4 +41,75 @@ $nav-bar-height: 8vh;
 }
 .bg-primary{
     background-color: $clr-primary!important
+}
+
+// ============================================
+// BORDER-RADIUS UTILITIES
+// ============================================
+.rounded-sm {
+  border-radius: $radius-sm !important;
+}
+.rounded-md {
+  border-radius: $radius-md !important;
+}
+.rounded-lg {
+  border-radius: $radius-lg !important;
+}
+.rounded-xl {
+  border-radius: $radius-xl !important;
+}
+.rounded-full {
+  border-radius: $radius-full !important;
+}
+
+// ============================================
+// SHADOW UTILITIES
+// ============================================
+.shadow-sm {
+  box-shadow: $shadow-sm !important;
+}
+.shadow-md {
+  box-shadow: $shadow-md !important;
+}
+.shadow-lg {
+  box-shadow: $shadow-lg !important;
+}
+.shadow-xl {
+  box-shadow: $shadow-xl !important;
+}
+.shadow-none {
+  box-shadow: none !important;
+}
+
+// ============================================
+// TRANSITION UTILITIES
+// ============================================
+.transition-fast {
+  transition: all $transition-fast !important;
+}
+.transition-normal {
+  transition: all $transition-normal !important;
+}
+.transition-slow {
+  transition: all $transition-slow !important;
+}
+
+// ============================================
+// HOVER UTILITIES
+// ============================================
+.hover-lift {
+  transition: transform $transition-normal, box-shadow $transition-normal;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-hover;
   }
+}
+
+.hover-scale {
+  transition: transform $transition-normal;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}

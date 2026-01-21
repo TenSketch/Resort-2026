@@ -271,11 +271,11 @@
                     (click)="removeRoom(roomIds, roomId)"
                     ><i class="fa fa-trash"></i
                   ></a>
-                  <div>
+                  <div class="mb-3">
                     <strong class="me-2">Room Name: </strong
                     >{{ findRoomById(roomId).Room_Name }}
                   </div>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column gap-3">
                     <small>
                       <strong>Room Tariff:</strong>
                       {{
@@ -305,7 +305,7 @@
                       <mat-hint class="px-0">Adults/Child over 5 yrs</mat-hint>
                     </mat-form-field>
 
-                    <div class="custom-dropdown mt-3">
+                    <div class="custom-dropdown mt-4">
                       <mat-form-field appearance="outline" class="mat-small">
                         <mat-label>No of children</mat-label>
                         <mat-select
@@ -322,7 +322,7 @@
 
                     <mat-checkbox
                       [checked]="findRoomById(roomId).extra_guest"
-                      class="example-margin"
+                      class="example-margin mt-4 d-block"
                       color="primary"
                       (change)="extraGuestActions($event, roomId)"
                     >
@@ -392,7 +392,7 @@
             <button
               mat-raised-button
               color="primary"
-              class="w-100 mt-3"
+              class="w-100 mt-3 btn-proceed"
               (click)="signIn()"
               *ngIf="showBookingSummary"
               [disabled]="isGuestSelectEmpty()"

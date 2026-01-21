@@ -1,0 +1,219 @@
+@use '/src/scss/base/' as *;
+
+// ============================================
+// CAROUSEL SYSTEM - Resort Website Design System
+// ============================================
+
+// ============================================
+// HERO CAROUSEL (70vh height)
+// ============================================
+.carousel-hero {
+  .carousel-item {
+    height: $carousel-height;
+    transition: transform $carousel-transition;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  // Dark overlay for text readability
+  .carousel-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: $carousel-overlay-bg;
+    width: 100%;
+    height: 100%;
+  }
+  
+  // Caption styling
+  .carousel-caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    
+    h1, h2 {
+      color: $clr-light !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.125rem;
+      max-width: 600px;
+    }
+  }
+}
+
+// ============================================
+// CAROUSEL INDICATORS
+// ============================================
+.carousel-indicators {
+  margin-bottom: 1.5rem;
+  
+  [data-bs-target] {
+    width: 12px;
+    height: 12px;
+    border-radius: $radius-full;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid transparent;
+    margin: 0 6px;
+    transition: all $transition-normal;
+    
+    &.active {
+      background-color: $white;
+      transform: scale(1.2);
+    }
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// ============================================
+// CAROUSEL NAVIGATION ARROWS
+// ============================================
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: $radius-full;
+  opacity: 0.7;
+  transition: all $transition-normal;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+  }
+  
+  &:focus {
+    outline: 2px solid $white;
+    outline-offset: 2px;
+  }
+}
+
+.carousel-control-prev {
+  left: 1rem;
+}
+
+.carousel-control-next {
+  right: 1rem;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 24px;
+  height: 24px;
+}
+
+// ============================================
+// CAROUSEL ANIMATIONS
+// ============================================
+.carousel-fade {
+  .carousel-item {
+    opacity: 0;
+    transition: opacity $carousel-transition;
+    
+    &.active {
+      opacity: 1;
+    }
+  }
+}
+
+// Zoom effect on active slide
+.carousel-zoom {
+  .carousel-item {
+    transition: all 3s ease-in-out;
+    
+    &.active {
+      transform: scale(1.05);
+    }
+    
+    &.carousel-item-prev,
+    &.carousel-item-next {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// ============================================
+// THUMBNAIL CAROUSEL
+// ============================================
+.carousel-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+  
+  .thumb {
+    width: 80px;
+    height: 60px;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    border: 2px solid transparent;
+    transition: all $transition-fast;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    &.active,
+    &:hover {
+      opacity: 1;
+      border-color: $clr-primary;
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+@media (max-width: 768px) {
+  .carousel-hero {
+    .carousel-item {
+      height: 50vh;
+    }
+    
+    .carousel-caption {
+      padding: 1rem;
+      
+      h1, h2 {
+        font-size: 1.5rem;
+      }
+      
+      p {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .carousel-control-prev {
+    left: 0.5rem;
+  }
+  
+  .carousel-control-next {
+    right: 0.5rem;
+  }
+}

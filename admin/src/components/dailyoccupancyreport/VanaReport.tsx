@@ -28,7 +28,8 @@ interface Reservation {
 
 export default function DailyOccupancyReport() {
   const tableRef = useRef(null);
-  const apiUrl = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000';
+  const apiUrl =
+    (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
   const [reservationData, setReservationData] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,16 +38,18 @@ export default function DailyOccupancyReport() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${apiUrl}/api/reports/daily-occupancy/slug/vanavihari`);
+        const response = await fetch(
+          `${apiUrl}/api/reports/daily-occupancy/slug/vanavihari`,
+        );
         const result = await response.json();
-        
+
         if (result.success) {
           setReservationData(result.data || []);
         } else {
-          console.error('Failed to fetch report data:', result.error);
+          console.error("Failed to fetch report data:", result.error);
         }
       } catch (error) {
-        console.error('Error fetching report data:', error);
+        console.error("Error fetching report data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -88,7 +91,7 @@ export default function DailyOccupancyReport() {
             row.totalFoods ?? "",
             row.noOfDays ?? "",
             row.remainingDays ?? "",
-          ].join(",")
+          ].join(","),
         ),
     ];
 
@@ -101,12 +104,25 @@ export default function DailyOccupancyReport() {
     link.click();
   };
 
-  const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const d = new Date();
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = months[d.getMonth()];
+  const day = String(d.getDate()).padStart(2, "0");
+  const year = d.getFullYear();
+  const today = `${day}/${month}/${year}`;
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -240,7 +256,10 @@ export default function DailyOccupancyReport() {
       </div>
 
       <div className="overflow-auto" style={{ position: "relative" }}>
-        <div ref={tableRef} style={{ position: "relative", minWidth: "max-content" }}>
+        <div
+          ref={tableRef}
+          style={{ position: "relative", minWidth: "max-content" }}
+        >
           <DataTable
             data={reservationData}
             columns={columns}

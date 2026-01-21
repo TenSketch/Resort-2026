@@ -1,1 +1,59 @@
-$pad-main-title: 1.5rem 1.5rem 2.3rem
+// ============================================
+// DESIGN TOKENS - Resort Website Design System
+// ============================================
+
+// Spacing
+$pad-main-title: 1.5rem 1.5rem 2.3rem;
+
+// ============================================
+// BORDER-RADIUS SCALE
+// ============================================
+$radius-sm: 4px; // inputs, small badges
+$radius-md: 8px; // buttons, tags
+$radius-lg: 12px; // cards, panels
+$radius-xl: 16px; // modals, large containers
+$radius-full: 9999px; // pills, avatars
+
+// ============================================
+// SHADOWS (Elevation System)
+// ============================================
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+$shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.15);
+$shadow-card:
+  0px 8px 16px rgba(0, 0, 0, 0.15),
+  inset 0px 1px 0px #ffffff;
+
+// ============================================
+// TRANSITIONS
+// ============================================
+$transition-fast: 150ms ease;
+$transition-normal: 300ms ease;
+$transition-slow: 500ms ease-in-out;
+
+// ============================================
+// BUTTON SIZES
+// ============================================
+$btn-padding-sm: 0.375rem 1rem;
+$btn-padding-md: 0.5rem 1.5rem;
+$btn-padding-lg: 0.75rem 2rem;
+$btn-font-sm: 0.875rem;
+$btn-font-md: 1rem;
+$btn-font-lg: 1.125rem;
+
+// ============================================
+// CARD TOKENS
+// ============================================
+$card-padding: 1rem;
+$card-padding-lg: 1.5rem;
+$card-radius: $radius-lg;
+$card-shadow: $shadow-card;
+
+// ============================================
+// CAROUSEL TOKENS
+// ============================================
+$carousel-height: 70vh;
+$carousel-overlay-bg: rgba(0, 0, 0, 0.4);
+$carousel-transition: 0.6s ease-in-out;

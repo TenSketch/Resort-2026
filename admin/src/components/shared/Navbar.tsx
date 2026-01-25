@@ -1,5 +1,5 @@
 
-import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Users } from "lucide-react";
+import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Users, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router";
 import Breadcrumb from "./Breadcrumb";
@@ -130,16 +130,30 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
         {/* Right side - reduced spacing for mobile */}
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
           
-          {/* Guests Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="flex items-center h-8 sm:h-9 px-1.5 sm:px-2"
-            onClick={() => navigate('/guests/all')}
-          >
-            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden md:inline text-sm ml-1">Guests</span>
-          </Button>
+          {/* Guests Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center h-8 sm:h-9 px-1.5 sm:px-2"
+              >
+                <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="hidden md:inline text-sm ml-1">Guests</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => navigate('/guests/all')} className="cursor-pointer">
+                <Users className="mr-2 h-4 w-4" />
+                All Guests
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/guests/add')} className="cursor-pointer">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add Guest
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* View Type Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

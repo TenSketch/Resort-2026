@@ -1,9 +1,9 @@
 
-import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Globe, Users, FileText, Home } from "lucide-react";
+import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router";
 import Breadcrumb from "./Breadcrumb";
-import NotificationDropdown from "./NotificationDropDown";
+// import NotificationDropdown from "./NotificationDropDown";
 import { useAdmin } from "@/lib/AdminProvider";
 import { useViewType } from "@/lib/ViewTypeContext";
 import type { ViewType } from "@/lib/ViewTypeContext";
@@ -168,7 +168,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <NotificationDropdown/>
+          {/* <NotificationDropdown/> */}
 
 
           {/* Global top-bar menu */}

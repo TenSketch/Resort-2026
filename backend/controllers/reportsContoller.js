@@ -340,3 +340,191 @@ export const getDashboardStats = async (req, res) => {
     res.status(500).json({ success: false, error: err.message })
   }
 }
+
+
+// Import tent models
+import TentReservation from '../models/tentReservationModel.js'
+import TentSpot from '../models/tentSpotModel.js'
+import Tent from '../models/tentModel.js'
+
+// Get tent dashboard statistics
+export const getTentDashboardStats = async (req, res) => {
+  try {
+    const { tentSpotId } = req.query
+    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    // Build query filter
+    const tentSpotFilter = tentSpotId ? { tentSpot: tentSpotId } : {}
+
+    // Get all tent spots
+    const tentSpots = await TentSpot.find().lean()
+    
+    // Total bookings today (reservations created today)
+    const totalBookingsToday = await TentReservation.countDocuments({
+      ...tentSpotFilter,
+      createdAt: { $gte: today, $lt: tomorrow }
+    })
+
+    // Total guests today (currently checked in)
+    const activeReservations = await TentReservation.find({
+      ...tentSpotFilter,
+      status: 'reserved',
+      checkinDate: { $lte: tomorrow },
+      checkoutDate: { $gt: today }
+    }).lean()
+
+    const totalGuestsToday = activeReservations.reduce((sum, r) => 
+      sum + (r.guests || 0) + (r.children || 0), 0
+    )
+
+    // Expected checkouts today
+    const expectedCheckouts = await TentReservation.countDocuments({
+      ...tentSpotFilter,
+      status: 'reserved',
+      checkoutDate: { $gte: today, $lt: tomorrow }
+    })
+
+    // Vacant tents calculation
+    const allTents = await Tent.find({ ...tentSpotFilter, isDisabled: false }).lean()
+    const totalTentCapacity = allTents.reduce((sum, tent) => sum + (tent.tentCount || 1), 0)
+    
+    const occupiedTentIds = new Set()
+    activeReservations.forEach(r => {
+      if (r.tents && Array.isArray(r.tents)) {
+        r.tents.forEach(tentId => occupiedTentIds.add(tentId))
+      }
+    })
+    const vacantTents = totalTentCapacity - occupiedTentIds.size
+
+    // Payment breakdown (last 30 days)
+    const thirtyDaysAgo = new Date(today)
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    
+    const recentReservations = await TentReservation.find({
+      ...tentSpotFilter,
+      createdAt: { $gte: thirtyDaysAgo }
+    }).lean()
+
+    const paymentStats = recentReservations.reduce((acc, r) => {
+      acc[r.paymentStatus] = (acc[r.paymentStatus] || 0) + 1
+      return acc
+    }, {})
+
+    const totalPayments = recentReservations.length || 1
+    const paymentBreakdown = [
+      { name: 'Paid', value: Math.round(((paymentStats.paid || 0) / totalPayments) * 100) },
+      { name: 'Pending', value: Math.round(((paymentStats.pending || 0) / totalPayments) * 100) },
+      { name: 'Unpaid', value: Math.round(((paymentStats.unpaid || 0) / totalPayments) * 100) },
+      { name: 'Failed', value: Math.round(((paymentStats.failed || 0) / totalPayments) * 100) },
+      { name: 'Refunded', value: Math.round(((paymentStats.refunded || 0) / totalPayments) * 100) }
+    ].filter(item => item.value > 0)
+
+    // Last 5 bookings
+    const last5Bookings = await TentReservation.find(tentSpotFilter)
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean()
+
+    const last5BookingsFormatted = await Promise.all(
+      last5Bookings.map(async (booking) => {
+        let tentSpotName = 'Unknown'
+        let tentName = 'Unknown'
+
+        if (booking.tentSpot && mongoose.Types.ObjectId.isValid(booking.tentSpot)) {
+          const tentSpot = await TentSpot.findById(booking.tentSpot).select('spotName').lean()
+          if (tentSpot) tentSpotName = tentSpot.spotName
+        }
+
+        if (booking.tents && booking.tents.length > 0) {
+          const firstTentId = booking.tents[0]
+          if (mongoose.Types.ObjectId.isValid(firstTentId)) {
+            const tent = await Tent.findById(firstTentId).select('tentId').lean()
+            if (tent) tentName = tent.tentId || 'Unknown'
+          }
+        }
+
+        return {
+          id: booking.bookingId || booking._id.toString().slice(-6),
+          guest: booking.fullName || 'Guest',
+          tentSpot: tentSpotName,
+          tent: tentName,
+          status: booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Unpaid',
+          amount: booking.totalPayable || 0
+        }
+      })
+    )
+
+    // 7-day occupancy forecast
+    const occupancy7Day = []
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today)
+      date.setDate(date.getDate() + i)
+      const nextDate = new Date(date)
+      nextDate.setDate(nextDate.getDate() + 1)
+
+      const reservationsOnDate = await TentReservation.countDocuments({
+        ...tentSpotFilter,
+        status: 'reserved',
+        checkinDate: { $lte: nextDate },
+        checkoutDate: { $gt: date }
+      })
+
+      const occupancyRate = totalTentCapacity > 0 
+        ? Math.round((reservationsOnDate / totalTentCapacity) * 100)
+        : 0
+
+      occupancy7Day.push({
+        day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        occupancy: occupancyRate
+      })
+    }
+
+    // Tent spot-specific vacant tents
+    const tentSpotVacantTents = {}
+    for (const tentSpot of tentSpots) {
+      const spotTents = await Tent.find({ tentSpot: tentSpot._id, isDisabled: false }).lean()
+      const spotTotalCapacity = spotTents.reduce((sum, tent) => sum + (tent.tentCount || 1), 0)
+      
+      const spotActiveReservations = await TentReservation.find({
+        tentSpot: tentSpot._id.toString(),
+        status: 'reserved',
+        checkinDate: { $lte: tomorrow },
+        checkoutDate: { $gt: today }
+      }).lean()
+
+      const spotOccupiedTentIds = new Set()
+      spotActiveReservations.forEach(r => {
+        if (r.tents && Array.isArray(r.tents)) {
+          r.tents.forEach(tentId => spotOccupiedTentIds.add(tentId))
+        }
+      })
+
+      tentSpotVacantTents[tentSpot._id.toString()] = spotTotalCapacity - spotOccupiedTentIds.size
+    }
+
+    res.json({
+      success: true,
+      stats: {
+        totalBookingsToday,
+        vacantTents,
+        totalGuestsToday,
+        expectedCheckouts
+      },
+      paymentBreakdown,
+      last5Bookings: last5BookingsFormatted,
+      occupancy7Day,
+      tentSpots: tentSpots.map(ts => ({
+        id: ts._id.toString(),
+        name: ts.spotName,
+        vacantToday: tentSpotVacantTents[ts._id.toString()] || 0
+      }))
+    })
+  } catch (err) {
+    console.error('getTentDashboardStats error', err)
+    res.status(500).json({ success: false, error: err.message })
+  }
+}

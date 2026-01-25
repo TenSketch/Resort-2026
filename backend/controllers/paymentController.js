@@ -3,6 +3,7 @@ import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
 import { sendReservationSuccessEmails } from "../services/reservationEmailService.js";
+import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
 import Reservation from "../models/reservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
@@ -443,6 +444,11 @@ export const handlePaymentCallback = async (req, res) => {
         sendReservationSuccessEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Emails sent successfully'))
           .catch(err => console.error('❌ Email sending failed:', err.message));
+        
+        // Send SMS asynchronously (don't wait for completion)
+        sendRoomReservationSMS(reservation, paymentTransaction)
+          .then(() => console.log('✅ Room reservation SMS sent successfully'))
+          .catch(err => console.error('❌ SMS sending failed:', err.message));
       }
 
       // Redirect based on status (Angular uses hash routing)

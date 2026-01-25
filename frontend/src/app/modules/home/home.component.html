@@ -175,7 +175,7 @@
                 class="card-footer d-grid place-items-center border-0 bg-transparent"
               >
                 <button
-                  mat-stroked-button
+                  mat-flat-button
                   color="primary"
                   (click)="goToVanavihari()"
                 >
@@ -208,7 +208,7 @@
                 class="card-footer d-grid place-items-center border-0 bg-transparent"
               >
                 <button
-                  mat-stroked-button
+                  mat-flat-button
                   color="primary"
                   (click)="goToJungleStar()"
                 >
@@ -244,11 +244,7 @@
               <div
                 class="card-footer d-grid place-items-center border-0 bg-transparent"
               >
-                <button
-                  mat-stroked-button
-                  color="primary"
-                  (click)="goToTents()"
-                >
+                <button mat-flat-button color="primary" (click)="goToTents()">
                   View details
                 </button>
               </div>
@@ -274,7 +270,7 @@
                 class="card-footer d-grid place-items-center border-0 bg-transparent"
               >
                 <button
-                  mat-stroked-button
+                  mat-flat-button
                   color="primary"
                   (click)="goToKarthikavanamTents()"
                 >
@@ -459,9 +455,12 @@
                   <small class="text-muted">Parking: ₹0/vehicle</small>
                 </div>
               </div>
-              <div class="card-footer bg-transparent border-0 pt-0">
+              <div
+                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
+              >
                 <button
-                  class="btn btn-outline-primary btn-sm w-100"
+                  mat-flat-button
+                  color="primary"
                   routerLink="/tourist-places"
                 >
                   Book Now
@@ -490,9 +489,12 @@
                   <small class="text-muted">Parking: ₹0/vehicle</small>
                 </div>
               </div>
-              <div class="card-footer bg-transparent border-0 pt-0">
+              <div
+                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
+              >
                 <button
-                  class="btn btn-outline-primary btn-sm w-100"
+                  mat-flat-button
+                  color="primary"
                   routerLink="/tourist-places"
                 >
                   Book Now
@@ -521,9 +523,12 @@
                   <small class="text-muted">Parking: ₹300/vehicle</small>
                 </div>
               </div>
-              <div class="card-footer bg-transparent border-0 pt-0">
+              <div
+                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
+              >
                 <button
-                  class="btn btn-outline-primary btn-sm w-100"
+                  mat-flat-button
+                  color="primary"
                   routerLink="/tourist-places"
                 >
                   Book Now
@@ -535,7 +540,9 @@
 
         <div class="text-center mt-5">
           <button
-            class="btn btn-primary btn-lg px-5"
+            mat-flat-button
+            color="primary"
+            class="px-5 py-2"
             routerLink="/tourist-places"
           >
             <i class="fa-solid fa-mountain-sun me-2"></i>

@@ -795,7 +795,7 @@ export default function AddReservationForm() {
                     <SelectItem value="reserved">Reserved</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="not-reserved">Not Reserved</SelectItem>
-                    <SelectItem value="canceled">Canceled</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -863,7 +863,8 @@ export default function AddReservationForm() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="not-paid">Not Paid</SelectItem>
+                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                    <SelectItem value="refunded">Refunded</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

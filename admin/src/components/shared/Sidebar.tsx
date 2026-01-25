@@ -123,8 +123,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
       children: [
-        { label: "Add Spots", path: "/tentspots/details", icon: Plus },
         { label: "All Spots", path: "/tentspots/all", icon: Globe },
+        { label: "Add Spots", path: "/tentspots/details", icon: Plus },
       ],
     },
     {
@@ -133,8 +133,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
       children: [
-        { label: "Add Tent Type", path: "/tenttypes/add", icon: Plus },
         { label: "All Tent Types", path: "/tenttypes/all", icon: BookOpen },
+        { label: "Add Tent Type", path: "/tenttypes/add", icon: Plus },
       ],
     },
     // Tent Inventory removed from Tent Management per request
@@ -144,8 +144,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
       children: [
-        { label: "Add Tents", path: "/tentinventory/addtents", icon: Plus },
         { label: "All Tents", path: "/tentinventory/alltents", icon: BookOpen },
+        { label: "Add Tents", path: "/tentinventory/addtents", icon: Plus },
       ],
     },
     {
@@ -154,8 +154,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Calendar,
       viewTypes: ["tent"] as ViewType[],
       children: [
+        { label: "All Bookings", path: "/tentbookings/allbookings", icon: Calendar },
         { label: "Add Bookings", path: "/tentbookings/addbookings", icon: Plus },
-        { label: "All Bookings", path: "/tentbookings/allbookings", icon: Calendar }
       ],
     },
     // {
@@ -182,8 +182,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Binoculars,
       viewTypes: ["tourist-spot"] as ViewType[],
       children: [
-        { label: "Add Spot", path: "/touristspots/add", icon: Plus },
         { label: "All Spots", path: "/touristspots/all", icon: Binoculars },
+        { label: "Add Spot", path: "/touristspots/add", icon: Plus },
       ],
     },
     {
@@ -201,8 +201,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Calendar,
       viewTypes: ["tourist-spot"] as ViewType[],
       children: [
-        { label: "Add Booking", path: "/tourist/bookings/add", icon: Plus },
         { label: "All Bookings", path: "/tourist/bookings", icon: Calendar },
+        { label: "Add Booking", path: "/tourist/bookings/add", icon: Plus },
       ],
     },
     // {

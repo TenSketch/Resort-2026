@@ -11,7 +11,6 @@ import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
 import { usePermissions } from '@/lib/AdminProvider'
-import { Download } from "lucide-react";
 import {
   Sheet,
   SheetContent,

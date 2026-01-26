@@ -176,7 +176,7 @@ export const initiateTentPayment = async (req, res) => {
       const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
       
       // Start polling for transaction status
-      startTransactionPolling(bookingId, bdorderid, merchantId, authToken);
+      startTransactionPolling(bookingId, bdorderid, merchantId, authToken, 'tent');
       console.log(`🔄 Started transaction polling for tent booking: ${bookingId}`);
       
       const formAction = billdeskResponse.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';

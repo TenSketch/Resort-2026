@@ -509,7 +509,9 @@ export default function RoomsTable() {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
         
-        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
+        if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
+          handleRowClick(room);
+        } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
           if (!permsRef.current.canEdit) return
           handleEdit(room);
         }
@@ -520,7 +522,7 @@ export default function RoomsTable() {
       const target = event.target as HTMLElement;
       
       // Don't trigger row click if a button was clicked
-      if (target.closest('.edit-btn')) {
+      if (target.closest('.view-btn, .edit-btn')) {
         return;
       }
       
@@ -600,6 +602,27 @@ export default function RoomsTable() {
         const isDisabled = disabledRooms.has(row.id);
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}" 
+              title="View Room"
+              style="
+                background: #10b981;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+              "
+              onmouseover="this.style.background='#059669'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
+              onmouseout="this.style.background='#10b981'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -976,24 +999,7 @@ export default function RoomsTable() {
               {/* Fixed Action Buttons */}
               <div className="flex-shrink-0 flex gap-3 justify-end p-6 pt-4 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit Room
-                    </Button>
-                    <Button 
-                      variant={disabledRooms.has(selectedRoom.id) ? "default" : "destructive"}
-                      onClick={() => { if (!perms.canDisable) return; handleToggleStatus(selectedRoom) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {disabledRooms.has(selectedRoom.id) ? 'Enable' : 'Disable'}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} disabled={saving}>Close</Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} disabled={saving} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')} disabled={saving}>Cancel</Button>

@@ -695,41 +695,12 @@ export default function AllTentsTable() {
                   </div>
                 </div>
 
-                <div>
-                  <Label>Status</Label>
-                  <div className="mt-1">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedTent.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {selectedTent.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
+
               </div>
 
               <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      className="flex-1"
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant={selectedTent.isActive ? "destructive" : "default"}
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedTent) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {selectedTent.isActive ? "Deactivate" : "Activate"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>Close</Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>

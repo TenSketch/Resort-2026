@@ -757,7 +757,7 @@ export default function ReservationTable() {
       const target = event.target as HTMLElement;
       // support clicks on inner text/nodes by finding the closest button
       const btn = target.closest(
-        ".edit-btn, .delete-btn",
+        ".view-btn, .edit-btn, .delete-btn",
       ) as HTMLElement | null;
       if (!btn) return;
 
@@ -770,7 +770,12 @@ export default function ReservationTable() {
       );
       if (!reservation) return;
 
-      if (btn.classList.contains("edit-btn")) {
+      if (btn.classList.contains("view-btn")) {
+        // Open detail sheet in view mode
+        setSelectedReservation(reservation);
+        setSheetMode("view");
+        setIsDetailSheetOpen(true);
+      } else if (btn.classList.contains("edit-btn")) {
         if (!permsRef.current.canEdit) return;
         // Open detail sheet in edit mode
         setSelectedReservation(reservation);
@@ -787,7 +792,7 @@ export default function ReservationTable() {
       const target = event.target as HTMLElement;
 
       // Don't trigger row click if a button was clicked
-      if (target.closest(".edit-btn, .delete-btn")) {
+      if (target.closest(".view-btn, .edit-btn, .delete-btn")) {
         return;
       }
 
@@ -968,6 +973,27 @@ export default function ReservationTable() {
       render: (_data: any, _type: any, row: Reservation) => {
         return `
           <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}" 
+              title="View Reservation"
+              style="
+                background: #10b981;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+              "
+              onmouseover="this.style.background='#059669'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
+              onmouseout="this.style.background='#10b981'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
+            >
+              View
+            </button>
             ${
               perms.canEdit
                 ? `
@@ -1943,26 +1969,7 @@ export default function ReservationTable() {
               {/* Fixed Action Buttons */}
               <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        if (!perms.canEdit) return;
-                        setSheetMode("edit");
-                        setEditForm({
-                          ...(selectedReservation as Reservation),
-                        });
-                      }}
-                      className="flex-1"
-                      disabled={!perms.canEdit}
-                      title={
-                        !perms.canEdit
-                          ? "You do not have permission to edit"
-                          : undefined
-                      }
-                    >
-                      Edit Reservation
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button

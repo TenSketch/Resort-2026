@@ -286,9 +286,17 @@ export default function AllTentSpotsTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: TentSpot) => {
-        const isDisabled = !row.isActive;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}"
+              style="background: #10b981; color: white; border: none; padding: 6px 12px;
+                border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;"
+              title="View Tent Spot"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -298,18 +306,6 @@ export default function AllTentSpotsTable() {
               title="Edit Tent Spot"
             >
               Edit
-            </button>` : ''}
-            ${perms.canDisable ? `
-            <button 
-              class="disable-btn" 
-              data-id="${row.id}"
-              style="background: ${isDisabled ? "#6b7280" : "#dc2626"}; color: white;
-                border: none; padding: 6px 12px; border-radius: 6px;
-                font-size: 12px; font-weight: 500; cursor: ${isDisabled ? 'not-allowed' : 'pointer'};"
-              ${isDisabled ? 'disabled' : ''}
-              title="${isDisabled ? 'Already inactive' : 'Deactivate'}"
-            >
-              ${isDisabled ? "Inactive" : "Deactivate"}
             </button>` : ''}
           </div>
         `;
@@ -322,18 +318,20 @@ export default function AllTentSpotsTable() {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
       const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('edit-btn') || button?.classList.contains('disable-btn')) {
+      if (button?.classList.contains('view-btn')) {
+        event.stopPropagation()
+        const spotId = button.getAttribute('data-id') || ''
+        const spot = tentSpotsRef.current.find(t => t.id === spotId)
+        if (spot) openForView(spot)
+        return
+      }
+      if (button?.classList.contains('edit-btn')) {
         event.stopPropagation()
         const spotId = button.getAttribute('data-id') || ''
         const spot = tentSpotsRef.current.find(t => t.id === spotId)
         if (!spot) return
-        if (button.classList.contains('edit-btn')) {
-          if (!permsRef.current.canEdit) return
-          handleEdit(spot)
-        } else if (button.classList.contains('disable-btn')) {
-          if (!permsRef.current.canDisable) return
-          toggleActiveStatus(spot)
-        }
+        if (!permsRef.current.canEdit) return
+        handleEdit(spot)
         return
       }
 
@@ -605,37 +603,12 @@ export default function AllTentSpotsTable() {
                   )}
                 </div>
 
-                <div>
-                  <Label>Status</Label>
-                  <Badge
-                    variant={selectedSpot.isActive ? "default" : "destructive"}
-                  >
-                    {selectedSpot.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
+
               </div>
 
               <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      className="flex-1"
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant={selectedSpot.isActive ? "destructive" : "default"}
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedSpot) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {selectedSpot.isActive ? "Deactivate" : "Activate"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>Close</Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>

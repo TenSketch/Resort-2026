@@ -297,7 +297,9 @@ export default function CottageDataTable() {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
         
-        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
+        if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
+          openForView(cottage);
+        } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
           if (!permsRef.current.canEdit) return
           handleEdit(cottage);
         } else if (target.classList.contains('disable-btn') || target.closest('.disable-btn')) {
@@ -311,7 +313,7 @@ export default function CottageDataTable() {
       const target = event.target as HTMLElement;
       
       // Don't trigger row click if a button was clicked
-      if (target.closest('.edit-btn, .disable-btn')) {
+      if (target.closest('.view-btn, .edit-btn, .disable-btn')) {
         return;
       }
       
@@ -388,6 +390,27 @@ export default function CottageDataTable() {
     const isDisabled = !!row.isDisabled;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row._id}" 
+              title="View Cottage"
+              style="
+                background: #10b981;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+              "
+              onmouseover="this.style.background='#059669'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
+              onmouseout="this.style.background='#10b981'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -410,29 +433,6 @@ export default function CottageDataTable() {
               onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
             >
               Edit
-            </button>` : ''}
-            ${perms.canDisable ? `
-            <button 
-              class="disable-btn" 
-              data-id="${row._id}" 
-              title="${isDisabled ? 'Already Disabled' : 'Disable Record'}"
-              style="
-                background: ${isDisabled ? '#6b7280' : '#dc2626'};
-                color: white;
-                border: none;
-                padding: 6px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 500;
-                cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
-                transition: all 0.2s ease;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-              "
-              ${isDisabled ? 'disabled' : ''}
-              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ''}"
-              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ''}"
-            >
-              ${isDisabled ? 'Disabled' : 'Disable'}
             </button>` : ''}
           </div>
         `;
@@ -618,25 +618,13 @@ export default function CottageDataTable() {
                   </Collapsible>
                 </div>
                 
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Status</Label>
-                  <div className="mt-1">
-                    <Badge variant={selectedCottage.isDisabled ? "destructive" : "default"} className="px-2 py-1">
-                      {selectedCottage.isDisabled ? 'Disabled' : 'Active'}
-                    </Badge>
-                  </div>
-                </div>
+
               </div>
               
               {/* Action Buttons */}
               <div className="flex gap-2 pt-4 border-t">
                 {!editMode ? (
-                  <>
-                    <Button onClick={()=> { if (!perms.canEdit) return; setEditMode(true); setFormData(selectedCottage); }} className="flex-1" disabled={selectedCottage.isDisabled || !perms.canEdit} title={!perms.canEdit ? 'You do not have permission to edit' : undefined}>Edit</Button>
-                    <Button variant={selectedCottage.isDisabled? 'default':'destructive'} onClick={()=> { if (!perms.canDisable) return; handleDisable(selectedCottage) }} disabled={!perms.canDisable} title={!perms.canDisable ? 'You do not have permission to change status' : undefined}>
-                      {selectedCottage.isDisabled? 'Enable':'Disable'}
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={()=> setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={()=> { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>

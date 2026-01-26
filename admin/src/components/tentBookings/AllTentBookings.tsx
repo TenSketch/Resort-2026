@@ -18,14 +18,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePermissions } from "@/lib/AdminProvider";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -76,8 +68,6 @@ export default function AllTentBookings() {
   const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [editForm, setEditForm] = useState<Partial<TentBooking> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [disabling, setDisabling] = useState<TentBooking | null>(null);
 
   const apiUrl =
     (import.meta.env && import.meta.env.VITE_API_URL) ||
@@ -169,28 +159,29 @@ export default function AllTentBookings() {
 
     const handleClick = (e: Event) => {
       const t = e.target as HTMLElement;
-      const btn = t.closest(".edit-btn, .delete-btn") as HTMLElement | null;
+      const btn = t.closest(".view-btn, .edit-btn") as HTMLElement | null;
       if (!btn) return;
       e.stopPropagation();
       const id = btn.getAttribute("data-id");
       const booking = bookingsRef.current.find((b) => b._id === id);
       if (!booking) return;
-      if (btn.classList.contains("edit-btn")) {
+      
+      if (btn.classList.contains("view-btn")) {
+        setSelected(booking);
+        setSheetMode("view");
+        setIsDetailOpen(true);
+      } else if (btn.classList.contains("edit-btn")) {
         if (!permsRef.current.canEdit) return;
         setSelected(booking);
         setEditForm({ ...booking });
         setSheetMode("edit");
         setIsDetailOpen(true);
-      } else if (btn.classList.contains("delete-btn")) {
-        if (!permsRef.current.canDisable) return;
-        setDisabling(booking);
-        setIsConfirmOpen(true);
       }
     };
 
     const handleRowClick = (e: Event) => {
       const target = e.target as HTMLElement;
-      if (target.closest(".edit-btn, .delete-btn")) return;
+      if (target.closest(".view-btn, .edit-btn")) return;
       const row = target.closest("tr");
       if (row && row.parentElement?.tagName === "TBODY") {
         const idx = Array.from(row.parentElement.children).indexOf(row);
@@ -303,8 +294,8 @@ export default function AllTentBookings() {
       searchable: false,
       render: (_d: any, _t: any, row: TentBooking) => `
       <div style="display:flex;gap:8px;align-items:center;">
+        <button class="view-btn" data-id="${row._id}" style="background:#10b981;color:#fff;border:none;padding:6px 10px;border-radius:6px;">View</button>
         ${perms.canEdit ? `<button class="edit-btn" data-id="${row._id}" style="background:#3b82f6;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Edit</button>` : ""}
-        ${perms.canDisable ? `<button class="delete-btn" data-id="${row._id}" style="background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Delete</button>` : ""}
       </div>
     `,
     },
@@ -514,42 +505,6 @@ export default function AllTentBookings() {
           }}
         />
       </div>
-
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this tent booking?
-            </DialogDescription>
-          </DialogHeader>
-          {disabling && (
-            <div className="py-4">
-              <p>
-                <strong>Booking ID:</strong> {disabling.bookingId}
-              </p>
-              <p>
-                <strong>Name:</strong> {disabling.fullName}
-              </p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                await deleteBooking(disabling);
-                setIsConfirmOpen(false);
-                setDisabling(null);
-              }}
-            >
-              Yes, Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
@@ -867,31 +822,7 @@ export default function AllTentBookings() {
 
               <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        if (!perms.canEdit) return;
-                        setSheetMode("edit");
-                        setEditForm({ ...selected });
-                      }}
-                      className="flex-1"
-                      disabled={!perms.canEdit}
-                    >
-                      Edit Booking
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => {
-                        if (!perms.canDisable) return;
-                        setIsDetailOpen(false);
-                        setDisabling(selected);
-                        setIsConfirmOpen(true);
-                      }}
-                      disabled={!perms.canDisable}
-                    >
-                      Delete
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button

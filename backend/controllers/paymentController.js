@@ -420,7 +420,7 @@ export const handlePaymentCallback = async (req, res) => {
       } else if (auth_status === '0398') {
         // User cancelled
         paymentTransaction.status = 'cancelled';
-        reservation.status = 'cancelled';
+        reservation.status = 'not-reserved';
         reservation.paymentStatus = 'unpaid';
       } else {
         // Unknown status - keep as unpaid

@@ -297,12 +297,13 @@ export const handleTentPaymentCallback = async (req, res) => {
         // Success
         console.log('✅ Payment successful, updating records...');
         paymentTransaction.status = 'success';
-        reservation.status = 'reserved'; // Changed from 'confirmed' to 'reserved'
+        reservation.status = 'reserved';
         reservation.paymentStatus = 'paid';
         reservation.expiresAt = null;
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.transactionId = transactionid;
         reservation.rawSource.bankRefNo = decryptedResponse.bank_ref_no;
+        reservation.rawSource.authCode = decryptedResponse.authcode;
         reservation.markModified('rawSource');
       } else if (auth_status === '0399') {
         // Failed - set to not-reserved (not cancelled)
@@ -311,11 +312,15 @@ export const handleTentPaymentCallback = async (req, res) => {
         paymentTransaction.errorMessage = transaction_error_desc;
         reservation.status = 'not-reserved';
         reservation.paymentStatus = 'unpaid';
+        // Store error info
+        if (!reservation.rawSource) reservation.rawSource = {};
+        reservation.rawSource.paymentError = transaction_error_desc;
+        reservation.markModified('rawSource');
       } else if (auth_status === '0002') {
         // Pending
         console.log('⏳ Payment pending');
         paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'pending';
+        reservation.paymentStatus = 'unpaid';
       } else if (auth_status === '0398') {
         // User cancelled
         console.log('🚫 Payment cancelled by user');
@@ -325,7 +330,7 @@ export const handleTentPaymentCallback = async (req, res) => {
       } else {
         console.log('⚠️ Unknown payment status:', auth_status);
         paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'pending';
+        reservation.paymentStatus = 'unpaid';
       }
 
       console.log('💾 Saving payment transaction...');

@@ -317,10 +317,64 @@ export const handleTentPaymentCallback = async (req, res) => {
         reservation.rawSource.paymentError = transaction_error_desc;
         reservation.markModified('rawSource');
       } else if (auth_status === '0002') {
-        // Pending
-        console.log('⏳ Payment pending');
+        // Pending - but check if it's actually successful (BillDesk UAT quirk)
+        console.log('⏳ Payment pending, but checking if actually successful...');
         paymentTransaction.status = 'pending';
         reservation.paymentStatus = 'unpaid';
+        
+        // If transaction_error_desc says "successful", immediately retrieve real status
+        if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
+          console.log('🔍 Transaction says "successful" but status is pending - will retrieve immediately');
+          // Schedule immediate check (after 10 seconds to allow BillDesk to update)
+          setTimeout(async () => {
+            try {
+              console.log(`🔍 Immediate status check for tent booking ${bookingId}`);
+              const authToken = reservation?.rawSource?.authToken || null;
+              const result = await retrieveTransaction(bookingId, process.env.BILLDESK_MERCID, authToken);
+              
+              if (result.success && result.data.auth_status === '0300') {
+                console.log('✅ Tent payment actually successful! Updating now...');
+                
+                await TentReservation.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'reserved',
+                    paymentStatus: 'paid',
+                    expiresAt: null,
+                    $set: {
+                      'rawSource.transactionId': result.data.transactionid,
+                      'rawSource.authStatus': '0300',
+                      'rawSource.bankRefNo': result.data.bank_ref_no,
+                      'rawSource.authCode': result.data.authcode
+                    }
+                  }
+                );
+                
+                await PaymentTransaction.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'success',
+                    authStatus: '0300',
+                    decryptedResponse: result.data
+                  }
+                );
+                
+                // Stop polling and send emails
+                stopTransactionPolling(bookingId);
+                
+                const updatedReservation = await TentReservation.findOne({ bookingId }).lean();
+                const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
+                
+                sendTentReservationEmails(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Tent email error:', err.message));
+                sendTentReservationSMS(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Tent SMS error:', err.message));
+              }
+            } catch (err) {
+              console.error('Immediate tent check error:', err.message);
+            }
+          }, 10000); // Check after 10 seconds
+        }
       } else if (auth_status === '0398') {
         // User cancelled
         console.log('🚫 Payment cancelled by user');

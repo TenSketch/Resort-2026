@@ -37,13 +37,19 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
 
     const [loading, setLoading] = useState(false);
 
+    const normalizeRole = (roleValue: any): string => {
+        const validRoles = ["superadmin", "admin", "staff"];
+        const normalized = String(roleValue || "admin").toLowerCase().trim();
+        return validRoles.includes(normalized) ? normalized : "admin";
+    };
+
     useEffect(() => {
         if (user) {
             setFormData({
                 username: user.username || "",
                 password: "",
                 name: user.name || "",
-                role: user.role || "admin",
+                role: normalizeRole(user.role),
                 permissions: {
                     canEdit: user.permissions?.canEdit || false,
                     canDisable: user.permissions?.canDisable || false,
@@ -54,8 +60,27 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
                     visiblePages: user.permissions?.visiblePages || [],
                 },
             });
+        } else {
+            // Reset form for new user
+            setFormData({
+                username: "",
+                password: "",
+                name: "",
+                role: "admin",
+                permissions: {
+                    canEdit: false,
+                    canDisable: false,
+                    canAddReservations: false,
+                    canAddGuests: false,
+                    canViewDownload: true,
+                    canExport: true,
+                    visiblePages: [],
+                },
+            });
         }
     }, [user]);
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,7 +98,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
 
             const body: any = {
                 name: formData.name,
-                role: formData.role,
+                role: normalizeRole(formData.role),
                 permissions: formData.permissions,
             };
 
@@ -119,7 +144,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
         }));
     };
 
-    const toggleAllPages = (category: string, pages: any[]) => {
+    const toggleAllPages = (_category: string, pages: any[]) => {
         const categoryPageIds = pages.map((p) => p.id);
         const allSelected = categoryPageIds.every((id) =>
             formData.permissions.visiblePages.includes(id)
@@ -203,12 +228,14 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
                             <Label htmlFor="role">Role</Label>
                             <Select
                                 value={formData.role}
-                                onValueChange={(value) =>
-                                    setFormData({ ...formData, role: value })
-                                }
+                                onValueChange={(value) => {
+                                    if (value) {
+                                        setFormData({ ...formData, role: value });
+                                    }
+                                }}
                             >
                                 <SelectTrigger>
-                                    <SelectValue />
+                                    <SelectValue placeholder="Select a role" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="admin">Admin</SelectItem>

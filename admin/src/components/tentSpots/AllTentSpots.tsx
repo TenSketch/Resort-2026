@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 
 DataTable.use(DT);
 
@@ -50,7 +50,7 @@ export default function AllTentSpotsTable() {
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedSpot, setSelectedSpot] = useState<TentSpot | null>(null);
   const [tentSpots, setTentSpots] = useState<TentSpot[]>([]);
   const tentSpotsRef = useRef<TentSpot[]>([])
@@ -118,8 +118,8 @@ export default function AllTentSpotsTable() {
     fetchTentSpots();
   }, []);
 
-  useEffect(()=>{ tentSpotsRef.current = tentSpots }, [tentSpots])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { tentSpotsRef.current = tentSpots }, [tentSpots])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -201,45 +201,7 @@ export default function AllTentSpotsTable() {
     setSheetMode('edit')
   };
 
-  const toggleActiveStatus = async (spot: TentSpot) => {
-    if (!permsRef.current.canDisable) return
-    
-    try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiBase}/api/tent-spots/${spot.id}/toggle-status`, {
-        method: 'PATCH',
-        headers,
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to toggle status');
-      }
-
-      // Update local state
-      setTentSpots((prev) =>
-        prev.map((t) =>
-          t.id === spot.id ? { ...t, isActive: !t.isActive } : t
-        )
-      );
-      if (selectedSpot && selectedSpot.id === spot.id) {
-        setSelectedSpot({ ...spot, isActive: !spot.isActive });
-      }
-    } catch (err: any) {
-      console.error('Failed to toggle status:', err);
-      alert('Failed to toggle status: ' + (err.message || String(err)));
-    }
-  };
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -355,11 +317,10 @@ export default function AllTentSpotsTable() {
         </h2>
         <button
           onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
-            perms.canViewDownload 
-              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload
+              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
               : 'bg-gray-300 cursor-not-allowed'
-          }`}
+            }`}
           disabled={!perms.canViewDownload}
           title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
         >
@@ -478,9 +439,9 @@ export default function AllTentSpotsTable() {
                 <div>
                   <Label>Tent ID Prefix</Label>
                   {sheetMode === 'edit' ? (
-                    <Input 
-                      value={editTentIdPrefix} 
-                      onChange={(e) => setEditTentIdPrefix(e.target.value)} 
+                    <Input
+                      value={editTentIdPrefix}
+                      onChange={(e) => setEditTentIdPrefix(e.target.value)}
                       maxLength={5}
                       placeholder="e.g., VM, VH"
                     />
@@ -502,8 +463,8 @@ export default function AllTentSpotsTable() {
                 <div>
                   <Label>Slug URL</Label>
                   {sheetMode === 'edit' ? (
-                    <Input 
-                      value={editSlugUrl} 
+                    <Input
+                      value={editSlugUrl}
                       onChange={(e) => setEditSlugUrl(e.target.value)}
                       placeholder="e.g., vanavihari-marudemalli"
                     />
@@ -615,11 +576,11 @@ export default function AllTentSpotsTable() {
                     <Button
                       onClick={async () => {
                         if (!perms.canEdit) return
-                        
+
                         try {
                           const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
                           const token = localStorage.getItem('admin_token');
-                          
+
                           const updateData = {
                             spotName: editSpotName,
                             tentIdPrefix: editTentIdPrefix,

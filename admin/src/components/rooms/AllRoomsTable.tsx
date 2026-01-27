@@ -58,7 +58,7 @@ export default function RoomsTable() {
   const permsRef = useRef(perms)
   // Removed separate edit & confirm disable dialogs
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [disabledRooms, setDisabledRooms] = useState<Set<string>>(new Set());
   const [roomsData, setRoomsData] = useState<Room[]>([]);
@@ -74,7 +74,7 @@ export default function RoomsTable() {
   const [cottageTypes, setCottageTypes] = useState<Array<{ _id: string; name: string }>>([]);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
   const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-  
+
   const exportToExcel = () => {
     const headers = [
       "S No",
@@ -122,7 +122,7 @@ export default function RoomsTable() {
     link.click();
     document.body.removeChild(link);
   };
-  
+
   const handleEdit = (room: Room) => {
     if (!permsRef.current.canEdit) return
     setSelectedRoom(room);
@@ -132,48 +132,7 @@ export default function RoomsTable() {
     setIsDetailSheetOpen(true);
   };
 
-  const handleToggleStatus = async (room: Room) => {
-    if (!permsRef.current.canDisable) return
-    
-    if (!room._id) {
-      alert('This room exists only in static seed data. Cannot update status.');
-      return;
-    }
-    
-    const isCurrentlyDisabled = disabledRooms.has(room.id);
-    const newStatus = isCurrentlyDisabled ? 'available' : 'disabled';
-    
-    try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${apiBase}/api/rooms/${room._id}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      
-      const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error((data && data.error) || res.statusText);
-      
-      // Update local state
-      if (newStatus === 'disabled') {
-        setDisabledRooms(prev => new Set([...prev, room.id]));
-      } else {
-        setDisabledRooms(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(room.id);
-          return newSet;
-        });
-      }
-      
-      alert(`Room ${newStatus === 'disabled' ? 'disabled' : 'enabled'} successfully!`);
-    } catch (e: any) {
-      console.error(e);
-      alert('Failed to update status: ' + e.message);
-    }
-  };
+
 
   const handleRowClick = (room: Room) => {
     setSelectedRoom(room);
@@ -193,11 +152,11 @@ export default function RoomsTable() {
       alert('Cannot delete images from static seed data.');
       return;
     }
-    
+
     if (!confirm('Are you sure you want to delete this image?')) {
       return;
     }
-    
+
     setDeletingImage(publicId);
     try {
       const token = localStorage.getItem('admin_token');
@@ -207,20 +166,20 @@ export default function RoomsTable() {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         }
       });
-      
+
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error((data && data.error) || res.statusText);
-      
+
       // Update local state
       if (data && data.room) {
         const updatedImages = data.room.images || [];
         setSelectedRoom(prev => prev ? { ...prev, images: updatedImages } : prev);
         setEditData(prev => ({ ...prev, images: updatedImages }));
-        setRoomsData(prev => prev.map(r => 
+        setRoomsData(prev => prev.map(r =>
           r._id === selectedRoom._id ? { ...r, images: updatedImages } as Room : r
         ));
       }
-      
+
       alert('Image deleted successfully!');
     } catch (e: any) {
       console.error(e);
@@ -238,19 +197,19 @@ export default function RoomsTable() {
       return;
     }
     const idForApi = selectedRoom._id; // use real Mongo _id
-    
+
     setSaving(true);
     try {
       const token = localStorage.getItem('admin_token');
       const statusValue = disabledRooms.has(selectedRoom.id) ? 'disabled' : 'available';
-      
+
       // Use FormData if there are new images
       if (newImages.length > 0) {
         const formData = new FormData();
         newImages.forEach((file) => {
           formData.append('images', file);
         });
-        
+
         // Append other fields
         if (editData.roomName) formData.append('roomName', editData.roomName);
         if (editData.roomId) formData.append('roomId', editData.roomId);
@@ -264,7 +223,7 @@ export default function RoomsTable() {
         if (editData.children !== undefined) formData.append('children', String(editData.children));
         if (editData.bedChargeWeekday !== undefined) formData.append('bedChargeWeekday', String(editData.bedChargeWeekday));
         if (editData.bedChargeWeekend !== undefined) formData.append('bedChargeWeekend', String(editData.bedChargeWeekend));
-        
+
         const res = await fetch(`${apiBase}/api/rooms/${idForApi}`, {
           method: 'PUT',
           headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
@@ -272,7 +231,7 @@ export default function RoomsTable() {
         });
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new Error((data && data.error) || res.statusText);
-        
+
         if (data && data.room) {
           const srv = data.room;
           const mapped: Partial<Room> = {
@@ -309,7 +268,7 @@ export default function RoomsTable() {
           bedChargeWeekday: editData.bedChargeWeekday ?? undefined,
           bedChargeWeekend: editData.bedChargeWeekend ?? undefined,
         };
-        
+
         const res = await fetch(`${apiBase}/api/rooms/${idForApi}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
@@ -317,7 +276,7 @@ export default function RoomsTable() {
         });
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new Error((data && data.error) || res.statusText);
-        
+
         if (data && data.room) {
           const srv = data.room;
           const mapped: Partial<Room> = {
@@ -337,7 +296,7 @@ export default function RoomsTable() {
           setRoomsData(prev => prev.map(r => (r._id === srv._id ? { ...r, ...mapped } as Room : r)));
         }
       }
-      
+
       alert('Saved successfully!');
       setNewImages([]);
       setSheetMode('view')
@@ -360,7 +319,7 @@ export default function RoomsTable() {
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         // Fetch rooms
         const res = await fetch(`${apiBase}/api/rooms/admin/all`, { headers });
         const data = await res.json().catch(() => null);
@@ -386,7 +345,7 @@ export default function RoomsTable() {
             status: r.status || 'available',
           }));
           setRoomsData(mapped);
-          
+
           // Initialize disabledRooms set based on status from backend
           const disabled = new Set<string>();
           mapped.forEach(room => {
@@ -396,24 +355,24 @@ export default function RoomsTable() {
           });
           setDisabledRooms(disabled);
         }
-        
+
         // Fetch resorts
         const resortsRes = await fetch(`${apiBase}/api/resorts`, { headers });
         const resortsData = await resortsRes.json().catch(() => null);
         if (resortsRes.ok && resortsData && Array.isArray(resortsData.resorts)) {
-          setResorts(resortsData.resorts.map((r: any) => ({ 
-            _id: r._id || r.id, 
-            resortName: r.resortName || r.name 
+          setResorts(resortsData.resorts.map((r: any) => ({
+            _id: r._id || r.id,
+            resortName: r.resortName || r.name
           })));
         }
-        
+
         // Fetch cottage types
         const cottageTypesRes = await fetch(`${apiBase}/api/cottage-types`, { headers });
         const cottageTypesData = await cottageTypesRes.json().catch(() => null);
         if (cottageTypesRes.ok && cottageTypesData && Array.isArray(cottageTypesData.cottageTypes)) {
-          setCottageTypes(cottageTypesData.cottageTypes.map((ct: any) => ({ 
-            _id: ct._id, 
-            name: ct.name 
+          setCottageTypes(cottageTypesData.cottageTypes.map((ct: any) => ({
+            _id: ct._id,
+            name: ct.name
           })));
         }
       } catch (e) {
@@ -504,11 +463,11 @@ export default function RoomsTable() {
       const target = event.target as HTMLElement;
       const roomId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
       const room = roomsDataRef.current.find(r => r.id === roomId);
-      
+
       if (room) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
-        
+
         if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
           handleRowClick(room);
         } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
@@ -518,14 +477,14 @@ export default function RoomsTable() {
       }
     };
 
-  const handleTableRowClick = (event: Event) => {
+    const handleTableRowClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger row click if a button was clicked
       if (target.closest('.view-btn, .edit-btn')) {
         return;
       }
-      
+
       const row = target.closest('tr');
       if (row && row.parentElement?.tagName === 'TBODY') {
         const rowIndex = Array.from(row.parentElement.children).indexOf(row);
@@ -546,7 +505,7 @@ export default function RoomsTable() {
   }, []);
 
   const columns = [
-    { 
+    {
       data: null,
       title: "S.No",
       orderable: false,
@@ -578,8 +537,8 @@ export default function RoomsTable() {
     },
     { data: "guests", title: "Guests" },
     { data: "extraGuests", title: "Extra Guests" },
-    { 
-      data: "children", 
+    {
+      data: "children",
       title: "Children",
       render: (data: number) => data || 0,
     },
@@ -684,8 +643,8 @@ export default function RoomsTable() {
       </div>
 
       <div ref={tableRef} className="w-full">
-  {loadingRooms && <div className="p-4 text-sm text-gray-500">Loading rooms...</div>}
-  <DataTable
+        {loadingRooms && <div className="p-4 text-sm text-gray-500">Loading rooms...</div>}
+        <DataTable
           data={roomsData}
           columns={columns}
           className="display nowrap w-full border border-gray-400"
@@ -732,7 +691,7 @@ export default function RoomsTable() {
               Complete information about the selected room
             </SheetDescription>
           </SheetHeader>
-          
+
           {selectedRoom && (
             <>
               {/* Scrollable Content */}
@@ -753,7 +712,7 @@ export default function RoomsTable() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Room Name</Label>
                     <input
@@ -763,7 +722,7 @@ export default function RoomsTable() {
                       disabled={sheetMode === 'view'}
                     />
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Resort</Label>
                     {sheetMode === 'edit' ? (
@@ -785,7 +744,7 @@ export default function RoomsTable() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Cottage Type</Label>
                     {sheetMode === 'edit' ? (
@@ -807,7 +766,7 @@ export default function RoomsTable() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Room Images</Label>
                     <div className="mt-1 space-y-2">
@@ -816,8 +775,8 @@ export default function RoomsTable() {
                         <div className="grid grid-cols-2 gap-2">
                           {selectedRoom.images.map((img, idx) => (
                             <div key={idx} className="relative group">
-                              <img 
-                                src={img.url} 
+                              <img
+                                src={img.url}
                                 alt={`${selectedRoom.roomName} ${idx + 1}`}
                                 className="w-full h-32 object-cover rounded-md border"
                               />
@@ -845,13 +804,13 @@ export default function RoomsTable() {
                           ))}
                         </div>
                       ) : (
-                        <img 
-                          src={selectedRoom.roomImage} 
+                        <img
+                          src={selectedRoom.roomImage}
                           alt={selectedRoom.roomName}
                           className="w-full h-48 object-cover rounded-md border"
                         />
                       )}
-                      
+
                       {/* Upload new images in edit mode */}
                       {sheetMode === 'edit' && (
                         <div className="mt-2">
@@ -879,7 +838,7 @@ export default function RoomsTable() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Weekday Rate</Label>
@@ -890,7 +849,7 @@ export default function RoomsTable() {
                         onChange={(e) => handleFieldChange('weekdayRate', Number(e.target.value))}
                       />
                     </div>
-                    
+
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Weekend Rate</Label>
                       <input
@@ -901,7 +860,7 @@ export default function RoomsTable() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Guests</Label>
@@ -912,7 +871,7 @@ export default function RoomsTable() {
                         onChange={(e) => handleFieldChange('guests', Number(e.target.value))}
                       />
                     </div>
-                    
+
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Extra Guests</Label>
                       <input
@@ -923,7 +882,7 @@ export default function RoomsTable() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Children</Label>
@@ -936,7 +895,7 @@ export default function RoomsTable() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Bed Charge (Weekday)</Label>
@@ -947,7 +906,7 @@ export default function RoomsTable() {
                         onChange={(e) => handleFieldChange('bedChargeWeekday', Number(e.target.value))}
                       />
                     </div>
-                    
+
                     <div>
                       <Label className="text-sm font-medium text-gray-700">Bed Charge (Weekend)</Label>
                       <input
@@ -958,7 +917,7 @@ export default function RoomsTable() {
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Status</Label>
                     {sheetMode === 'edit' ? (
@@ -984,7 +943,7 @@ export default function RoomsTable() {
                       </select>
                     ) : (
                       <div className="mt-1">
-                        <Badge 
+                        <Badge
                           variant={disabledRooms.has(selectedRoom.id) ? "destructive" : "default"}
                           className="px-2 py-1"
                         >
@@ -995,7 +954,7 @@ export default function RoomsTable() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Fixed Action Buttons */}
               <div className="flex-shrink-0 flex gap-3 justify-end p-6 pt-4 border-t bg-white">
                 {sheetMode === 'view' ? (

@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 
 DataTable.use(DT);
 
@@ -44,7 +44,7 @@ export default function AllTentTypesTable() {
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedTent, setSelectedTent] = useState<TentType | null>(null);
   const [tentTypes, setTentTypes] = useState<TentType[]>([]);
   const tentTypesRef = useRef<TentType[]>([])
@@ -103,8 +103,8 @@ export default function AllTentTypesTable() {
   }, []);
 
   // keep refs up to date for DOM handlers
-  useEffect(()=>{ tentTypesRef.current = tentTypes }, [tentTypes])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { tentTypesRef.current = tentTypes }, [tentTypes])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -168,45 +168,7 @@ export default function AllTentTypesTable() {
     setSheetMode('edit')
   };
 
-  const toggleActiveStatus = async (tent: TentType) => {
-    if (!permsRef.current.canDisable) return
-    
-    try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiBase}/api/tent-types/${tent.id}/toggle-status`, {
-        method: 'PATCH',
-        headers,
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to toggle status');
-      }
-
-      // Update local state
-      setTentTypes((prev) =>
-        prev.map((t) =>
-          t.id === tent.id ? { ...t, isActive: !t.isActive } : t
-        )
-      );
-      if (selectedTent && selectedTent.id === tent.id) {
-        setSelectedTent({ ...tent, isActive: !tent.isActive });
-      }
-    } catch (err: any) {
-      console.error('Failed to toggle status:', err);
-      alert('Failed to toggle status: ' + (err.message || String(err)));
-    }
-  };
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -315,11 +277,10 @@ export default function AllTentTypesTable() {
         </h2>
         <button
           onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
-            perms.canViewDownload 
-              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload
+              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
               : 'bg-gray-300 cursor-not-allowed'
-          }`}
+            }`}
           disabled={!perms.canViewDownload}
           title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
         >
@@ -347,7 +308,7 @@ export default function AllTentTypesTable() {
         {loadError && (
           <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
         )}
-          <DataTable
+        <DataTable
           data={tentTypes}
           columns={columns}
           className="display nowrap w-full border border-gray-400"
@@ -362,29 +323,29 @@ export default function AllTentTypesTable() {
             scrollY: "calc(100vh - 350px)",
             scrollCollapse: true,
             layout: {
-                topStart: "buttons",
-                topEnd: "search",
-                bottomStart: "pageLength",
-                bottomEnd: "paging",
+              topStart: "buttons",
+              topEnd: "search",
+              bottomStart: "pageLength",
+              bottomEnd: "paging",
             },
             buttons: [
-                {
+              {
                 extend: "colvis",
                 text: "Column Visibility",
                 collectionLayout: "fixed two-column",
                 collection: {
-                    // 👇 this is the fix
-                    appendTo: "body",
+                  // 👇 this is the fix
+                  appendTo: "body",
                 },
-                },
+              },
             ],
             columnControl: [
-                "order",
+              "order",
             ],
             columnDefs: [
-                { targets: "_all", visible: true },
+              { targets: "_all", visible: true },
             ],
-            }}
+          }}
 
         />
       </div>
@@ -493,11 +454,11 @@ export default function AllTentTypesTable() {
                     <Button
                       onClick={async () => {
                         if (!perms.canEdit) return
-                        
+
                         try {
                           const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
                           const token = localStorage.getItem('admin_token');
-                          
+
                           const updateData = {
                             tentType: editTentType,
                             accommodationType: editAccommodationType,
@@ -533,16 +494,16 @@ export default function AllTentTypesTable() {
                             prev.map((t) =>
                               t.id === selectedTent.id
                                 ? {
-                                    ...t,
-                                    tentType: editTentType,
-                                    accommodationType: editAccommodationType,
-                                    tentBase: editTentBase,
-                                    dimensions: editDimensions,
-                                    brand: editBrand,
-                                    features: editFeatures,
-                                    price: Number(editPrice),
-                                    amenities: editAmenities,
-                                  }
+                                  ...t,
+                                  tentType: editTentType,
+                                  accommodationType: editAccommodationType,
+                                  tentBase: editTentBase,
+                                  dimensions: editDimensions,
+                                  brand: editBrand,
+                                  features: editFeatures,
+                                  price: Number(editPrice),
+                                  amenities: editAmenities,
+                                }
                                 : t
                             )
                           );

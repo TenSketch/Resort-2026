@@ -7,6 +7,7 @@ type Permissions = {
   canAddGuests: boolean
   canViewDownload: boolean
   canExport: boolean
+  visiblePages?: string[]
 }
 
 type Admin = {
@@ -38,6 +39,7 @@ const defaultPermissions: Permissions = {
   // Backend default is true, preserve that expectation for unauthenticated too
   canViewDownload: true,
   canExport: true,
+  visiblePages: [],
 }
 
 const AdminContext = createContext<AdminContextValue | undefined>(undefined)
@@ -127,7 +129,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const permissions = useMemo<Permissions>(() => {
     if (!admin) return defaultPermissions
     if (admin.role === 'superadmin') {
-      return { canEdit: true, canDisable: true, canAddReservations: true, canAddGuests: true, canViewDownload: true, canExport: true }
+      return { canEdit: true, canDisable: true, canAddReservations: true, canAddGuests: true, canViewDownload: true, canExport: true, visiblePages: [] }
     }
     return {
       canEdit: !!admin.permissions?.canEdit,
@@ -137,6 +139,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // default true matches backend model default
       canViewDownload: admin.permissions?.canViewDownload !== false,
       canExport: admin.permissions?.canExport !== false,
+      visiblePages: admin.permissions?.visiblePages || [],
     }
   }, [admin])
 
@@ -157,12 +160,13 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (isSuperAdmin) return true
 
     // Check if page is in visiblePages array
-    const visiblePages = (admin.permissions as any)?.visiblePages || []
+    const visiblePages = admin.permissions?.visiblePages || []
     return visiblePages.includes(pageId)
   }
 
   const canPerformAction = (action: keyof Permissions): boolean => {
-    return permissions[action]
+    const val = permissions[action];
+    return typeof val === 'boolean' ? val : !!val;
   }
 
   const value: AdminContextValue = {

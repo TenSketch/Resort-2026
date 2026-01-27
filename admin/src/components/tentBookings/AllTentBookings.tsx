@@ -165,7 +165,7 @@ export default function AllTentBookings() {
       const id = btn.getAttribute("data-id");
       const booking = bookingsRef.current.find((b) => b._id === id);
       if (!booking) return;
-      
+
       if (btn.classList.contains("view-btn")) {
         setSelected(booking);
         setSheetMode("view");
@@ -424,32 +424,7 @@ export default function AllTentBookings() {
     }
   };
 
-  const deleteBooking = async (b: TentBooking | null) => {
-    if (!permsRef.current.canDisable) return;
-    if (!b) return;
 
-    try {
-      const token = localStorage.getItem("admin_token");
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const res = await fetch(`${apiUrl}/api/tent-reservations/${b._id}`, {
-        method: "DELETE",
-        headers,
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete");
-      }
-
-      setBookings((prev) => prev.filter((x) => x._id !== b._id));
-      alert("Booking deleted successfully");
-    } catch (err) {
-      console.error("Delete error", err);
-      alert("Failed to delete booking: " + String(err));
-    }
-  };
 
   return (
     <div className="w-full max-w-full overflow-hidden">

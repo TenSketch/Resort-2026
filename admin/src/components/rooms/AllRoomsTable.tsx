@@ -616,13 +616,13 @@ export default function RoomsTable() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Rooms Table</h2>
         <button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canViewDownload}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
           title={
-            perms.canViewDownload
+            perms.canExport
               ? "Export to Excel"
-              : "You do not have permission to download/export"
+              : "You do not have permission to export data"
           }
         >
           <svg

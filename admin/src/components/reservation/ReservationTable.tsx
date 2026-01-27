@@ -225,13 +225,13 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                  1,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                )
+                1,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              )
               : updatedLocal.noOfDays,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -994,9 +994,8 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1019,8 +1018,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -1032,13 +1031,13 @@ export default function ReservationTable() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
         <button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canViewDownload}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
           title={
-            perms.canViewDownload
+            perms.canExport
               ? "Export to Excel"
-              : "You do not have permission to download/export"
+              : "You do not have permission to export data"
           }
         >
           <svg
@@ -1828,11 +1827,11 @@ export default function ReservationTable() {
                           <span className="text-sm text-gray-900">
                             {selectedReservation.paymentTransactionDateTime
                               ? formatDateForDisplay(
-                                  selectedReservation.paymentTransactionDateTime.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                selectedReservation.paymentTransactionDateTime.slice(
+                                  0,
+                                  10,
+                                ),
+                              )
                               : "N/A"}
                           </span>
                         </div>
@@ -1911,11 +1910,11 @@ export default function ReservationTable() {
                           <span className="text-sm text-gray-900">
                             {selectedReservation.refundRequestedDateTime
                               ? formatDateForDisplay(
-                                  selectedReservation.refundRequestedDateTime.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                selectedReservation.refundRequestedDateTime.slice(
+                                  0,
+                                  10,
+                                ),
+                              )
                               : "N/A"}
                           </span>
                         </div>
@@ -1929,8 +1928,8 @@ export default function ReservationTable() {
                           <span className="text-sm text-gray-900">
                             {selectedReservation.dateOfRefund
                               ? formatDateForDisplay(
-                                  selectedReservation.dateOfRefund.slice(0, 10),
-                                )
+                                selectedReservation.dateOfRefund.slice(0, 10),
+                              )
                               : "N/A"}
                           </span>
                         </div>

@@ -316,13 +316,13 @@ export default function AllTentSpotsTable() {
           Tent Spots
         </h2>
         <button
-          onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload
-              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-              : 'bg-gray-300 cursor-not-allowed'
+          onClick={() => perms.canExport ? exportToExcel() : null}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
+            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            : 'bg-gray-300 cursor-not-allowed'
             }`}
-          disabled={!perms.canViewDownload}
-          title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
+          disabled={!perms.canExport}
+          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
         >
           <svg
             className="w-4 h-4 mr-2"

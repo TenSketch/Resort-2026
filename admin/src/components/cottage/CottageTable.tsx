@@ -67,8 +67,8 @@ export default function CottageDataTable() {
   const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
   const perms = usePermissions()
   const permsRef = useRef(perms)
-  useEffect(()=>{ cottageRef.current = cottageTypes }, [cottageTypes])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { cottageRef.current = cottageTypes }, [cottageTypes])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -107,7 +107,7 @@ export default function CottageDataTable() {
   const addAmenity = () => {
     const val = amenityDraft.trim();
     if (!val) return;
-    setFormData(f => ({ ...f, amenities: [ ...(f.amenities || []), val ] }));
+    setFormData(f => ({ ...f, amenities: [...(f.amenities || []), val] }));
     setAmenityDraft('');
   };
   const removeAmenity = (amenity: string) => {
@@ -152,7 +152,7 @@ export default function CottageDataTable() {
         setFormData(data.cottageType);
       }
       setVersion(v => v + 1);
-    } catch (e:any) {
+    } catch (e: any) {
       console.error(e);
       alert(e.message || 'Disable failed');
     }
@@ -178,8 +178,8 @@ export default function CottageDataTable() {
           amenities: ct.amenities || [],
         })) || [];
         setCottageTypes(list);
-        setVersion(v=>v+1);
-      } catch (e:any) {
+        setVersion(v => v + 1);
+      } catch (e: any) {
         setError(e.message);
       } finally {
         setLoading(false);
@@ -292,11 +292,11 @@ export default function CottageDataTable() {
       const target = event.target as HTMLElement;
       const cottageId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
       const cottage = cottageRef.current.find(c => c._id === cottageId);
-      
+
       if (cottage) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
-        
+
         if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
           openForView(cottage);
         } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
@@ -309,14 +309,14 @@ export default function CottageDataTable() {
       }
     };
 
-  const handleTableRowClick = (event: Event) => {
+    const handleTableRowClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger row click if a button was clicked
       if (target.closest('.view-btn, .edit-btn, .disable-btn')) {
         return;
       }
-      
+
       const row = target.closest('tr');
       if (row && row.parentElement?.tagName === 'TBODY') {
         const rowIndex = Array.from(row.parentElement.children).indexOf(row);
@@ -359,13 +359,13 @@ export default function CottageDataTable() {
         `<div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${data}">${data}</div>`,
     },
     {
-  data: "amenities",
+      data: "amenities",
       title: "Amenities",
       render: (data: string[]) =>
         `<div style="display: flex; flex-wrap: wrap; gap: 4px;">
           ${data
-            .map(
-              (item) => `
+          .map(
+            (item) => `
                 <span style="
                   background: #dbeafe;
                   color: #1e3a8a;
@@ -377,8 +377,8 @@ export default function CottageDataTable() {
                   overflow: hidden;
                   text-overflow: ellipsis;
                 ">${item}</span>`
-            )
-            .join("")}
+          )
+          .join("")}
         </div>`,
     },
     {
@@ -387,7 +387,7 @@ export default function CottageDataTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: CottageType) => {
-    const isDisabled = !!row.isDisabled;
+        const isDisabled = !!row.isDisabled;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
             <button 
@@ -446,13 +446,13 @@ export default function CottageDataTable() {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Cottage Types</h2>
         <button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canViewDownload ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canViewDownload}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
           title={
-            perms.canViewDownload
+            perms.canExport
               ? "Export to Excel"
-              : "You do not have permission to download/export"
+              : "You do not have permission to export data"
           }
         >
           <svg
@@ -511,7 +511,7 @@ export default function CottageDataTable() {
         />
       </div>
 
-  {/* Removed Edit & Confirmation dialogs */}
+      {/* Removed Edit & Confirmation dialogs */}
 
       {/* Cottage Details Sheet */}
       <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
@@ -522,7 +522,7 @@ export default function CottageDataTable() {
               Complete information about the selected cottage type
             </SheetDescription>
           </SheetHeader>
-          
+
           {selectedCottage && (
             <div className="flex flex-col gap-6 py-4 p-6">
               {/* Basic Information */}
@@ -533,36 +533,36 @@ export default function CottageDataTable() {
                     <span className="text-sm text-gray-900">{selectedCottage._id}</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Cottage Name</Label>
                   {editMode ? (
-                    <Input value={formData.name || ''} onChange={e=> setFormData(f=>({...f, name: e.target.value}))} />
+                    <Input value={formData.name || ''} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} />
                   ) : (
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border"><span className="text-sm text-gray-900">{selectedCottage.name}</span></div>
                   )}
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Resort</Label>
                   <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[48px]">
                     <span className="text-sm text-gray-900">
-                      {typeof selectedCottage.resort === 'string' 
-                        ? selectedCottage.resort 
+                      {typeof selectedCottage.resort === 'string'
+                        ? selectedCottage.resort
                         : (selectedCottage.resort?.resortName || selectedCottage.resort?.name || '')}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Description</Label>
                   {editMode ? (
-                    <Input value={formData.description || ''} onChange={e=> setFormData(f=>({...f, description: e.target.value}))} />
+                    <Input value={formData.description || ''} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} />
                   ) : (
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]"><span className="text-sm text-gray-900">{selectedCottage.description}</span></div>
                   )}
                 </div>
-                
+
                 <div>
                   <Collapsible open={isAmenitiesOpen} onOpenChange={setIsAmenitiesOpen}>
                     <div className="flex items-center justify-between">
@@ -579,7 +579,7 @@ export default function CottageDataTable() {
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-wrap gap-2">
                             {(formData.amenities || []).map((amenity, idx) => (
-                              <Badge key={amenity+idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
+                              <Badge key={amenity + idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
                                 <span>{amenity}</span>
                                 <button
                                   type="button"
@@ -617,30 +617,30 @@ export default function CottageDataTable() {
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
-                
+
 
               </div>
-              
+
               {/* Action Buttons */}
               <div className="flex gap-2 pt-4 border-t">
                 {!editMode ? (
-                  <Button variant="outline" onClick={()=> setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={()=> { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>
-                    <Button onClick={async ()=> {
+                    <Button variant="outline" onClick={() => { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>
+                    <Button onClick={async () => {
                       if (!perms.canEdit) return
                       try {
                         const token = localStorage.getItem('admin_token')
-                        const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method:'PUT', headers:{'Content-Type':'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {})}, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
-                        if(!res.ok) throw new Error('Update failed');
+                        const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
+                        if (!res.ok) throw new Error('Update failed');
                         const data = await res.json();
                         setCottageTypes(prev => prev.map(c => c._id === data.cottageType._id ? data.cottageType : c));
                         setSelectedCottage(data.cottageType);
                         setFormData(data.cottageType);
                         setEditMode(false);
-                        setVersion(v=>v+1);
-                      } catch(e:any){
+                        setVersion(v => v + 1);
+                      } catch (e: any) {
                         alert(e.message || 'Update failed');
                       }
                     }} disabled={!perms.canEdit} title={!perms.canEdit ? 'You do not have permission to save' : undefined}>Save</Button>

@@ -8,7 +8,7 @@ import { useAdmin } from "@/lib/AdminProvider";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // Using 'email' variable name for backward compatibility, but it's actually username
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate()
@@ -54,10 +54,10 @@ const LoginPage = () => {
 
       // store token and refresh auth state
       localStorage.setItem('admin_token', data.token)
-      
+
       // Trigger auth state update
       await refresh()
-      
+
       // Navigate to dashboard
       navigate('/dashboard/report', { replace: true })
     } catch (err: any) {
@@ -75,7 +75,7 @@ const LoginPage = () => {
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="mb-6">
-            <img 
+            <img
               src="https://res.cloudinary.com/dia8x6y6u/image/upload/v1752997496/logo_kszbod.png"
               alt="Vanavihari Logo"
               className="w-full h-20 mx-auto object-contain"
@@ -91,12 +91,12 @@ const LoginPage = () => {
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-              Email Address
+              Username
             </Label>
             <Input
               id="email"
-              type="email"
-              placeholder="you@gmail.com"
+              type="text"
+              placeholder="Enter your username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"

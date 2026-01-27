@@ -17,6 +17,7 @@ import {
   ClipboardMinus,
   Tent,
   Binoculars,
+  Users,
 } from "lucide-react";
 import {
   Collapsible,
@@ -27,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useViewType } from "@/lib/ViewTypeContext";
 import type { ViewType } from "@/lib/ViewTypeContext";
+import { useAdmin } from "@/lib/AdminProvider";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -36,6 +38,7 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
   const { viewType } = useViewType();
+  const { canAccessPage, isSuperAdmin } = useAdmin();
   const [openSections, setOpenSections] = useState<string[]>([]);
 
   const toggleSection = (section: string) => {
@@ -54,12 +57,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Home,
       path: "/dashboard/report",
       viewTypes: ["resort"] as ViewType[],
+      pageId: "dashboard-resort",
     },
     {
       id: "resorts",
       label: "Resorts",
       icon: Building2,
       viewTypes: ["resort"] as ViewType[],
+      pageId: "resorts",
       children: [
         { label: "All Resorts", path: "/resorts/all", icon: Globe },
         { label: "Add Resort", path: "/resorts/add", icon: Plus },
@@ -70,6 +75,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Cottage Types",
       icon: BookOpen,
       viewTypes: ["resort"] as ViewType[],
+      pageId: "cottage-types",
       children: [
         { label: "All Types", path: "/cottage-types/all", icon: BookOpen },
         { label: "Add Type", path: "/cottage-types/add", icon: Plus },
@@ -80,6 +86,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Rooms",
       icon: Bed,
       viewTypes: ["resort"] as ViewType[],
+      pageId: "rooms",
       children: [
         { label: "All Rooms", path: "/rooms/all", icon: BedDouble },
         { label: "Add Room", path: "/rooms/add", icon: Plus },
@@ -91,6 +98,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Reservations",
       icon: Calendar,
       viewTypes: ["resort"] as ViewType[],
+      pageId: "reservations",
       children: [
         { label: "All Reservations", path: "/reservation/all", icon: Calendar },
         { label: "Add Reservation", path: "/reservation/add", icon: Plus },
@@ -101,6 +109,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Reports",
       icon: FileText,
       viewTypes: ["resort"] as ViewType[],
+      pageId: "reports",
       children: [
         { label: "Daily Occupancy Jungle Star", path: "/reports/daily-occupancy-junglestar", icon: ClipboardMinus },
         { label: "Daily Occupancy Vanavihari", path: "/reports/daily-occupancy-vanavihari", icon: ClipboardMinus },
@@ -116,12 +125,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Home,
       path: "/tent/dashboard",
       viewTypes: ["tent"] as ViewType[],
+      pageId: "dashboard-tent",
     },
     {
       id: "tentspots",
       label: "Tent Spots",
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
+      pageId: "tent-spots",
       children: [
         { label: "All Spots", path: "/tentspots/all", icon: Globe },
         { label: "Add Spots", path: "/tentspots/details", icon: Plus },
@@ -132,17 +143,19 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Tent Types",
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
+      pageId: "tent-types",
       children: [
         { label: "All Tent Types", path: "/tenttypes/all", icon: BookOpen },
         { label: "Add Tent Type", path: "/tenttypes/add", icon: Plus },
       ],
     },
     // Tent Inventory removed from Tent Management per request
-        {
+    {
       id: "tentinventory",
       label: "Tent Inventory",
       icon: Tent,
       viewTypes: ["tent"] as ViewType[],
+      pageId: "tent-inventory",
       children: [
         { label: "All Tents", path: "/tentinventory/alltents", icon: BookOpen },
         { label: "Add Tents", path: "/tentinventory/addtents", icon: Plus },
@@ -153,6 +166,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Tent Bookings",
       icon: Calendar,
       viewTypes: ["tent"] as ViewType[],
+      pageId: "tent-bookings",
       children: [
         { label: "All Bookings", path: "/tentbookings/allbookings", icon: Calendar },
         { label: "Add Bookings", path: "/tentbookings/addbookings", icon: Plus },
@@ -175,12 +189,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       icon: Home,
       path: "/tourist/dashboard",
       viewTypes: ["tourist-spot"] as ViewType[],
+      pageId: "dashboard-tourist",
     },
     {
       id: "spots",
       label: "Spots",
       icon: Binoculars,
       viewTypes: ["tourist-spot"] as ViewType[],
+      pageId: "tourist-spots",
       children: [
         { label: "All Spots", path: "/touristspots/all", icon: Binoculars },
         { label: "Add Spot", path: "/touristspots/add", icon: Plus },
@@ -191,6 +207,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Packages",
       icon: Globe,
       viewTypes: ["tourist-spot"] as ViewType[],
+      pageId: "tourist-packages",
       children: [
         { label: "All Packages", path: "/tourist/packages", icon: Globe },
       ],
@@ -200,6 +217,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       label: "Bookings",
       icon: Calendar,
       viewTypes: ["tourist-spot"] as ViewType[],
+      pageId: "tourist-bookings",
       children: [
         { label: "All Bookings", path: "/tourist/bookings", icon: Calendar },
         { label: "Add Booking", path: "/tourist/bookings/add", icon: Plus },
@@ -215,12 +233,34 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     //     { label: "Revenue", path: "/reports/revenue", icon: FileText },
     //   ],
     // },
+
+    // User Management (SuperAdmin only, shown in all views)
+    {
+      id: "user-management",
+      label: "User Management",
+      icon: Users,
+      path: "/users/manage",
+      viewTypes: ["resort", "tent", "tourist-spot"] as ViewType[],
+      pageId: "user-management",
+      superAdminOnly: true,
+    },
   ];
 
-  // Filter menu items based on current view type
+  // Filter menu items based on current view type AND user permissions
   const menuItems = useMemo(() => {
-    return allMenuItems.filter(item => item.viewTypes.includes(viewType));
-  }, [viewType]);
+    return allMenuItems.filter(item => {
+      // First check if item matches current view type
+      if (!item.viewTypes.includes(viewType)) return false
+
+      // Check if item is superadmin-only
+      if ((item as any).superAdminOnly && !isSuperAdmin) return false
+
+      // Then check if user has permission to access this page
+      if (item.pageId && !canAccessPage(item.pageId)) return false
+
+      return true
+    })
+  }, [viewType, canAccessPage, isSuperAdmin]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -247,12 +287,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           <div className="p-4">
             {/* Brand */}
             <div className="flex items-center space-x-2">
-          <img 
-            src="https://res.cloudinary.com/dia8x6y6u/image/upload/v1752997496/logo_kszbod.png"
-            alt="Vanavihari Logo"
-            className="w-full h-8 object-contain"
-          />
-        </div>
+              <img
+                src="https://res.cloudinary.com/dia8x6y6u/image/upload/v1752997496/logo_kszbod.png"
+                alt="Vanavihari Logo"
+                className="w-full h-8 object-contain"
+              />
+            </div>
           </div>
 
           {/* Menu Items */}

@@ -71,7 +71,7 @@ const breadcrumbMap: Record<string, string[]> = {
 const Navbar = ({ onMenuClick }: NavbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAdmin();
+  const { logout, admin } = useAdmin();
   const { viewType, setViewType } = useViewType();
   const currentPath = location.pathname;
 
@@ -129,13 +129,13 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
         {/* Right side - reduced spacing for mobile */}
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
-          
+
           {/* Guests Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="flex items-center h-8 sm:h-9 px-1.5 sm:px-2"
               >
                 <Users className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -212,16 +212,16 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gray-300 rounded-full flex items-center justify-center">
                   <User className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 </div>
-                <span className="hidden lg:block text-sm ml-1">Account</span>
+                <span className="hidden lg:block text-sm ml-1">{admin?.name || 'Account'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/my-account')} className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 My Account
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600" onClick={handleSignOut}>
+              <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
               </DropdownMenuItem>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import PermissionButton from "@/components/shared/PermissionButton";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -147,7 +148,7 @@ export default function AddReservationForm() {
 
         // Generate booking ID: BB2109072510008
         const bookingId = `${resortInitials}${day}${hour}${minute}${year}${month}${serial}`;
-        
+
         setFormData(prev => ({ ...prev, bookingId }));
       } catch (err) {
         console.error('Error generating booking ID:', err);
@@ -159,9 +160,9 @@ export default function AddReservationForm() {
 
   // Auto-update number of rooms based on selected rooms
   useEffect(() => {
-    setFormData(prev => ({ 
-      ...prev, 
-      numberOfRooms: String(formData.rooms.length) 
+    setFormData(prev => ({
+      ...prev,
+      numberOfRooms: String(formData.rooms.length)
     }));
   }, [formData.rooms]);
 
@@ -204,7 +205,7 @@ export default function AddReservationForm() {
 
     // Determine min date based on resort
     let minDate = formatDate(today);
-    
+
     if (selectedResortData) {
       const resortName = selectedResortData.resortName.toLowerCase();
       // Jungle Star, Valamuru: next day onwards
@@ -503,14 +504,14 @@ export default function AddReservationForm() {
         const apiUrl =
           (import.meta.env && import.meta.env.VITE_API_URL) ||
           "http://localhost:5000";
-        
+
         // Get admin token from localStorage
         const token = localStorage.getItem('admin_token');
         const headers: any = { "Content-Type": "application/json" };
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         const res = await fetch(`${apiUrl}/api/reservations`, {
           method: "POST",
           headers,
@@ -631,10 +632,10 @@ export default function AddReservationForm() {
                     !formData.resort
                       ? "Select Resort First"
                       : loading.cottageTypes
-                      ? "Loading..."
-                      : cottageTypes.length === 0
-                      ? "No Cottage Types"
-                      : "Choose Cottage Types"
+                        ? "Loading..."
+                        : cottageTypes.length === 0
+                          ? "No Cottage Types"
+                          : "Choose Cottage Types"
                   }
                   disabled={!formData.resort}
                 />
@@ -654,10 +655,10 @@ export default function AddReservationForm() {
                     formData.cottageTypes.length === 0
                       ? "Select Cottage Type First"
                       : loading.rooms
-                      ? "Loading..."
-                      : rooms.length === 0
-                      ? "No Rooms Available"
-                      : "Choose Rooms"
+                        ? "Loading..."
+                        : rooms.length === 0
+                          ? "No Rooms Available"
+                          : "Choose Rooms"
                   }
                   disabled={formData.cottageTypes.length === 0}
                 />
@@ -1045,12 +1046,13 @@ export default function AddReservationForm() {
 
           {/* Actions */}
           <div className="flex gap-4 pt-6">
-            <Button
+            <PermissionButton
+              permission="canAddReservations"
               type="submit"
               className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
             >
               Submit
-            </Button>
+            </PermissionButton>
             <Button
               type="button"
               onClick={handleReset}

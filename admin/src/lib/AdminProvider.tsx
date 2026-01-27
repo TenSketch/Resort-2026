@@ -6,6 +6,7 @@ type Permissions = {
   canAddReservations: boolean
   canAddGuests: boolean
   canViewDownload: boolean
+  canExport: boolean
 }
 
 type Admin = {
@@ -24,6 +25,9 @@ type AdminContextValue = {
   permissions: Permissions
   refresh: () => Promise<void>
   logout: () => void
+  canAccessPage: (pageId: string) => boolean
+  canPerformAction: (action: keyof Permissions) => boolean
+  isSuperAdmin: boolean
 }
 
 const defaultPermissions: Permissions = {
@@ -33,6 +37,7 @@ const defaultPermissions: Permissions = {
   canAddGuests: false,
   // Backend default is true, preserve that expectation for unauthenticated too
   canViewDownload: true,
+  canExport: true,
 }
 
 const AdminContext = createContext<AdminContextValue | undefined>(undefined)
@@ -50,24 +55,24 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setAdmin(null)
         return
       }
-      
+
       // Verify token with backend
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-      
+
       try {
         const res = await fetch(`${apiBase}/api/admin/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         })
-        
+
         if (!res.ok) {
           // Token is invalid or expired, clear it
           localStorage.removeItem('admin_token')
           setAdmin(null)
           return
         }
-        
+
         const data = await res.json()
         setAdmin(data?.admin || { username: 'admin', role: 'superadmin' })
       } catch (fetchError) {
@@ -78,14 +83,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             'Authorization': `Bearer ${token}`,
           },
         })
-        
+
         if (!testRes.ok) {
           // Token is invalid, clear it
           localStorage.removeItem('admin_token')
           setAdmin(null)
           return
         }
-        
+
         // Token is valid, set default admin
         setAdmin({ username: 'admin', role: 'superadmin' })
       }
@@ -107,10 +112,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (e.key === 'admin_token') fetchMe()
     }
     const onAuthChanged = () => fetchMe()
-    
+
     window.addEventListener('storage', onStorage)
     window.addEventListener('admin-auth-changed', onAuthChanged as EventListener)
-    
+
     return () => {
       isMountedRef.current = false
       window.removeEventListener('storage', onStorage)
@@ -122,7 +127,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const permissions = useMemo<Permissions>(() => {
     if (!admin) return defaultPermissions
     if (admin.role === 'superadmin') {
-      return { canEdit: true, canDisable: true, canAddReservations: true, canAddGuests: true, canViewDownload: true }
+      return { canEdit: true, canDisable: true, canAddReservations: true, canAddGuests: true, canViewDownload: true, canExport: true }
     }
     return {
       canEdit: !!admin.permissions?.canEdit,
@@ -131,6 +136,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       canAddGuests: !!admin.permissions?.canAddGuests,
       // default true matches backend model default
       canViewDownload: admin.permissions?.canViewDownload !== false,
+      canExport: admin.permissions?.canExport !== false,
     }
   }, [admin])
 
@@ -144,6 +150,21 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }
 
+  const isSuperAdmin = admin?.role === 'superadmin'
+
+  const canAccessPage = (pageId: string): boolean => {
+    if (!admin) return false
+    if (isSuperAdmin) return true
+
+    // Check if page is in visiblePages array
+    const visiblePages = (admin.permissions as any)?.visiblePages || []
+    return visiblePages.includes(pageId)
+  }
+
+  const canPerformAction = (action: keyof Permissions): boolean => {
+    return permissions[action]
+  }
+
   const value: AdminContextValue = {
     admin,
     isAuthenticated: !!admin,
@@ -151,6 +172,9 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     permissions,
     refresh: fetchMe,
     logout,
+    canAccessPage,
+    canPerformAction,
+    isSuperAdmin,
   }
 
   return (

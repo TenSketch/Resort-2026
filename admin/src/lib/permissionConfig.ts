@@ -73,7 +73,7 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
 
     // Tourist Spot Management
     { id: 'dashboard-tourist', label: 'Tourist Dashboard', paths: ['/tourist/dashboard'], category: 'tourist-spot' },
-    { id: 'tourist-spots-view', label: 'All Tourist Spots', paths: ['/touristspots/all'], category: 'tourist-spot' },
+    { id: 'tourist-spots-view', label: 'All Trek Spots', paths: ['/touristspots/all'], category: 'tourist-spot' },
     { id: 'tourist-spots-add', label: 'Add Tourist Spot', paths: ['/touristspots/add'], category: 'tourist-spot' },
     { id: 'tourist-packages', label: 'Tourist Packages', paths: ['/tourist/packages'], category: 'tourist-spot' },
     { id: 'tourist-bookings-view', label: 'All Tourist Bookings', paths: ['/tourist/bookings'], category: 'tourist-spot' },

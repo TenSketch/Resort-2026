@@ -222,7 +222,7 @@ export class BookTentComponent implements OnInit {
     this.lightbox.open(index);
   }
 
-  // --- Booking summary helpers (adapted from tourist spots) ---
+  // --- Booking summary helpers (adapted from Trek Spots) ---
   private persistBooking() {
     localStorage.setItem(this.bookingStorageKey, JSON.stringify(this.bookedTents));
   }

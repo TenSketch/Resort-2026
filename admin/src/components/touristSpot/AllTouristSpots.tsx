@@ -114,7 +114,7 @@ export default function AllTouristSpots() {
           setSpots(mapped);
         }
       } catch (e) {
-        console.warn('Failed to load tourist spots; using static seed');
+        console.warn('Failed to load Trek Spots; using static seed');
       } finally {
         setLoading(false);
       }
@@ -253,7 +253,7 @@ export default function AllTouristSpots() {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-slate-800">Tourist Spots</h2>
+        <h2 className="text-xl font-semibold text-slate-800">Trek Spots</h2>
         <Button
           onClick={() => perms.canViewDownload ? exportToExcel() : null}
           className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
@@ -270,7 +270,7 @@ export default function AllTouristSpots() {
       </div>
 
       <div ref={tableRef} className="w-full">
-        {loading && <div className="p-4 text-sm text-gray-500">Loading tourist spots...</div>}
+        {loading && <div className="p-4 text-sm text-gray-500">Loading Trek Spots...</div>}
         <DataTable
           data={spots}
           columns={columns}

@@ -30,7 +30,7 @@ interface TouristSpot {
   description?: string;
   address?: string;
   mapEmbed?: string;
-  images?: Array<string | { url?: string }>;
+  images?: Array<{ url: string; public_id: string }>;
 }
 
 export default function AllTouristSpots() {
@@ -109,7 +109,7 @@ export default function AllTouristSpots() {
             description: s.description || s.desc || '',
             address: s.address || s.location || '',
             mapEmbed: s.mapEmbed || s.map || '',
-            images: Array.isArray(s.images) ? s.images.map((i: any) => (typeof i === 'string' ? i : i.url || i.path || '')) : [],
+            images: Array.isArray(s.images) ? s.images : [],
           }));
           setSpots(mapped);
         }
@@ -197,7 +197,7 @@ export default function AllTouristSpots() {
       title: 'Thumbnail',
       orderable: false,
       render: (data: any, _type: any, row: TouristSpot) => {
-        const img = Array.isArray(data) && data.length > 0 ? (typeof data[0] === 'string' ? data[0] : (data[0].url || '')) : '';
+        const img = Array.isArray(data) && data.length > 0 ? data[0].url : '';
         const src = img || '/img/placeholder.jpg';
         return `<img src="${src}" alt="${row.name}" style="width:64px;height:48px;object-fit:cover;border-radius:4px;"/>`;
       }

@@ -13,7 +13,7 @@ interface TouristSpot {
   description?: string;
   address?: string;
   mapEmbed?: string;
-  images?: Array<string | { url?: string }>;
+  images?: Array<{ url: string; public_id: string }>;
 }
 
 interface TouristSpotDetailPanelProps {
@@ -32,13 +32,12 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState(() => buildForm(spot));
   const [newImages, setNewImages] = useState<File[]>([]);
-  const [keptImages, setKeptImages] = useState(() => spot?.images || []);
+  const [deletingImage, setDeletingImage] = useState<string | null>(null);
 
   const apiBase = (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     setFormData(buildForm(spot));
-    setKeptImages(spot?.images || []);
     // Reset editing state when spot/isOpen/startEditing changes — only enable if allowed
     setIsEditing(Boolean(startEditing && canEdit));
     setNewImages([]);
@@ -52,6 +51,50 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
   }, [spot]);
 
   if (!isOpen || !spot) return null;
+
+  const handleDeleteImage = async (publicId: string) => {
+    if (!canEdit) {
+      setError("You do not have permission to delete images");
+      return;
+    }
+    if (!spot || !spot._id) {
+      alert('Cannot delete images from this spot.');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+
+    setDeletingImage(publicId);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`${apiBase}/api/touristspots/${spot._id}/images/${encodeURIComponent(publicId)}`, {
+        method: 'DELETE',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error((data && data.error) || res.statusText);
+
+      // Update local state
+      if (data && data.touristSpot) {
+        const updatedImages = data.touristSpot.images || [];
+        if (onSpotUpdated) {
+          onSpotUpdated({ ...spot, images: updatedImages });
+        }
+      }
+
+      alert('Image deleted successfully!');
+    } catch (e: any) {
+      console.error(e);
+      alert('Failed to delete image: ' + e.message);
+    } finally {
+      setDeletingImage(null);
+    }
+  };
 
   async function handleSave() {
     if (!canEdit) {
@@ -79,26 +122,26 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
       };
 
       const token = localStorage.getItem("admin_token");
-      const headers: Record<string, string> = {}; // Let browser set content-type for FormData, or json
+      const headers: Record<string, string> = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
       let body = null;
-      if (newImages.length > 0 || keptImages.length !== (spot.images?.length || 0)) {
+      // Use FormData if there are new images
+      if (newImages.length > 0) {
         const fd = new FormData();
+        newImages.forEach((file) => {
+          fd.append("images", file);
+        });
+
+        // Append other fields
         Object.entries(payload).forEach(([k, v]) => {
           if (v !== undefined && v !== null && v !== "") {
             fd.append(k, String(v));
           }
         });
-        
-        // Send retained images as JSON string
-        fd.append("retainedImages", JSON.stringify(keptImages));
-
-        newImages.forEach((file) => {
-          fd.append("images", file);
-        });
         body = fd;
       } else {
+        // No new images, use JSON
         headers["Content-Type"] = "application/json";
         body = JSON.stringify(payload);
       }
@@ -115,7 +158,11 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
       }
 
       const data = await res.json();
-      if (data?.touristSpot && onSpotUpdated) onSpotUpdated(data.touristSpot);
+      if (data?.touristSpot && onSpotUpdated) {
+        onSpotUpdated(data.touristSpot);
+      }
+      alert('Saved successfully!');
+      setNewImages([]);
       setIsEditing(false);
     } catch (e: any) {
       setError(e.message || "Failed to save");
@@ -125,9 +172,9 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex">
+    <div className="fixed inset-0 z-[9999] flex">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="ml-auto h-full w-full max-w-[520px] bg-white shadow-xl overflow-y-auto relative z-50">
+      <div className="ml-auto h-full w-full max-w-[520px] bg-white shadow-xl overflow-y-auto relative z-[10000]">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <div>
             <p className="text-xs text-slate-500">Tourist Spot</p>
@@ -219,64 +266,85 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
             )}
           </Section>
 
-          {isEditing && (
-             <Section title="Upload Images">
-              <div className="space-y-3">
-                {keptImages.length > 0 && (
-                  <div className="mb-2">
-                    <p className="text-xs text-slate-500 mb-1">Existing Images</p>
-                    <div className="flex flex-wrap gap-2">
-                      {keptImages.map((img: any, i) => {
-                         const url = typeof img === 'string' ? img : img.url
-                         return (
-                          <div key={i} className="relative w-20 h-20 border rounded overflow-hidden group">
-                            <img
-                              src={url}
-                              alt="existing"
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                               onClick={() => setKeptImages(prev => prev.filter((_, idx) => idx !== i))}
-                               className="absolute top-0 right-0 bg-red-600 text-white p-0.5 rounded-bl opacity-0 group-hover:opacity-100 transition-opacity"
-                               title="Remove image"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                      )})}
+          <Section title="Images">
+            <div className="space-y-3">
+              {/* Display existing images */}
+              {spot.images && spot.images.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2">
+                  {spot.images.map((img, idx) => (
+                    <div key={idx} className="relative group">
+                      <img
+                        src={img.url}
+                        alt={`${spot.name} ${idx + 1}`}
+                        className="w-full h-32 object-cover rounded-md border"
+                      />
+                      {isEditing && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteImage(img.public_id)}
+                          disabled={deletingImage === img.public_id}
+                          className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                          title="Delete image"
+                        >
+                          {deletingImage === img.public_id ? (
+                            <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
                     </div>
-                  </div>
-                )}
-                <div className="flex flex-col gap-1">
-                   <p className="text-xs text-slate-500">Add New Images</p>
-                   <input
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">No images available</p>
+              )}
+
+              {/* Upload new images in edit mode */}
+              {isEditing && (
+                <div className="mt-2">
+                  <input
                     type="file"
-                    multiple
                     accept="image/*"
+                    multiple
                     onChange={(e) => {
-                      if (e.target.files) {
-                        setNewImages(Array.from(e.target.files));
+                      const files = e.target.files;
+                      if (files) {
+                        setNewImages(Array.from(files));
                       }
                     }}
                     className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
-                </div>
-                {newImages.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {newImages.map((file, i) => (
-                      <div key={i} className="relative w-20 h-20 border rounded overflow-hidden">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="preview"
-                          className="w-full h-full object-cover"
-                        />
+                  {newImages.length > 0 && (
+                    <>
+                      <p className="text-xs text-green-600 mt-1">
+                        {newImages.length} new image(s) selected
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {newImages.map((file, i) => (
+                          <div key={i} className="relative w-20 h-20 border rounded overflow-hidden">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt="preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Section>
-          )}
+                    </>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Select new images to add (will be appended to existing images)
+                  </p>
+                </div>
+              )}
+            </div>
+          </Section>
         </div>
 
         {isEditing && (

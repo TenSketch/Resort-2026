@@ -130,8 +130,8 @@ const AddTouristBooking = () => {
       reservationDate: formData.reservationDate || new Date().toISOString().slice(0,10),
     };
 
-    console.log('Tourist Spot Booking:', submitData);
-    alert('Tourist spot booking created (demo).');
+    console.log('Trek Spot Booking:', submitData);
+    alert('Trek spot booking created (demo).');
     handleReset();
   };
 
@@ -184,8 +184,8 @@ const AddTouristBooking = () => {
     <div className="min-h-screen p-8">
       <div className="w-full max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Tourist Spot Booking</h1>
-          <p className="text-slate-600">Create a new tourist spot booking (demo)</p>
+          <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Trek Spot Booking</h1>
+          <p className="text-slate-600">Create a new Trek spot booking (demo)</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -238,7 +238,7 @@ const AddTouristBooking = () => {
               <Input name="visitTime" value={formData.visitTime} onChange={handleChange} placeholder="e.g., 09:00 - 11:00" />
             </div>
             <div className="space-y-2">
-              <Label>Tourist Spot Name</Label>
+              <Label>Trek Spot Name</Label>
               <Input name="touristSpotName" value={formData.touristSpotName} onChange={handleChange} />
             </div>
             <div className="space-y-2">

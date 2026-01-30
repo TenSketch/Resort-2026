@@ -145,7 +145,7 @@ export class BookingStatusComponent {
         this.authService.clearBookingRooms(this.bookingTypeResort);
       }, 3000);
 
-      // Check if it is a tourist spot booking
+      // Check if it is a Trek spot booking
       const isTouristSpot = !!booking.touristSpots && booking.touristSpots.length > 0;
 
       let resortName = 'Resort';
@@ -154,7 +154,7 @@ export class BookingStatusComponent {
       let checkOutDate = booking.checkOut;
 
       if (isTouristSpot) {
-        resortName = 'Tourist Spot Booking';
+        resortName = 'Trek Spot Booking';
         roomsArray = booking.touristSpots.map((spot: any) => ({
           room_name: spot.name,
           cottage_type: 'Entry'

@@ -51,8 +51,8 @@ export default function AllTouristSpots() {
 
   const exportToExcel = () => {
     const headers = [
-      "ID",
-      "Tourist Spot Name",
+      "S.No",
+      "Trek Spot Name",
       "Category", 
       "Entry Fees (₹)",
       "2 Wheeler Parking (₹)",
@@ -65,9 +65,9 @@ export default function AllTouristSpots() {
 
     const csvContent = [
       headers.join(","),
-      ...spots.map((spot) => {
+      ...spots.map((spot, idx) => {
         return [
-          `"${spot.id}"`,
+          idx + 1,
           `"${spot.name.replace(/"/g, '""')}"`,
           `"${(spot.category || '—').replace(/"/g, '""')}"`,
           `₹${(spot.entryFees || 0).toLocaleString()}`,
@@ -163,8 +163,8 @@ export default function AllTouristSpots() {
               // remove from list
               setSpots(prev => prev.filter(p => p.id !== id))
             } catch (err: any) {
-              console.error('Failed to delete tourist spot', err)
-              alert('Failed to delete tourist spot: ' + (err.message || String(err)))
+              console.error('Failed to delete Trek spot', err)
+              alert('Failed to delete Trek spot: ' + (err.message || String(err)))
             }
           })()
         }
@@ -189,8 +189,16 @@ export default function AllTouristSpots() {
   }, [apiBase, navigate])
 
   const columns = [
-    { data: 'id', title: 'ID' },
-    { data: 'name', title: 'Tourist Spot Name' },
+    {
+      data: null,
+      title: 'S.No',
+      orderable: false,
+      searchable: false,
+      render: (_data: any, _type: any, _row: any, meta: any) => {
+        return meta.row + 1;
+      }
+    },
+    { data: 'name', title: 'Trek Spot Name' },
     { data: 'category', title: 'Category' },
     {
       data: 'images',

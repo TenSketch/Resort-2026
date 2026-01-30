@@ -177,7 +177,7 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
       <div className="ml-auto h-full w-full max-w-[520px] bg-white shadow-xl overflow-y-auto relative z-[10000]">
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <div>
-            <p className="text-xs text-slate-500">Tourist Spot</p>
+            <p className="text-xs text-slate-500">Trek Spot</p>
             <h2 className="text-lg font-semibold text-slate-800">{spot.name}</h2>
           </div>
           <div className="flex items-center gap-2">

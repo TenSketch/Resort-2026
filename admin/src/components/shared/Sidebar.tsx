@@ -174,7 +174,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     //   ],
     // },
 
-    // Tourist Spot Management
+    // Trek Spot Management
     {
       id: "tourist-dashboard",
       label: "Dashboard",

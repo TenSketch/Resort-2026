@@ -71,10 +71,10 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
     { id: 'tent-bookings-view', label: 'All Tent Bookings', paths: ['/tentbookings/allbookings'], category: 'tent' },
     { id: 'tent-bookings-add', label: 'Add Tent Booking', paths: ['/tentbookings/addbookings'], category: 'tent' },
 
-    // Tourist Spot Management
+    // Trek Spot Management
     { id: 'dashboard-tourist', label: 'Tourist Dashboard', paths: ['/tourist/dashboard'], category: 'tourist-spot' },
     { id: 'tourist-spots-view', label: 'All Trek Spots', paths: ['/touristspots/all'], category: 'tourist-spot' },
-    { id: 'tourist-spots-add', label: 'Add Tourist Spot', paths: ['/touristspots/add'], category: 'tourist-spot' },
+    { id: 'tourist-spots-add', label: 'Add Trek Spot', paths: ['/touristspots/add'], category: 'tourist-spot' },
     { id: 'tourist-packages', label: 'Tourist Packages', paths: ['/tourist/packages'], category: 'tourist-spot' },
     { id: 'tourist-bookings-view', label: 'All Tourist Bookings', paths: ['/tourist/bookings'], category: 'tourist-spot' },
     { id: 'tourist-bookings-add', label: 'Add Tourist Booking', paths: ['/tourist/bookings/add'], category: 'tourist-spot' },

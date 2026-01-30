@@ -90,7 +90,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const viewTypeOptions: { value: ViewType; label: string; icon: typeof Building2 }[] = [
     { value: "resort", label: "Resort", icon: Building2 },
     { value: "tent", label: "Tent", icon: Tent },
-    { value: "tourist-spot", label: "Tourist Spot", icon: MapPin },
+    { value: "tourist-spot", label: "Trek Spot", icon: MapPin },
   ];
 
   const currentViewOption = viewTypeOptions.find(option => option.value === viewType);

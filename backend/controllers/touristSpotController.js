@@ -114,7 +114,7 @@ const listTouristSpots = async (req, res) => {
     const { slug } = req.query
     if (slug) {
       const spot = await TouristSpot.findOne({ slug })
-      if (!spot) return res.status(404).json({ error: 'Tourist spot not found' })
+      if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
       return res.json({ touristSpot: spot })
     }
     const spots = await TouristSpot.find().sort({ createdAt: -1 })
@@ -128,7 +128,7 @@ const getTouristSpotById = async (req, res) => {
   try {
     const { id } = req.params
     const spot = await TouristSpot.findById(id)
-    if (!spot) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
     res.json({ touristSpot: spot })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -139,7 +139,7 @@ const updateTouristSpot = async (req, res) => {
   try {
     const { id } = req.params
     const existing = await TouristSpot.findById(id)
-    if (!existing) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!existing) return res.status(404).json({ error: 'Trek spot not found' })
 
     const body = req.body || {}
     const v = (k) => {
@@ -227,7 +227,7 @@ const deleteTouristSpot = async (req, res) => {
   try {
     const { id } = req.params
     const existing = await TouristSpot.findById(id)
-    if (!existing) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!existing) return res.status(404).json({ error: 'Trek spot not found' })
 
     // delete images from cloudinary if any
     if (Array.isArray(existing.images)) {
@@ -250,7 +250,7 @@ const deleteTouristSpotImage = async (req, res) => {
   try {
     const { id, publicId } = req.params
     const spot = await TouristSpot.findById(id)
-    if (!spot) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
 
     // Find the image
     const imageIndex = spot.images.findIndex(img => img.public_id === publicId)

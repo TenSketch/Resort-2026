@@ -32,7 +32,7 @@ const MyAccountPage = () => {
     const categoryLabels = {
         'resort': 'Resort Management',
         'tent': 'Tent Management',
-        'tourist-spot': 'Tourist Spot Management',
+        'tourist-spot': 'Trek Spot Management',
         'general': 'General'
     }
 

@@ -418,7 +418,7 @@ export default function AllTouristBookings() {
     <div className="w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">
-          Tourist Spot Bookings
+          Trek Spot Bookings
         </h2>
         <button
           onClick={() => (perms.canViewDownload ? exportToExcel() : null)}

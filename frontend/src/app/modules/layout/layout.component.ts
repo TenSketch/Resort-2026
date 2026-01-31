@@ -123,12 +123,43 @@ export class LayoutComponent implements OnInit {
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
+  // Auto-hide Top Nav Logic
+  isNavHidden = false;
+  private lastScrollTop = 0;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollThreshold = window.innerHeight; // 100vh
+
+    // Logic:
+    // 1. Fixed initially (scrollTop <= 0 or < threshold) -> Show
+    // 2. Hide after 100vh scroll (scrollTop > threshold && scrolling down) -> Hide
+    // 3. Reappear on slight scroll-up (scrolling up) -> Show
+    
+    if (scrollTop <= 0) {
+      this.isNavHidden = false;
+    } else if (scrollTop > this.lastScrollTop) {
+      // Scrolling Down
+      if (scrollTop > scrollThreshold) {
+        this.isNavHidden = true;
+      }
+    } else {
+      // Scrolling Up
+      this.isNavHidden = false;
+    }
+    
+    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const targetElement = event.target as HTMLElement;
+    // Check if click is inside sidebar, navbar-toggler, or any element with .menu-toggle class
     if (
       !targetElement.closest('#sidebar') &&
-      !targetElement.closest('.navbar-toggler')
+      !targetElement.closest('.navbar-toggler') &&
+      !targetElement.closest('.menu-toggle')
     ) {
       this.closeSidebar();
     }

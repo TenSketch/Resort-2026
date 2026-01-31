@@ -19,14 +19,47 @@
   }
 }
 
+.logo-text {
+  color: #111827; // Slate-900 or use a primary color variable if preferred
+  letter-spacing: 0.02em;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+
+  @media (min-width: 992px) {
+    width: auto;
+    justify-content: flex-start;
+  }
+}
+
 .navbar {
-  height: 8vh;
+  min-height: 10vh;
+  height: auto;
   // Adjust for top nav bar on all devices
-  top: 0 !important;
+  // top: 0 !important;
   z-index: 10001;
+  transition: transform 0.3s ease-in-out; // Smooth slide logic
+
+  &.is-nav-hidden {
+    transform: translateY(-100%);
+  }
 
   & > .container-fluid {
-    justify-content: start;
+    justify-content: space-between; // Push left/right items to edges
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+
+    @media (max-width: 576px) {
+      padding-right: 0.25rem;
+      padding-left: 0.25rem;
+      justify-content: center; // Center everything together
+      gap: 0.5rem; // Add small gap between logos
+    }
+    position: relative; // Needed for absolute positioning context
   }
 
   // Show the toggler on all screen sizes so hamburger is visible on large screens too
@@ -38,8 +71,55 @@
   // min-height: $nav-bar-height;
 
   .navbar-brand {
+    // me-auto handles the spacing, but we constrain the width
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 0; // Allow shrinking
+    flex-shrink: 1;
+
+    // Mobile Layout Change: Standard Flex Flow
+    @media (max-width: 768px) {
+      position: static;
+      transform: none;
+      left: auto;
+      margin: 0 0.5rem; // Add side margins for spacing
+    }
+
     img {
-      width: clamp(10vw, 160px, 22vw);
+      width: clamp(
+        100px,
+        25vw,
+        180px
+      ); // Increased min-width (70px -> 100px) for bigger logo
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  .govt-logo {
+    height: 9.5vh;
+    max-height: 95px;
+    width: auto;
+    max-width: 25vw; // Constraint width on mobile
+    object-fit: contain;
+
+    @media (max-width: 768px) {
+      height: 65px;
+      max-width: 25vw; // Increased from 15vw -> 25vw
+    }
+  }
+
+  .forest-logo {
+    height: 9.5vh;
+    max-height: 95px;
+    width: auto;
+    max-width: 25vw; // Constraint width on mobile
+    object-fit: contain;
+
+    @media (max-width: 768px) {
+      height: 65px;
+      max-width: 25vw; // Increased from 15vw -> 25vw
     }
   }
 
@@ -101,6 +181,22 @@
       }
     }
   }
+  .top-bar-actions {
+    a {
+      font-size: 0.95rem;
+      color: #111827 !important; // Slate-900
+      transition: color 0.2s ease;
+      text-decoration: none;
+
+      &:hover {
+        color: $clr-primary-dark !important;
+      }
+
+      i {
+        color: $clr-primary-dark;
+      }
+    }
+  }
 }
 
 #sidebar {
@@ -116,14 +212,19 @@
   transform: translateX(100%);
   transition: transform 0.3s ease;
 
-  // Tablet: Half width
-  @media (min-width: 768px) {
-    width: 50%;
-  }
-
-  // Desktop: Content width (approx 350px)
+  // Tablet/Desktop: Fixed Left Sidebar
   @media (min-width: 992px) {
-    width: 350px;
+    top: 0;
+    left: 0;
+    right: auto;
+    width: 280px;
+    height: 100vh;
+    transform: none !important;
+    border-left: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+    z-index: 10000; // Behind navbar (10001)
+    padding-top: 10vh; // Clear the navbar area so content starts below
   }
 
   &.active {
@@ -141,12 +242,22 @@
 
     &.active {
       display: block;
+
+      // Hide overlay on desktop as sidebar is always visible and doesn't partially cover
+      @media (min-width: 992px) {
+        display: none !important;
+      }
     }
   }
 
   .sidebar-content {
-    padding: 2.5rem;
-    margin-top: calc(8vh + 1rem);
+    padding: 0.75rem;
+    margin-top: calc(10vh + 1rem);
+
+    // Desktop: Remove top margin valid for mobile overlay
+    @media (min-width: 992px) {
+      margin-top: 1rem;
+    }
     color: $clr-primary-dark;
 
     .sidebar-menu {
@@ -154,38 +265,52 @@
       padding: 0;
 
       .sidebar-item {
-        margin-top: 0.875rem;
-
-        &:first-child {
-          margin-top: 0;
-        }
+        margin-top: 0.25rem; // Tighter vertical spacing for cleaner look
 
         .sidebar-link {
-          font-size: 1rem;
-          color: $clr-primary-dark !important;
+          font-size: 0.95rem;
+          color: #166534 !important; // Green-700
           text-decoration: none !important;
-          padding: 0.75rem 0 !important;
-          /* Uniform vertical padding */
+          padding: 0.75rem 1rem !important;
+          margin: 0 0.75rem;
+          border-radius: 8px;
           display: flex;
           align-items: center;
-          /* height: 3rem; /* Enforce uniform height */
-          line-height: normal;
+          transition: all 0.2s ease;
+          border-left: 3px solid transparent;
 
           i {
-            font-size: 1.125rem;
-            min-width: 1.25rem;
+            font-size: 1.1rem;
+            min-width: 1.5rem;
             text-align: center;
-            display: flex;
-            /* Ensure icon is centered in its box */
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            color: #15803d; // Green-700
+            transition: color 0.2s ease;
           }
 
-          /* span margin handled via ms-3 in HTML */
+          span {
+            font-weight: 500;
+            letter-spacing: 0.01em;
+          }
 
-          &.p-0 {
-            padding: 0 !important;
+          // Hover State
+          &:hover {
+            background-color: #f3f4f6; // Slate-100
+            color: #111827 !important; // Slate-900
+
+            i {
+              color: $clr-primary-dark;
+            }
+          }
+
+          // Active State (routerLinkActive)
+          &.active {
+            background-color: rgba($clr-primary-dark, 0.1); // Subtly tinted bg
+            color: $clr-primary-dark !important;
+            font-weight: 600;
+
+            i {
+              color: $clr-primary-dark;
+            }
           }
 
           .dropdown-item {
@@ -204,62 +329,71 @@
 
       .accordion {
         --bs-accordion-bg: transparent;
-        --bs-accordion-color: #{$clr-primary-dark};
-        --bs-accordion-active-bg: transparent;
-        --bs-accordion-active-color: #{$clr-primary-dark};
-        --bs-accordion-btn-color: #{$clr-primary-dark};
-        --bs-accordion-btn-bg: transparent;
-        margin-bottom: 0.875rem;
+        --bs-accordion-border-width: 0;
+        margin-bottom: 0; // Removed bottom margin to prevent double gap
       }
 
       .accordion-item {
-        border: none;
-        border-radius: 0;
-        margin-bottom: 0.875rem;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        margin-bottom: 0;
 
-        &:last-child {
-          margin-bottom: 0;
+        & + .accordion-item {
+          margin-top: 0.25rem; // Add standard gap between stacked accordion items
         }
       }
 
       .accordion-button {
         background-color: transparent;
-        color: inherit !important;
+        color: #166534 !important; // Green-700
         border: none;
-        padding: 0.75rem 0;
-        /* Match sidebar-link padding */
-        margin: 0;
+        padding: 0.75rem 1rem;
+        margin: 0 0.75rem;
+        border-radius: 8px;
         text-align: left;
         box-shadow: none;
-        font-size: 1rem;
-        font-weight: inherit;
+        font-size: 0.95rem;
+        font-weight: 500;
         display: flex;
         align-items: center;
-        /* height: 3rem; /* Match sidebar-link height */
-        line-height: normal;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
 
         i {
-          font-size: 1.125rem;
-          min-width: 1.25rem;
+          font-size: 1.1rem;
+          min-width: 1.5rem;
+          text-align: center;
+          color: #15803d;
         }
 
         &:not(.collapsed) {
-          background-color: transparent;
-          color: inherit;
+          background-color: #f3f4f6;
+          color: $clr-primary-dark !important;
           box-shadow: none;
+
+          i {
+            color: $clr-primary-dark;
+          }
         }
 
-        &:focus {
-          border: none;
-          box-shadow: none;
+        &:hover {
+          background-color: #f3f4f6;
+          color: #111827 !important;
+
+          i {
+            color: $clr-primary-dark;
+          }
         }
 
         &::after {
           margin-left: auto;
-          font-size: 0.875rem;
-          filter: inherit;
+          font-size: 0.8rem;
+          opacity: 0.5;
         }
       }
+
+      // ... existing accordion header/body checks ...
 
       .accordion-header {
         background-color: transparent;
@@ -303,9 +437,23 @@
   color: gray;
 }
 
+// Main Content Area
+main {
+  padding-top: 10vh; // Ensure content starts below fixed navbar
+  @media (min-width: 992px) {
+    margin-left: 280px; // Match sidebar width
+    transition: margin-left 0.3s ease;
+  }
+}
+
 .footer {
   .container {
     border-top: 1px solid rgba(0, 0, 0, 0.233);
+  }
+
+  @media (min-width: 992px) {
+    margin-left: 280px; // Match sidebar width
+    width: auto; // Let it take remaining width
   }
 }
 
@@ -326,6 +474,10 @@
 
 .bottom-footer {
   background-color: $clr-primary-lighter;
+
+  @media (max-width: 991px) {
+    padding-bottom: 80px !important; // Prevent overlap with bottom nav
+  }
 }
 
 // WhatsApp Floating Button
@@ -340,23 +492,6 @@
   /* Changed to row to place pill next to button */
   align-items: center;
   gap: 12px;
-}
-
-.support-pill {
-  background-color: #25d366;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  animation: fadeIn 0.3s ease;
-  white-space: nowrap;
-
-  &:hover {
-    background-color: #20bd5a;
-  }
 }
 
 .whatsapp-float {
@@ -470,10 +605,15 @@
   }
 }
 
+@media (max-width: 991px) {
+  .whatsapp-wrapper {
+    bottom: 80px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .whatsapp-wrapper {
     right: 16px;
-    bottom: 16px;
   }
 
   .whatsapp-float {
@@ -484,5 +624,75 @@
 
   .wa-card {
     width: 260px;
+  }
+}
+
+// Bottom Navigation Bar
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  z-index: 11000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); // More premium shadow
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.7rem 0; // Slightly taller for premium feel
+  border-top: 1px solid rgba(0, 0, 0, 0.03);
+  padding-bottom: max(
+    0.7rem,
+    env(safe-area-inset-bottom)
+  ); // Safe area for iPhones
+
+  // Hide on desktop (lg and up)
+  @media (min-width: 992px) {
+    display: none !important;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none !important;
+    color: #166534; // Green-700
+    font-size: 0.7rem; // Small, clean text
+    padding: 0.25rem 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+
+    i {
+      font-size: 1.35rem;
+      margin-bottom: 0.35rem;
+      color: inherit;
+      transition: transform 0.2s ease;
+    }
+
+    span {
+      font-weight: 500;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    &.active {
+      color: $clr-primary-dark;
+
+      i {
+        color: $clr-primary-dark;
+        transform: translateY(-2px);
+      }
+
+      span {
+        font-weight: 600;
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
   }
 }

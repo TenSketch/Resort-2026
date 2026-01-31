@@ -177,4 +177,27 @@ export class HomeComponent implements OnInit {
   goToKarthikavanamTents() {
     this.router.navigate(['/book-tent/karthikavanm']);
   }
+
+  goToResort() {
+    const resortSection = document.querySelector('.resort-intro');
+    if (resortSection) {
+      resortSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  goToAboutUs() {
+    this.router.navigate(['/about-vanavihari']);
+  }
+
+  isVideoPlaying: boolean = true;
+
+  toggleVideo(video: HTMLVideoElement) {
+    if (video.paused) {
+      video.play();
+      this.isVideoPlaying = true;
+    } else {
+      video.pause();
+      this.isVideoPlaying = false;
+    }
+  }
 }

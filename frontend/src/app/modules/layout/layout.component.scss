@@ -439,10 +439,16 @@
 
 // Main Content Area
 main {
-  padding-top: 10vh; // Ensure content starts below fixed navbar
+  // Mobile: Navbar logos ~65px + py-2 (~8px*2) = ~81px. 
+  // Adjusted to 85px to be safe but close.
+  padding-top: 85px; 
+
   @media (min-width: 992px) {
     margin-left: 280px; // Match sidebar width
     transition: margin-left 0.3s ease;
+    // Desktop: Logos max 95px + py-2 = ~111px. 
+    // Adjusted to 115px.
+    padding-top: 115px; 
   }
 }
 

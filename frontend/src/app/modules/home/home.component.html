@@ -11,130 +11,50 @@
     >
       <div class="carousel-indicators">
         <button
+          *ngFor="let slide of heroSlides; let i = index"
           type="button"
           data-bs-target="#mobileHeroCarousel"
-          data-bs-slide-to="0"
-          class="active"
-          aria-current="true"
-          aria-label="Slide 1"
-        ></button>
-        <button
-          type="button"
-          data-bs-target="#mobileHeroCarousel"
-          data-bs-slide-to="1"
-          aria-label="Slide 2"
-        ></button>
-        <button
-          type="button"
-          data-bs-target="#mobileHeroCarousel"
-          data-bs-slide-to="2"
-          aria-label="Slide 3"
-        ></button>
-        <button
-          type="button"
-          data-bs-target="#mobileHeroCarousel"
-          data-bs-slide-to="3"
-          aria-label="Slide 4"
+          [attr.data-bs-slide-to]="i"
+          [class.active]="i === 0"
+          [attr.aria-current]="i === 0 ? 'true' : null"
+          [attr.aria-label]="'Slide ' + (i + 1)"
         ></button>
       </div>
 
       <div class="carousel-inner h-100">
-        <!-- Slide 1: Welcome -->
-        <div class="carousel-item active h-100">
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item h-100"
+          [class.active]="i === 0"
+          (click)="handleSlideAction(slide.action)"
+          style="cursor: pointer"
+        >
           <img
-            src="assets/img/Vihari-outer.jpg"
+            [src]="slide.image"
             class="d-block w-100 h-100 object-fit-cover"
-            alt="Welcome to Vanavihari"
+            [alt]="slide.title"
           />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption mobile-caption text-start">
-            <h5 class="fw-bold mb-1">Welcome to Vanavihari</h5>
-            <p class="small mb-1">
-              <i class="fa-solid fa-location-dot me-1"></i>Maredumilli
+            <h5 class="fw-bold mb-1">{{ slide.title }}</h5>
+            <p class="small mb-1" *ngIf="slide.location">
+              <i class="fa-solid fa-location-dot me-1"></i>{{ slide.location }}
             </p>
-            <p class="fst-italic mb-2 smaller-text">
-              "Book Easily. Explore Deeply."
+            <p class="small mb-1" *ngIf="slide.subtitle">
+              {{ slide.subtitle }}
             </p>
-            <button
-              class="btn btn-sm btn-light rounded-pill px-3 fw-bold"
-              (click)="goToAboutUs()"
+            <p class="fst-italic mb-2 smaller-text">"{{ slide.tagline }}"</p>
+            <p class="fw-bold mb-2 small" *ngIf="slide.price">
+              {{ slide.price }}
+            </p>
+            <div
+              *ngIf="slide.startText"
+              class="mb-2 small fw-bold text-white-50"
             >
-              Explore Now »
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 2: Resorts -->
-        <div class="carousel-item h-100">
-          <img
-            src="assets/img/Vanavihari-reception.jpg"
-            class="d-block w-100 h-100 object-fit-cover"
-            alt="Luxury Stay"
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption mobile-caption text-start">
-            <h5 class="fw-bold mb-1">Welcome to Vanavihari</h5>
-            <p class="small mb-1">
-              <i class="fa-solid fa-location-dot me-1"></i>Maredumilli
-            </p>
-            <p class="fst-italic mb-2 smaller-text">
-              "Book Easily. Explore Deeply."
-            </p>
-            <button
-              class="btn btn-sm btn-light rounded-pill px-3 fw-bold"
-              (click)="goToAboutUs()"
-            >
-              Explore Now »
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 3: Tents -->
-        <div class="carousel-item h-100">
-          <img
-            src="assets/img/tent/Vanavihari/tent1.jpg"
-            class="d-block w-100 h-100 object-fit-cover"
-            alt="Exclusive Tents"
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption mobile-caption text-start">
-            <h5 class="fw-bold mb-1">Welcome to Vanavihari</h5>
-            <p class="small mb-1">
-              <i class="fa-solid fa-location-dot me-1"></i>Maredumilli
-            </p>
-            <p class="fst-italic mb-2 smaller-text">
-              "Book Easily. Explore Deeply."
-            </p>
-            <button
-              class="btn btn-sm btn-light rounded-pill px-3 fw-bold"
-              (click)="goToAboutUs()"
-            >
-              Explore Now »
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 4: Treks -->
-        <div class="carousel-item h-100">
-          <img
-            src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
-            class="d-block w-100 h-100 object-fit-cover"
-            alt="Thrilling Treks"
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption mobile-caption text-start">
-            <h5 class="fw-bold mb-1">Welcome to Vanavihari</h5>
-            <p class="small mb-1">
-              <i class="fa-solid fa-location-dot me-1"></i>Maredumilli
-            </p>
-            <p class="fst-italic mb-2 smaller-text">
-              "Book Easily. Explore Deeply."
-            </p>
-            <button
-              class="btn btn-sm btn-light rounded-pill px-3 fw-bold"
-              (click)="goToAboutUs()"
-            >
-              Explore Now »
+              {{ slide.startText }}
+            </div>
+            <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
+              {{ slide.cta }} »
             </button>
           </div>
         </div>
@@ -170,98 +90,41 @@
       id="carouselExampleFade"
       class="carousel slide carousel-fade d-none d-md-block"
       data-bs-ride="carousel"
+      data-bs-interval="6000"
     >
       <div class="carousel-inner">
-        <div class="carousel-item active">
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
           <img
-            src="assets/img/Vihari-outer.jpg"
+            [src]="slide.image"
             class="d-block w-100"
-            alt="..."
+            style="height: 100%; object-fit: cover"
+            [alt]="slide.title"
           />
           <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
+          <div
+            class="carousel-caption p-0 text-start"
+            style="bottom: 15%; left: 10%; right: 10%"
+          >
+            <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+            <p class="h4 text-light mt-3" *ngIf="slide.location">
+              <i class="fa-solid fa-location-dot me-2"></i>{{ slide.location }}
             </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/Vanavihari-reception.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
+            <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
+
+            <p class="h5 fw-bold text-warning mt-3" *ngIf="slide.price">
+              {{ slide.price }}
             </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/home-gallery-junglestar/junglestar-home-gallery-5.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="assets/img/jungle.jpeg" class="d-block w-100" alt="..." />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/amruthadhara.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/Rampa-falls.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
-            </p>
+
+            <button
+              class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
+              (click)="handleSlideAction(slide.action)"
+            >
+              {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+            </button>
           </div>
         </div>
       </div>

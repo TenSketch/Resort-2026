@@ -66,6 +66,71 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  heroSlides = [
+    {
+      id: 1,
+      image: 'assets/img/Vihari-outer.jpg',
+      title: 'Welcome to Vanavihari Adventures',
+      subtitle: 'Discover Nature, Trek Trails & Unforgettable Stays',
+      tagline: 'New Online Booking for Resorts, Tents & Treks!',
+      startText: 'Book Easily. Explore Deeply.',
+      price: null,
+      cta: 'Explore Now',
+      action: 'about'
+    },
+    {
+      id: 2,
+      image: 'assets/img/Vanavihari-reception.jpg',
+      title: 'Luxury Stay at Vanavihari & Jungle Star',
+      location: 'Maredumilli, Andhra Pradesh',
+      tagline: 'Comfort Amidst Nature',
+      startText: null,
+      price: 'Starts at ₹3,499 / night',
+      cta: 'View Resorts',
+      action: 'resorts'
+    },
+    {
+      id: 3,
+      image: 'assets/img/tent/Vanavihari/tent1.jpg',
+      title: 'Exclusive Tent Experiences',
+      location: 'Vanavihari & Karthikavanam',
+      tagline: 'Sleep Under the Stars',
+      startText: null,
+      price: 'From ₹1,500 / night',
+      cta: 'Book Tents',
+      action: 'tents'
+    },
+    {
+      id: 4,
+      image: 'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg',
+      title: 'Thrilling Trek Escapes',
+      location: 'Jalatarangini / Jungle Star / Gudisa',
+      tagline: 'Choose Your Path, Feel the Rush',
+      startText: null,
+      price: 'Entry from ₹800',
+      cta: 'Explore Treks',
+      action: 'treks'
+    }
+  ];
+
+  handleSlideAction(action: string) {
+    switch(action) {
+      case 'about':
+        this.router.navigate(['/about-vanavihari']);
+        break;
+      case 'resorts':
+        this.goToResort();
+        break;
+      case 'tents':
+        this.goToTents();
+        break;
+      case 'treks':
+        this.router.navigate(['/tourist-places']);
+        break;
+      default:
+        break;
+    }
+  }
 
 
   ngOnInit(): void {
@@ -176,5 +241,28 @@ export class HomeComponent implements OnInit {
 
   goToKarthikavanamTents() {
     this.router.navigate(['/book-tent/karthikavanm']);
+  }
+
+  goToResort() {
+    const resortSection = document.querySelector('.resort-intro');
+    if (resortSection) {
+      resortSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  goToAboutUs() {
+    this.router.navigate(['/about-vanavihari']);
+  }
+
+  isVideoPlaying: boolean = true;
+
+  toggleVideo(video: HTMLVideoElement) {
+    if (video.paused) {
+      video.play();
+      this.isVideoPlaying = true;
+    } else {
+      video.pause();
+      this.isVideoPlaying = false;
+    }
   }
 }

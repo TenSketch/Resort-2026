@@ -1,101 +1,130 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="showLoader"></app-loader>
+
+    <!-- Mobile Hero Carousel -->
+    <section
+      id="mobileHeroCarousel"
+      class="carousel slide d-block d-md-none"
+      data-bs-ride="carousel"
+      data-bs-interval="5000"
+    >
+      <div class="carousel-indicators">
+        <button
+          *ngFor="let slide of heroSlides; let i = index"
+          type="button"
+          data-bs-target="#mobileHeroCarousel"
+          [attr.data-bs-slide-to]="i"
+          [class.active]="i === 0"
+          [attr.aria-current]="i === 0 ? 'true' : null"
+          [attr.aria-label]="'Slide ' + (i + 1)"
+        ></button>
+      </div>
+
+      <div class="carousel-inner h-100">
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item h-100"
+          [class.active]="i === 0"
+          (click)="handleSlideAction(slide.action)"
+          style="cursor: pointer"
+        >
+          <img
+            [src]="slide.image"
+            class="d-block w-100 h-100 object-fit-cover"
+            [alt]="slide.title"
+          />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption mobile-caption text-start">
+            <h5 class="fw-bold mb-1">{{ slide.title }}</h5>
+            <p class="small mb-1" *ngIf="slide.location">
+              <i class="fa-solid fa-location-dot me-1"></i>{{ slide.location }}
+            </p>
+            <p class="small mb-1" *ngIf="slide.subtitle">
+              {{ slide.subtitle }}
+            </p>
+            <p class="fst-italic mb-2 smaller-text">"{{ slide.tagline }}"</p>
+            <p class="fw-bold mb-2 small" *ngIf="slide.price">
+              {{ slide.price }}
+            </p>
+            <div
+              *ngIf="slide.startText"
+              class="mb-2 small fw-bold text-white-50"
+            >
+              {{ slide.startText }}
+            </div>
+            <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
+              {{ slide.cta }} »
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#mobileHeroCarousel"
+        data-bs-slide="prev"
+      >
+        <span
+          class="carousel-control-prev-icon small-control"
+          aria-hidden="true"
+        ></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#mobileHeroCarousel"
+        data-bs-slide="next"
+      >
+        <span
+          class="carousel-control-next-icon small-control"
+          aria-hidden="true"
+        ></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </section>
+
     <section
       id="carouselExampleFade"
-      class="carousel slide carousel-fade"
+      class="carousel slide carousel-fade d-none d-md-block"
       data-bs-ride="carousel"
+      data-bs-interval="6000"
     >
       <div class="carousel-inner">
-        <div class="carousel-item active">
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
           <img
-            src="assets/img/Vihari-outer.jpg"
+            [src]="slide.image"
             class="d-block w-100"
-            alt="..."
+            style="height: 100%; object-fit: cover"
+            [alt]="slide.title"
           />
           <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Vanavihari resort, nestled in Maredumilli, is a haven for
-              eco-tourism enthusiasts. This community-centric guesthouse offers
-              a peaceful escape surrounded by nature.
+          <div
+            class="carousel-caption p-0 text-start"
+            style="bottom: 15%; left: 10%; right: 10%"
+          >
+            <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+            <p class="h4 text-light mt-3" *ngIf="slide.location">
+              <i class="fa-solid fa-location-dot me-2"></i>{{ slide.location }}
             </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/Vanavihari-reception.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Vanavihari</h1>
-            <p class="h4">
-              Providing cozy cottages and rooms, it sits within easy reach of
-              Maredumilli Waterfalls, ensuring guests enjoy a tranquil
-              environment.
+            <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
+
+            <p class="h5 fw-bold text-warning mt-3" *ngIf="slide.price">
+              {{ slide.price }}
             </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/home-gallery-junglestar/junglestar-home-gallery-5.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Jungle Star</h1>
-            <p class="h4">
-              Jungle Star Eco Camp, managed by the Andhra Pradesh Forest
-              Department, offers seven cottages atop a hillock, reachable only
-              by a bridge.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="assets/img/jungle.jpeg" class="d-block w-100" alt="..." />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Jungle Star</h1>
-            <p class="h4">
-              This eco-friendly site provides adventure activities like treks
-              and campfires, nestled deep in the unexplored Eastern Ghats.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/amruthadhara.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Amruthadhara Falls</h1>
-            <p class="h4">
-              Amruthadhara falls a popular destination for nature lovers,
-              especially during the monsoon season when the falls are at their
-              most spectacular.
-            </p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="assets/img/Rampa-falls.jpg"
-            class="d-block w-100"
-            alt="..."
-          />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">Rampa Falls</h1>
-            <p class="h4">
-              In East Godavari's Agency track, discover Rampa V.S.S nestled in
-              semi-evergreen forests, featuring Neelakanteswara and Rampa
-              waterfalls.
-            </p>
+
+            <button
+              class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
+              (click)="handleSlideAction(slide.action)"
+            >
+              {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -118,10 +147,161 @@
         <span class="visually-hidden">Next</span>
       </button>
     </section>
-    <section class="my-5">
+    <section class="hero-search-section">
       <div class="container">
-        <h2 class="text-center mb-4">Search room availability</h2>
+        <!-- <h2 class="text-center mb-4">Search room availability</h2> -->
         <app-search-resort></app-search-resort>
+      </div>
+    </section>
+
+    <!-- Feature Cards Section -->
+    <section class="feature-cards-section py-5">
+      <div class="container">
+        <div class="row g-4 justify-content-center">
+          <!-- Card 1: Resorts -->
+          <div class="col-md-4 col-sm-6">
+            <div class="feature-card shadow-sm" (click)="goToResort()">
+              <div class="icon-wrapper">
+                <i class="fa-solid fa-hotel"></i>
+              </div>
+              <div class="card-content">
+                <h3>Luxury Resorts</h3>
+                <p>Stay in comfort with nature around you.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Tents -->
+          <div class="col-md-4 col-sm-6">
+            <div class="feature-card shadow-sm" (click)="goToTents()">
+              <div class="icon-wrapper">
+                <i class="fa-solid fa-campground"></i>
+              </div>
+              <div class="card-content">
+                <h3>Camping Tents</h3>
+                <p>Experience the thrill of sleeping under stars.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Trekking -->
+          <div class="col-md-4 col-sm-6">
+            <div class="feature-card shadow-sm" routerLink="/tourist-places">
+              <div class="icon-wrapper">
+                <i class="fa-solid fa-person-hiking"></i>
+              </div>
+              <div class="card-content">
+                <h3>Trekking Spots</h3>
+                <p>Explore hidden trails and scenic views.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Announcement Section: Editorial Style (Resized) -->
+    <section class="announcement-section py-5">
+      <div class="container">
+        <!-- Standard container to match content above -->
+        <div class="row align-items-center gx-5">
+          <!-- Text Content (Left) -->
+          <div class="col-lg-5">
+            <div class="announcement-content">
+              <span
+                class="text-uppercase tracking-widest small mb-2 d-block text-primary fw-bold"
+                style="letter-spacing: 0.15em; font-size: 0.75rem"
+              >
+                New Experiences
+              </span>
+              <h2 class="display-6 serif-font mb-3 text-dark-green fw-bold">
+                Escape to the <span class="fst-italic text-primary">Wild.</span>
+              </h2>
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
+                We've curated exclusive <strong>Camping Tents</strong> and
+                <strong>Trekking Adventures</strong> for souls seeking
+                connection with nature. You can now book these experiences
+                directly online.
+              </p>
+
+              <div class="d-flex align-items-center gap-4">
+                <a
+                  (click)="goToTents()"
+                  class="btn-underline text-dark fw-bold small"
+                >
+                  Book a Tent <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+                <a
+                  routerLink="/tourist-places"
+                  class="btn-underline text-dark fw-bold small"
+                >
+                  Plan a Trek <i class="fa-solid fa-arrow-right ms-2"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Media Content (Right) -->
+          <div class="col-lg-7 position-relative">
+            <div class="editorial-media-wrapper ps-lg-4 py-2">
+              <!-- Organic Shape Background (scaled down) -->
+              <svg
+                class="organic-blob"
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill="#e2f5d5"
+                  d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-4.9C93.5,9.3,82.1,22.9,71.1,34.8C60,46.6,49.3,56.7,37.1,64.1C25,71.5,11.4,76.1,-1.5,78.7C-14.4,81.4,-27.6,82,-39.7,75.9C-51.8,69.7,-62.8,56.9,-71.4,43.1C-80,29.3,-86.2,14.5,-85.6,0.3C-85,-13.8,-77.6,-27.3,-67.6,-38.7C-57.5,-50.1,-44.8,-59.4,-31.6,-67.2C-18.4,-75,-4.7,-81.3,7.4,-94.1L19.5,-106.9Z"
+                  transform="translate(100 100)"
+                />
+              </svg>
+
+              <div
+                class="media-container shadow"
+                style="
+                  border-radius: 4px;
+                  overflow: hidden;
+                  max-width: 90%;
+                  margin-left: auto;
+                  cursor: pointer;
+                "
+                (click)="toggleVideo(promoVideo)"
+              >
+                <video
+                  #promoVideo
+                  src="assets/images/vanavihari.mp4"
+                  class="img-fluid w-100 object-fit-cover"
+                  style="height: 320px"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                ></video>
+
+                <!-- Play/Pause Button Overlay -->
+                <div
+                  class="play-overlay"
+                  [class.show-controls]="!isVideoPlaying"
+                >
+                  <div
+                    class="play-circle"
+                    style="width: 50px; height: 50px; font-size: 1.2rem"
+                  >
+                    <i
+                      class="fa-solid"
+                      [class.fa-play]="!isVideoPlaying"
+                      [class.fa-pause]="isVideoPlaying"
+                    ></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
     <section class="about py-5">

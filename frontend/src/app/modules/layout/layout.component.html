@@ -1,146 +1,56 @@
 <header>
-  <nav class="navbar navbar-light py-0 fixed-top bg-light">
-    <div class="container-fluid align-items-baseline">
-      <a class="navbar-brand me-auto py-0" href="#">
+  <nav
+    class="navbar navbar-light py-2 fixed-top bg-light"
+    [class.is-nav-hidden]="isNavHidden"
+  >
+    <div class="container align-items-center">
+      <div class="d-flex flex-row align-items-center me-1 me-md-3 gap-2">
+        <img
+          class="govt-logo"
+          src="assets/images/AP_gov.png"
+          alt="Government of Andhra Pradesh"
+        />
+        <span
+          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem"
+          >Government of Andhra Pradesh</span
+        >
+      </div>
+      <a class="navbar-brand py-0" href="#">
         <img class="" src="assets/img/logo-vana.png" alt="logo-vana" />
       </a>
-      <ul class="navbar-nav d-flex flex-row gap-2 gap-lg-3">
-        <li class="nav-item d-none d-lg-block">
-          <a
-            class="nav-link"
-            routerLink="/home"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-          >
-            <i class="fa-solid fa-home me-2"></i>Home
-          </a>
-        </li>
-        <li class="nav-item dropdown d-none d-lg-block">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="dropdownId"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fa-solid fa-hotel me-2"></i>Book Resort
-          </a>
-          <div
-            class="dropdown-menu position-absolute"
-            aria-labelledby="dropdownId"
-          >
-            <a class="dropdown-item" (click)="goToVanavihari()"
-              >Vanavihari, Maredumilli</a
-            >
-            <a class="dropdown-item" (click)="goToJungleStar()"
-              >Jungle Star, Valamuru</a
-            >
-          </div>
-        </li>
-        <li class="nav-item dropdown d-none d-lg-block">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="dropdownIdTents"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fa-solid fa-tent me-2"></i>Book Tents
-          </a>
-          <div
-            class="dropdown-menu position-absolute"
-            aria-labelledby="dropdownIdTents"
-          >
-            <a class="dropdown-item" (click)="goToTents()"
-              >Vanavihari, Maredumilli</a
-            >
-            <a class="dropdown-item" (click)="goToKarthikavanamTents()"
-              >Karthikavanam, Valamuru</a
-            >
-          </div>
-        </li>
-        <li class="nav-item d-none d-lg-block">
-          <a
-            class="nav-link"
-            routerLink="/tourist-places"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-          >
-            <i class="fa-regular fa-compass me-2"></i>Trek Spots
-          </a>
-        </li>
-
-        <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a
-            class="nav-link"
-            routerLink="/sign-in"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-          >
-            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Sign in</a
-          >
-        </li>
-        <!-- <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a class="nav-link" routerLink="/sign-up" routerLinkActive="active" ariaCurrentWhenActive="page">
-            <i class="fa-solid fa-arrow-up-from-bracket me-2"></i>Sign up</a>
-        </li> -->
-        <!-- *ngIf="isLoggedIn()" -->
-        <li
-          class="nav-item dropdown"
-          style="z-index: 1000"
-          *ngIf="isLoggedIn()"
-        >
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="dropdownId"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fa-regular fa-user-circle me-2"></i> {{ accountusername }}
-          </a>
-          <div
-            class="dropdown-menu position-absolute py-3 px-2"
-            aria-labelledby="dropdownId"
-          >
-            <!-- nav item dropdown My Account>Settings, My Bookings, Saved -->
-            <a class="dropdown-item" (click)="goToMyAccSettings()">
-              <i class="fa-solid fa-cog me-3"></i><span>My account</span>
-            </a>
-            <a class="dropdown-item" (click)="goToMyBookings()">
-              <i class="fa-regular fa-calendar-check me-3"></i
-              ><span>My Bookings</span>
-            </a>
-            <!-- <a class="dropdown-item" (click)="goToMyAccSettings">
-              <i class="fa-regular fa-comment fa-flip-horizontal me-3"></i><span>Reviews</span>
-            </a> -->
-            <!-- <a class="dropdown-item" (click)="changePasswod()">
-              <i class="fa-solid fa-lock me-3"></i><span>Change Password</span>
-            </a> -->
-            <a class="dropdown-item" (click)="triggerModal()">
-              <i class="fa-solid fa-power-off me-3"></i><span>Sign out</span>
-            </a>
-          </div>
-        </li>
-      </ul>
-      <button
-        class="navbar-toggler border-0"
-        type="button"
-        (click)="toggleSidebar()"
+      <div
+        class="d-none d-lg-flex align-items-center gap-3 me-3 top-bar-actions"
       >
-        <i
-          class="fa-solid fa-bars fa-2xl"
-          [ngClass]="{ 'd-none': isSidebarOpen }"
-        ></i>
-        <!-- <span class="navbar-toggler-icon" ></span> -->
-        <i
-          class="fa-solid fa-xmark fa-2xl"
-          [ngClass]="{ 'd-none': !isSidebarOpen }"
-        ></i>
-      </button>
+        <a
+          *ngIf="!isLoggedIn()"
+          routerLink="/sign-in"
+          class="text-decoration-none fw-medium text-dark"
+          >Sign In</a
+        >
+        <a
+          *ngIf="isLoggedIn()"
+          routerLink="/my-account/settings"
+          class="text-decoration-none fw-medium text-dark d-flex align-items-center gap-2"
+        >
+          <span>Profile</span>
+          <i class="fa-regular fa-user-circle fa-lg"></i>
+        </a>
+      </div>
+
+      <!-- 4. Forest Dept Logo (Right) -->
+      <div class="d-flex flex-row align-items-center ms-1 ms-md-3 gap-2">
+        <span
+          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem"
+          >Andhra Pradesh Forest Department</span
+        >
+        <img
+          class="forest-logo"
+          src="assets/images/AP_forest.png"
+          alt="AP Forest Department"
+        />
+      </div>
     </div>
   </nav>
   <div
@@ -163,8 +73,10 @@
             ><span class="ms-3">About VANAVIHARI</span>
           </a>
         </li>
+
+        <!-- Book Resort Accordion -->
         <li class="sidebar-item">
-          <div class="accordion d-lg-none" id="accordionExample">
+          <div class="accordion" id="accordionExample">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingOne">
                 <button
@@ -199,6 +111,8 @@
                 </div>
               </div>
             </div>
+
+            <!-- Book Tents Accordion -->
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingTwo">
                 <button
@@ -235,11 +149,25 @@
             </div>
           </div>
         </li>
+
+        <!-- Treks (New) -->
         <li class="sidebar-item d-flex">
           <a
             class="sidebar-link"
             (click)="toggleSidebar()"
             routerLink="/tourist-places"
+          >
+            <!-- Note: routerLink='/treks' is assumed, verify actual route or use placeholder -->
+            <i class="fa-solid fa-person-hiking"></i
+            ><span class="ms-3">Treks</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item d-flex">
+          <a
+            class="sidebar-link"
+            (click)="toggleSidebar()"
+            routerLink="/tourist-destination"
           >
             <i class="fa-regular fa-compass"></i
             ><span class="ms-3">Tourist Destinations</span>
@@ -260,8 +188,20 @@
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAwards()">
             <i class="fa-solid fa-award"></i
-            ><span class="ms-3">Awards and News</span></a
-          >
+            ><span class="ms-3">Awards and News</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item mt-4">
+          <hr class="mx-3 my-2 text-muted" />
+        </li>
+
+        <!-- Help / Policies (New) -->
+        <li class="sidebar-item d-flex">
+          <a class="sidebar-link" (click)="toggleSidebar()">
+            <i class="fa-solid fa-gear"></i
+            ><span class="ms-3">Help / Policies</span>
+          </a>
         </li>
 
         <!-- <li class="sidebar-item">
@@ -445,13 +385,6 @@
 
 <!-- WhatsApp Floating Button (with support options) -->
 <div class="whatsapp-wrapper" (click)="$event.stopPropagation()">
-  <div
-    class="support-pill"
-    *ngIf="!isWhatsappOptionsOpen"
-    (click)="toggleWhatsappOptions($event)"
-  >
-    Support
-  </div>
   <button
     class="whatsapp-float"
     (click)="toggleWhatsappOptions($event)"
@@ -528,3 +461,62 @@
     </div>
   </div>
 </div>
+
+<nav class="bottom-nav d-lg-none">
+  <div
+    class="nav-item"
+    routerLink="/resort-listing"
+    routerLinkActive="active"
+    title="Resorts"
+  >
+    <i class="fa-solid fa-hotel"></i>
+    <span>Resorts</span>
+  </div>
+
+  <div
+    class="nav-item"
+    routerLink="/book-tent/vanavihari-maredumilli"
+    routerLinkActive="active"
+    title="Tents"
+  >
+    <i class="fa-solid fa-tent"></i>
+    <span>Tents</span>
+  </div>
+
+  <div
+    class="nav-item"
+    routerLink="/tourist-places"
+    routerLinkActive="active"
+    title="Treks"
+  >
+    <i class="fa-solid fa-person-hiking"></i>
+    <span>Treks</span>
+  </div>
+
+  <div
+    class="nav-item"
+    *ngIf="isLoggedIn()"
+    routerLink="/my-account/settings"
+    routerLinkActive="active"
+    title="Profile"
+  >
+    <i class="fa-regular fa-user-circle"></i>
+    <span>Profile</span>
+  </div>
+
+  <div
+    class="nav-item"
+    *ngIf="!isLoggedIn()"
+    routerLink="/sign-in"
+    routerLinkActive="active"
+    title="Sign In"
+  >
+    <i class="fa-regular fa-user-circle"></i>
+    <span>Profile</span>
+  </div>
+
+  <div class="nav-item menu-toggle" (click)="toggleSidebar()" title="More">
+    <i class="fa-solid fa-bars"></i>
+    <span>Menu</span>
+  </div>
+</nav>

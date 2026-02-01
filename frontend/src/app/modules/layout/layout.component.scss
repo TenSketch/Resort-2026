@@ -208,21 +208,21 @@
   width: 100%;
   background-color: #f0fdf4;
   border-left: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: 10000;
+  z-index: 12000; // Increased to cover bottom nav (11000) on mobile
   transform: translateX(100%);
   transition: transform 0.3s ease;
 
-  // Tablet/Desktop: Fixed Left Sidebar
+  // Tablet/Desktop: Fixed Right Sidebar (Moved from Left)
   @media (min-width: 992px) {
     top: 0;
-    left: 0;
-    right: auto;
+    left: auto; // Was 0
+    right: 0;   // Was auto
     width: 280px;
     height: 100vh;
     transform: none !important;
-    border-left: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+    border-right: none; // Was border-right
+    border-left: 1px solid rgba(0, 0, 0, 0.05); // Add border-left
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.02); // Shadow on left
     z-index: 10000; // Behind navbar (10001)
     padding-top: 10vh; // Clear the navbar area so content starts below
   }
@@ -330,7 +330,15 @@
         }
       }
 
-      .accordion {
+        // Static Item (Non-link header container)
+        .sidebar-item-static {
+          margin-top: 0.5rem;
+          .header-text {
+             color: #166534; // Match .sidebar-link color
+          }
+        }
+
+        .accordion {
         --bs-accordion-bg: transparent;
         --bs-accordion-border-width: 0;
         margin-bottom: 0; // Removed bottom margin to prevent double gap
@@ -447,8 +455,9 @@ main {
   padding-top: 85px; 
 
   @media (min-width: 992px) {
-    margin-left: 280px; // Match sidebar width
-    transition: margin-left 0.3s ease;
+    margin-right: 280px; // Match sidebar width (Right side)
+    margin-left: 0;
+    transition: margin-right 0.3s ease;
     // Desktop: Logos max 95px + py-2 = ~111px. 
     // Adjusted to 115px.
     padding-top: 115px; 
@@ -461,7 +470,8 @@ main {
   }
 
   @media (min-width: 992px) {
-    margin-left: 280px; // Match sidebar width
+    margin-right: 280px; // Match right sidebar
+    margin-left: 0;
     width: auto; // Let it take remaining width
   }
 }

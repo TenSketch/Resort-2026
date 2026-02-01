@@ -4,6 +4,7 @@ import {
   OnInit,
   Renderer2,
   ViewChild,
+  OnDestroy
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -28,7 +29,7 @@ import { EnvService } from '@/app/env.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   //user
   currentUser: string;
   // Define an array to hold the image filenames
@@ -168,6 +169,17 @@ export class HomeComponent implements OnInit {
     const user = this.userService.getFullUser();
     this.currentUser = user ? user : '';
     //alert('Registration successful!');
+
+    // Start Staggered Auto-Flip
+    this.flipInterval = setInterval(() => {
+      this.isResortFlipped = !this.isResortFlipped;
+      setTimeout(() => {
+        this.isTentFlipped = !this.isTentFlipped;
+      }, 200);
+      setTimeout(() => {
+        this.isTrekkingFlipped = !this.isTrekkingFlipped;
+      }, 400);
+    }, 3000);
   }
 
   // timer starts
@@ -255,6 +267,18 @@ export class HomeComponent implements OnInit {
   }
 
   isVideoPlaying: boolean = true;
+
+  // Auto-Flip Logic
+  isResortFlipped = false;
+  isTentFlipped = false;
+  isTrekkingFlipped = false;
+  private flipInterval: any;
+
+  ngOnDestroy() {
+    if (this.flipInterval) {
+      clearInterval(this.flipInterval);
+    }
+  }
 
   toggleVideo(video: HTMLVideoElement) {
     if (video.paused) {

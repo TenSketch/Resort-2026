@@ -1,5 +1,10 @@
 <section class="search-rooms-container">
   <div class="search-widget card-glass">
+    <!-- Widget Title -->
+    <h2 class="text-center mb-4 text-uppercase fw-bold text-secondary fa-sm">
+      Quick Filter
+    </h2>
+
     <!-- Progress Indicator -->
     <div class="progress-container">
       <div class="progress-track">
@@ -96,6 +101,17 @@
             <i class="fa-solid fa-arrow-left"></i> Back
           </button>
           <h3 class="step-title mb-0">Select Dates</h3>
+        </div>
+
+        <!-- Selected Place Display -->
+
+        <!-- Selected Place Display (Aligned Left) -->
+        <div class="w-100 mb-2" *ngIf="selectedResort">
+          <span
+            class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1"
+          >
+            <i class="fa-solid fa-location-dot me-2"></i>{{ selectedResort }}
+          </span>
         </div>
 
         <div class="dates-container" *ngIf="selectedType !== 'trek'">

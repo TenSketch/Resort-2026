@@ -76,7 +76,7 @@ export class HomeComponent implements OnInit {
       startText: 'Book Easily. Explore Deeply.',
       price: null,
       cta: 'Explore Now',
-      action: 'about'
+      action: 'resorts'
     },
     {
       id: 2,
@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
       location: 'Maredumilli, Andhra Pradesh',
       tagline: 'Comfort Amidst Nature',
       startText: null,
-      price: 'Starts at ₹3,499 / night',
+      price: 'Starts at ₹2,500 / night',
       cta: 'View Resorts',
       action: 'resorts'
     },
@@ -104,10 +104,10 @@ export class HomeComponent implements OnInit {
       id: 4,
       image: 'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg',
       title: 'Thrilling Trek Escapes',
-      location: 'Jalatarangini / Jungle Star / Gudisa',
+      location: 'Jalatarangini / Jungle Star',
       tagline: 'Choose Your Path, Feel the Rush',
       startText: null,
-      price: 'Entry from ₹800',
+      price: 'Entry from ₹50',
       cta: 'Explore Treks',
       action: 'treks'
     }

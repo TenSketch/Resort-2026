@@ -154,46 +154,153 @@
       </div>
     </section>
 
-    <!-- Feature Cards Section -->
-    <section class="feature-cards-section py-5">
+    <!-- Feature Cards Section (Zig-Zag Layout) -->
+    <section class="feature-cards-section py-5 overflow-hidden">
       <div class="container">
-        <div class="row g-4 justify-content-center">
-          <!-- Card 1: Resorts -->
-          <div class="col-md-4 col-sm-6">
-            <div class="feature-card shadow-sm" (click)="goToResort()">
-              <div class="icon-wrapper">
-                <i class="fa-solid fa-hotel"></i>
-              </div>
-              <div class="card-content">
-                <h3>Luxury Resorts</h3>
-                <p>Stay in comfort with nature around you.</p>
-              </div>
+        <!-- Section 1: Resorts (Text Left, Image Right) -->
+        <div class="row align-items-center mb-5 gx-5 zigzag-row">
+          <div class="col-md-6 order-2 order-md-1">
+            <div class="content-wrapper pe-md-4">
+              <span
+                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
+                >Stay in Luxury</span
+              >
+              <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
+                Luxury Resorts
+              </h2>
+              <p class="lead text-muted mb-4 font-body">
+                Immerse yourself in comfort while being surrounded by nature.
+                Our eco-friendly resorts offer the perfect blend of modern
+                amenities and wilderness serenity.
+              </p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-check-circle text-success me-2"></i>
+                  Premium Amenities
+                </li>
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-check-circle text-success me-2"></i>
+                  Scenic Views
+                </li>
+                <li class="d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-check-circle text-success me-2"></i>
+                  Local Cuisine
+                </li>
+              </ul>
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                (click)="goToResort()"
+              >
+                Explore Resorts <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
             </div>
           </div>
-
-          <!-- Card 2: Tents -->
-          <div class="col-md-4 col-sm-6">
-            <div class="feature-card shadow-sm" (click)="goToTents()">
-              <div class="icon-wrapper">
-                <i class="fa-solid fa-campground"></i>
-              </div>
-              <div class="card-content">
-                <h3>Camping Tents</h3>
-                <p>Experience the thrill of sleeping under stars.</p>
-              </div>
+          <div class="col-md-6 order-1 order-md-2 mb-4 mb-md-0">
+            <div class="image-wrapper position-relative">
+              <div class="blob-bg blob-right"></div>
+              <img
+                src="assets/img/Vanavihari-reception.jpg"
+                alt="Luxury Resorts"
+                class="img-fluid rounded-4 shadow-lg position-relative z-1 hover-scale"
+              />
             </div>
           </div>
+        </div>
 
-          <!-- Card 3: Trekking -->
-          <div class="col-md-4 col-sm-6">
-            <div class="feature-card shadow-sm" routerLink="/tourist-places">
-              <div class="icon-wrapper">
-                <i class="fa-solid fa-person-hiking"></i>
-              </div>
-              <div class="card-content">
-                <h3>Trekking Spots</h3>
-                <p>Explore hidden trails and scenic views.</p>
-              </div>
+        <!-- Section 2: Tents (Image Left, Text Right) -->
+        <div class="row align-items-center mb-5 gx-5 zigzag-row">
+          <div class="col-md-6 order-1 mb-4 mb-md-0">
+            <div class="image-wrapper position-relative">
+              <div class="blob-bg blob-left"></div>
+              <img
+                src="assets/img/tent/Vanavihari/tent1.jpg"
+                alt="Camping Tents"
+                class="img-fluid rounded-4 shadow-lg position-relative z-1 hover-scale"
+              />
+            </div>
+          </div>
+          <div class="col-md-6 order-2">
+            <div class="content-wrapper ps-md-4">
+              <span
+                class="badge bg-light text-warning mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-warning border-opacity-10"
+                >Adventure Awaits</span
+              >
+              <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
+                Camping Tents
+              </h2>
+              <p class="lead text-muted mb-4 font-body">
+                Experience the thrill of sleeping under the stars. Connect with
+                the outdoors in our secure and comfortable camping tents
+                suitable for families and solo travelers.
+              </p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-fire text-warning me-2"></i> Campfire
+                  Nights
+                </li>
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-star text-warning me-2"></i> Stargazing
+                </li>
+                <li class="d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-shield-halved text-warning me-2"></i>
+                  Safe & Secure
+                </li>
+              </ul>
+              <button
+                class="btn btn-outline-dark rounded-pill px-4 py-2"
+                (click)="goToTents()"
+              >
+                Book a Tent <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Trekking (Text Left, Image Right) -->
+        <div class="row align-items-center gx-5 zigzag-row">
+          <div class="col-md-6 order-2 order-md-1">
+            <div class="content-wrapper pe-md-4">
+              <span
+                class="badge bg-light text-info mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-info border-opacity-10"
+                >Explore Nature</span
+              >
+              <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
+                Trekking Spots
+              </h2>
+              <p class="lead text-muted mb-4 font-body">
+                Discover hidden trails and breathtaking scenic views. Whether
+                you are a beginner or a pro, we have trekking paths that will
+                challenge and inspire you.
+              </p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-person-hiking text-info me-2"></i>
+                  Guided Tours
+                </li>
+                <li class="mb-2 d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-camera text-info me-2"></i> Photography
+                  Spots
+                </li>
+                <li class="d-flex align-items-center text-muted">
+                  <i class="fa-solid fa-map text-info me-2"></i> Forest Trails
+                </li>
+              </ul>
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                routerLink="/tourist-places"
+              >
+                Plan a Trek <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6 order-1 order-md-2 mb-4 mb-md-0">
+            <div class="image-wrapper position-relative">
+              <div class="blob-bg blob-right-alt"></div>
+              <img
+                src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+                alt="Trekking Spots"
+                class="img-fluid rounded-4 shadow-lg position-relative z-1 hover-scale"
+              />
             </div>
           </div>
         </div>
@@ -631,7 +738,7 @@
                   for beginners and nature enthusiasts.
                 </p>
                 <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹800/person</small><br />
+                  <small class="text-primary">Entry: ₹50/person</small><br />
                   <small class="text-muted">Parking: ₹0/vehicle</small>
                 </div>
               </div>

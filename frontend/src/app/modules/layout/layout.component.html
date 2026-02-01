@@ -204,6 +204,20 @@
           </a>
         </li>
 
+        <li class="sidebar-item d-flex" *ngIf="!isLoggedIn()">
+          <a class="sidebar-link" (click)="toggleSidebar(); goToSignin()">
+            <i class="fa-solid fa-right-to-bracket"></i
+            ><span class="ms-3">Sign In</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
+          <a class="sidebar-link" (click)="toggleSidebar(); triggerModal()">
+            <i class="fa-solid fa-right-from-bracket"></i
+            ><span class="ms-3">Sign Out</span>
+          </a>
+        </li>
+
         <!-- <li class="sidebar-item">
           <a class="sidebar-link d-flex gap-2 align-items-center" href="#">
             <i class="fa-regular fa-images"></i><span>Gallery</span>

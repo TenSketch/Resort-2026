@@ -11,7 +11,6 @@ import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
 import { usePermissions } from '@/lib/AdminProvider'
-import { Download } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -22,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 
 DataTable.use(DT);
 
@@ -45,7 +44,7 @@ export default function AllTentTypesTable() {
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedTent, setSelectedTent] = useState<TentType | null>(null);
   const [tentTypes, setTentTypes] = useState<TentType[]>([]);
   const tentTypesRef = useRef<TentType[]>([])
@@ -104,8 +103,8 @@ export default function AllTentTypesTable() {
   }, []);
 
   // keep refs up to date for DOM handlers
-  useEffect(()=>{ tentTypesRef.current = tentTypes }, [tentTypes])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { tentTypesRef.current = tentTypes }, [tentTypes])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -169,45 +168,7 @@ export default function AllTentTypesTable() {
     setSheetMode('edit')
   };
 
-  const toggleActiveStatus = async (tent: TentType) => {
-    if (!permsRef.current.canDisable) return
-    
-    try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiBase}/api/tent-types/${tent.id}/toggle-status`, {
-        method: 'PATCH',
-        headers,
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to toggle status');
-      }
-
-      // Update local state
-      setTentTypes((prev) =>
-        prev.map((t) =>
-          t.id === tent.id ? { ...t, isActive: !t.isActive } : t
-        )
-      );
-      if (selectedTent && selectedTent.id === tent.id) {
-        setSelectedTent({ ...tent, isActive: !tent.isActive });
-      }
-    } catch (err: any) {
-      console.error('Failed to toggle status:', err);
-      alert('Failed to toggle status: ' + (err.message || String(err)));
-    }
-  };
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -247,9 +208,17 @@ export default function AllTentTypesTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: TentType) => {
-        const isDisabled = !row.isActive;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}"
+              style="background: #10b981; color: white; border: none; padding: 6px 12px;
+                border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;"
+              title="View Tent Type"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -259,18 +228,6 @@ export default function AllTentTypesTable() {
               title="Edit Tent Type"
             >
               Edit
-            </button>` : ''}
-            ${perms.canDisable ? `
-            <button 
-              class="disable-btn" 
-              data-id="${row.id}"
-              style="background: ${isDisabled ? "#6b7280" : "#dc2626"}; color: white;
-                border: none; padding: 6px 12px; border-radius: 6px;
-                font-size: 12px; font-weight: 500; cursor: ${isDisabled ? 'not-allowed' : 'pointer'};"
-              ${isDisabled ? 'disabled' : ''}
-              title="${isDisabled ? 'Already inactive' : 'Deactivate'}"
-            >
-              ${isDisabled ? "Inactive" : "Deactivate"}
             </button>` : ''}
           </div>
         `;
@@ -283,18 +240,20 @@ export default function AllTentTypesTable() {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
       const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('edit-btn') || button?.classList.contains('disable-btn')) {
+      if (button?.classList.contains('view-btn')) {
+        event.stopPropagation()
+        const tentId = button.getAttribute('data-id') || ''
+        const tent = tentTypesRef.current.find(t => t.id === tentId)
+        if (tent) openForView(tent)
+        return
+      }
+      if (button?.classList.contains('edit-btn')) {
         event.stopPropagation()
         const tentId = button.getAttribute('data-id') || ''
         const tent = tentTypesRef.current.find(t => t.id === tentId)
         if (!tent) return
-        if (button.classList.contains('edit-btn')) {
-          if (!permsRef.current.canEdit) return
-          handleEdit(tent)
-        } else if (button.classList.contains('disable-btn')) {
-          if (!permsRef.current.canDisable) return
-          toggleActiveStatus(tent)
-        }
+        if (!permsRef.current.canEdit) return
+        handleEdit(tent)
         return
       }
 
@@ -316,19 +275,30 @@ export default function AllTentTypesTable() {
         <h2 className="text-xl font-semibold text-slate-800">
           Tent Types
         </h2>
-        <Button
-          onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
-            perms.canViewDownload 
-              ? 'bg-green-600 hover:bg-green-700' 
-              : 'bg-gray-300 cursor-not-allowed'
-          }`}
-          disabled={!perms.canViewDownload}
-          title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
+        <button
+          onClick={() => perms.canExport ? exportToExcel() : null}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
+            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            : 'bg-gray-300 cursor-not-allowed'
+            }`}
+          disabled={!perms.canExport}
+          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
         >
-          <Download className="h-4 w-4 mr-2" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
           Export to Excel
-        </Button>
+        </button>
       </div>
 
       <div ref={tableRef} className="flex-1 overflow-hidden">
@@ -338,7 +308,7 @@ export default function AllTentTypesTable() {
         {loadError && (
           <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
         )}
-          <DataTable
+        <DataTable
           data={tentTypes}
           columns={columns}
           className="display nowrap w-full border border-gray-400"
@@ -353,29 +323,29 @@ export default function AllTentTypesTable() {
             scrollY: "calc(100vh - 350px)",
             scrollCollapse: true,
             layout: {
-                topStart: "buttons",
-                topEnd: "search",
-                bottomStart: "pageLength",
-                bottomEnd: "paging",
+              topStart: "buttons",
+              topEnd: "search",
+              bottomStart: "pageLength",
+              bottomEnd: "paging",
             },
             buttons: [
-                {
+              {
                 extend: "colvis",
                 text: "Column Visibility",
                 collectionLayout: "fixed two-column",
                 collection: {
-                    // 👇 this is the fix
-                    appendTo: "body",
+                  // 👇 this is the fix
+                  appendTo: "body",
                 },
-                },
+              },
             ],
             columnControl: [
-                "order",
+              "order",
             ],
             columnDefs: [
-                { targets: "_all", visible: true },
+              { targets: "_all", visible: true },
             ],
-            }}
+          }}
 
         />
       </div>
@@ -470,46 +440,25 @@ export default function AllTentTypesTable() {
                   )}
                 </div>
 
-                <div>
-                  <Label>Status</Label>
-                  <Badge variant={selectedTent.isActive ? "default" : "destructive"}>{selectedTent.isActive ? "Active" : "Inactive"}</Badge>
-                </div>
+
               </div>
 
               <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      className="flex-1"
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant={selectedTent.isActive ? "destructive" : "default"}
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedTent) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {selectedTent.isActive ? "Deactivate" : "Activate"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>
-                      Close
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">
+                    Close
+                  </Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
                     <Button
                       onClick={async () => {
                         if (!perms.canEdit) return
-                        
+
                         try {
                           const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
                           const token = localStorage.getItem('admin_token');
-                          
+
                           const updateData = {
                             tentType: editTentType,
                             accommodationType: editAccommodationType,
@@ -545,16 +494,16 @@ export default function AllTentTypesTable() {
                             prev.map((t) =>
                               t.id === selectedTent.id
                                 ? {
-                                    ...t,
-                                    tentType: editTentType,
-                                    accommodationType: editAccommodationType,
-                                    tentBase: editTentBase,
-                                    dimensions: editDimensions,
-                                    brand: editBrand,
-                                    features: editFeatures,
-                                    price: Number(editPrice),
-                                    amenities: editAmenities,
-                                  }
+                                  ...t,
+                                  tentType: editTentType,
+                                  accommodationType: editAccommodationType,
+                                  tentBase: editTentBase,
+                                  dimensions: editDimensions,
+                                  brand: editBrand,
+                                  features: editFeatures,
+                                  price: Number(editPrice),
+                                  amenities: editAmenities,
+                                }
                                 : t
                             )
                           );

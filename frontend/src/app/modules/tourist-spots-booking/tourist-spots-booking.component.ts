@@ -128,7 +128,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         this.startAutoplay();
       })
       .catch(err => {
-        console.warn('Failed to load tourist spots from backend', err);
+        console.warn('Failed to load Trek Spots from backend', err);
         this.applyFilters();
         this.initHeroImages();
         this.startAutoplay();
@@ -274,7 +274,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
       this.categories = built;
     } catch (e) {
-      console.warn('Error loading tourist spots', e);
+      console.warn('Error loading Trek Spots', e);
       // fallback
     }
   }

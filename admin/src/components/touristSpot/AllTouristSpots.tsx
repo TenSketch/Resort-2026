@@ -30,7 +30,7 @@ interface TouristSpot {
   description?: string;
   address?: string;
   mapEmbed?: string;
-  images?: Array<string | { url?: string }>;
+  images?: Array<{ url: string; public_id: string }>;
 }
 
 export default function AllTouristSpots() {
@@ -51,8 +51,8 @@ export default function AllTouristSpots() {
 
   const exportToExcel = () => {
     const headers = [
-      "ID",
-      "Tourist Spot Name",
+      "S.No",
+      "Trek Spot Name",
       "Category", 
       "Entry Fees (₹)",
       "2 Wheeler Parking (₹)",
@@ -65,9 +65,9 @@ export default function AllTouristSpots() {
 
     const csvContent = [
       headers.join(","),
-      ...spots.map((spot) => {
+      ...spots.map((spot, idx) => {
         return [
-          `"${spot.id}"`,
+          idx + 1,
           `"${spot.name.replace(/"/g, '""')}"`,
           `"${(spot.category || '—').replace(/"/g, '""')}"`,
           `₹${(spot.entryFees || 0).toLocaleString()}`,
@@ -109,12 +109,12 @@ export default function AllTouristSpots() {
             description: s.description || s.desc || '',
             address: s.address || s.location || '',
             mapEmbed: s.mapEmbed || s.map || '',
-            images: Array.isArray(s.images) ? s.images.map((i: any) => (typeof i === 'string' ? i : i.url || i.path || '')) : [],
+            images: Array.isArray(s.images) ? s.images : [],
           }));
           setSpots(mapped);
         }
       } catch (e) {
-        console.warn('Failed to load tourist spots; using static seed');
+        console.warn('Failed to load Trek Spots; using static seed');
       } finally {
         setLoading(false);
       }
@@ -163,8 +163,8 @@ export default function AllTouristSpots() {
               // remove from list
               setSpots(prev => prev.filter(p => p.id !== id))
             } catch (err: any) {
-              console.error('Failed to delete tourist spot', err)
-              alert('Failed to delete tourist spot: ' + (err.message || String(err)))
+              console.error('Failed to delete Trek spot', err)
+              alert('Failed to delete Trek spot: ' + (err.message || String(err)))
             }
           })()
         }
@@ -189,15 +189,23 @@ export default function AllTouristSpots() {
   }, [apiBase, navigate])
 
   const columns = [
-    { data: 'id', title: 'ID' },
-    { data: 'name', title: 'Tourist Spot Name' },
+    {
+      data: null,
+      title: 'S.No',
+      orderable: false,
+      searchable: false,
+      render: (_data: any, _type: any, _row: any, meta: any) => {
+        return meta.row + 1;
+      }
+    },
+    { data: 'name', title: 'Trek Spot Name' },
     { data: 'category', title: 'Category' },
     {
       data: 'images',
       title: 'Thumbnail',
       orderable: false,
       render: (data: any, _type: any, row: TouristSpot) => {
-        const img = Array.isArray(data) && data.length > 0 ? (typeof data[0] === 'string' ? data[0] : (data[0].url || '')) : '';
+        const img = Array.isArray(data) && data.length > 0 ? data[0].url : '';
         const src = img || '/img/placeholder.jpg';
         return `<img src="${src}" alt="${row.name}" style="width:64px;height:48px;object-fit:cover;border-radius:4px;"/>`;
       }
@@ -253,7 +261,7 @@ export default function AllTouristSpots() {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-slate-800">Tourist Spots</h2>
+        <h2 className="text-xl font-semibold text-slate-800">Trek Spots</h2>
         <Button
           onClick={() => perms.canViewDownload ? exportToExcel() : null}
           className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
@@ -270,7 +278,7 @@ export default function AllTouristSpots() {
       </div>
 
       <div ref={tableRef} className="w-full">
-        {loading && <div className="p-4 text-sm text-gray-500">Loading tourist spots...</div>}
+        {loading && <div className="p-4 text-sm text-gray-500">Loading Trek Spots...</div>}
         <DataTable
           data={spots}
           columns={columns}

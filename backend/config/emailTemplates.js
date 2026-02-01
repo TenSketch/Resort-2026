@@ -39,6 +39,70 @@ export const PASSWORD_RESET_EMAIL_TEMPLATE = `
 </div>
 `;
 
+export const PASSWORD_ADMIN_SEND_TEMPLATE = `
+<div style="font-family: Arial, sans-serif; color: #000000; line-height: 1.6; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+
+    <h2 style="color: #4d9900; text-align: center;">Welcome to Vanavihari!</h2>
+
+    <p style="font-size: 16px;"><em style="color: #4d9900;">Dear {{FULL_NAME}},</em></p>
+
+    <p style="font-size: 16px;">
+        Greetings from <strong>Vanavihari</strong>!
+    </p>
+
+    <p style="font-size: 16px;">
+        Your account has been successfully created by our admin team. You can now access your account and start exploring all that Vanavihari has to offer.
+    </p>
+
+    <div style="background-color: #f8f8f8; padding: 20px; border-left: 4px solid #4d9900; margin: 20px 0;">
+        <h3 style="color: #4d9900; margin-top: 0;">Your Login Credentials:</h3>
+        <p style="font-size: 16px; margin: 10px 0;">
+            <strong>Email:</strong> {{EMAIL}}
+        </p>
+        <p style="font-size: 16px; margin: 10px 0;">
+            <strong>Password:</strong> <span style="background-color: #fff; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 18px; color: #333;">{{PASSWORD}}</span>
+        </p>
+        <p style="font-size: 16px; margin: 10px 0;">
+            <strong>Email Verification Status:</strong> {{VERIFICATION_STATUS}}
+        </p>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{LOGIN_LINK}}" 
+           style="background-color: #4d9900; color: #ffffff; text-decoration: none; display: inline-block; padding: 15px 40px; font-size: 18px; border-radius: 8px; font-weight: bold;">
+            LOGIN NOW
+        </a>
+    </div>
+
+    <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 14px; color: #856404;">
+            <strong>⚠️ Security Notice:</strong> For your security, we recommend changing your password after your first login. You can do this from your account settings.
+        </p>
+    </div>
+
+    <p style="font-size: 16px;">
+        If you have any questions or need assistance, feel free to reach out to us at 
+        <a href="mailto:info@vanavihari.com" style="color: #4d9900; font-weight: bold;">info@vanavihari.com</a> 
+        or call us at <span style="font-weight: bold;">9840166419</span>. We're here to help!
+    </p>
+
+    <p style="font-size: 16px; margin-top: 30px;">
+        Best Regards,
+    </p>
+
+    <p style="font-size: 16px;">
+        Team <strong>Vanavihari</strong>
+    </p>
+
+    <p style="font-size: 16px; color: #666;">
+        <a href="mailto:info@vanavihari.com" style="color: #4d9900;">info@vanavihari.com</a> | 9840166419<br>
+        <a href="http://www.vanavihari.com" style="color: #4d9900;">www.vanavihari.com</a>
+    </p>
+
+</div>
+`;
+
+
 export const EMAIL_VERIFICATION_TEMPLATE = `
 <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
 

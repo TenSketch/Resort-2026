@@ -3,6 +3,7 @@ import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
 import { sendReservationSuccessEmails } from "../services/reservationEmailService.js";
+import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
 import Reservation from "../models/reservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
@@ -413,13 +414,70 @@ export const handlePaymentCallback = async (req, res) => {
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.paymentError = transaction_error_desc;
       } else if (auth_status === '0002') {
-        // Pending - keep as unpaid until confirmed
+        // Pending - but check if it's actually successful (BillDesk UAT quirk)
+        console.log('⏳ Payment pending, but checking if actually successful...');
         paymentTransaction.status = 'pending';
         reservation.paymentStatus = 'unpaid';
+        
+        // If transaction_error_desc says "successful", immediately retrieve real status
+        if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
+          console.log('🔍 Transaction says "successful" but status is pending - will retrieve immediately');
+          // Import at top if not already: import { retrieveTransaction } from '../services/retrieveTransaction.js';
+          // Schedule immediate check (after 10 seconds to allow BillDesk to update)
+          setTimeout(async () => {
+            try {
+              console.log(`🔍 Immediate status check for ${bookingId}`);
+              const authToken = reservation?.rawSource?.authToken || null;
+              const result = await retrieveTransaction(bookingId, process.env.BILLDESK_MERCID, authToken);
+              
+              if (result.success && result.data.auth_status === '0300') {
+                console.log('✅ Payment actually successful! Updating now...');
+                
+                await Reservation.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'reserved',
+                    paymentStatus: 'paid',
+                    expiresAt: null,
+                    $set: {
+                      'rawSource.transactionId': result.data.transactionid,
+                      'rawSource.authStatus': '0300',
+                      'rawSource.bankRefNo': result.data.bank_ref_no,
+                      'rawSource.authCode': result.data.authcode
+                    }
+                  }
+                );
+                
+                await PaymentTransaction.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'success',
+                    authStatus: '0300',
+                    decryptedResponse: result.data
+                  }
+                );
+                
+                // Stop polling and send emails
+                const { stopTransactionPolling } = await import('../services/transactionPoller.js');
+                stopTransactionPolling(bookingId);
+                
+                const updatedReservation = await Reservation.findOne({ bookingId }).lean();
+                const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
+                
+                sendReservationSuccessEmails(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Email error:', err.message));
+                sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('SMS error:', err.message));
+              }
+            } catch (err) {
+              console.error('Immediate check error:', err.message);
+            }
+          }, 10000); // Check after 10 seconds
+        }
       } else if (auth_status === '0398') {
         // User cancelled
         paymentTransaction.status = 'cancelled';
-        reservation.status = 'cancelled';
+        reservation.status = 'not-reserved';
         reservation.paymentStatus = 'unpaid';
       } else {
         // Unknown status - keep as unpaid
@@ -443,6 +501,11 @@ export const handlePaymentCallback = async (req, res) => {
         sendReservationSuccessEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Emails sent successfully'))
           .catch(err => console.error('❌ Email sending failed:', err.message));
+        
+        // Send SMS asynchronously (don't wait for completion)
+        sendRoomReservationSMS(reservation, paymentTransaction)
+          .then(() => console.log('✅ Room reservation SMS sent successfully'))
+          .catch(err => console.error('❌ SMS sending failed:', err.message));
       }
 
       // Redirect based on status (Angular uses hash routing)

@@ -1,8 +1,5 @@
 import Resort from '../models/resortModel.js'
 import cloudinary from '../config/cloudinaryConfig.js'
-import fs from 'fs'
-import { promisify } from 'util'
-const unlinkAsync = promisify(fs.unlink)
 
 // Helper function to generate slug from text
 const generateSlug = (text) => {
@@ -89,18 +86,29 @@ const createResort = async (req, res) => {
     // if multer provided a file, upload to cloudinary
     if (req.file) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path, { folder: 'vanavihari/resorts' })
-        resortData.logo = { url: result.secure_url, public_id: result.public_id }
-      } finally {
-        // attempt to remove temp file if it exists
-        if (req.file && req.file.path) {
-          try {
-            await unlinkAsync(req.file.path)
-          } catch (e) {
-            // log but don't fail the request because of cleanup error
-            console.warn('Failed to remove temp file:', req.file.path, e.message || e)
+        const result = await cloudinary.uploader.upload_stream(
+          { folder: 'vanavihari/resorts' },
+          (error, result) => {
+            if (error) throw error
+            return result
           }
-        }
+        )
+        // For memory storage, we need to use a different approach
+        const uploadPromise = new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'vanavihari/resorts' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          stream.end(req.file.buffer)
+        })
+        const uploadResult = await uploadPromise
+        resortData.logo = { url: uploadResult.secure_url, public_id: uploadResult.public_id }
+      } catch (e) {
+        console.error('Cloudinary upload error:', e)
+        throw e
       }
     }
 
@@ -204,12 +212,21 @@ const updateResort = async (req, res) => {
         if (existing.logo?.public_id) {
           try { await cloudinary.uploader.destroy(existing.logo.public_id) } catch (e) { /* silent */ }
         }
-        const result = await cloudinary.uploader.upload(req.file.path, { folder: 'vanavihari/resorts' })
-        update.logo = { url: result.secure_url, public_id: result.public_id }
-      } finally {
-        if (req.file?.path) {
-          try { await unlinkAsync(req.file.path) } catch (e) { /* silent */ }
-        }
+        const uploadPromise = new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'vanavihari/resorts' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          stream.end(req.file.buffer)
+        })
+        const uploadResult = await uploadPromise
+        update.logo = { url: uploadResult.secure_url, public_id: uploadResult.public_id }
+      } catch (e) {
+        console.error('Cloudinary upload error:', e)
+        throw e
       }
     }
 

@@ -372,8 +372,8 @@ export default function AddTentBookings() {
                   <SelectContent>
                     <SelectItem value="reserved">Reserved</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="not reserved">Not Reserved</SelectItem>
-                    <SelectItem value="canceled">Canceled</SelectItem>
+                    <SelectItem value="not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -405,7 +405,8 @@ export default function AddTentBookings() {
                   <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50"><SelectValue placeholder="Select" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="unpaid">Not Paid</SelectItem>
+                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                    <SelectItem value="refunded">Refunded</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

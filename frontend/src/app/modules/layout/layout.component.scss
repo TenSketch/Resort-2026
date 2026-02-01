@@ -206,7 +206,7 @@
   left: auto;
   height: 100vh;
   width: 100%;
-  background-color: #f8f9fa;
+  background-color: #f0fdf4;
   border-left: 1px solid rgba(0, 0, 0, 0.05);
   z-index: 10000;
   transform: translateX(100%);
@@ -237,6 +237,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999;
     display: none;
 
@@ -259,6 +260,8 @@
       margin-top: 1rem;
     }
     color: $clr-primary-dark;
+    overflow-y: auto;
+    height: 100%;
 
     .sidebar-menu {
       list-style: none;

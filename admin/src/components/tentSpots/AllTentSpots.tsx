@@ -11,7 +11,6 @@ import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
 import { usePermissions } from '@/lib/AdminProvider'
-import { Download } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -22,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 
 DataTable.use(DT);
 
@@ -51,7 +50,7 @@ export default function AllTentSpotsTable() {
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedSpot, setSelectedSpot] = useState<TentSpot | null>(null);
   const [tentSpots, setTentSpots] = useState<TentSpot[]>([]);
   const tentSpotsRef = useRef<TentSpot[]>([])
@@ -119,8 +118,8 @@ export default function AllTentSpotsTable() {
     fetchTentSpots();
   }, []);
 
-  useEffect(()=>{ tentSpotsRef.current = tentSpots }, [tentSpots])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { tentSpotsRef.current = tentSpots }, [tentSpots])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -202,45 +201,7 @@ export default function AllTentSpotsTable() {
     setSheetMode('edit')
   };
 
-  const toggleActiveStatus = async (spot: TentSpot) => {
-    if (!permsRef.current.canDisable) return
-    
-    try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiBase}/api/tent-spots/${spot.id}/toggle-status`, {
-        method: 'PATCH',
-        headers,
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to toggle status');
-      }
-
-      // Update local state
-      setTentSpots((prev) =>
-        prev.map((t) =>
-          t.id === spot.id ? { ...t, isActive: !t.isActive } : t
-        )
-      );
-      if (selectedSpot && selectedSpot.id === spot.id) {
-        setSelectedSpot({ ...spot, isActive: !spot.isActive });
-      }
-    } catch (err: any) {
-      console.error('Failed to toggle status:', err);
-      alert('Failed to toggle status: ' + (err.message || String(err)));
-    }
-  };
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -287,9 +248,17 @@ export default function AllTentSpotsTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: TentSpot) => {
-        const isDisabled = !row.isActive;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row.id}"
+              style="background: #10b981; color: white; border: none; padding: 6px 12px;
+                border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;"
+              title="View Tent Spot"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -299,18 +268,6 @@ export default function AllTentSpotsTable() {
               title="Edit Tent Spot"
             >
               Edit
-            </button>` : ''}
-            ${perms.canDisable ? `
-            <button 
-              class="disable-btn" 
-              data-id="${row.id}"
-              style="background: ${isDisabled ? "#6b7280" : "#dc2626"}; color: white;
-                border: none; padding: 6px 12px; border-radius: 6px;
-                font-size: 12px; font-weight: 500; cursor: ${isDisabled ? 'not-allowed' : 'pointer'};"
-              ${isDisabled ? 'disabled' : ''}
-              title="${isDisabled ? 'Already inactive' : 'Deactivate'}"
-            >
-              ${isDisabled ? "Inactive" : "Deactivate"}
             </button>` : ''}
           </div>
         `;
@@ -323,18 +280,20 @@ export default function AllTentSpotsTable() {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
       const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('edit-btn') || button?.classList.contains('disable-btn')) {
+      if (button?.classList.contains('view-btn')) {
+        event.stopPropagation()
+        const spotId = button.getAttribute('data-id') || ''
+        const spot = tentSpotsRef.current.find(t => t.id === spotId)
+        if (spot) openForView(spot)
+        return
+      }
+      if (button?.classList.contains('edit-btn')) {
         event.stopPropagation()
         const spotId = button.getAttribute('data-id') || ''
         const spot = tentSpotsRef.current.find(t => t.id === spotId)
         if (!spot) return
-        if (button.classList.contains('edit-btn')) {
-          if (!permsRef.current.canEdit) return
-          handleEdit(spot)
-        } else if (button.classList.contains('disable-btn')) {
-          if (!permsRef.current.canDisable) return
-          toggleActiveStatus(spot)
-        }
+        if (!permsRef.current.canEdit) return
+        handleEdit(spot)
         return
       }
 
@@ -356,19 +315,30 @@ export default function AllTentSpotsTable() {
         <h2 className="text-xl font-semibold text-slate-800">
           Tent Spots
         </h2>
-        <Button
-          onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
-            perms.canViewDownload 
-              ? 'bg-green-600 hover:bg-green-700' 
-              : 'bg-gray-300 cursor-not-allowed'
-          }`}
-          disabled={!perms.canViewDownload}
-          title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
+        <button
+          onClick={() => perms.canExport ? exportToExcel() : null}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
+            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            : 'bg-gray-300 cursor-not-allowed'
+            }`}
+          disabled={!perms.canExport}
+          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
         >
-          <Download className="h-4 w-4 mr-2" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
           Export to Excel
-        </Button>
+        </button>
       </div>
 
       <div ref={tableRef} className="flex-1 overflow-hidden">
@@ -469,9 +439,9 @@ export default function AllTentSpotsTable() {
                 <div>
                   <Label>Tent ID Prefix</Label>
                   {sheetMode === 'edit' ? (
-                    <Input 
-                      value={editTentIdPrefix} 
-                      onChange={(e) => setEditTentIdPrefix(e.target.value)} 
+                    <Input
+                      value={editTentIdPrefix}
+                      onChange={(e) => setEditTentIdPrefix(e.target.value)}
                       maxLength={5}
                       placeholder="e.g., VM, VH"
                     />
@@ -493,8 +463,8 @@ export default function AllTentSpotsTable() {
                 <div>
                   <Label>Slug URL</Label>
                   {sheetMode === 'edit' ? (
-                    <Input 
-                      value={editSlugUrl} 
+                    <Input
+                      value={editSlugUrl}
                       onChange={(e) => setEditSlugUrl(e.target.value)}
                       placeholder="e.g., vanavihari-marudemalli"
                     />
@@ -594,48 +564,23 @@ export default function AllTentSpotsTable() {
                   )}
                 </div>
 
-                <div>
-                  <Label>Status</Label>
-                  <Badge
-                    variant={selectedSpot.isActive ? "default" : "destructive"}
-                  >
-                    {selectedSpot.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
+
               </div>
 
               <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      className="flex-1"
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant={selectedSpot.isActive ? "destructive" : "default"}
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedSpot) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {selectedSpot.isActive ? "Deactivate" : "Activate"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>Close</Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
                     <Button
                       onClick={async () => {
                         if (!perms.canEdit) return
-                        
+
                         try {
                           const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
                           const token = localStorage.getItem('admin_token');
-                          
+
                           const updateData = {
                             spotName: editSpotName,
                             tentIdPrefix: editTentIdPrefix,

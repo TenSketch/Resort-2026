@@ -1,9 +1,8 @@
-
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Admin from '../models/adminModel.js'
 import userModel from '../models/userModel.js'
-import { generateVerificationToken, sendVerificationEmail, generatePasswordResetToken, sendPasswordResetEmail } from '../services/emailService.js'
+import { generateVerificationToken, sendVerificationEmail, generatePasswordResetToken, sendPasswordResetEmail, sendAdminCreatedAccountEmail } from '../services/emailService.js'
 
 // route for user login
 const loginUser = async (req, res) => {
@@ -116,7 +115,7 @@ const loginUser = async (req, res) => {
 // route for user register
 const registerUser = async (req, res) => {
   try {
-    const { full_name, email_id, mobile_number, password, dob, nationality, address1, address2, city, state, pincode, country } = req.body
+    const { full_name, email_id, mobile_number, password, dob, nationality, address1, address2, city, state, pincode, country, isEmailVerified } = req.body
     
     // Validation
     if (!full_name || !email_id || !mobile_number || !password) {
@@ -165,25 +164,26 @@ const registerUser = async (req, res) => {
       })
     }
 
-    // Check if user already exists
+    // Check if user already exists by email
     const existingUserByEmail = await userModel.findOne({ email: email_id })
     if (existingUserByEmail) {
       return res.status(400).json({ 
         code: 3000,
         result: { 
           status: 'error', 
-          msg: 'User with this email already exists' 
+          msg: 'An account with this email already exists. Please use a different email or login to your existing account.' 
         }
       })
     }
 
+    // Check if user already exists by phone
     const existingUserByPhone = await userModel.findOne({ phone: mobile_number })
     if (existingUserByPhone) {
       return res.status(400).json({ 
         code: 3000,
         result: { 
           status: 'error', 
-          msg: 'User with this phone number already exists' 
+          msg: 'An account with this phone number already exists. Please use a different phone number.' 
         }
       })
     }
@@ -220,9 +220,10 @@ const registerUser = async (req, res) => {
       newUser.profileCompleted = true
     }
 
-    // For admin-registered users, auto-verify email
+    // Handle email verification based on registration source
     if (req.body.registerThrough === 'admin') {
-      newUser.isEmailVerified = true
+      // For admin registration, use the isEmailVerified flag from request
+      newUser.isEmailVerified = isEmailVerified !== undefined ? isEmailVerified : true
     } else {
       // For frontend registration, generate verification token
       const verificationToken = generateVerificationToken()
@@ -233,8 +234,8 @@ const registerUser = async (req, res) => {
 
     const savedUser = await newUser.save()
 
-    // Send verification email for frontend registrations
-    if (req.body.registerThrough !== 'admin') {
+    // Send verification email for frontend registrations (only if not verified)
+    if (req.body.registerThrough !== 'admin' && !savedUser.isEmailVerified) {
       try {
         await sendVerificationEmail(savedUser, savedUser.emailVerificationToken)
       } catch (emailError) {
@@ -260,6 +261,17 @@ const registerUser = async (req, res) => {
       })
     }
 
+    // For admin registrations, send credentials email
+    if (req.body.registerThrough === 'admin') {
+      try {
+        await sendAdminCreatedAccountEmail(savedUser, password, savedUser.isEmailVerified)
+        console.log(`✅ Account credentials email sent to ${savedUser.email}`)
+      } catch (emailError) {
+        console.error('Failed to send account credentials email:', emailError)
+        // Continue with registration even if email fails
+      }
+    }
+
     // For admin registrations, return token immediately
     const token = jwt.sign(
       { 
@@ -271,20 +283,28 @@ const registerUser = async (req, res) => {
       { expiresIn: '7d' }
     )
 
+    const verificationStatus = savedUser.isEmailVerified ? 'verified' : 'unverified'
+    const successMsg = savedUser.isEmailVerified 
+      ? 'User account created successfully! Login credentials have been sent to the user\'s email.'
+      : 'User account created successfully! Login credentials have been sent to the user\'s email. Email verification is pending.'
+
     res.status(201).json({ 
       code: 3000,
       result: { 
         status: 'success', 
-        msg: 'Account created successfully with complete profile!',
+        msg: successMsg,
         user: {
           id: savedUser._id,
           name: savedUser.name,
           email: savedUser.email,
-          phone: savedUser.phone
+          phone: savedUser.phone,
+          isEmailVerified: savedUser.isEmailVerified
         },
         token,
         userfullname: savedUser.name,
-        profileCompleted
+        profileCompleted,
+        emailVerificationStatus: verificationStatus,
+        credentialsSent: true
       }
     })
   } catch (error) {

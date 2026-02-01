@@ -67,13 +67,47 @@ export default function CottageDataTable() {
   const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(false);
   const perms = usePermissions()
   const permsRef = useRef(perms)
-  useEffect(()=>{ cottageRef.current = cottageTypes }, [cottageTypes])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { cottageRef.current = cottageTypes }, [cottageTypes])
+  useEffect(() => { permsRef.current = perms }, [perms])
+
+  const exportToExcel = () => {
+    const headers = [
+      "S No",
+      "Cottage Name",
+      "Resort",
+      "Description",
+      "Amenities",
+      "Status",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...cottageRef.current.map((row, idx) => {
+        return [
+          idx + 1,
+          `"${row.name}"`,
+          `"${typeof row.resort === 'string' ? row.resort : (row.resort?.resortName || row.resort?.name || '')}"`,
+          `"${row.description || ''}"`,
+          `"${(row.amenities || []).join('; ')}"`,
+          `"${row.isDisabled ? 'Disabled' : 'Active'}"`,
+        ].join(",");
+      }),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "Cottage_Types.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const addAmenity = () => {
     const val = amenityDraft.trim();
     if (!val) return;
-    setFormData(f => ({ ...f, amenities: [ ...(f.amenities || []), val ] }));
+    setFormData(f => ({ ...f, amenities: [...(f.amenities || []), val] }));
     setAmenityDraft('');
   };
   const removeAmenity = (amenity: string) => {
@@ -118,7 +152,7 @@ export default function CottageDataTable() {
         setFormData(data.cottageType);
       }
       setVersion(v => v + 1);
-    } catch (e:any) {
+    } catch (e: any) {
       console.error(e);
       alert(e.message || 'Disable failed');
     }
@@ -144,8 +178,8 @@ export default function CottageDataTable() {
           amenities: ct.amenities || [],
         })) || [];
         setCottageTypes(list);
-        setVersion(v=>v+1);
-      } catch (e:any) {
+        setVersion(v => v + 1);
+      } catch (e: any) {
         setError(e.message);
       } finally {
         setLoading(false);
@@ -258,12 +292,14 @@ export default function CottageDataTable() {
       const target = event.target as HTMLElement;
       const cottageId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
       const cottage = cottageRef.current.find(c => c._id === cottageId);
-      
+
       if (cottage) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
-        
-        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
+
+        if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
+          openForView(cottage);
+        } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
           if (!permsRef.current.canEdit) return
           handleEdit(cottage);
         } else if (target.classList.contains('disable-btn') || target.closest('.disable-btn')) {
@@ -273,14 +309,14 @@ export default function CottageDataTable() {
       }
     };
 
-  const handleTableRowClick = (event: Event) => {
+    const handleTableRowClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger row click if a button was clicked
-      if (target.closest('.edit-btn, .disable-btn')) {
+      if (target.closest('.view-btn, .edit-btn, .disable-btn')) {
         return;
       }
-      
+
       const row = target.closest('tr');
       if (row && row.parentElement?.tagName === 'TBODY') {
         const rowIndex = Array.from(row.parentElement.children).indexOf(row);
@@ -323,13 +359,13 @@ export default function CottageDataTable() {
         `<div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${data}">${data}</div>`,
     },
     {
-  data: "amenities",
+      data: "amenities",
       title: "Amenities",
       render: (data: string[]) =>
         `<div style="display: flex; flex-wrap: wrap; gap: 4px;">
           ${data
-            .map(
-              (item) => `
+          .map(
+            (item) => `
                 <span style="
                   background: #dbeafe;
                   color: #1e3a8a;
@@ -341,8 +377,8 @@ export default function CottageDataTable() {
                   overflow: hidden;
                   text-overflow: ellipsis;
                 ">${item}</span>`
-            )
-            .join("")}
+          )
+          .join("")}
         </div>`,
     },
     {
@@ -351,9 +387,30 @@ export default function CottageDataTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: CottageType) => {
-    const isDisabled = !!row.isDisabled;
+        const isDisabled = !!row.isDisabled;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
+            <button 
+              class="view-btn" 
+              data-id="${row._id}" 
+              title="View Cottage"
+              style="
+                background: #10b981;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+              "
+              onmouseover="this.style.background='#059669'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
+              onmouseout="this.style.background='#10b981'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
+            >
+              View
+            </button>
             ${perms.canEdit ? `
             <button 
               class="edit-btn" 
@@ -377,29 +434,6 @@ export default function CottageDataTable() {
             >
               Edit
             </button>` : ''}
-            ${perms.canDisable ? `
-            <button 
-              class="disable-btn" 
-              data-id="${row._id}" 
-              title="${isDisabled ? 'Already Disabled' : 'Disable Record'}"
-              style="
-                background: ${isDisabled ? '#6b7280' : '#dc2626'};
-                color: white;
-                border: none;
-                padding: 6px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 500;
-                cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
-                transition: all 0.2s ease;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-              "
-              ${isDisabled ? 'disabled' : ''}
-              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ''}"
-              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ''}"
-            >
-              ${isDisabled ? 'Disabled' : 'Disable'}
-            </button>` : ''}
           </div>
         `;
       },
@@ -409,7 +443,34 @@ export default function CottageDataTable() {
 
   return (
     <div className="flex flex-col h-full max-h-screen overflow-hidden py-8">
-      <h2 className="text-xl font-semibold text-slate-800 mb-4">Cottage Types</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-slate-800">Cottage Types</h2>
+        <button
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
+        >
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Export to Excel
+        </button>
+      </div>
       <div ref={tableRef} className="flex-1 overflow-hidden">
         {error && <div className="text-red-600 p-2">{error}</div>}
         {loading && <div className="p-2">Loading...</div>}
@@ -450,7 +511,7 @@ export default function CottageDataTable() {
         />
       </div>
 
-  {/* Removed Edit & Confirmation dialogs */}
+      {/* Removed Edit & Confirmation dialogs */}
 
       {/* Cottage Details Sheet */}
       <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
@@ -461,7 +522,7 @@ export default function CottageDataTable() {
               Complete information about the selected cottage type
             </SheetDescription>
           </SheetHeader>
-          
+
           {selectedCottage && (
             <div className="flex flex-col gap-6 py-4 p-6">
               {/* Basic Information */}
@@ -472,36 +533,36 @@ export default function CottageDataTable() {
                     <span className="text-sm text-gray-900">{selectedCottage._id}</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Cottage Name</Label>
                   {editMode ? (
-                    <Input value={formData.name || ''} onChange={e=> setFormData(f=>({...f, name: e.target.value}))} />
+                    <Input value={formData.name || ''} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} />
                   ) : (
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border"><span className="text-sm text-gray-900">{selectedCottage.name}</span></div>
                   )}
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Resort</Label>
                   <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[48px]">
                     <span className="text-sm text-gray-900">
-                      {typeof selectedCottage.resort === 'string' 
-                        ? selectedCottage.resort 
+                      {typeof selectedCottage.resort === 'string'
+                        ? selectedCottage.resort
                         : (selectedCottage.resort?.resortName || selectedCottage.resort?.name || '')}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Description</Label>
                   {editMode ? (
-                    <Input value={formData.description || ''} onChange={e=> setFormData(f=>({...f, description: e.target.value}))} />
+                    <Input value={formData.description || ''} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} />
                   ) : (
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]"><span className="text-sm text-gray-900">{selectedCottage.description}</span></div>
                   )}
                 </div>
-                
+
                 <div>
                   <Collapsible open={isAmenitiesOpen} onOpenChange={setIsAmenitiesOpen}>
                     <div className="flex items-center justify-between">
@@ -518,7 +579,7 @@ export default function CottageDataTable() {
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-wrap gap-2">
                             {(formData.amenities || []).map((amenity, idx) => (
-                              <Badge key={amenity+idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
+                              <Badge key={amenity + idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
                                 <span>{amenity}</span>
                                 <button
                                   type="button"
@@ -556,42 +617,30 @@ export default function CottageDataTable() {
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
-                
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Status</Label>
-                  <div className="mt-1">
-                    <Badge variant={selectedCottage.isDisabled ? "destructive" : "default"} className="px-2 py-1">
-                      {selectedCottage.isDisabled ? 'Disabled' : 'Active'}
-                    </Badge>
-                  </div>
-                </div>
+
+
               </div>
-              
+
               {/* Action Buttons */}
               <div className="flex gap-2 pt-4 border-t">
                 {!editMode ? (
-                  <>
-                    <Button onClick={()=> { if (!perms.canEdit) return; setEditMode(true); setFormData(selectedCottage); }} className="flex-1" disabled={selectedCottage.isDisabled || !perms.canEdit} title={!perms.canEdit ? 'You do not have permission to edit' : undefined}>Edit</Button>
-                    <Button variant={selectedCottage.isDisabled? 'default':'destructive'} onClick={()=> { if (!perms.canDisable) return; handleDisable(selectedCottage) }} disabled={!perms.canDisable} title={!perms.canDisable ? 'You do not have permission to change status' : undefined}>
-                      {selectedCottage.isDisabled? 'Enable':'Disable'}
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={()=> { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>
-                    <Button onClick={async ()=> {
+                    <Button variant="outline" onClick={() => { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>
+                    <Button onClick={async () => {
                       if (!perms.canEdit) return
                       try {
                         const token = localStorage.getItem('admin_token')
-                        const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method:'PUT', headers:{'Content-Type':'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {})}, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
-                        if(!res.ok) throw new Error('Update failed');
+                        const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
+                        if (!res.ok) throw new Error('Update failed');
                         const data = await res.json();
                         setCottageTypes(prev => prev.map(c => c._id === data.cottageType._id ? data.cottageType : c));
                         setSelectedCottage(data.cottageType);
                         setFormData(data.cottageType);
                         setEditMode(false);
-                        setVersion(v=>v+1);
-                      } catch(e:any){
+                        setVersion(v => v + 1);
+                      } catch (e: any) {
                         alert(e.message || 'Update failed');
                       }
                     }} disabled={!perms.canEdit} title={!perms.canEdit ? 'You do not have permission to save' : undefined}>Save</Button>

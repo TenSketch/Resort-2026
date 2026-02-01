@@ -18,14 +18,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePermissions } from "@/lib/AdminProvider";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -76,8 +68,6 @@ export default function AllTentBookings() {
   const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [editForm, setEditForm] = useState<Partial<TentBooking> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [disabling, setDisabling] = useState<TentBooking | null>(null);
 
   const apiUrl =
     (import.meta.env && import.meta.env.VITE_API_URL) ||
@@ -169,28 +159,29 @@ export default function AllTentBookings() {
 
     const handleClick = (e: Event) => {
       const t = e.target as HTMLElement;
-      const btn = t.closest(".edit-btn, .delete-btn") as HTMLElement | null;
+      const btn = t.closest(".view-btn, .edit-btn") as HTMLElement | null;
       if (!btn) return;
       e.stopPropagation();
       const id = btn.getAttribute("data-id");
       const booking = bookingsRef.current.find((b) => b._id === id);
       if (!booking) return;
-      if (btn.classList.contains("edit-btn")) {
+
+      if (btn.classList.contains("view-btn")) {
+        setSelected(booking);
+        setSheetMode("view");
+        setIsDetailOpen(true);
+      } else if (btn.classList.contains("edit-btn")) {
         if (!permsRef.current.canEdit) return;
         setSelected(booking);
         setEditForm({ ...booking });
         setSheetMode("edit");
         setIsDetailOpen(true);
-      } else if (btn.classList.contains("delete-btn")) {
-        if (!permsRef.current.canDisable) return;
-        setDisabling(booking);
-        setIsConfirmOpen(true);
       }
     };
 
     const handleRowClick = (e: Event) => {
       const target = e.target as HTMLElement;
-      if (target.closest(".edit-btn, .delete-btn")) return;
+      if (target.closest(".view-btn, .edit-btn")) return;
       const row = target.closest("tr");
       if (row && row.parentElement?.tagName === "TBODY") {
         const idx = Array.from(row.parentElement.children).indexOf(row);
@@ -303,8 +294,8 @@ export default function AllTentBookings() {
       searchable: false,
       render: (_d: any, _t: any, row: TentBooking) => `
       <div style="display:flex;gap:8px;align-items:center;">
+        <button class="view-btn" data-id="${row._id}" style="background:#10b981;color:#fff;border:none;padding:6px 10px;border-radius:6px;">View</button>
         ${perms.canEdit ? `<button class="edit-btn" data-id="${row._id}" style="background:#3b82f6;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Edit</button>` : ""}
-        ${perms.canDisable ? `<button class="delete-btn" data-id="${row._id}" style="background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Delete</button>` : ""}
       </div>
     `,
     },
@@ -433,43 +424,36 @@ export default function AllTentBookings() {
     }
   };
 
-  const deleteBooking = async (b: TentBooking | null) => {
-    if (!permsRef.current.canDisable) return;
-    if (!b) return;
 
-    try {
-      const token = localStorage.getItem("admin_token");
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const res = await fetch(`${apiUrl}/api/tent-reservations/${b._id}`, {
-        method: "DELETE",
-        headers,
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete");
-      }
-
-      setBookings((prev) => prev.filter((x) => x._id !== b._id));
-      alert("Booking deleted successfully");
-    } catch (err) {
-      console.error("Delete error", err);
-      alert("Failed to delete booking: " + String(err));
-    }
-  };
 
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Tent Bookings</h2>
         <button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${perms.canViewDownload ? "bg-green-600 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canViewDownload}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
-          ⬇ Export to Excel
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Export to Excel
         </button>
       </div>
 
@@ -496,42 +480,6 @@ export default function AllTentBookings() {
           }}
         />
       </div>
-
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this tent booking?
-            </DialogDescription>
-          </DialogHeader>
-          {disabling && (
-            <div className="py-4">
-              <p>
-                <strong>Booking ID:</strong> {disabling.bookingId}
-              </p>
-              <p>
-                <strong>Name:</strong> {disabling.fullName}
-              </p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                await deleteBooking(disabling);
-                setIsConfirmOpen(false);
-                setDisabling(null);
-              }}
-            >
-              Yes, Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
@@ -849,31 +797,7 @@ export default function AllTentBookings() {
 
               <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        if (!perms.canEdit) return;
-                        setSheetMode("edit");
-                        setEditForm({ ...selected });
-                      }}
-                      className="flex-1"
-                      disabled={!perms.canEdit}
-                    >
-                      Edit Booking
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => {
-                        if (!perms.canDisable) return;
-                        setIsDetailOpen(false);
-                        setDisabling(selected);
-                        setIsConfirmOpen(true);
-                      }}
-                      disabled={!perms.canDisable}
-                    >
-                      Delete
-                    </Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button

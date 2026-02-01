@@ -2,6 +2,7 @@ import { encryptRequest, signEncryptedRequest, decryptResponse, verifySignature 
 import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
+import { sendTentReservationSMS } from "../services/reservationSmsService.js";
 import TentReservation from "../models/tentReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import TentSpot from "../models/tentSpotModel.js";
@@ -175,7 +176,7 @@ export const initiateTentPayment = async (req, res) => {
       const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
       
       // Start polling for transaction status
-      startTransactionPolling(bookingId, bdorderid, merchantId, authToken);
+      startTransactionPolling(bookingId, bdorderid, merchantId, authToken, 'tent');
       console.log(`🔄 Started transaction polling for tent booking: ${bookingId}`);
       
       const formAction = billdeskResponse.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';
@@ -296,12 +297,13 @@ export const handleTentPaymentCallback = async (req, res) => {
         // Success
         console.log('✅ Payment successful, updating records...');
         paymentTransaction.status = 'success';
-        reservation.status = 'reserved'; // Changed from 'confirmed' to 'reserved'
+        reservation.status = 'reserved';
         reservation.paymentStatus = 'paid';
         reservation.expiresAt = null;
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.transactionId = transactionid;
         reservation.rawSource.bankRefNo = decryptedResponse.bank_ref_no;
+        reservation.rawSource.authCode = decryptedResponse.authcode;
         reservation.markModified('rawSource');
       } else if (auth_status === '0399') {
         // Failed - set to not-reserved (not cancelled)
@@ -310,11 +312,69 @@ export const handleTentPaymentCallback = async (req, res) => {
         paymentTransaction.errorMessage = transaction_error_desc;
         reservation.status = 'not-reserved';
         reservation.paymentStatus = 'unpaid';
+        // Store error info
+        if (!reservation.rawSource) reservation.rawSource = {};
+        reservation.rawSource.paymentError = transaction_error_desc;
+        reservation.markModified('rawSource');
       } else if (auth_status === '0002') {
-        // Pending
-        console.log('⏳ Payment pending');
+        // Pending - but check if it's actually successful (BillDesk UAT quirk)
+        console.log('⏳ Payment pending, but checking if actually successful...');
         paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'pending';
+        reservation.paymentStatus = 'unpaid';
+        
+        // If transaction_error_desc says "successful", immediately retrieve real status
+        if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
+          console.log('🔍 Transaction says "successful" but status is pending - will retrieve immediately');
+          // Schedule immediate check (after 10 seconds to allow BillDesk to update)
+          setTimeout(async () => {
+            try {
+              console.log(`🔍 Immediate status check for tent booking ${bookingId}`);
+              const authToken = reservation?.rawSource?.authToken || null;
+              const result = await retrieveTransaction(bookingId, process.env.BILLDESK_MERCID, authToken);
+              
+              if (result.success && result.data.auth_status === '0300') {
+                console.log('✅ Tent payment actually successful! Updating now...');
+                
+                await TentReservation.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'reserved',
+                    paymentStatus: 'paid',
+                    expiresAt: null,
+                    $set: {
+                      'rawSource.transactionId': result.data.transactionid,
+                      'rawSource.authStatus': '0300',
+                      'rawSource.bankRefNo': result.data.bank_ref_no,
+                      'rawSource.authCode': result.data.authcode
+                    }
+                  }
+                );
+                
+                await PaymentTransaction.findOneAndUpdate(
+                  { bookingId },
+                  {
+                    status: 'success',
+                    authStatus: '0300',
+                    decryptedResponse: result.data
+                  }
+                );
+                
+                // Stop polling and send emails
+                stopTransactionPolling(bookingId);
+                
+                const updatedReservation = await TentReservation.findOne({ bookingId }).lean();
+                const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
+                
+                sendTentReservationEmails(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Tent email error:', err.message));
+                sendTentReservationSMS(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Tent SMS error:', err.message));
+              }
+            } catch (err) {
+              console.error('Immediate tent check error:', err.message);
+            }
+          }, 10000); // Check after 10 seconds
+        }
       } else if (auth_status === '0398') {
         // User cancelled
         console.log('🚫 Payment cancelled by user');
@@ -324,7 +384,7 @@ export const handleTentPaymentCallback = async (req, res) => {
       } else {
         console.log('⚠️ Unknown payment status:', auth_status);
         paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'pending';
+        reservation.paymentStatus = 'unpaid';
       }
 
       console.log('💾 Saving payment transaction...');
@@ -342,6 +402,11 @@ export const handleTentPaymentCallback = async (req, res) => {
         sendTentReservationEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Tent booking emails sent'))
           .catch(err => console.error('❌ Tent email sending failed:', err.message));
+        
+        // Send SMS asynchronously (don't wait for completion)
+        sendTentReservationSMS(reservation, paymentTransaction)
+          .then(() => console.log('✅ Tent booking SMS sent'))
+          .catch(err => console.error('❌ Tent SMS sending failed:', err.message));
       }
 
       // Redirect based on status

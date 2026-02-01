@@ -13,6 +13,8 @@ const adminSchema = new mongoose.Schema({
     canAddReservations: { type: Boolean, default: false },
     canAddGuests: { type: Boolean, default: false },
     canViewDownload: { type: Boolean, default: true },
+    canExport: { type: Boolean, default: true },
+    visiblePages: [{ type: String }], // Array of page IDs the user can access
   }
 }, { timestamps: true })
 

@@ -11,7 +11,6 @@ import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
 import { usePermissions } from '@/lib/AdminProvider'
-import { Download } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -46,7 +45,7 @@ export default function AllTentsTable() {
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
   const [selectedTent, setSelectedTent] = useState<Tent | null>(null);
   const [tents, setTents] = useState<Tent[]>([]);
   const tentsRef = useRef<Tent[]>([])
@@ -75,7 +74,7 @@ export default function AllTentsTable() {
         }
         const data = await res.json();
         const list = Array.isArray(data.tents) ? data.tents : [];
-        
+
         const mapped = list.map((t: any, idx: number) => ({
           id: t._id,
           sno: idx + 1,
@@ -91,7 +90,7 @@ export default function AllTentsTable() {
           images: t.images || [],
           isActive: !t.isDisabled,
         }));
-        
+
         setTents(mapped);
       } catch (err: any) {
         console.error('Failed to load tents', err);
@@ -104,8 +103,8 @@ export default function AllTentsTable() {
     fetchTents();
   }, []);
 
-  useEffect(()=>{ tentsRef.current = tents }, [tents])
-  useEffect(()=>{ permsRef.current = perms }, [perms])
+  useEffect(() => { tentsRef.current = tents }, [tents])
+  useEffect(() => { permsRef.current = perms }, [perms])
 
   const exportToExcel = () => {
     const headers = [
@@ -160,45 +159,7 @@ export default function AllTentsTable() {
     setIsDetailSheetOpen(true);
   };
 
-  const toggleActiveStatus = async (tent: Tent) => {
-    if (!permsRef.current.canDisable) return
-    
-    try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${apiBase}/api/tents/${tent.id}/toggle-status`, {
-        method: 'PATCH',
-        headers,
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to toggle status');
-      }
-
-      // Update local state
-      setTents((prev) =>
-        prev.map((t) =>
-          t.id === tent.id ? { ...t, isActive: !t.isActive } : t
-        )
-      );
-      if (selectedTent && selectedTent.id === tent.id) {
-        setSelectedTent({ ...tent, isActive: !tent.isActive });
-      }
-    } catch (err: any) {
-      console.error('Failed to toggle status:', err);
-      alert('Failed to toggle status: ' + (err.message || String(err)));
-    }
-  };
 
   const handleEdit = (tent: Tent) => {
     if (!permsRef.current.canEdit) return
@@ -213,8 +174,8 @@ export default function AllTentsTable() {
     { data: "noOfGuests", title: "No. of Guests" },
     { data: "noOfChildren", title: "No. of Children" },
     { data: "tentId", title: "Tent ID" },
-    { 
-      data: "rate", 
+    {
+      data: "rate",
       title: "Rate (₹)",
       render: (data: number) => `₹${data.toLocaleString()}`
     },
@@ -307,11 +268,11 @@ export default function AllTentsTable() {
       alert('No tent selected.');
       return;
     }
-    
+
     if (!confirm('Are you sure you want to delete this image?')) {
       return;
     }
-    
+
     setDeletingImage(publicId);
     try {
       const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
@@ -322,25 +283,25 @@ export default function AllTentsTable() {
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      
+
       const res = await fetch(`${apiBase}/api/tents/${selectedTent.id}/image`, {
         method: 'DELETE',
         headers,
         body: JSON.stringify({ public_id: publicId })
       });
-      
+
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error((data && data.error) || res.statusText);
-      
+
       // Update local state
       if (data && data.tent) {
         const updatedImages = data.tent.images || [];
         setSelectedTent(prev => prev ? { ...prev, images: updatedImages } : prev);
-        setTents(prev => prev.map(t => 
+        setTents(prev => prev.map(t =>
           t.id === selectedTent.id ? { ...t, images: updatedImages } : t
         ));
       }
-      
+
       alert('Image deleted successfully!');
     } catch (e: any) {
       console.error(e);
@@ -352,11 +313,11 @@ export default function AllTentsTable() {
 
   const handleSaveEdit = async () => {
     if (!perms.canEdit || !selectedTent) return;
-    
+
     try {
       const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
       const token = localStorage.getItem('admin_token');
-      
+
       const headers: Record<string, string> = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -368,7 +329,7 @@ export default function AllTentsTable() {
         newImages.forEach((file) => {
           formData.append('images', file);
         });
-        
+
         // Append other fields
         formData.append('noOfGuests', String(editNoOfGuests));
         formData.append('noOfChildren', String(editNoOfChildren));
@@ -430,7 +391,7 @@ export default function AllTentsTable() {
           )
         );
       }
-      
+
       setSheetMode('view');
       setNewImages([]);
       alert('Tent updated successfully!');
@@ -446,19 +407,30 @@ export default function AllTentsTable() {
         <h2 className="text-xl font-semibold text-slate-800">
           All Tents
         </h2>
-        <Button
-          onClick={() => perms.canViewDownload ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
-            perms.canViewDownload 
-              ? 'bg-green-600 hover:bg-green-700' 
-              : 'bg-gray-300 cursor-not-allowed'
-          }`}
-          disabled={!perms.canViewDownload}
-          title={perms.canViewDownload ? 'Export to Excel' : 'You do not have permission to download/export'}
+        <button
+          onClick={() => perms.canExport ? exportToExcel() : null}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
+            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            : 'bg-gray-300 cursor-not-allowed'
+            }`}
+          disabled={!perms.canExport}
+          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
         >
-          <Download className="h-4 w-4 mr-2" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
           Export to Excel
-        </Button>
+        </button>
       </div>
 
       <div ref={tableRef} className="flex-1 overflow-hidden">
@@ -623,8 +595,8 @@ export default function AllTentsTable() {
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           {selectedTent.images.map((img, idx) => (
                             <div key={idx} className="relative group">
-                              <img 
-                                src={img.url} 
+                              <img
+                                src={img.url}
                                 alt={`Tent ${idx + 1}`}
                                 className="w-full h-32 object-cover rounded-md border"
                               />
@@ -655,7 +627,7 @@ export default function AllTentsTable() {
                     ) : (
                       <span className="text-red-600 text-sm">✗ No images uploaded</span>
                     )}
-                    
+
                     {/* Upload new images in edit mode */}
                     {sheetMode === 'edit' && (
                       <div className="mt-2">
@@ -684,41 +656,12 @@ export default function AllTentsTable() {
                   </div>
                 </div>
 
-                <div>
-                  <Label>Status</Label>
-                  <div className="mt-1">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedTent.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {selectedTent.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
+
               </div>
 
               <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      className="flex-1"
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
-                      disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant={selectedTent.isActive ? "destructive" : "default"}
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedTent) }}
-                      disabled={!perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
-                    >
-                      {selectedTent.isActive ? "Deactivate" : "Activate"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>Close</Button>
-                  </>
+                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>

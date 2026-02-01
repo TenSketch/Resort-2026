@@ -8,6 +8,7 @@ interface GuestFormData {
   phone: string;
   email: string;
   password: string;
+  emailVerificationStatus: string;
   dob: string;
   nationality: string;
   address1: string;
@@ -17,7 +18,6 @@ interface GuestFormData {
   pincode: string;
   country: string;
   registrationDate: string;
-  registerThrough: string;
 }
 
 const countries = ["India", "United States", "United Kingdom", "Australia", "Canada"];
@@ -28,6 +28,7 @@ const AddGuestForm = () => {
     phone: "",
     email: "",
     password: "",
+    emailVerificationStatus: "verified",
     dob: "",
     nationality: "",
     address1: "",
@@ -37,7 +38,6 @@ const AddGuestForm = () => {
     pincode: "",
     country: "",
     registrationDate: new Date().toISOString().split('T')[0],
-    registerThrough: "admin",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -97,7 +97,8 @@ const AddGuestForm = () => {
         email_id: formData.email,
         mobile_number: formData.phone,
         password: formData.password,
-        registerThrough: formData.registerThrough,
+        registerThrough: "admin",
+        isEmailVerified: formData.emailVerificationStatus === "verified",
         // Include profile data in registration
         dob: formData.dob,
         nationality: formData.nationality,
@@ -120,10 +121,13 @@ const AddGuestForm = () => {
       const data = await response.json();
 
       if (response.ok && data.code === 3000 && data.result.status === 'success') {
-        alert('User added successfully with complete profile!');
+        const successMessage = data.result.credentialsSent 
+          ? `${data.result.msg}\n\nThe user can now login using:\nEmail: ${formData.email}\nPassword: (sent to their email)`
+          : data.result.msg;
+        alert(successMessage);
         handleReset();
       } else {
-        throw new Error(data.result?.msg || 'Failed to add user');
+        throw new Error(data.result?.msg || data.error || 'Failed to add user');
       }
     } catch (err: any) {
       console.error('Error adding user:', err);
@@ -139,6 +143,7 @@ const AddGuestForm = () => {
       phone: "",
       email: "",
       password: "",
+      emailVerificationStatus: "verified",
       dob: "",
       nationality: "",
       address1: "",
@@ -148,7 +153,6 @@ const AddGuestForm = () => {
       pincode: "",
       country: "",
       registrationDate: new Date().toISOString().split('T')[0],
-      registerThrough: "admin",
     });
   };
 
@@ -166,7 +170,7 @@ const AddGuestForm = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Account Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name *</Label>
               <Input
@@ -206,7 +210,24 @@ const AddGuestForm = () => {
                 required
               />
             </div>
-            <div className="space-y-2 md:col-span-2">
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+            <div className="space-y-2">
+              <Label htmlFor="emailVerificationStatus" className="text-sm font-medium text-slate-700">Email Verified *</Label>
+              <select
+                id="emailVerificationStatus"
+                name="emailVerificationStatus"
+                value={formData.emailVerificationStatus}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                required
+              >
+                <option value="verified">Verified</option>
+                <option value="not-verified">Not Verified</option>
+              </select>
+            </div>
+            <div className="space-y-2 lg:col-span-3">
               <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password *</Label>
               <div className="flex gap-2">
                 <Input
@@ -267,19 +288,6 @@ const AddGuestForm = () => {
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="registerThrough" className="text-sm font-medium text-slate-700">Register Through</Label>
-              <select
-                id="registerThrough"
-                name="registerThrough"
-                value={formData.registerThrough}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-              >
-                <option value="admin">Admin</option>
-                <option value="frontend">Frontend</option>
-              </select>
             </div>
           </div>
 

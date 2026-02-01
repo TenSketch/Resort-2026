@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router";
 import { Suspense, lazy } from "react";
 import LoadingScreen from "./components/shared/LoadingScreen";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RoleGuard from "./components/auth/RoleGuard";
 
 const Layout = lazy(() => import('./components/shared/Layout'))
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
@@ -60,6 +61,8 @@ const AddTouristBookingPage = lazy(() => import("./pages/touristBookings/AddTour
 
 const AddTents = lazy(() => import("./pages/tentInventory/AddTents"));
 const AllTents = lazy(() => import("./pages/tentInventory/AllTents"));
+const UserManagementPage = lazy(() => import("./pages/users/UserManagementPage"));
+const MyAccountPage = lazy(() => import("./pages/account/MyAccountPage"));
 
 function App() {
   return (
@@ -75,39 +78,41 @@ function App() {
           <Route path="dashboard/report" element={<ResortDashboardPage />} />
           <Route path="tent/dashboard" element={<TentDashboardPage />} />
           <Route path="tourist/dashboard" element={<TouristSpotDashboardPage />} />
-          <Route path="dailyoccupanyreport/vanavihari" element={<VanaReportPage/>} />
-          <Route path="dailyoccupanyreport/junglestar" element={<JunglestarReportPage/>} />
-          <Route path="frontdesk/checkin" element={<CheckInPage/>} />
-          <Route path="frontdesk/checkout" element={<CheckOutPage/>} />
-          <Route path="rooms/add" element={<AddRoomPage />} />
-          <Route path="rooms/all" element={<AllRoomsPage/>} />
-          <Route path="guests/add" element={<AddGuestPage />} />
-          <Route path="guests/all" element={<AllGuestsPage />} />
-          <Route path="resorts/add" element={<AddResortsPage />} />
-          <Route path="resorts/all" element={<AllResortsPage />} />
+          <Route path="dailyoccupanyreport/vanavihari" element={<VanaReportPage />} />
+          <Route path="dailyoccupanyreport/junglestar" element={<JunglestarReportPage />} />
+          <Route path="frontdesk/checkin" element={<RoleGuard pageId="frontdesk"><CheckInPage /></RoleGuard>} />
+          <Route path="frontdesk/checkout" element={<RoleGuard pageId="frontdesk"><CheckOutPage /></RoleGuard>} />
+          <Route path="rooms/add" element={<RoleGuard pageId="rooms-add"><AddRoomPage /></RoleGuard>} />
+          <Route path="rooms/all" element={<RoleGuard pageId="rooms-view"><AllRoomsPage /></RoleGuard>} />
+          <Route path="guests/add" element={<RoleGuard pageId="guests-add"><AddGuestPage /></RoleGuard>} />
+          <Route path="guests/all" element={<RoleGuard pageId="guests-view"><AllGuestsPage /></RoleGuard>} />
+          <Route path="resorts/add" element={<RoleGuard pageId="resorts-add"><AddResortsPage /></RoleGuard>} />
+          <Route path="resorts/all" element={<RoleGuard pageId="resorts-view"><AllResortsPage /></RoleGuard>} />
           <Route path="log-reports/all" element={<AllLogReportsPage />} />
           <Route path="log-reports/table" element={<LogTablePage />} />
-          <Route path="reservation/add" element={<AddReservationPage />} />
-          <Route path="reservation/all" element={<AllReservationPage />} />
-          <Route path="cottage-types/all" element={<AllCottageTypePage />} />
-          <Route path="cottage-types/add" element={<AddCottageTypePage />} />
-          <Route path="room-amenities/all" element={<AllRoomAmenitiesPage />} />
-          <Route path="room-amenities/add" element={<AddRoomAmenitiesPage />} />
-          <Route path="touristspots/add" element={<AddTouristSpot />} />
-          <Route path="touristspots/all" element={<AllTouristSpot />} />
-          <Route path="tenttypes/add" element={<AddTentTypes />} />
-          <Route path="tenttypes/all" element={<AllTentTypes />} />
-          <Route path="tentspots/add" element={<AddTentSpots />} />
-          <Route path="tentspots/all" element={<AllTentSpots />} />
-          <Route path="tentspots/details" element={<AddTentSpots />} />
-          <Route path="tentbookings/allbookings" element={<AllTentBook />} />
-          <Route path="tentbookings/addbookings" element={<AddTentBook />} />
-          <Route path="tourist/bookings" element={<AllTouristBookingsPage />} />
-          <Route path="tourist/bookings/add" element={<AddTouristBookingPage />} />
+          <Route path="reservation/add" element={<RoleGuard pageId="reservations-add"><AddReservationPage /></RoleGuard>} />
+          <Route path="reservation/all" element={<RoleGuard pageId="reservations-view"><AllReservationPage /></RoleGuard>} />
+          <Route path="cottage-types/all" element={<RoleGuard pageId="cottage-types-view"><AllCottageTypePage /></RoleGuard>} />
+          <Route path="cottage-types/add" element={<RoleGuard pageId="cottage-types-add"><AddCottageTypePage /></RoleGuard>} />
+          <Route path="room-amenities/all" element={<RoleGuard pageId="room-amenities-view"><AllRoomAmenitiesPage /></RoleGuard>} />
+          <Route path="room-amenities/add" element={<RoleGuard pageId="room-amenities-add"><AddRoomAmenitiesPage /></RoleGuard>} />
+          <Route path="touristspots/add" element={<RoleGuard pageId="tourist-spots-add"><AddTouristSpot /></RoleGuard>} />
+          <Route path="touristspots/all" element={<RoleGuard pageId="tourist-spots-view"><AllTouristSpot /></RoleGuard>} />
+          <Route path="tenttypes/add" element={<RoleGuard pageId="tent-types-add"><AddTentTypes /></RoleGuard>} />
+          <Route path="tenttypes/all" element={<RoleGuard pageId="tent-types-view"><AllTentTypes /></RoleGuard>} />
+          <Route path="tentspots/add" element={<RoleGuard pageId="tent-spots-add"><AddTentSpots /></RoleGuard>} />
+          <Route path="tentspots/all" element={<RoleGuard pageId="tent-spots-view"><AllTentSpots /></RoleGuard>} />
+          <Route path="tentspots/details" element={<RoleGuard pageId="tent-spots-view"><AddTentSpots /></RoleGuard>} />
+          <Route path="tentbookings/allbookings" element={<RoleGuard pageId="tent-bookings-view"><AllTentBook /></RoleGuard>} />
+          <Route path="tentbookings/addbookings" element={<RoleGuard pageId="tent-bookings-add"><AddTentBook /></RoleGuard>} />
+          <Route path="tourist/bookings" element={<RoleGuard pageId="tourist-bookings-view"><AllTouristBookingsPage /></RoleGuard>} />
+          <Route path="tourist/bookings/add" element={<RoleGuard pageId="tourist-bookings-add"><AddTouristBookingPage /></RoleGuard>} />
           <Route path="reports/daily-occupancy-junglestar" element={<JunglestarReportPage />} />
           <Route path="reports/daily-occupancy-vanavihari" element={<VanaReportPage />} />
-          <Route path="tentinventory/addtents" element={<AddTents />} />
-          <Route path="tentinventory/alltents" element={<AllTents />} />
+          <Route path="tentinventory/addtents" element={<RoleGuard pageId="tent-inventory-add"><AddTents /></RoleGuard>} />
+          <Route path="tentinventory/alltents" element={<RoleGuard pageId="tent-inventory-view"><AllTents /></RoleGuard>} />
+          <Route path="users/manage" element={<RoleGuard pageId="user-management"><UserManagementPage /></RoleGuard>} />
+          <Route path="my-account" element={<MyAccountPage />} />
 
         </Route>
       </Routes>

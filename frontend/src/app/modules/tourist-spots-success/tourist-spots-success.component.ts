@@ -66,7 +66,7 @@ export class TouristSpotsSuccessComponent implements OnInit {
   private generateReceiptContent(): string {
     const data = this.transactionData;
     let content = `
-VANAVIHARI - TOURIST SPOTS BOOKING RECEIPT
+VANAVIHARI - Trek Spots BOOKING RECEIPT
 ==========================================
 
 Transaction ID: ${data.transactionId}

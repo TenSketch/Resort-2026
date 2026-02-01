@@ -8,6 +8,7 @@ import "datatables.net-columncontrol-dt";
 import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePermissions } from "@/lib/AdminProvider";
 
 DataTable.use(DT);
 
@@ -27,6 +28,7 @@ interface Reservation {
 }
 
 export default function DailyOccupancyReport() {
+  const perms = usePermissions();
   const tableRef = useRef(null);
   const apiUrl =
     (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
@@ -235,8 +237,10 @@ export default function DailyOccupancyReport() {
           <p className="text-sm text-gray-500">Today: {today}</p>
         </div>
         <button
-          onClick={exportToExcel}
-          className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
+          title={perms.canExport ? "Export to Excel" : "You do not have permission to export data"}
         >
           <svg
             className="w-4 h-4 mr-2"

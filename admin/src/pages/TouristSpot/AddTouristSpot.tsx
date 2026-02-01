@@ -64,7 +64,7 @@ const AddTouristSpot = () => {
                             //     setExistingImages(s.images.map((i:any) => (typeof i === 'string' ? { url: i } : i)))
                             // }
                         } catch (e) {
-                            console.warn('Failed to load tourist spot for edit', e)
+                            console.warn('Failed to load Trek spot for edit', e)
                         }
                     })()
                 }
@@ -113,7 +113,7 @@ const AddTouristSpot = () => {
                             throw new Error((errData && errData.error) || res.statusText || 'Failed to update');
                         }
                         await res.json().catch(() => null);
-                        setSuccess('Tourist spot updated successfully');
+                        setSuccess('Trek spot updated successfully');
                         // navigate back to list
                         navigate('/touristspots/all')
                         return
@@ -146,7 +146,7 @@ const AddTouristSpot = () => {
                             throw new Error((errData && errData.error) || res.statusText || 'Failed to update');
                         }
                         await res.json().catch(() => null);
-                        setSuccess('Tourist spot updated successfully');
+                        setSuccess('Trek spot updated successfully');
                         navigate('/touristspots/all')
                         return
                     }
@@ -212,12 +212,12 @@ const AddTouristSpot = () => {
                     setAdded(prev => [saved, ...prev]);
                 }
 
-                setSuccess('Tourist spot added successfully');
+                setSuccess('Trek spot added successfully');
                 setForm({ name: '', category: 'TREK', entryFees: '', parking2W: '', parking4W: '', cameraFees: '', maxSlotsPerDay: '', maxMembersPerSlot: '', description: '', address: '', mapEmbed: '' });
                 setNewImages([]);
             } catch (err: any) {
-                console.error('Add tourist spot error', err);
-                setError(err.message || 'Failed to add tourist spot');
+                console.error('Add Trek spot error', err);
+                setError(err.message || 'Failed to add Trek spot');
             } finally {
                 setIsSaving(false);
             }
@@ -234,8 +234,8 @@ const AddTouristSpot = () => {
         <div className="min-h-screen p-8">
             <div className="w-full max-w-3xl">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Tourist Spot</h1>
-                    <p className="text-slate-600">Create a new tourist spot with fees and parking details.</p>
+                    <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Trek Spot</h1>
+                    <p className="text-slate-600">Create a new Trek spot with fees and parking details.</p>
 
                     {success && (
                         <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800">{success}</div>
@@ -323,7 +323,7 @@ const AddTouristSpot = () => {
 
                     <div className="flex gap-4 pt-2">
                         <Button type="button" onClick={handleAdd} disabled={isSaving} className="bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-6 rounded-lg">
-                            {isSaving ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update Tourist Spot' : 'Add Tourist Spot')}
+                            {isSaving ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update Trek Spot' : 'Add Trek Spot')}
                         </Button>
                         <Button type="button" onClick={handleReset} variant="ghost" disabled={isSaving} className="bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-3 px-6 rounded-lg">
                             Reset

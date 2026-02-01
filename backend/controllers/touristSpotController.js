@@ -65,11 +65,34 @@ const createTouristSpot = async (req, res) => {
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         try {
-          const result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/tourist-spots' })
-          spot.images.push({ url: result.secure_url, public_id: result.public_id })
+          // Upload from buffer (memory storage) or file path (disk storage)
+          let result
+          if (file.buffer) {
+            // Memory storage - upload from buffer
+            result = await new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'vanavihari/tourist-spots' },
+                (error, result) => {
+                  if (error) reject(error)
+                  else resolve(result)
+                }
+              )
+              uploadStream.end(file.buffer)
+            })
+          } else if (file.path) {
+            // Disk storage - upload from file path
+            result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/tourist-spots' })
+          }
+
+          if (result) {
+            spot.images.push({ url: result.secure_url, public_id: result.public_id })
+          }
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError)
         } finally {
-          if (file.path) {
-            try { await unlinkAsync(file.path) } catch (e) { /* silent */ }
+          // Clean up disk file if it exists
+          if (file && file.path) {
+            try { await unlinkAsync(file.path) } catch (e) { console.warn('cleanup failed', e.message || e) }
           }
         }
       }
@@ -91,7 +114,7 @@ const listTouristSpots = async (req, res) => {
     const { slug } = req.query
     if (slug) {
       const spot = await TouristSpot.findOne({ slug })
-      if (!spot) return res.status(404).json({ error: 'Tourist spot not found' })
+      if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
       return res.json({ touristSpot: spot })
     }
     const spots = await TouristSpot.find().sort({ createdAt: -1 })
@@ -105,7 +128,7 @@ const getTouristSpotById = async (req, res) => {
   try {
     const { id } = req.params
     const spot = await TouristSpot.findById(id)
-    if (!spot) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
     res.json({ touristSpot: spot })
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -116,7 +139,7 @@ const updateTouristSpot = async (req, res) => {
   try {
     const { id } = req.params
     const existing = await TouristSpot.findById(id)
-    if (!existing) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!existing) return res.status(404).json({ error: 'Trek spot not found' })
 
     const body = req.body || {}
     const v = (k) => {
@@ -144,42 +167,47 @@ const updateTouristSpot = async (req, res) => {
       update.slug = newSlug
     }
 
-    // Handle retained images
-    let finalImages = existing.images || []
-    if (body.retainedImages) {
-      try {
-        const retained = JSON.parse(body.retainedImages)
-        // Identify images to delete
-        const toDelete = finalImages.filter(img => !retained.some(r => r.public_id === img.public_id))
-        for (const img of toDelete) {
-          if (img.public_id) {
-             try { await cloudinary.uploader.destroy(img.public_id) } catch (e) { console.error('Failed to delete image', img.public_id, e)}
-          }
-        }
-        finalImages = retained
-      } catch (e) {
-        console.error("Error parsing retainedImages", e)
-      }
-    }
-
     // handle new uploaded images - append to images array
     if (req.files && req.files.length > 0) {
       const uploaded = []
       for (const file of req.files) {
         try {
-          const result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/tourist-spots' })
-          uploaded.push({ url: result.secure_url, public_id: result.public_id })
+          // Upload from buffer (memory storage) or file path (disk storage)
+          let result
+          if (file.buffer) {
+            // Memory storage - upload from buffer
+            result = await new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: 'vanavihari/tourist-spots' },
+                (error, result) => {
+                  if (error) reject(error)
+                  else resolve(result)
+                }
+              )
+              uploadStream.end(file.buffer)
+            })
+          } else if (file.path) {
+            // Disk storage - upload from file path
+            result = await cloudinary.uploader.upload(file.path, { folder: 'vanavihari/tourist-spots' })
+          }
+
+          if (result) {
+            uploaded.push({ url: result.secure_url, public_id: result.public_id })
+          }
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError)
         } finally {
-          if (file.path) {
-            try { await unlinkAsync(file.path) } catch (e) { /* silent */ }
+          // Clean up disk file if it exists
+          if (file && file.path) {
+            try { await unlinkAsync(file.path) } catch (e) { console.warn('cleanup failed', e.message || e) }
           }
         }
       }
       // merge with existing images
-      finalImages = [...finalImages, ...uploaded]
+      if (uploaded.length) {
+        update.images = [...(existing.images || []), ...uploaded]
+      }
     }
-    
-    update.images = finalImages
 
     // remove undefined fields
     Object.keys(update).forEach(k => update[k] === undefined && delete update[k])
@@ -199,7 +227,7 @@ const deleteTouristSpot = async (req, res) => {
   try {
     const { id } = req.params
     const existing = await TouristSpot.findById(id)
-    if (!existing) return res.status(404).json({ error: 'Tourist spot not found' })
+    if (!existing) return res.status(404).json({ error: 'Trek spot not found' })
 
     // delete images from cloudinary if any
     if (Array.isArray(existing.images)) {
@@ -218,4 +246,35 @@ const deleteTouristSpot = async (req, res) => {
   }
 }
 
-export { createTouristSpot, listTouristSpots, getTouristSpotById, updateTouristSpot, deleteTouristSpot }
+const deleteTouristSpotImage = async (req, res) => {
+  try {
+    const { id, publicId } = req.params
+    const spot = await TouristSpot.findById(id)
+    if (!spot) return res.status(404).json({ error: 'Trek spot not found' })
+
+    // Find the image
+    const imageIndex = spot.images.findIndex(img => img.public_id === publicId)
+    if (imageIndex === -1) {
+      return res.status(404).json({ error: 'Image not found' })
+    }
+
+    // Delete from Cloudinary
+    try {
+      await cloudinary.uploader.destroy(publicId)
+    } catch (e) {
+      console.error('Failed to delete from Cloudinary:', e)
+      // Continue anyway to remove from database
+    }
+
+    // Remove from database
+    spot.images.splice(imageIndex, 1)
+    await spot.save()
+
+    res.json({ touristSpot: spot })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+export { createTouristSpot, listTouristSpots, getTouristSpotById, updateTouristSpot, deleteTouristSpot, deleteTouristSpotImage }

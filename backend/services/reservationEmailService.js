@@ -11,7 +11,7 @@ import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEM
 export async function sendReservationSuccessEmails(reservation, paymentTransaction) {
   try {
     // Fetch resort details
-    // Detect if it's a Tourist Spot Reservation
+    // Detect if it's a Trek Spot Reservation
     const isTouristSpot = reservation.touristSpots && reservation.touristSpots.length > 0;
     
     let resortName = 'Resort';
@@ -21,7 +21,7 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
     let foodProviding = 'No';
 
     if (isTouristSpot) {
-      resortName = 'Tourist Spot Booking';
+      resortName = 'Trek Spot Booking';
       roomList = reservation.touristSpots.map(s => `${s.name} (${s.counts?.adults || 0} Adults)`).join(', ');
       // Use visitDate for both checkin/checkout or just one
       const visitDate = reservation.touristSpots[0]?.visitDate || reservation.createdAt;

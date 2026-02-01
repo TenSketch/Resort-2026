@@ -267,7 +267,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
       postalCode: this.form.value.gpincode,
       country: this.form.value.gcountry,
 
-      // Raw source for tourist spot specific details
+      // Raw source for Trek spot specific details
       rawSource: {
         bookingType: 'tourist-spot',
         spots: this.bookingData.spots.map((spot: any) => ({

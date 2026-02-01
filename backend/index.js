@@ -25,6 +25,7 @@ import touristSpotRouter from './routes/touristSpotRoutes.js'
 import touristSpotReservationRouter from './routes/touristSpotReservationRoutes.js'
 
 import webhookRouter from './routes/webhookRoutes.js'
+import adminRouter from './routes/adminRoutes.js'
 
 import adminAuth from './middlewares/adminAuth.js'
 import {
@@ -77,6 +78,7 @@ app.use('/api/touristspots', touristSpotRouter)
 app.use('/api/tourist-booking', touristSpotReservationRouter)
 
 app.use('/api/webhook', webhookRouter)
+app.use('/api/admin', adminRouter)
 
 // ---------------- STATIC TMP FOLDER ----------------
 app.use('/tmp', express.static(path.join(process.cwd(), 'tmp')))

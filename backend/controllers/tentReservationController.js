@@ -96,12 +96,12 @@ export const createTentReservation = async (req, res) => {
     }
 
     // Check if tents are available for the requested dates based on tentCount
-    if (status !== 'confirmed' && status !== 'reserved') {
+    if (status !== 'reserved') {
       // For each tent, count existing bookings and compare with tentCount
       for (const tent of tents) {
         const overlappingCount = await TentReservation.countDocuments({
           tentSpot: tentSpotIdFinal,
-          status: { $in: ['pending', 'confirmed'] },
+          status: { $in: ['pending', 'reserved'] },
           tents: tent._id,
           $or: [
             { checkinDate: { $gte: new Date(checkinDate), $lt: new Date(checkoutDate) } },
@@ -322,7 +322,7 @@ export const updatePaymentStatus = async (req, res) => {
 
     // If payment is successful, confirm the reservation
     if (paymentStatus === 'paid') {
-      updateData.status = 'confirmed';
+      updateData.status = 'reserved';
       updateData.expiresAt = null; // Remove expiry
     }
 

@@ -56,7 +56,7 @@ const tentReservationSchema = new mongoose.Schema({
   paymentStatus: { 
     type: String, 
     default: 'unpaid', 
-    enum: ['unpaid', 'paid', 'failed', 'pending', 'refunded'] 
+    enum: ['unpaid', 'paid', 'refunded'] 
   },
   refundPercentage: Number,
   

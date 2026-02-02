@@ -1131,9 +1131,9 @@ export default function ReservationTable() {
 
       {/* Reservation Details Sheet */}
       <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
-          <SheetHeader className="flex-shrink-0">
-            <SheetTitle>Reservation Details</SheetTitle>
+        <SheetContent className="w-[500px] sm:w-[800px] lg:w-[900px] xl:w-[1000px] flex flex-col p-0">
+          <SheetHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b">
+            <SheetTitle className="text-xl">Reservation Details</SheetTitle>
             <SheetDescription>
               Complete information about the selected reservation
             </SheetDescription>
@@ -1142,28 +1142,27 @@ export default function ReservationTable() {
           {selectedReservation && (
             <>
               {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                <div className="space-y-4">
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                   {/* Guest Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Guest Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Full Name
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.fullName || ""}
                             onChange={(e) =>
                               handleEditChange("fullName", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.fullName}
                             </span>
@@ -1172,19 +1171,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Phone
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.phone || ""}
                             onChange={(e) =>
                               handleEditChange("phone", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.phone}
                             </span>
@@ -1193,19 +1192,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Email
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.email || ""}
                             onChange={(e) =>
                               handleEditChange("email", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.email}
                             </span>
@@ -1216,25 +1215,25 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Address Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Address Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Address Line 1
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.address1 || ""}
                             onChange={(e) =>
                               handleEditChange("address1", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.address1 || "N/A"}
                             </span>
@@ -1243,19 +1242,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Address Line 2
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.address2 || ""}
                             onChange={(e) =>
                               handleEditChange("address2", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.address2 || "N/A"}
                             </span>
@@ -1264,19 +1263,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           City
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.city || ""}
                             onChange={(e) =>
                               handleEditChange("city", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.city || "N/A"}
                             </span>
@@ -1285,19 +1284,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           State
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.state || ""}
                             onChange={(e) =>
                               handleEditChange("state", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.state || "N/A"}
                             </span>
@@ -1306,19 +1305,19 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Postal Code
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             value={editForm?.postalCode || ""}
                             onChange={(e) =>
                               handleEditChange("postalCode", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.postalCode || "N/A"}
                             </span>
@@ -1327,19 +1326,31 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Country
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
-                            className="mt-1"
+                          <Select
                             value={editForm?.country || ""}
-                            onChange={(e) =>
-                              handleEditChange("country", e.target.value)
+                            onValueChange={(value) =>
+                              handleEditChange("country", value)
                             }
-                          />
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select Country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="India">India</SelectItem>
+                              <SelectItem value="USA">USA</SelectItem>
+                              <SelectItem value="UK">UK</SelectItem>
+                              <SelectItem value="United States">United States</SelectItem>
+                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                              <SelectItem value="Australia">Australia</SelectItem>
+                              <SelectItem value="Canada">Canada</SelectItem>
+                            </SelectContent>
+                          </Select>
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.country || "N/A"}
                             </span>
@@ -1350,42 +1361,53 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Booking Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Booking Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Booking ID
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900 font-mono">
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600 font-mono">
                             {selectedReservation.bookingId}
                           </span>
                         </div>
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Reservation Date
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {formatDateForDisplay(
-                              selectedReservation.reservationDate,
-                            )}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            type="date"
+                            value={editForm?.reservationDate || ""}
+                            onChange={(e) =>
+                              handleEditChange("reservationDate", e.target.value)
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {formatDateForDisplay(
+                                selectedReservation.reservationDate,
+                              )}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check In
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             type="date"
                             value={editForm?.checkIn || ""}
                             onChange={(e) =>
@@ -1393,7 +1415,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {formatDateForDisplay(
                                 selectedReservation.checkIn,
@@ -1404,12 +1426,12 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check Out
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
+                            className="w-full"
                             type="date"
                             value={editForm?.checkOut || ""}
                             onChange={(e) =>
@@ -1417,7 +1439,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {formatDateForDisplay(
                                 selectedReservation.checkOut,
@@ -1428,21 +1450,21 @@ export default function ReservationTable() {
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           No. of Days
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600">
                             {selectedReservation.noOfDays}
                           </span>
                         </div>
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Resort
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.resortName}
                           </span>
@@ -1450,10 +1472,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cottage Types
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.cottageTypeNames.join(", ") ||
                               "N/A"}
@@ -1462,10 +1484,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Rooms
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.roomNames.join(", ") || "N/A"}
                           </span>
@@ -1475,18 +1497,18 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Guest Details */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Guest Details
                     </h3>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Guests
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="h-11 text-center text-base font-medium"
                             type="number"
                             value={String(editForm?.guests ?? 0)}
                             onChange={(e) =>
@@ -1497,7 +1519,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                             <span className="text-base font-medium text-gray-900">
                               {selectedReservation.guests}
                             </span>
@@ -1506,12 +1528,12 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Children
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="h-11 text-center text-base font-medium"
                             type="number"
                             value={String(editForm?.children ?? 0)}
                             onChange={(e) =>
@@ -1522,7 +1544,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                             <span className="text-base font-medium text-gray-900">
                               {selectedReservation.children}
                             </span>
@@ -1531,12 +1553,12 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Extra Guests
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="h-11 text-center text-base font-medium"
                             type="number"
                             value={String(editForm?.extraGuests ?? 0)}
                             onChange={(e) =>
@@ -1547,7 +1569,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                             <span className="text-base font-medium text-gray-900">
                               {selectedReservation.extraGuests}
                             </span>
@@ -1556,10 +1578,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Total Guests
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-blue-50 rounded-md border border-blue-200">
+                        <div className="h-11 flex items-center justify-center bg-blue-50 rounded-md border border-blue-200">
                           <span className="text-xl font-bold text-blue-900">
                             {Number(editForm?.guests || 0) +
                               Number(editForm?.children || 0) +
@@ -1571,72 +1593,57 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Room Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Room Information
                     </h3>
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="flex flex-col max-w-xs">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Number of Rooms
                         </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="h-12 text-center text-base font-medium"
-                            type="number"
-                            value={String(editForm?.numberOfRooms ?? 0)}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "numberOfRooms",
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
-                              {selectedReservation.numberOfRooms}
-                            </span>
-                          </div>
-                        )}
+                        <div className="h-11 flex items-center justify-center bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-base font-medium text-gray-600">
+                            {selectedReservation.numberOfRooms}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Pricing Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Pricing Information
                     </h3>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Room Price
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                        <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                           <span className="text-base font-semibold text-gray-900">
-                            ₹{selectedReservation.roomPrice.toLocaleString()}
+                            ₹{(selectedReservation.roomPrice - selectedReservation.extraBedCharges).toLocaleString()}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Extra Bed Charges
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                        <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                           <span className="text-base font-semibold text-gray-900">
-                            ₹
-                            {selectedReservation.extraBedCharges.toLocaleString()}
+                            ₹{selectedReservation.extraBedCharges.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Total Payable
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-green-50 rounded-md border border-green-200">
+                        <div className="h-11 flex items-center justify-center bg-green-50 rounded-md border border-green-200">
                           <span className="text-xl font-bold text-green-900">
                             ₹{selectedReservation.totalPayable.toLocaleString()}
                           </span>
@@ -1646,39 +1653,80 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Food & Reservation Source */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Food & Reservation Details
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Reserved From
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.reservedFrom || "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Select
+                            value={editForm?.reservedFrom || ""}
+                            onValueChange={(value) =>
+                              handleEditChange("reservedFrom", value)
+                            }
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select source" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Website">Website</SelectItem>
+                              <SelectItem value="Phone">Phone</SelectItem>
+                              <SelectItem value="Walk-in">Walk-in</SelectItem>
+                              <SelectItem value="Email">Email</SelectItem>
+                              <SelectItem value="Agent">Agent</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.reservedFrom || "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Food Preference
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.foodPreference || "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Select
+                            value={editForm?.foodPreference || ""}
+                            onValueChange={(value) =>
+                              handleEditChange("foodPreference", value)
+                            }
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select preference" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Vegetarian">Vegetarian</SelectItem>
+                              <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
+                              <SelectItem value="Vegan">Vegan</SelectItem>
+                              <SelectItem value="Jain">Jain</SelectItem>
+                              <SelectItem value="No Preference">No Preference</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.foodPreference || "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Foods Billed
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600">
                             {(Number(selectedReservation.guests) || 0) +
                               (Number(selectedReservation.extraGuests) || 0)}
                           </span>
@@ -1688,13 +1736,13 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Status Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Status Information
                     </h3>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Reservation Status
                         </Label>
                         {sheetMode === "edit" ? (
@@ -1704,21 +1752,19 @@ export default function ReservationTable() {
                               handleEditChange("status", value)
                             }
                           >
-                            <SelectTrigger className="h-12 text-base font-medium">
+                            <SelectTrigger className="h-11">
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Reserved">Reserved</SelectItem>
-                              <SelectItem value="Pending">Pending</SelectItem>
-                              <SelectItem value="Not Reserved">
-                                Not Reserved
-                              </SelectItem>
-                              <SelectItem value="Canceled">Canceled</SelectItem>
+                              <SelectItem value="reserved">Reserved</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="not-reserved">Not Reserved</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
+                            <span className="text-base font-medium text-gray-900 capitalize">
                               {selectedReservation.status}
                             </span>
                           </div>
@@ -1726,7 +1772,7 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Payment Status
                         </Label>
                         {sheetMode === "edit" ? (
@@ -1736,17 +1782,18 @@ export default function ReservationTable() {
                               handleEditChange("paymentStatus", value)
                             }
                           >
-                            <SelectTrigger className="h-12 text-base font-medium">
+                            <SelectTrigger className="h-11">
                               <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="paid">Paid</SelectItem>
                               <SelectItem value="unpaid">Unpaid</SelectItem>
+                              <SelectItem value="refunded">Refunded</SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
+                            <span className="text-base font-medium text-gray-900 capitalize">
                               {selectedReservation.paymentStatus}
                             </span>
                           </div>
@@ -1754,12 +1801,12 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
                           Refund Percentage
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="h-11 text-center"
                             type="number"
                             value={String(editForm?.refundPercentage ?? 0)}
                             onChange={(e) =>
@@ -1770,7 +1817,7 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
+                          <div className="h-11 flex items-center justify-center bg-gray-50 rounded-md border">
                             <span className="text-base font-medium text-gray-900">
                               {selectedReservation.refundPercentage}%
                             </span>
@@ -1781,94 +1828,140 @@ export default function ReservationTable() {
                   </div>
 
                   {/* Payment Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Payment Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Payable
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
-                            ₹{selectedReservation.totalPayable.toLocaleString()}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <Input
+                              className="w-full pl-8"
+                              type="number"
+                              value={String(editForm?.totalPayable ?? 0)}
+                              onChange={(e) =>
+                                handleEditChange(
+                                  "totalPayable",
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm font-semibold text-gray-900">
+                              ₹{selectedReservation.totalPayable.toLocaleString()}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Paid
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm font-semibold text-gray-600">
                             ₹{selectedReservation.totalPayable.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction Id
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900 font-mono">
-                            {selectedReservation.paymentTransactionId || "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            value={editForm?.paymentTransactionId || ""}
+                            onChange={(e) =>
+                              handleEditChange("paymentTransactionId", e.target.value)
+                            }
+                            placeholder="Enter transaction ID"
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900 font-mono">
+                              {selectedReservation.paymentTransactionId || "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction Date & Time
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.paymentTransactionDateTime
-                              ? formatDateForDisplay(
-                                selectedReservation.paymentTransactionDateTime.slice(
-                                  0,
-                                  10,
-                                ),
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            type="date"
+                            value={
+                              editForm?.paymentTransactionDateTime
+                                ? editForm.paymentTransactionDateTime.slice(0, 10)
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleEditChange(
+                                "paymentTransactionDateTime",
+                                e.target.value ? new Date(e.target.value).toISOString() : "",
                               )
-                              : "N/A"}
-                          </span>
-                        </div>
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.paymentTransactionDateTime
+                                ? formatDateForDisplay(
+                                  selectedReservation.paymentTransactionDateTime.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction SubBillerId
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">N/A</span>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600">N/A</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Verification Information */}
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Verification Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Verification Proof Type
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">N/A</span>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600">N/A</span>
                         </div>
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Verification Proof Id
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">N/A</span>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600">N/A</span>
                         </div>
                       </div>
                     </div>
@@ -1876,97 +1969,186 @@ export default function ReservationTable() {
 
                   {/* Cancellation & Refund Information */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Cancellation & Refund Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cancel Booking Reason
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.cancelBookingReason || "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            value={editForm?.cancelBookingReason || ""}
+                            onChange={(e) =>
+                              handleEditChange("cancelBookingReason", e.target.value)
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.cancelBookingReason || "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cancellation Message
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.cancellationMessage || "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            value={editForm?.cancellationMessage || ""}
+                            onChange={(e) =>
+                              handleEditChange("cancellationMessage", e.target.value)
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.cancellationMessage || "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Refund Requested Date & Time
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.refundRequestedDateTime
-                              ? formatDateForDisplay(
-                                selectedReservation.refundRequestedDateTime.slice(
-                                  0,
-                                  10,
-                                ),
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            type="date"
+                            value={
+                              editForm?.refundRequestedDateTime
+                                ? editForm.refundRequestedDateTime.slice(0, 10)
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleEditChange(
+                                "refundRequestedDateTime",
+                                e.target.value ? new Date(e.target.value).toISOString() : "",
                               )
-                              : "N/A"}
-                          </span>
-                        </div>
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.refundRequestedDateTime
+                                ? formatDateForDisplay(
+                                  selectedReservation.refundRequestedDateTime.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Date of Refund
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedReservation.dateOfRefund
-                              ? formatDateForDisplay(
-                                selectedReservation.dateOfRefund.slice(0, 10),
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full"
+                            type="date"
+                            value={
+                              editForm?.dateOfRefund
+                                ? editForm.dateOfRefund.slice(0, 10)
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleEditChange(
+                                "dateOfRefund",
+                                e.target.value ? new Date(e.target.value).toISOString() : "",
                               )
-                              : "N/A"}
-                          </span>
-                        </div>
+                            }
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.dateOfRefund
+                                ? formatDateForDisplay(
+                                  selectedReservation.dateOfRefund.slice(0, 10),
+                                )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Refundable Amount
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
-                            {selectedReservation.refundableAmount
-                              ? `₹${selectedReservation.refundableAmount.toLocaleString()}`
-                              : "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <Input
+                              className="w-full pl-8"
+                              type="number"
+                              value={String(editForm?.refundableAmount ?? 0)}
+                              onChange={(e) =>
+                                handleEditChange(
+                                  "refundableAmount",
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm font-semibold text-gray-900">
+                              {selectedReservation.refundableAmount
+                                ? `₹${selectedReservation.refundableAmount.toLocaleString()}`
+                                : "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div>
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Refunded
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
-                            {selectedReservation.amountRefunded
-                              ? `₹${selectedReservation.amountRefunded.toLocaleString()}`
-                              : "N/A"}
-                          </span>
-                        </div>
+                        {sheetMode === "edit" ? (
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <Input
+                              className="w-full pl-8"
+                              type="number"
+                              value={String(editForm?.amountRefunded ?? 0)}
+                              onChange={(e) =>
+                                handleEditChange(
+                                  "amountRefunded",
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm font-semibold text-gray-900">
+                              {selectedReservation.amountRefunded
+                                ? `₹${selectedReservation.amountRefunded.toLocaleString()}`
+                                : "N/A"}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                </div>
               </div>
 
               {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+              <div className="flex-shrink-0 flex gap-3 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
                   <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
                 ) : (
@@ -1976,12 +2158,14 @@ export default function ReservationTable() {
                       onClick={() => {
                         setSheetMode("view");
                       }}
+                      className="flex-1"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={saveChanges}
                       disabled={isSaving || !perms.canEdit}
+                      className="flex-1"
                       title={
                         !perms.canEdit
                           ? "You do not have permission to update"

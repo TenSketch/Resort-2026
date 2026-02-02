@@ -54,6 +54,14 @@
   ></div>
   <div id="sidebar" [ngClass]="{ active: isSidebarOpen }">
     <div class="sidebar-content">
+      <!-- Close Button (Mobile Only) -->
+      <button
+        class="sidebar-close-btn d-lg-none"
+        (click)="closeSidebar()"
+        aria-label="Close menu"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
         <!-- Profile / Sign In Section (Top) -->

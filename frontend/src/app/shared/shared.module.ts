@@ -8,6 +8,7 @@ import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirm
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { SearchResortComponent } from './search-resort/search-resort.component';
+import { SearchResortOnlyComponent } from './search-resort-only/search-resort-only.component';
 import { SearchTentComponent } from './search-tent/search-tent.component';
 import { SearchTouristSpotComponent } from './search-tourist-spot/search-tourist-spot.component';
 import { TouristSpotSelectionComponent } from './tourist-spot-selection/tourist-spot-selection.component';
@@ -30,6 +31,7 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     BreadcrumbsComponent,
     GalleryComponent,
     SearchResortComponent,
+    SearchResortOnlyComponent,
     SearchTentComponent,
     SearchTouristSpotComponent,
     TouristSpotSelectionComponent,
@@ -49,6 +51,6 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     GalleryModule,
     LightboxModule
   ],
-  exports: [GalleryComponent, SearchResortComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule],
+  exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule],
 })
 export class SharedModule {}

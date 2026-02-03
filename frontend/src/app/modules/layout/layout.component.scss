@@ -253,14 +253,44 @@
 
   .sidebar-content {
     padding: 0.75rem;
-    margin-top: calc(10vh + 1rem);
+    padding-top: calc(10vh + 1rem);
+    position: relative;
+    overflow: visible; // Allow close button to be visible
+
+    // Close button for mobile sidebar
+    .sidebar-close-btn {
+      position: absolute;
+      top: calc(10vh + 0.5rem);
+      right: 0.75rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #166534;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: $clr-primary-dark;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
 
     // Desktop: Remove top margin valid for mobile overlay
     @media (min-width: 992px) {
-      margin-top: 1rem;
+      padding-top: 1rem;
     }
     color: $clr-primary-dark;
-    overflow-y: auto;
     height: 100%;
 
     .sidebar-menu {
@@ -452,7 +482,7 @@
 main {
   // Mobile: Navbar logos ~65px + py-2 (~8px*2) = ~81px. 
   // Adjusted to 85px to be safe but close.
-  padding-top: 85px; 
+  padding-top: 8px; 
 
   @media (min-width: 992px) {
     margin-right: 280px; // Match sidebar width (Right side)
@@ -460,7 +490,7 @@ main {
     transition: margin-right 0.3s ease;
     // Desktop: Logos max 95px + py-2 = ~111px. 
     // Adjusted to 115px.
-    padding-top: 115px; 
+    padding-top: 11px; 
   }
 }
 

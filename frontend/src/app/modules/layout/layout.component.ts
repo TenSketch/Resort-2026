@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 export class LayoutComponent implements OnInit {
   accountusername: string = 'John Doe';
   isSidebarOpen: boolean = false;
+  isSidebarCollapsed: boolean = false;
   // Desktop dropdown states
   isBookResortOpen: boolean = false;
   isBookTentsOpen: boolean = false;
@@ -122,6 +123,23 @@ export class LayoutComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  toggleSidebarCollapse() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(event: Event) {
+    this.checkScreenSize();
+  }
+
+  checkScreenSize() {
+    const width = window.innerWidth;
+    // Auto-expand on mobile (drawer mode)
+    if (width < 768) {
+      this.isSidebarCollapsed = false;
+    }
   }
   // Auto-hide Top Nav Logic
   isNavHidden = false;

@@ -31,7 +31,6 @@
             formControlName="checkinDate"
             [disabled]="!searchForm.get('selectedTentSpot')?.value"
             required />
-          <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkinDate')?.invalid">
@@ -52,7 +51,6 @@
             [min]="setMinCheckoutDate()"
             [disabled]="!searchForm.get('selectedTentSpot')?.value || !searchForm.get('checkinDate')?.value"
             required />
-          <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkoutDate')?.invalid">

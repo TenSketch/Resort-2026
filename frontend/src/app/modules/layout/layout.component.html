@@ -2,6 +2,7 @@
   <nav
     class="navbar navbar-light py-2 fixed-top bg-light"
     [class.is-nav-hidden]="isNavHidden"
+    [class.sidebar-collapsed]="isSidebarCollapsed"
   >
     <div class="container align-items-center">
       <div class="d-flex flex-row align-items-center me-1 me-md-3 gap-2">
@@ -19,18 +20,7 @@
       <a class="navbar-brand py-0" href="#">
         <img class="" src="assets/img/logo-vana.png" alt="logo-vana" />
       </a>
-      <div
-        class="d-none d-lg-flex align-items-center gap-3 me-3 top-bar-actions"
-      >
-        <a
-          *ngIf="isLoggedIn()"
-          routerLink="/my-account/settings"
-          class="text-decoration-none fw-medium text-dark d-flex align-items-center gap-2"
-        >
-          <span>Profile</span>
-          <i class="fa-regular fa-user-circle fa-lg"></i>
-        </a>
-      </div>
+ 
 
       <!-- 4. Forest Dept Logo (Right) -->
       <div class="d-flex flex-row align-items-center ms-1 ms-md-3 gap-2">
@@ -52,7 +42,7 @@
     [ngClass]="{ active: isSidebarOpen }"
     (click)="closeSidebar()"
   ></div>
-  <div id="sidebar" [ngClass]="{ active: isSidebarOpen }">
+  <div id="sidebar" [ngClass]="{ 'active': isSidebarOpen, 'collapsed': isSidebarCollapsed }">
     <div class="sidebar-content">
       <!-- Close Button (Mobile Only) -->
       <button
@@ -62,6 +52,12 @@
       >
         <i class="fa-solid fa-xmark"></i>
       </button>
+
+      <!-- Mobile Menu Header Text -->
+      <div class="d-lg-none mb-3 mt-1" style="margin-left: 0.75rem; margin-right: 0.75rem;">
+        <div class="fw-bold text-uppercase" style="color: #1f2937; font-size: 0.85rem; letter-spacing: 0.5px;">Govt. of AP</div>
+        <div class="fw-bold text-uppercase" style="color: #1f2937; font-size: 0.85rem; letter-spacing: 0.5px;">AP Forest Dept.</div>
+      </div>
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
         <!-- Profile / Sign In Section (Top) -->
@@ -76,10 +72,30 @@
         </li>
         <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
           <a
+            class="sidebar-link"
+            routerLink="/my-account/settings"
+            (click)="toggleSidebar()"
+          >
+            <i class="fa-regular fa-user-circle"></i
+            ><span class="ms-3">Profile</span>
+          </a>
+        </li>
+        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
+          <a
+            class="sidebar-link"
+            routerLink="/my-account/my-bookings"
+            (click)="toggleSidebar()"
+          >
+            <i class="fa-solid fa-calendar-check"></i
+            ><span class="ms-3">My Bookings</span>
+          </a>
+        </li>
+        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
+          <a
             class="sidebar-link fw-bold text-primary"
             (click)="toggleSidebar(); triggerModal()"
           >
-            <i class="fa-regular fa-user-circle"></i
+            <i class="fa-solid fa-right-from-bracket"></i
             ><span class="ms-3">Sign Out</span>
           </a>
         </li>
@@ -108,7 +124,7 @@
                 aria-expanded="false"
                 aria-controls="collapseResorts"
               >
-                <i class="fa-solid fa-hotel me-2"></i>Resorts
+                <i class="fa-solid fa-hotel"></i><span class="menu-text">Resorts</span>
               </button>
             </h2>
             <div
@@ -146,7 +162,7 @@
                 aria-expanded="false"
                 aria-controls="collapseTents"
               >
-                <i class="fa-solid fa-tent me-2"></i>Tent Accommodation
+                <i class="fa-solid fa-tent"></i><span class="menu-text">Tent Accommodation</span>
               </button>
             </h2>
             <div
@@ -171,7 +187,7 @@
           </div>
         </div>
 
-        <!-- Treks -->
+        <!-- Treks (temporarily disabled)
         <li class="sidebar-item d-flex">
           <a
             class="sidebar-link"
@@ -182,6 +198,7 @@
             ><span class="ms-3">Guided Treks</span>
           </a>
         </li>
+        -->
 
         <li class="sidebar-item mt-3">
           <hr class="mx-3 my-2 text-muted" />
@@ -241,15 +258,22 @@
           </a>
         </li>
       </ul>
+      <!-- Collapse Toggle Button (Desktop Only - ≥992px) -->
+      <button class="sidebar-collapse-btn d-none d-lg-flex" 
+              (click)="toggleSidebarCollapse()" 
+              [attr.aria-expanded]="!isSidebarCollapsed"
+              aria-label="Toggle sidebar">
+        <i class="fa-solid" [ngClass]="isSidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      </button>
     </div>
   </div>
 </header>
 <!-- End Header -->
-<main>
+<main [class.sidebar-collapsed]="isSidebarCollapsed">
   <app-loader *ngIf="showLoader"></app-loader>
   <ng-content select=".main"></ng-content>
 </main>
-<footer id="footer" class="footer py-4">
+<footer id="footer" class="footer py-4" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container pt-5">
     <div class="row w-100">
       <div class="col-md-3">
@@ -346,7 +370,7 @@
     </div>
   </div>
 </footer>
-<footer class="bottom-footer mt-auto py-3">
+<footer class="bottom-footer mt-auto py-3" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container">
     <div
       class="row justify-content-center justify-content-md-between align-items-center gy-2"
@@ -368,7 +392,7 @@
 </footer>
 
 <!-- WhatsApp Floating Button (with support options) -->
-<div class="whatsapp-wrapper" (click)="$event.stopPropagation()">
+<div class="whatsapp-wrapper" [class.sidebar-collapsed]="isSidebarCollapsed" (click)="$event.stopPropagation()">
   <button
     class="whatsapp-float"
     (click)="toggleWhatsappOptions($event)"
@@ -467,6 +491,7 @@
     <span>Tents</span>
   </div>
 
+  <!-- Treks (temporarily disabled)
   <div
     class="nav-item"
     routerLink="/tourist-places"
@@ -476,6 +501,7 @@
     <i class="fa-solid fa-person-hiking"></i>
     <span>Treks</span>
   </div>
+  -->
 
   <div
     class="nav-item"

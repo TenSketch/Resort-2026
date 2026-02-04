@@ -109,6 +109,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       children: [
         { label: "Daily Occupancy Jungle Star", path: "/reports/daily-occupancy-junglestar", icon: ClipboardMinus },
         { label: "Daily Occupancy Vanavihari", path: "/reports/daily-occupancy-vanavihari", icon: ClipboardMinus },
+        { label: "Consolidation Report", path: "/reports/consolidation-report-vanavihari", icon: ClipboardMinus },
         // { label: "Payments", path: "/reports/payments", icon: FileText },
         // { label: "Logs", path: "/log-reports/all", icon: FileText },
       ],

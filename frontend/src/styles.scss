@@ -420,7 +420,39 @@ gallery-thumbs {
 // }
 
 /* When the button is expanded (no `.collapsed` class) show the arrow pointing down */
-#sidebar .accordion-button:not(.collapsed)::after,
-.sidebar-content .accordion-button:not(.collapsed)::after {
-  transform: rotate(180deg) !important;
+
+/* Fix for gallery/overlays being covered by fixed sidebar */
+.cdk-global-overlay-wrapper {
+  // Desktop Sidebar (>= 1200px) - Sidebar width 260px
+  @media (min-width: 1200px) {
+    width: calc(100% - 260px) !important;
+    margin-right: 260px !important;
+    left: 0 !important;
+    
+    // Adjust top position to be below navbar (approx 10vh)
+    top: 10vh !important;
+    height: 90vh !important;
+    position: fixed !important; 
+  }
+
+  // Large Sidebar (992px - 1199px) - Sidebar width min(40%, 320px)
+  @media (min-width: 992px) and (max-width: 1199px) {
+    // We use 320px as a safe maximum or 40% if possible
+    // Using 320px ensures no overlap
+    width: calc(100% - 320px) !important;
+    margin-right: 320px !important;
+    left: 0 !important;
+    
+    top: 10vh !important;
+    height: 90vh !important;
+    position: fixed !important;
+  }
+}
+
+// Override for collapsed sidebar
+body.sidebar-collapsed .cdk-global-overlay-wrapper {
+  @media (min-width: 992px) {
+    width: calc(100% - 70px) !important;
+    margin-right: 70px !important;
+  }
 }

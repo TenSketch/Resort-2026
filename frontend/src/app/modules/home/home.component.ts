@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       image: 'assets/img/Vihari-outer.jpg',
       title: 'Welcome to Vanavihari Adventures',
       subtitle: 'Discover Nature, Trek Trails & Unforgettable Stays',
-      tagline: 'New Online Booking for Resorts, Tents & Treks!',
+      tagline: 'New Online Booking for Resorts & Treks!',
       startText: 'Book Easily. Explore Deeply.',
       price: null,
       cta: 'Explore Now',

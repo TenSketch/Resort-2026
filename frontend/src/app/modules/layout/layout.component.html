@@ -1,16 +1,23 @@
 <header>
   <nav
     class="navbar navbar-light py-2 fixed-top bg-light"
-    [class.is-nav-hidden]="isNavHidden"
+
     [class.sidebar-collapsed]="isSidebarCollapsed"
   >
     <div class="container align-items-center">
-      <div class="d-flex flex-row align-items-center me-1 me-md-3 gap-2">
+      <div class="d-flex flex-column flex-lg-row align-items-center me-1 me-md-3 gap-0 gap-lg-2">
         <img
           class="govt-logo"
           src="assets/images/AP_gov.png"
           alt="Government of Andhra Pradesh"
         />
+        <!-- Mobile Text -->
+        <span
+          class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem"
+          >Govt. of AP</span
+        >
+        <!-- Desktop Text -->
         <span
           class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
           style="line-height: 1.2; font-size: 0.9rem"
@@ -23,7 +30,8 @@
  
 
       <!-- 4. Forest Dept Logo (Right) -->
-      <div class="d-flex flex-row align-items-center ms-1 ms-md-3 gap-2">
+      <div class="d-flex flex-column flex-lg-row align-items-center ms-1 ms-md-3 gap-0 gap-lg-2">
+        <!-- Desktop Text (Left of Image on Desktop) -->
         <span
           class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
           style="line-height: 1.2; font-size: 0.9rem"
@@ -34,6 +42,12 @@
           src="assets/images/AP_forest.png"
           alt="AP Forest Department"
         />
+        <!-- Mobile Text (Below Image on Mobile) -->
+        <span
+          class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem"
+          >AP Forest Dept.</span
+        >
       </div>
     </div>
   </nav>
@@ -480,8 +494,8 @@
     <i class="fa-solid fa-hotel"></i>
     <span>Resorts</span>
   </div>
-
-  <div
+  <!-- Tents (temporarily disabled) -->
+  <!-- <div
     class="nav-item"
     routerLink="/book-tent/vanavihari-maredumilli"
     routerLinkActive="active"
@@ -489,9 +503,9 @@
   >
     <i class="fa-solid fa-tent"></i>
     <span>Tents</span>
-  </div>
+  </div> -->
 
-  <!-- Treks (temporarily disabled)
+  <!-- Treks (temporarily disabled) -->
   <div
     class="nav-item"
     routerLink="/tourist-places"
@@ -501,7 +515,7 @@
     <i class="fa-solid fa-person-hiking"></i>
     <span>Treks</span>
   </div>
-  -->
+ 
 
   <div
     class="nav-item"

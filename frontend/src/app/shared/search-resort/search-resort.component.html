@@ -1,9 +1,8 @@
 <section class="search-rooms-container">
   <div class="search-widget card-glass">
     <!-- Widget Title -->
-    <h2 class="text-center mb-4 text-uppercase fw-bold text-secondary fa-sm">
-      Quick Filter
-    </h2>
+   
+     <h3 class="step-title text-center mb-4 text-uppercase fw-bold">Choose your experience</h3>
 
     <!-- Progress Indicator -->
     <div class="progress-container">
@@ -35,7 +34,7 @@
     <div class="widget-content">
       <!-- Step 1: Experience -->
       <div class="step-view" *ngIf="currentStep === 1">
-        <h3 class="step-title">Choose your experience</h3>
+       
         <div class="options-grid">
           <div class="option-card" (click)="selectType('resort')">
             <div class="icon-box resort-bg">
@@ -48,7 +47,7 @@
             <i class="fa-solid fa-chevron-right arrow-icon"></i>
           </div>
 
-          <div class="option-card" (click)="selectType('tent')">
+          <!-- <div class="option-card" (click)="selectType('tent')">
             <div class="icon-box tent-bg">
               <i class="fa-solid fa-campground"></i>
             </div>
@@ -57,7 +56,7 @@
               <span class="option-desc">Camping adventures</span>
             </div>
             <i class="fa-solid fa-chevron-right arrow-icon"></i>
-          </div>
+          </div> -->
 
           <div class="option-card" (click)="selectType('trek')">
             <div class="icon-box trek-bg">

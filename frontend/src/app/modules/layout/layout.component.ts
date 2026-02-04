@@ -80,6 +80,7 @@ export class LayoutComponent implements OnInit {
   ngOnInit(): void {
     this.accountusername = this.userService.getFullUser();
     // this.getUserData()
+    this.updateBodyClass();
   }
 
   // getUserData() {
@@ -127,6 +128,7 @@ export class LayoutComponent implements OnInit {
 
   toggleSidebarCollapse() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    this.updateBodyClass();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -140,35 +142,19 @@ export class LayoutComponent implements OnInit {
     if (width < 768) {
       this.isSidebarCollapsed = false;
     }
+    this.updateBodyClass();
   }
-  // Auto-hide Top Nav Logic
-  isNavHidden = false;
-  private lastScrollTop = 0;
 
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollThreshold = window.innerHeight; // 100vh
-
-    // Logic:
-    // 1. Fixed initially (scrollTop <= 0 or < threshold) -> Show
-    // 2. Hide after 100vh scroll (scrollTop > threshold && scrolling down) -> Hide
-    // 3. Reappear on slight scroll-up (scrolling up) -> Show
-    
-    if (scrollTop <= 0) {
-      this.isNavHidden = false;
-    } else if (scrollTop > this.lastScrollTop) {
-      // Scrolling Down
-      if (scrollTop > scrollThreshold) {
-        this.isNavHidden = true;
-      }
+  updateBodyClass() {
+    if (this.isSidebarCollapsed) {
+      document.body.classList.add('sidebar-collapsed');
     } else {
-      // Scrolling Up
-      this.isNavHidden = false;
+      document.body.classList.remove('sidebar-collapsed');
     }
-    
-    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
   }
+  // Auto-hide Top Nav Logic REMOVED per user request
+  isNavHidden = false; // Kept as false permanently or could be removed if template binding is removed
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

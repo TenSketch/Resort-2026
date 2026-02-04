@@ -101,6 +101,23 @@ export class SearchResortComponent implements OnInit {
   selectLocation(location: string) {
     this.selectedResort = location;
     this.setMinDate();
+    
+    // Autofill check-in date logic
+    const today = new Date();
+    let autoDate = new Date();
+    
+    if (location.includes('Vanavihari')) {
+      autoDate = today;
+    } else if (location.includes('Jungle Star')) {
+      autoDate.setDate(today.getDate() + 1);
+    }
+    
+    // Format to YYYY-MM-DD for native date input
+    const year = autoDate.getFullYear();
+    const month = ('0' + (autoDate.getMonth() + 1)).slice(-2);
+    const day = ('0' + autoDate.getDate()).slice(-2);
+    this.checkinDate = `${year}-${month}-${day}`;
+    
     this.nextStep();
   }
 

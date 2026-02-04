@@ -86,12 +86,40 @@ export class SearchResortOnlyComponent implements OnInit {
     this.selectionChanged = true;
     this.setMinDate();
     
-    // Reset dates when resort changes
-    this.searchForm.patchValue({
-      checkinDate: null,
-      checkoutDate: null
-    });
-    this.minCheckoutDate = null;
+    // Autofill check-in date logic
+    const selectedResort = this.searchForm.get('selectedResort')?.value;
+    const today = new Date();
+    let autoDate = new Date();
+    let shouldAutofill = false;
+
+    if (selectedResort && selectedResort.includes('Vanavihari')) {
+      autoDate = today;
+      shouldAutofill = true;
+    } else if (selectedResort && selectedResort.includes('Jungle Star')) {
+      autoDate.setDate(today.getDate() + 1);
+      shouldAutofill = true;
+    }
+
+    if (shouldAutofill) {
+      // Format to YYYY-MM-DD for native date input
+      const year = autoDate.getFullYear();
+      const month = ('0' + (autoDate.getMonth() + 1)).slice(-2);
+      const day = ('0' + autoDate.getDate()).slice(-2);
+      const formattedDate = `${year}-${month}-${day}`;
+      
+      this.searchForm.patchValue({
+        checkinDate: formattedDate,
+        checkoutDate: null
+      });
+      // Allow minCheckoutDate to update via subscription
+    } else {
+        // Reset dates when resort changes if no autofill matches (or fallback)
+        this.searchForm.patchValue({
+          checkinDate: null,
+          checkoutDate: null
+        });
+        this.minCheckoutDate = null;
+    }
   }
 
   /**

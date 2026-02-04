@@ -3,7 +3,6 @@ import { Suspense, lazy } from "react";
 import LoadingScreen from "./components/shared/LoadingScreen";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RoleGuard from "./components/auth/RoleGuard";
-import VanavihariConsolidationReport from "./components/consolidationReport/VanavihariReportConsolidation";
 
 const Layout = lazy(() => import('./components/shared/Layout'))
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));

@@ -27,6 +27,8 @@ const AllTentTypes = lazy(() => import("./pages/tentTypes/AllTentTypes"));
 const AddTentSpots = lazy(() => import("./pages/TentSpots/AddTentSpots"));
 const AllTentSpots = lazy(() => import("./pages/TentSpots/AllTentSpots"));
 
+const VanavihariReportConsolidationPage = lazy(() => import("./pages/consolidationReport/VanavihariConsolidationReport"));
+
 const AllLogReportsPage = lazy(
   () => import("./pages/logReports/AllLogReportsPage")
 );
@@ -109,6 +111,7 @@ function App() {
           <Route path="tourist/bookings/add" element={<RoleGuard pageId="tourist-bookings-add"><AddTouristBookingPage /></RoleGuard>} />
           <Route path="reports/daily-occupancy-junglestar" element={<JunglestarReportPage />} />
           <Route path="reports/daily-occupancy-vanavihari" element={<VanaReportPage />} />
+          <Route path="reports/consolidation-report-vanavihari" element={< VanavihariReportConsolidationPage />} />
           <Route path="tentinventory/addtents" element={<RoleGuard pageId="tent-inventory-add"><AddTents /></RoleGuard>} />
           <Route path="tentinventory/alltents" element={<RoleGuard pageId="tent-inventory-view"><AllTents /></RoleGuard>} />
           <Route path="users/manage" element={<RoleGuard pageId="user-management"><UserManagementPage /></RoleGuard>} />

@@ -1,18 +1,35 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="showLoader"> </app-loader>
-    <!-- <section class="page-banner d-grid place-items-center" *ngIf="selectedResortInfo">
-      <h1 class="display-3 text-center">{{ selectedResortInfo.title }}</h1>
-    </section> -->
     <section
-      class="page-banner d-grid place-items-center"
+      id="roomsCarousel"
+      class="carousel slide carousel-fade"
+      data-bs-ride="carousel"
+      data-bs-interval="6000"
       *ngIf="selectedResortInfo"
-      [ngStyle]="{
-        'background-image':
-          'url(' + selectedResortInfo.backgroundImageUrl + ')',
-      }"
     >
-      <h1 class="display-3 text-center">{{ selectedResortInfo.title }}</h1>
+      <div class="carousel-inner">
+        <div
+          class="carousel-item"
+          *ngFor="let image of selectedResortInfo.carouselImages; let i = index"
+          [class.active]="i === 0"
+        >
+          <img [src]="image.url" class="d-block w-100" [alt]="selectedResortInfo.title + ' View ' + (i + 1)" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0">
+            <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
+            <p class="h4">{{ image.description }}</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#roomsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#roomsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </section>
 
     <div class="container-fluid">

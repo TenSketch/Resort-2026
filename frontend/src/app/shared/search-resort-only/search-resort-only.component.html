@@ -30,7 +30,6 @@
             placeholder="Check-in date"
             formControlName="checkinDate"
             required />
-          <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkinDate')?.invalid">
@@ -51,7 +50,6 @@
             [min]="minCheckoutDate"
             [max]="maxDate"
             required />
-          <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkoutDate')?.invalid">

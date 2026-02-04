@@ -1,112 +1,57 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="false"></app-loader>
-    <div
+    <section
       id="tentCarousel"
-      class="carousel slide"
+      class="carousel slide carousel-fade"
       data-bs-ride="carousel"
+      data-bs-interval="6000"
       *ngIf="selectedResortInfo"
     >
-      <div class="carousel-indicators">
-        <button
-          type="button"
-          data-bs-target="#tentCarousel"
-          data-bs-slide-to="0"
-          class="active"
-          aria-current="true"
-          aria-label="Slide 1"
-        ></button>
-        <button
-          type="button"
-          data-bs-target="#tentCarousel"
-          data-bs-slide-to="1"
-          aria-label="Slide 2"
-        ></button>
-        <button
-          type="button"
-          data-bs-target="#tentCarousel"
-          data-bs-slide-to="2"
-          aria-label="Slide 3"
-        ></button>
-      </div>
       <div class="carousel-inner">
-        <div class="carousel-item active" style="height: 70vh">
-          <img
-            src="assets/img/tent/Vanavihari/tent1.jpg"
-            class="d-block w-100"
-            alt="Tent View 1"
-            style="object-fit: cover; height: 100%"
-          />
-          <div
-            class="carousel-caption d-flex justify-content-center align-items-center h-100"
-            style="top: 0; bottom: 0; left: 0; right: 0"
-          >
-            <h1
-              class="display-3 text-center text-white"
-              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
-            >
-              {{ selectedResortInfo.title }}
-            </h1>
+        <div class="carousel-item active">
+          <img src="assets/img/tent/Vanavihari/tent1.jpg" class="d-block w-100" alt="Tent View 1" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0">
+            <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
+            <p class="h4">
+              Experience the thrill of camping under the stars in our
+              comfortable tents.
+            </p>
           </div>
         </div>
-        <div class="carousel-item" style="height: 70vh">
-          <img
-            src="assets/img/tent/Vanavihari/tent2.jpg"
-            class="d-block w-100"
-            alt="Tent View 2"
-            style="object-fit: cover; height: 100%"
-          />
-          <div
-            class="carousel-caption d-flex justify-content-center align-items-center h-100"
-            style="top: 0; bottom: 0; left: 0; right: 0"
-          >
-            <h1
-              class="display-3 text-center text-white"
-              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
-            >
-              {{ selectedResortInfo.title }}
-            </h1>
+        <div class="carousel-item">
+          <img src="assets/img/tent/Vanavihari/tent2.jpg" class="d-block w-100" alt="Tent View 2" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0">
+            <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
+            <p class="h4">
+              Surrounded by nature with all essential amenities for a
+              memorable stay.
+            </p>
           </div>
         </div>
-        <div class="carousel-item" style="height: 70vh">
-          <img
-            src="assets/img/tent/Vanavihari/tent3.jpg"
-            class="d-block w-100"
-            alt="Tent View 3"
-            style="object-fit: cover; height: 100%"
-          />
-          <div
-            class="carousel-caption d-flex justify-content-center align-items-center h-100"
-            style="top: 0; bottom: 0; left: 0; right: 0"
-          >
-            <h1
-              class="display-3 text-center text-white"
-              style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6)"
-            >
-              {{ selectedResortInfo.title }}
-            </h1>
+        <div class="carousel-item">
+          <img src="assets/img/tent/Vanavihari/tent3.jpg" class="d-block w-100" alt="Tent View 3" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0">
+            <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
+            <p class="h4">
+              Perfect for families and adventure seekers looking to connect
+              with the outdoors.
+            </p>
           </div>
         </div>
       </div>
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#tentCarousel"
-        data-bs-slide="prev"
-      >
+      <button class="carousel-control-prev" type="button" data-bs-target="#tentCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#tentCarousel"
-        data-bs-slide="next"
-      >
+      <button class="carousel-control-next" type="button" data-bs-target="#tentCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
-    </div>
+    </section>
 
     <div class="container-fluid">
       <nav aria-label="breadcrumb">

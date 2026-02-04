@@ -58,8 +58,24 @@ export class SearchResortOnlyComponent implements OnInit {
   ngOnInit(): void {
     // Restore previous search data if available
     const previousResort = this.authService.getSearchData('resort');
+    const previousCheckin = this.authService.getSearchData('checkin');
+    const previousCheckout = this.authService.getSearchData('checkout');
+    
     if (previousResort) {
       this.searchForm.patchValue({ selectedResort: previousResort });
+      this.setMinDate(); // Set min date based on resort
+    }
+    
+    // Auto-fill dates if available from home page quick filter
+    if (previousCheckin) {
+      const checkinDate = new Date(previousCheckin);
+      this.searchForm.patchValue({ checkinDate: checkinDate });
+      this.updateMinCheckoutDate(checkinDate);
+    }
+    
+    if (previousCheckout) {
+      const checkoutDate = new Date(previousCheckout);
+      this.searchForm.patchValue({ checkoutDate: checkoutDate });
     }
   }
 

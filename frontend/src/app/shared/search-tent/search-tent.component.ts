@@ -1,6 +1,7 @@
 import { Component, OnInit, OnChanges, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TentSpotService } from '../../services/tent-spot.service';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-search-tent',
@@ -22,7 +23,8 @@ export class SearchTentComponent implements OnInit, OnChanges {
 
   constructor(
     private formBuilder: FormBuilder,
-    private tentSpotService: TentSpotService
+    private tentSpotService: TentSpotService,
+    private authService: AuthService
   ) {
     this.searchForm = this.formBuilder.group({
       selectedTentSpot: [null, Validators.required],
@@ -64,6 +66,20 @@ export class SearchTentComponent implements OnInit, OnChanges {
             this.searchForm.patchValue({
               selectedTentSpot: this.preselectedTentSpotId
             });
+          }
+          
+          // Auto-fill dates from home page quick filter if available
+          const previousCheckin = this.authService.getSearchData('checkin');
+          const previousCheckout = this.authService.getSearchData('checkout');
+          
+          if (previousCheckin) {
+            const checkinDate = new Date(previousCheckin);
+            this.searchForm.patchValue({ checkinDate: checkinDate });
+          }
+          
+          if (previousCheckout) {
+            const checkoutDate = new Date(previousCheckout);
+            this.searchForm.patchValue({ checkoutDate: checkoutDate });
           }
         }
       },

@@ -13,7 +13,6 @@
             placeholder="Visit date"
             formControlName="visitDate"
             required />
-          <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="searchForm.get('visitDate')?.invalid">

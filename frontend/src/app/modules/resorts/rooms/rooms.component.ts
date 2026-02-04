@@ -117,12 +117,40 @@ export class RoomsComponent implements OnInit {
       about: 'Vanavihari, Maredumilli',
       backgroundImageUrl:
         '/assets/img/home-gallery/vanavihari-home-gallery-1.jpg',
+      carouselImages: [
+        {
+          url: '/assets/img/home-gallery/vanavihari-home-gallery-1.jpg',
+          description: 'Nestled in serene landscapes, beckoning eco-tourism aficionados with its abundance of bamboo trees.'
+        },
+        {
+          url: '/assets/img/home-gallery/vanavihari-home-gallery-2.jpg',
+          description: 'Snug cottages and rooms conveniently located close to Amruthadhara Waterfalls.'
+        },
+        {
+          url: '/assets/img/home-gallery/vanavihari-home-gallery-3.jpg',
+          description: 'A guesthouse committed to community well-being offering a serene retreat amidst natural surroundings.'
+        }
+      ]
     },
     'Jungle Star, Valamuru': {
       title: 'Jungle Star, Valamuru',
       about: 'Jungle Star, Valamuru',
       backgroundImageUrl:
         '/assets/img/home-gallery-junglestar/junglestar-home-gallery-11.jpg',
+      carouselImages: [
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-2.jpg',
+          description: 'An island-like setting with seven cottages atop a hillock, accessible only via a hanging bridge.'
+        },
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg',
+          description: 'Crossing the bridge is thrilling as it sways over the flowing river below.'
+        },
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-4.jpg',
+          description: 'Stunning mountain views with eco-friendly adventures like treks and campfires.'
+        }
+      ]
     },
   };
 

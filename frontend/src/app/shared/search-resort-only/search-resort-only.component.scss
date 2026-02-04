@@ -258,7 +258,7 @@ $clr-neutral--700: #374151;
     opacity: 0;
     transform: translateY(10px); // Slide up
     transition: all 0.3s;
-    margin-top: 1rem;
+    margin-top: 0rem;
     
     @media (max-width: 768px) {
        transform: translateX(-10px); // Slide right

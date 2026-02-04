@@ -36,26 +36,29 @@
           />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption mobile-caption text-start">
-            <h5 class="fw-bold mb-1">{{ slide.title }}</h5>
-            <p class="small mb-1" *ngIf="slide.location">
-              <i class="fa-solid fa-location-dot me-1"></i>{{ slide.location }}
-            </p>
-            <p class="small mb-1" *ngIf="slide.subtitle">
-              {{ slide.subtitle }}
-            </p>
-            <p class="fst-italic mb-2 smaller-text">"{{ slide.tagline }}"</p>
-            <p class="fw-bold mb-2 small" *ngIf="slide.price">
-              {{ slide.price }}
-            </p>
-            <div
-              *ngIf="slide.startText"
-              class="mb-2 small fw-bold text-white-50"
-            >
-              {{ slide.startText }}
+            <div class="container">
+              <h5 class="fw-bold mb-1">{{ slide.title }}</h5>
+              <p class="small mb-1" *ngIf="slide.location">
+                <i class="fa-solid fa-location-dot me-1"></i>
+                {{ slide.location }}
+              </p>
+              <p class="small mb-1" *ngIf="slide.subtitle">
+                {{ slide.subtitle }}
+              </p>
+              <p class="fst-italic mb-2 smaller-text">"{{ slide.tagline }}"</p>
+              <p class="fw-bold mb-2 small" *ngIf="slide.price">
+                {{ slide.price }}
+              </p>
+              <div
+                *ngIf="slide.startText"
+                class="mb-2 small fw-bold text-white-50"
+              >
+                {{ slide.startText }}
+              </div>
+              <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
+                {{ slide.cta }} »
+              </button>
             </div>
-            <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
-              {{ slide.cta }} »
-            </button>
           </div>
         </div>
       </div>
@@ -109,22 +112,25 @@
             class="carousel-caption p-0 text-start"
             style="bottom: 15%; left: 10%; right: 10%"
           >
-            <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
-            <p class="h4 text-light mt-3" *ngIf="slide.location">
-              <i class="fa-solid fa-location-dot me-2"></i>{{ slide.location }}
-            </p>
-            <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
+            <div class="container">
+              <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+              <p class="h4 text-light mt-3" *ngIf="slide.location">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                {{ slide.location }}
+              </p>
+              <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
 
-            <p class="h5 fw-bold text-warning mt-3" *ngIf="slide.price">
-              {{ slide.price }}
-            </p>
+              <p class="h5 fw-bold text-warning mt-3" *ngIf="slide.price">
+                {{ slide.price }}
+              </p>
 
-            <button
-              class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
-              (click)="handleSlideAction(slide.action)"
-            >
-              {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
-            </button>
+              <button
+                class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
+                (click)="handleSlideAction(slide.action)"
+              >
+                {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -221,37 +227,14 @@
                   overflow: hidden;
                   max-width: 90%;
                   margin-left: auto;
-                  cursor: pointer;
                 "
-                (click)="toggleVideo(promoVideo)"
               >
-                <video
-                  #promoVideo
-                  src="assets/images/vanavihari.mp4"
+                <img
+                  src="assets/img/Vanavihari-reception.jpg"
+                  alt="Vanavihari reception"
                   class="img-fluid w-100 object-fit-cover"
                   style="height: 320px"
-                  autoplay
-                  muted
-                  loop
-                  playsinline
-                ></video>
-
-                <!-- Play/Pause Button Overlay -->
-                <!-- <div
-                  class="play-overlay"
-                  [class.show-controls]="!isVideoPlaying"
-                >
-                  <div
-                    class="play-circle"
-                    style="width: 50px; height: 50px; font-size: 1.2rem"
-                  >
-                    <i
-                      class="fa-solid"
-                      [class.fa-play]="!isVideoPlaying"
-                      [class.fa-pause]="isVideoPlaying"
-                    ></i>
-                  </div>
-                </div> -->
+                />
               </div>
             </div>
           </div>
@@ -272,8 +255,10 @@
               <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
                 Luxury Resorts
               </h2>
-              <p   class="text-muted mb-4"
-                style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 Immerse yourself in comfort while being surrounded by nature.
                 Our eco-friendly resorts offer the perfect blend of modern
                 amenities and wilderness serenity.
@@ -409,8 +394,10 @@
               <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
                 Trekking Spots
               </h2>
-              <p   class="text-muted mb-4"
-                style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 Discover hidden trails and breathtaking scenic views. Whether
                 you are a beginner or a pro, we have trekking paths that will
                 challenge and inspire you.
@@ -480,8 +467,10 @@
             <h2 class="display-5 fw-bold text-dark-green mb-3">
               About Vanavihari
             </h2>
-            <p   class="text-muted mb-4"
-                style="line-height: 1.6; font-size: 1rem">
+            <p
+              class="text-muted mb-4"
+              style="line-height: 1.6; font-size: 1rem"
+            >
               Owned by the AP Forest Department and managed by local tribes,
               Vanavihari offers immersive eco-tourism experiences. Your stay
               supports sustainable livelihoods for the native Konda Reddy and
@@ -514,8 +503,8 @@
               </div>
               <div class="bento-item item-side-bottom">
                 <img
-                  src="assets/img/MAREDUMILLI-waterfalls.jpg"
-                  alt="Maredumilli Waterfalls"
+                  src="assets/img/TOURIST-PLACES/Jala-Tharangini-Waterfalls.webp"
+                  alt="Jalatharangini Waterfalls"
                   class="img-fluid"
                 />
               </div>
@@ -524,6 +513,7 @@
         </div>
       </div>
     </section>
+    <!-- OLD OUR RESORTS SECTION - COMMENTED OUT
     <section class="resort-intro py-5">
       <div class="container">
         <h1 class="text-center mb-4">Our Resorts</h1>
@@ -595,6 +585,344 @@
         </div>
       </div>
     </section>
+    END OLD OUR RESORTS SECTION -->
+
+    <!-- NEW OUR RESORTS SECTION (Wireframe-based) -->
+    <section class="our-resorts-new py-5">
+      <div class="container">
+        <h1 class="section-title text-center mb-5">Our Resorts</h1>
+
+        <!-- Resort Card: Vanavihari, Maredumilli -->
+        <div class="resort-card mb-5">
+          <div class="resort-card-header">
+            <h3 class="resort-name">Vanavihari, Maredumilli</h3>
+          </div>
+          <div class="resort-card-body">
+            <div class="row g-4">
+              <!-- Left: Mini Gallery (2x2 grid) -->
+              <div class="col-lg-6">
+                <div class="mini-gallery">
+                  <div class="gallery-grid">
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(0, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/Vanavihari-reception.jpg"
+                        alt="Vanavihari Gallery 1"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(1, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/Vanavihari-back.jpg"
+                        alt="Vanavihari Gallery 2"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(2, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg"
+                        alt="Vanavihari Gallery 3"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item gallery-more"
+                      (click)="openLightbox(0, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/home-gallery/vanavihari-home-gallery-4.jpg"
+                        alt="More Photos"
+                      />
+                      <div class="gallery-overlay">
+                        <span>+{{ imageFilenames.length - 3 }} Photos</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Right: Resort Info -->
+              <div class="col-lg-6">
+                <div class="resort-info">
+                  <p class="resort-description">
+                    Nestled in the heart of Maredumilli, Vanavihari is a haven
+                    for eco-tourism enthusiasts. Experience the tranquility of
+                    bamboo-filled surroundings with cozy cottages managed by
+                    local tribal communities.
+                  </p>
+                  <div class="resort-meta">
+                    <div class="meta-item">
+                      <i class="fa-solid fa-location-dot text-primary"></i>
+                      <span>Maredumilli, Andhra Pradesh</span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fa-solid fa-indian-rupee-sign text-success"></i>
+                      <span class="price"
+                        >Starts from <strong>₹1500</strong> / night</span
+                      >
+                    </div>
+                  </div>
+                  <div class="resort-actions">
+                    <button
+                      class="btn btn-outline-secondary btn-how-to-reach"
+                      data-bs-toggle="modal"
+                      data-bs-target="#vanavihariHowToReachModal"
+                    >
+                      <i class="fa-solid fa-compass me-2"></i> How to Reach
+                    </button>
+                    <button
+                      class="btn btn-primary btn-view-resort"
+                      (click)="goToVanavihari()"
+                    >
+                      View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resort Card: Jungle Star Eco Camp, Valamuru -->
+        <div class="resort-card">
+          <div class="resort-card-header">
+            <h3 class="resort-name">Jungle Star Eco Camp, Valamuru</h3>
+          </div>
+          <div class="resort-card-body">
+            <div class="row g-4">
+              <!-- Left: Mini Gallery (2x2 grid) -->
+              <div class="col-lg-6">
+                <div class="mini-gallery">
+                  <div class="gallery-grid">
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(0, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/Jungle_Star-reception.jpg"
+                        alt="Jungle Star Gallery 1"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(1, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/Jungle_Star-reception-1.jpg"
+                        alt="Jungle Star Gallery 2"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item"
+                      (click)="openLightbox(2, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg"
+                        alt="Jungle Star Gallery 3"
+                      />
+                    </div>
+                    <div
+                      class="gallery-item gallery-more"
+                      (click)="openLightbox(0, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-4.jpg"
+                        alt="More Photos"
+                      />
+                      <div class="gallery-overlay">
+                        <span>+{{ imageFilenames1.length - 3 }} Photos</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Right: Resort Info -->
+              <div class="col-lg-6">
+                <div class="resort-info">
+                  <p class="resort-description">
+                    A unique island-like setting with cottages perched on a
+                    hillock, accessed via a thrilling hanging bridge. Surrounded
+                    by towering mountains and flowing rivers, it offers
+                    eco-friendly adventures in the Eastern Ghats.
+                  </p>
+                  <div class="resort-meta">
+                    <div class="meta-item">
+                      <i class="fa-solid fa-location-dot text-primary"></i>
+                      <span>Valamuru, Andhra Pradesh</span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fa-solid fa-indian-rupee-sign text-success"></i>
+                      <span class="price"
+                        >Starts from <strong>₹1800</strong> / night</span
+                      >
+                    </div>
+                  </div>
+                  <div class="resort-actions">
+                    <button
+                      class="btn btn-outline-secondary btn-how-to-reach"
+                      data-bs-toggle="modal"
+                      data-bs-target="#jungleStarHowToReachModal"
+                    >
+                      <i class="fa-solid fa-compass me-2"></i> How to Reach
+                    </button>
+                    <button
+                      class="btn btn-primary btn-view-resort"
+                      (click)="goToJungleStar()"
+                    >
+                      View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to Reach Modal: Vanavihari -->
+    <div
+      class="modal fade"
+      id="vanavihariHowToReachModal"
+      tabindex="-1"
+      aria-labelledby="vanavihariHowToReachLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="vanavihariHowToReachLabel">
+              <i class="fa-solid fa-compass me-2 text-primary"></i> How to Reach
+              Vanavihari
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-4">
+              <div class="col-md-7">
+                <div class="map-embed">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
+                    width="100%"
+                    height="280"
+                    style="border: 0; border-radius: 12px"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="distance-info">
+                  <h6 class="fw-bold mb-3">Distance from Key Points</h6>
+                  <div class="distance-item">
+                    <i class="fa-solid fa-train text-primary"></i>
+                    <div>
+                      <strong>Rajahmundry Railway Station</strong>
+                      <span>84 km · ~2 hours</span>
+                    </div>
+                  </div>
+                  <div class="distance-item">
+                    <i class="fa-solid fa-plane-arrival text-primary"></i>
+                    <div>
+                      <strong>Rajahmundry Airport</strong>
+                      <span>69.7 km · ~1.5 hours</span>
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="https://www.google.com/maps/dir//Vanavihari+Maredumilli"
+                  target="_blank"
+                  class="btn btn-outline-primary w-100 mt-3"
+                >
+                  <i class="fa-solid fa-map-location-dot me-2"></i> Open in
+                  Google Maps
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to Reach Modal: Jungle Star -->
+    <div
+      class="modal fade"
+      id="jungleStarHowToReachModal"
+      tabindex="-1"
+      aria-labelledby="jungleStarHowToReachLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="jungleStarHowToReachLabel">
+              <i class="fa-solid fa-compass me-2 text-primary"></i> How to Reach
+              Jungle Star
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-4">
+              <div class="col-md-7">
+                <div class="map-embed">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
+                    width="100%"
+                    height="280"
+                    style="border: 0; border-radius: 12px"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="distance-info">
+                  <h6 class="fw-bold mb-3">Distance from Key Points</h6>
+                  <div class="distance-item">
+                    <i class="fa-solid fa-train text-primary"></i>
+                    <div>
+                      <strong>Rajahmundry Railway Station</strong>
+                      <span>94.7 km · ~2.5 hours</span>
+                    </div>
+                  </div>
+                  <div class="distance-item">
+                    <i class="fa-solid fa-plane-arrival text-primary"></i>
+                    <div>
+                      <strong>Rajahmundry Airport</strong>
+                      <span>79.4 km · ~2 hours</span>
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="https://www.google.com/maps/dir//JUNGLE+STAR+ECO+CAMP"
+                  target="_blank"
+                  class="btn btn-outline-primary w-100 mt-3"
+                >
+                  <i class="fa-solid fa-map-location-dot me-2"></i> Open in
+                  Google Maps
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- section for tents  Disabled by Koustav-->
     <!-- <section class="tent-intro py-5 bg-light">
       <div class="container">
@@ -658,275 +986,28 @@
         </div>
       </div>
     </section> -->
-    <!-- section for resorts -->
+    <!-- OLD RESORT GALLERY + TREK SECTIONS - COMMENTED OUT
     <section class="resorts-gallery-location py-5">
       <div class="container">
         <h1 class="text-center mb-4">Vanavihari, Maredumilli</h1>
-        <div class="row">
-          <div class="col-md-8">
-            <h2 class="mb-3 text-center">Gallery</h2>
-            <div class="masonry-layout" id="vanavihari-gallery">
-              <!-- <lightgallery [settings]="settings">
-                <a *ngFor="let item of imageFilenames" className="gallery-item" [attr.href]="item">
-                  <img className="img-responsive" src="{{ item }}" />
-                </a>
-              </lightgallery> -->
-
-              <div class="gallerize-example">
-                <p class="" gallerize>
-                  <img
-                    *ngFor="let img of imageFilenames; let i = index"
-                    [src]="img"
-                    (click)="openLightbox(i, 'vanavihari')"
-                    class="gallery-image"
-                  />
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 mt-3 mt-md-0">
-            <h2 class="mb-3 text-center">How to reach?</h2>
-            <address>
-              <i class="fa-solid fa-location-dot"></i>
-              Vanavihari Eco-tourism Complex, Maredumilli, AP-533295.
-            </address>
-            <div class="map-container">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-                width="400"
-                height="300"
-                style="border: 0"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">From</th>
-                    <th scope="col">Distance</th>
-                    <th scope="col">Travel Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <i class="fa-solid fa-train me-2"></i>Rajahmundry Railway
-                      Station
-                    </td>
-                    <td>84 km</td>
-                    <td>2 hours</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry
-                      Airport
-                    </td>
-                    <td>69.7 km</td>
-                    <td>1 hour 30 minutes</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        ... (gallery content) ...
       </div>
     </section>
 
     <section class="resorts-gallery-location py-5">
       <div class="container">
         <h1 class="text-center mb-4">Jungle Star, Valamuru</h1>
-        <div class="row">
-          <div class="col-md-8">
-            <h2 class="mb-3 text-center">Gallery</h2>
-            <div class="masonry-layout" id="jungle-star-gallery">
-              <div class="gallerize-example">
-                <p class="" gallerize>
-                  <img
-                    *ngFor="let img of imageFilenames1; let i = index"
-                    [src]="img"
-                    (click)="openLightbox(i, 'jungle-star')"
-                    class="gallery-image"
-                  />
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 mt-3 mt-md-0">
-            <h2 class="mb-3 text-center">How to reach?</h2>
-            <address>
-              <i class="fa-solid fa-location-dot"></i>
-              Jungle Star ECO Camp, Valamuru, AP-533295.
-            </address>
-            <div class="map-container">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
-                width="600"
-                height="450"
-                style="border: 0"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th scope="col">From</th>
-                    <th scope="col">Distance</th>
-                    <th scope="col">Travel Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <i class="fa-solid fa-train me-2"></i>Rajahmundry Railway
-                      Station
-                    </td>
-                    <td>94.7 km</td>
-                    <td>2 hours 24 minutes</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <i class="fa-solid fa-plane-arrival me-2"></i>Rajahmundry
-                      Airport
-                    </td>
-                    <td>79.4 km</td>
-                    <td>1 hour 52 minutes</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        ... (gallery content) ...
       </div>
     </section>
-
-    <!-- Trek Spots Section -->
 
     <section class="tourist-spots py-5 bg-light">
       <div class="container">
         <h2 class="text-center mb-5">Explore Trek Spots</h2>
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm tourist-spot-card">
-              <img
-                src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
-                class="card-img-top"
-                alt="Soft Trek"
-                style="height: 250px; object-fit: cover"
-              />
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">🥾 Soft Trek</h5>
-                <p class="card-text text-muted small">Maredumilli</p>
-                <p class="card-text flex-grow-1">
-                  Guided Easy Trek from Jalatarangini to G.M. Valasa. Perfect
-                  for beginners and nature enthusiasts.
-                </p>
-                <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹50/person</small><br />
-                  <small class="text-muted">Parking: ₹0/vehicle</small>
-                </div>
-              </div>
-              <div
-                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
-              >
-                <button
-                  mat-flat-button
-                  color="primary"
-                  routerLink="/tourist-places"
-                >
-                  Book Now
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm tourist-spot-card">
-              <img
-                src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
-                class="card-img-top"
-                alt="Very Hard Trek"
-                style="height: 250px; object-fit: cover"
-              />
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">🧗 Very Hard Trek</h5>
-                <p class="card-text text-muted small">Maredumilli</p>
-                <p class="card-text flex-grow-1">
-                  Experienced Trek: Jungle Star Eco Camp to Nellore (Tribal
-                  Village). A challenging adventure deep in the forest.
-                </p>
-                <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹1200/person</small><br />
-                  <small class="text-muted">Parking: ₹0/vehicle</small>
-                </div>
-              </div>
-              <div
-                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
-              >
-                <button
-                  mat-flat-button
-                  color="primary"
-                  routerLink="/tourist-places"
-                >
-                  Book Now
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm tourist-spot-card">
-              <img
-                src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg"
-                class="card-img-top"
-                alt="Gudisa View Point"
-                style="height: 250px; object-fit: cover"
-              />
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">� Gudisa View Point</h5>
-                <p class="card-text text-muted small">Gudisa Hills</p>
-                <p class="card-text flex-grow-1">
-                  Experience scenic sunrises and sunsets from the breathtaking
-                  Gudisa Hills view point.
-                </p>
-                <div class="pricing-info mb-3">
-                  <small class="text-primary">Entry: ₹100/person</small><br />
-                  <small class="text-muted">Parking: ₹300/vehicle</small>
-                </div>
-              </div>
-              <div
-                class="card-footer bg-transparent border-0 pt-0 d-flex justify-content-center"
-              >
-                <button
-                  mat-flat-button
-                  color="primary"
-                  routerLink="/tourist-places"
-                >
-                  Book Now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-center mt-5">
-          <button
-            mat-flat-button
-            color="primary"
-            class="px-5 py-2"
-            routerLink="/tourist-places"
-          >
-            <i class="fa-solid fa-mountain-sun me-2"></i>
-            View More Trek Spots
-          </button>
-        </div>
+        ... (trek spots content) ...
       </div>
     </section>
+    END OLD RESORT GALLERY + TREK SECTIONS -->
 
     <!-- testimonials -->
     <section class="testimonials">

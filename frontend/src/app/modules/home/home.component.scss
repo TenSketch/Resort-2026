@@ -274,7 +274,8 @@ $card-flex-basis: 35%;
   }
 
   .font-heading {
-    font-family: "Playfair Display", serif; // Ensure you have this font or fallback
+    font-family:
+      "Playfair Display", serif; // Ensure you have this font or fallback
     letter-spacing: -0.02em;
   }
 
@@ -349,14 +350,16 @@ $card-flex-basis: 35%;
       // Ensure back image covers
       img {
         border-radius: 1rem;
-        transform: scaleX(-1); // Check if we want to mirror the back image or not. Usually no for photos. Removing this line if text is involved.
+        transform: scaleX(
+          -1
+        ); // Check if we want to mirror the back image or not. Usually no for photos. Removing this line if text is involved.
         transform: none; // Reset
       }
-      
+
       .flip-overlay {
         position: absolute;
         inset: 0;
-        background: rgba(0,0,0,0.1); // Slight overlay for depth if needed
+        background: rgba(0, 0, 0, 0.1); // Slight overlay for depth if needed
         pointer-events: none;
       }
     }
@@ -601,17 +604,17 @@ $card-flex-basis: 35%;
   grid-template-columns: 1.5fr 1fr;
   grid-template-rows: 200px 200px;
   gap: 1rem;
-  
+
   @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
 
   .bento-item {
     border-radius: 16px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease;
 
     &:hover {
@@ -623,26 +626,372 @@ $card-flex-basis: 35%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s ease;
-      
+
       &:hover {
         transform: scale(1.05);
       }
     }
-    
+
     &.item-main {
       grid-row: span 2;
-      
-       @media (max-width: 768px) {
+
+      @media (max-width: 768px) {
         grid-row: auto;
         height: 250px;
       }
     }
-    
-    &.item-side-top, &.item-side-bottom {
-        @media (max-width: 768px) {
-         height: 200px;
+
+    &.item-side-top,
+    &.item-side-bottom {
+      @media (max-width: 768px) {
+        height: 200px;
       }
     }
   }
 }
 
+// NEW OUR RESORTS SECTION (Wireframe-based)
+.our-resorts-new {
+  background-color: #fafbfc;
+
+  .section-title {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    color: $clr-primary-dark;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .resort-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .resort-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(
+        135deg,
+        $clr-primary-lighter 0%,
+        #ffffff 100%
+      );
+
+      .resort-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $clr-primary-dark;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &::before {
+          content: "";
+          display: inline-block;
+          width: 4px;
+          height: 1.25em;
+          background: $clr-primary;
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .resort-card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  // Mini Gallery Grid (2x2)
+  .mini-gallery {
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 140px);
+      gap: 0.75rem;
+
+      @media (min-width: 992px) {
+        grid-template-rows: repeat(2, 160px);
+      }
+    }
+
+    .gallery-item {
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      &:hover img {
+        transform: scale(1.08);
+      }
+
+      &.gallery-more {
+        .gallery-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.3s ease;
+
+          span {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        &:hover .gallery-overlay {
+          background: rgba(0, 0, 0, 0.7);
+        }
+      }
+    }
+  }
+
+  // Resort Info Section
+  .resort-info {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+
+    .resort-description {
+      color: #6b7280;
+      line-height: 1.7;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .resort-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        i {
+          width: 20px;
+          text-align: center;
+          font-size: 1rem;
+        }
+
+        span {
+          color: #374151;
+          font-size: 0.95rem;
+        }
+
+        .price strong {
+          color: $clr-primary-dark;
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .resort-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .btn-how-to-reach {
+        border-radius: 8px;
+        padding: 0.6rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-color: #d1d5db;
+        color: #374151;
+
+        &:hover {
+          background-color: #f3f4f6;
+          border-color: #9ca3af;
+        }
+      }
+
+      .btn-view-resort {
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        background: linear-gradient(
+          135deg,
+          $clr-primary 0%,
+          $clr-primary-dark 100%
+        );
+        border: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(77, 153, 0, 0.35);
+        }
+      }
+    }
+  }
+
+  // Mobile Responsive
+  @media (max-width: 991.98px) {
+    .resort-card-body {
+      padding: 1rem !important;
+    }
+
+    .mini-gallery .gallery-grid {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 100px;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+
+      .gallery-item {
+        scroll-snap-align: start;
+        min-width: 120px;
+      }
+    }
+
+    .resort-info {
+      margin-top: 1rem;
+
+      .resort-description {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .resort-actions {
+        .btn {
+          flex: 1;
+          min-width: 140px;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+// How to Reach Modal Styles
+#vanavihariHowToReachModal,
+#jungleStarHowToReachModal {
+  .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, $clr-primary-lighter 0%, #ffffff 100%);
+
+    .modal-title {
+      font-weight: 600;
+      color: $clr-primary-dark;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .map-embed iframe {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .distance-info {
+    background: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 12px;
+
+    .distance-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e5e7eb;
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      &:first-of-type {
+        padding-top: 0;
+      }
+
+      i {
+        font-size: 1.25rem;
+        margin-top: 2px;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        strong {
+          font-size: 0.9rem;
+          color: #374151;
+        }
+
+        span {
+          font-size: 0.85rem;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  // Mobile Bottom Sheet Style
+  @media (max-width: 767.98px) {
+    .modal-dialog {
+      margin: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 100%;
+      transform: translateY(0) !important;
+    }
+
+    .modal-content {
+      border-radius: 20px 20px 0 0;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .row {
+      flex-direction: column;
+    }
+
+    .map-embed iframe {
+      height: 200px !important;
+    }
+
+    .distance-info {
+      margin-top: 1rem;
+    }
+  }
+}

@@ -181,7 +181,7 @@
                 class="text-muted mb-4"
                 style="line-height: 1.6; font-size: 1rem"
               >
-                We've curated exclusive 
+                We've curated exclusive
                 <strong>Trekking Adventures</strong> for souls seeking
                 connection with nature. You can now book these experiences
                 directly online.
@@ -602,9 +602,9 @@
               <!-- Left: Mini Gallery (2x2 grid) -->
               <div class="col-lg-6">
                 <div class="mini-gallery">
-                  <div class="gallery-grid">
+                  <div class="gallery-bento">
                     <div
-                      class="gallery-item"
+                      class="bento-main"
                       (click)="openLightbox(0, 'vanavihari')"
                     >
                       <img
@@ -613,7 +613,7 @@
                       />
                     </div>
                     <div
-                      class="gallery-item"
+                      class="bento-side-top"
                       (click)="openLightbox(1, 'vanavihari')"
                     >
                       <img
@@ -622,24 +622,15 @@
                       />
                     </div>
                     <div
-                      class="gallery-item"
-                      (click)="openLightbox(2, 'vanavihari')"
-                    >
-                      <img
-                        src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg"
-                        alt="Vanavihari Gallery 3"
-                      />
-                    </div>
-                    <div
-                      class="gallery-item gallery-more"
+                      class="bento-side-bottom gallery-more"
                       (click)="openLightbox(0, 'vanavihari')"
                     >
                       <img
-                        src="assets/img/home-gallery/vanavihari-home-gallery-4.jpg"
+                        src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg"
                         alt="More Photos"
                       />
                       <div class="gallery-overlay">
-                        <span>+{{ imageFilenames.length - 3 }} Photos</span>
+                        <span>+{{ imageFilenames.length - 2 }} Photos</span>
                       </div>
                     </div>
                   </div>
@@ -697,9 +688,9 @@
               <!-- Left: Mini Gallery (2x2 grid) -->
               <div class="col-lg-6">
                 <div class="mini-gallery">
-                  <div class="gallery-grid">
+                  <div class="gallery-bento">
                     <div
-                      class="gallery-item"
+                      class="bento-main"
                       (click)="openLightbox(0, 'jungle-star')"
                     >
                       <img
@@ -708,7 +699,7 @@
                       />
                     </div>
                     <div
-                      class="gallery-item"
+                      class="bento-side-top"
                       (click)="openLightbox(1, 'jungle-star')"
                     >
                       <img
@@ -717,24 +708,15 @@
                       />
                     </div>
                     <div
-                      class="gallery-item"
-                      (click)="openLightbox(2, 'jungle-star')"
-                    >
-                      <img
-                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg"
-                        alt="Jungle Star Gallery 3"
-                      />
-                    </div>
-                    <div
-                      class="gallery-item gallery-more"
+                      class="bento-side-bottom gallery-more"
                       (click)="openLightbox(0, 'jungle-star')"
                     >
                       <img
-                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-4.jpg"
+                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg"
                         alt="More Photos"
                       />
                       <div class="gallery-overlay">
-                        <span>+{{ imageFilenames1.length - 3 }} Photos</span>
+                        <span>+{{ imageFilenames1.length - 2 }} Photos</span>
                       </div>
                     </div>
                   </div>
@@ -757,7 +739,7 @@
                     <div class="meta-item">
                       <i class="fa-solid fa-indian-rupee-sign text-success"></i>
                       <span class="price"
-                        >Starts from <strong>₹1800</strong> / night</span
+                        >Starts from <strong>₹5,000</strong> / night</span
                       >
                     </div>
                   </div>
@@ -1010,57 +992,6 @@
     END OLD RESORT GALLERY + TREK SECTIONS -->
 
     <!-- testimonials -->
-    <section class="testimonials">
-      <div class="container mt-5">
-        <h2 class="text-center mb-4">Guest Reviews</h2>
-        <div
-          id="testimonialCarousel"
-          class="carousel slide"
-          data-bs-ride="carousel"
-        >
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <blockquote class="blockquote text-center">
-                <p class="">
-                  The resort was an absolute paradise! The staff was friendly,
-                  the rooms were luxurious, and the amenities were top-notch. I
-                  can't wait to come back!
-                </p>
-                <footer class="blockquote-footer">Rajesh</footer>
-              </blockquote>
-            </div>
-            <div class="carousel-item">
-              <blockquote class="blockquote text-center">
-                <p class="">
-                  Our family had a fantastic time at the resort. The kids loved
-                  the pool, and we enjoyed the beautiful beach. The service was
-                  exceptional, and we left with unforgettable memories.
-                </p>
-                <footer class="blockquote-footer">Lakshmi</footer>
-              </blockquote>
-            </div>
-            <!-- Add more carousel items as needed -->
-          </div>
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#testimonialCarousel"
-            data-bs-slide="prev"
-          >
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#testimonialCarousel"
-            data-bs-slide="next"
-          >
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
-        </div>
-      </div>
-    </section>
+    <!-- testimonials removed as per user request -->
   </div>
 </app-layout>

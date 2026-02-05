@@ -1,6 +1,19 @@
 @use "./src/scss/base/" as *;
 $card-flex-basis: 35%;
 
+// Mobile Container Consistency - Same width/padding for all sections
+@media (max-width: 767.98px) {
+  .main {
+    // Ensure all containers have consistent padding on mobile (matching quick filter section)
+    > section .container,
+    > section > .container {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+      max-width: 100% !important;
+    }
+  }
+}
+
 // Quick Search Section (10%)
 .hero-search-section {
   height: auto;
@@ -710,7 +723,7 @@ $card-flex-basis: 35%;
     }
   }
 
-  // Mini Gallery Grid (2x2)
+  // Mini Gallery Grid (2x2) - Legacy
   .mini-gallery {
     .gallery-grid {
       display: grid;
@@ -720,6 +733,75 @@ $card-flex-basis: 35%;
 
       @media (min-width: 992px) {
         grid-template-rows: repeat(2, 160px);
+      }
+    }
+
+    // Bento Grid Layout (Card 1 large left, Cards 2+3 stacked right)
+    .gallery-bento {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      grid-template-rows: 140px 140px;
+      gap: 0.75rem;
+
+      @media (min-width: 992px) {
+        grid-template-rows: 160px 160px;
+      }
+
+      .bento-main,
+      .bento-side-top,
+      .bento-side-bottom {
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        &:hover img {
+          transform: scale(1.08);
+        }
+      }
+
+      .bento-main {
+        grid-row: span 2;
+      }
+
+      .bento-side-top {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .bento-side-bottom {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .gallery-more {
+        .gallery-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.3s ease;
+
+          span {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        &:hover .gallery-overlay {
+          background: rgba(0, 0, 0, 0.7);
+        }
       }
     }
 
@@ -814,9 +896,9 @@ $card-flex-basis: 35%;
       flex-wrap: wrap;
 
       .btn-how-to-reach {
-        border-radius: 8px;
-        padding: 0.6rem 1.25rem;
-        font-weight: 500;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
         transition: all 0.3s ease;
         border-color: #d1d5db;
         color: #374151;
@@ -828,8 +910,8 @@ $card-flex-basis: 35%;
       }
 
       .btn-view-resort {
-        border-radius: 8px;
-        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
         background: linear-gradient(
           135deg,
@@ -958,21 +1040,73 @@ $card-flex-basis: 35%;
     }
   }
 
-  // Mobile Bottom Sheet Style
-  @media (max-width: 767.98px) {
+  // Desktop Centered Modal Style - Robust Flexbox Approach
+  @media (min-width: 768px) {
+    // Make the modal container a flexbox to center its child (dialog)
+    &.modal.show {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
     .modal-dialog {
-      margin: 0;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: 100%;
-      transform: translateY(0) !important;
+      // Reset all positioning to let Flexbox handle centering
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+      // margin: auto !important; // Was pure auto
+      margin: 15vh auto auto auto !important; // deeply lowered
+      
+      width: 100% !important;
+      max-width: 800px !important;
+      max-height: 85vh !important;
+      
+      display: flex !important;
+      flex-direction: column !important;
+      pointer-events: auto;
+    }
+
+    // Ensure proper pointer events behavior
+    &.modal:not(.show) {
+      display: none !important;
+      pointer-events: none;
     }
 
     .modal-content {
-      border-radius: 20px 20px 0 0;
-      max-height: 80vh;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+    }
+  }
+
+  // Mobile Centered Modal Style - Fixed viewport positioning
+  @media (max-width: 767.98px) {
+    &.modal {
+      padding: 0 !important;
+    }
+
+    .modal-dialog {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      width: calc(100% - 2rem) !important;
+      max-width: calc(100% - 2rem) !important;
+      max-height: 90vh !important;
+    }
+
+    .modal-content {
+      border-radius: 16px;
+      max-height: 85vh;
       overflow-y: auto;
     }
 
@@ -980,6 +1114,7 @@ $card-flex-basis: 35%;
       position: sticky;
       top: 0;
       z-index: 10;
+      background: white;
     }
 
     .row {

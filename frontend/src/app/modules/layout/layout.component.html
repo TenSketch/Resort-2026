@@ -75,44 +75,58 @@
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
         <!-- Profile / Sign In Section (Top) -->
-        <li class="sidebar-item d-flex" *ngIf="!isLoggedIn()">
-          <a
-            class="sidebar-link fw-bold text-primary"
-            (click)="toggleSidebar(); goToSignin()"
-          >
-            <i class="fa-solid fa-right-to-bracket"></i
-            ><span class="ms-3">Sign In</span>
-          </a>
-        </li>
-        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
-          <a
-            class="sidebar-link"
-            routerLink="/my-account/settings"
-            (click)="toggleSidebar()"
-          >
-            <i class="fa-regular fa-user-circle"></i
-            ><span class="ms-3">Profile</span>
-          </a>
-        </li>
-        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
-          <a
-            class="sidebar-link"
-            routerLink="/my-account/my-bookings"
-            (click)="toggleSidebar()"
-          >
-            <i class="fa-solid fa-calendar-check"></i
-            ><span class="ms-3">My Bookings</span>
-          </a>
-        </li>
-        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
-          <a
-            class="sidebar-link fw-bold text-primary"
-            (click)="toggleSidebar(); triggerModal()"
-          >
-            <i class="fa-solid fa-right-from-bracket"></i
-            ><span class="ms-3">Sign Out</span>
-          </a>
-        </li>
+        <!-- My Account Group (Accordion) -->
+        <div class="accordion mb-2" id="sidebarAccordionAccount">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAccount">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseAccount"
+                aria-expanded="false"
+                aria-controls="collapseAccount"
+              >
+                <i class="fa-regular fa-user-circle"></i><span class="menu-text">My Account</span>
+              </button>
+            </h2>
+            <div
+              id="collapseAccount"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingAccount"
+              data-bs-parent="#sidebarAccordionAccount"
+            >
+              <div class="accordion-body ps-4">
+                <a
+                  *ngIf="!isLoggedIn()"
+                  class="dropdown-item text-nowrap"
+                  (click)="toggleSidebar(); goToSignin()"
+                  >Sign In</a
+                >
+                <a
+                  *ngIf="isLoggedIn()"
+                  class="dropdown-item text-nowrap"
+                  routerLink="/my-account/settings"
+                  (click)="toggleSidebar()"
+                  >Profile</a
+                >
+                <a
+                  *ngIf="isLoggedIn()"
+                  class="dropdown-item text-nowrap"
+                  routerLink="/my-account/my-bookings"
+                  (click)="toggleSidebar()"
+                  >My Bookings</a
+                >
+                <a
+                  *ngIf="isLoggedIn()"
+                  class="dropdown-item text-nowrap"
+                  (click)="toggleSidebar(); triggerModal()"
+                  >Sign Out</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
         <li class="sidebar-item mt-2">
           <hr class="mx-3 my-2 text-muted" />
         </li>
@@ -165,7 +179,7 @@
         </div>
 
         <!-- Tents Group (Accordion) -->
-        <div class="accordion mt-2" id="sidebarAccordionTents">
+        <!-- <div class="accordion mt-2" id="sidebarAccordionTents">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingTents">
               <button
@@ -199,7 +213,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Treks (temporarily disabled)
         <li class="sidebar-item d-flex">

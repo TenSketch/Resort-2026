@@ -166,15 +166,15 @@
         <!-- Standard container to match content above -->
         <div class="row align-items-center gx-5">
           <!-- Text Content (Left) -->
-          <div class="col-lg-5">
-            <div class="announcement-content">
+          <div class="col-md-6">
+            <div class="announcement-content mx-auto" style="max-width: 90%">
               <span
                 class="text-uppercase tracking-widest small mb-2 d-block text-primary fw-bold"
                 style="letter-spacing: 0.15em; font-size: 0.75rem"
               >
                 New Experiences
               </span>
-              <h2 class="display-6 serif-font mb-3 text-dark-green fw-bold">
+              <h2 class="display-6 font-heading mb-3 text-dark-green fw-bold">
                 Escape to the <span class="fst-italic text-primary">Wild.</span>
               </h2>
               <p
@@ -205,8 +205,8 @@
           </div>
 
           <!-- Media Content (Right) -->
-          <div class="col-lg-7 position-relative">
-            <div class="editorial-media-wrapper ps-lg-4 py-2">
+          <div class="col-md-6 position-relative">
+            <div class="editorial-media-wrapper py-2">
               <!-- Organic Shape Background (scaled down) -->
               <svg
                 class="organic-blob"
@@ -221,19 +221,13 @@
               </svg>
 
               <div
-                class="media-container shadow"
-                style="
-                  border-radius: 4px;
-                  overflow: hidden;
-                  max-width: 90%;
-                  margin-left: auto;
-                "
+                class="media-container shadow-lg rounded-4 w-100 overflow-hidden"
               >
                 <img
-                  src="assets/img/Vanavihari-reception.jpg"
-                  alt="Vanavihari reception"
+                  src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+                  alt="Trekking Adventure"
                   class="img-fluid w-100 object-fit-cover"
-                  style="height: 320px"
+                  style="height: 350px"
                 />
               </div>
             </div>
@@ -247,7 +241,7 @@
         <!-- Section 1: Resorts (Text Left, Image Right) -->
         <div class="row align-items-center mb-5 gx-5 zigzag-row">
           <div class="col-md-6 order-2 order-md-1">
-            <div class="content-wrapper pe-md-4">
+            <div class="content-wrapper pe-md-4 mx-auto" style="max-width: 90%">
               <span
                 class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
                 >Stay in Luxury</span
@@ -386,9 +380,9 @@
         <!-- Section 3: Trekking (Text Left, Image Right) -->
         <div class="row align-items-center gx-5 zigzag-row">
           <div class="col-md-6 order-2 order-md-1">
-            <div class="content-wrapper pe-md-4">
+            <div class="content-wrapper pe-md-4 mx-auto" style="max-width: 90%">
               <span
-                class="badge bg-light text-info mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-info border-opacity-10"
+                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
                 >Explore Nature</span
               >
               <h2 class="display-5 fw-bold mb-3 text-dark-green font-heading">
@@ -404,15 +398,16 @@
               </p>
               <ul class="list-unstyled mb-4">
                 <li class="mb-2 d-flex align-items-center text-muted">
-                  <i class="fa-solid fa-person-hiking text-info me-2"></i>
+                  <i class="fa-solid fa-person-hiking text-success me-2"></i>
                   Guided Tours
                 </li>
                 <li class="mb-2 d-flex align-items-center text-muted">
-                  <i class="fa-solid fa-camera text-info me-2"></i> Photography
-                  Spots
+                  <i class="fa-solid fa-camera text-success me-2"></i>
+                  Photography Spots
                 </li>
                 <li class="d-flex align-items-center text-muted">
-                  <i class="fa-solid fa-map text-info me-2"></i> Forest Trails
+                  <i class="fa-solid fa-map text-success me-2"></i> Forest
+                  Trails
                 </li>
               </ul>
               <button
@@ -463,29 +458,31 @@
       <div class="container">
         <div class="row align-items-center gx-lg-5">
           <!-- Left Column: Content -->
-          <div class="col-lg-5 mb-4 mb-lg-0">
-            <h2 class="display-5 fw-bold text-dark-green mb-3">
-              About Vanavihari
-            </h2>
-            <p
-              class="text-muted mb-4"
-              style="line-height: 1.6; font-size: 1rem"
-            >
-              Owned by the AP Forest Department and managed by local tribes,
-              Vanavihari offers immersive eco-tourism experiences. Your stay
-              supports sustainable livelihoods for the native Konda Reddy and
-              Valmiki communities.
-            </p>
-            <button
-              class="btn btn-primary rounded-pill px-4 py-2"
-              (click)="goToAboutUs()"
-            >
-              Know More <i class="fa-solid fa-arrow-right ms-2"></i>
-            </button>
+          <div class="col-md-6 mb-4 mb-lg-0">
+            <div class="mx-auto" style="max-width: 90%">
+              <h2 class="display-5 fw-bold text-dark-green mb-3">
+                About Vanavihari
+              </h2>
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
+                Owned by the AP Forest Department and managed by local tribes,
+                Vanavihari offers immersive eco-tourism experiences. Your stay
+                supports sustainable livelihoods for the native Konda Reddy and
+                Valmiki communities.
+              </p>
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                (click)="goToAboutUs()"
+              >
+                Know More <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
           </div>
 
           <!-- Right Column: Bento Grid Images -->
-          <div class="col-lg-7">
+          <div class="col-md-6">
             <div class="bento-grid">
               <div class="bento-item item-main">
                 <img
@@ -600,7 +597,7 @@
           <div class="resort-card-body">
             <div class="row g-4">
               <!-- Left: Mini Gallery (2x2 grid) -->
-              <div class="col-lg-6">
+              <div class="col-md-6">
                 <div class="mini-gallery">
                   <div class="gallery-bento">
                     <div
@@ -637,8 +634,8 @@
                 </div>
               </div>
               <!-- Right: Resort Info -->
-              <div class="col-lg-6">
-                <div class="resort-info">
+              <div class="col-md-6">
+                <div class="resort-info mx-auto" style="max-width: 90%">
                   <p class="resort-description">
                     Nestled in the heart of Maredumilli, Vanavihari is a haven
                     for eco-tourism enthusiasts. Experience the tranquility of
@@ -653,7 +650,7 @@
                     <div class="meta-item">
                       <i class="fa-solid fa-indian-rupee-sign text-success"></i>
                       <span class="price"
-                        >Starts from <strong>₹1500</strong> / night</span
+                        >Starts from <strong>₹1750</strong> / night</span
                       >
                     </div>
                   </div>
@@ -686,7 +683,7 @@
           <div class="resort-card-body">
             <div class="row g-4">
               <!-- Left: Mini Gallery (2x2 grid) -->
-              <div class="col-lg-6">
+              <div class="col-md-6">
                 <div class="mini-gallery">
                   <div class="gallery-bento">
                     <div
@@ -723,8 +720,8 @@
                 </div>
               </div>
               <!-- Right: Resort Info -->
-              <div class="col-lg-6">
-                <div class="resort-info">
+              <div class="col-md-6">
+                <div class="resort-info mx-auto" style="max-width: 90%">
                   <p class="resort-description">
                     A unique island-like setting with cottages perched on a
                     hillock, accessed via a thrilling hanging bridge. Surrounded

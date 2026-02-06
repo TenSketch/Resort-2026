@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { User, Shield, Eye, Lock, CheckCircle, XCircle } from "lucide-react"
 import { useAdmin } from "@/lib/AdminProvider"
 import { PAGE_DEFINITIONS } from "@/lib/permissionConfig"

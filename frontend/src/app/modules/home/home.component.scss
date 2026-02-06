@@ -1,6 +1,13 @@
 @use "./src/scss/base/" as *;
 $card-flex-basis: 35%;
 
+
+// Typography Utilities
+.font-heading {
+  font-family: "Noto Sans", sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
 // Mobile Container Consistency - Same width/padding for all sections
 @media (max-width: 767.98px) {
   .main {
@@ -284,12 +291,6 @@ $card-flex-basis: 35%;
   .zigzag-row {
     position: relative;
     z-index: 2;
-  }
-
-  .font-heading {
-    font-family:
-      "Playfair Display", serif; // Ensure you have this font or fallback
-    letter-spacing: -0.02em;
   }
 
   .font-body {
@@ -1057,11 +1058,11 @@ $card-flex-basis: 35%;
       transform: none !important;
       // margin: auto !important; // Was pure auto
       margin: 15vh auto auto auto !important; // deeply lowered
-      
+
       width: 100% !important;
       max-width: 800px !important;
       max-height: 85vh !important;
-      
+
       display: flex !important;
       flex-direction: column !important;
       pointer-events: auto;

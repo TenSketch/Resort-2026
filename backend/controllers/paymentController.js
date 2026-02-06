@@ -155,15 +155,17 @@ export const initiatePayment = async (req, res) => {
     
     // Validate IP format - must be valid IPv4
     const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (!clientIp || !ipv4Regex.test(clientIp)) {
-      // Use a placeholder public IP if we can't get real one
+    if (!clientIp || !ipv4Regex.test(clientIp) || clientIp === '127.0.0.1' || clientIp === '::1') {
+      // Use a hardcoded valid public IP for UAT/Testing if local or invalid
+      // BillDesk often rejects private IPs or localhost
+      console.warn(`⚠️ Invalid or local IP deteced (${clientIp}), using public fallback IP for BillDesk UAT`);
       clientIp = "103.0.0.1";
     }
 
     // Truncate user agent to reasonable length
     let userAgent = req.headers['user-agent'] || "Mozilla/5.0";
-    if (userAgent.length > 100) {
-      userAgent = "Mozilla/5.0";
+    if (userAgent.length > 255) {
+      userAgent = userAgent.substring(0, 255);
     }
 
     // Prepare order data - match BillDesk expected format exactly

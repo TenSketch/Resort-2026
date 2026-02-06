@@ -312,7 +312,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
     // Unified payment initiation (no type param needed as it checks unified Reservation collection)
-    this.http.post<any>(`${this.api_url}/api/payment/initiate`, { bookingId }, { headers }).subscribe({
+    this.http.post<any>(`${this.api_url}/api/trek-payment/initiate`, { bookingId }, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.paymentData) {
           localStorage.removeItem('touristSpotsBooking');

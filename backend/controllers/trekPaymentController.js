@@ -4,7 +4,7 @@ import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
 import { sendReservationSuccessEmails } from "../services/reservationEmailService.js";
 import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
-import Reservation from "../models/reservationModel.js";
+import Reservation from "../models/touristSpotReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
 import Room from "../models/roomModel.js";
@@ -36,8 +36,8 @@ async function sendReservationSuccessEmailsLegacy(reservation, paymentTransactio
 
     // Prepare email data
     const emailData = {
-      Full_Name: reservation.fullName,
-      Guest_Details: `${reservation.fullName}\n${reservation.email}\n${reservation.phone}\n${reservation.address1}, ${reservation.city}, ${reservation.state} - ${reservation.postalCode}`,
+      Full_Name: reservation.user?.name || reservation.fullName,
+      Guest_Details: `${reservation.user?.name || reservation.fullName}\n${reservation.user?.email || reservation.email}\n${reservation.user?.phone || reservation.phone}\n${reservation.user?.address || reservation.address1}, ${reservation.user?.city || reservation.city}, ${reservation.user?.state || reservation.state} - ${reservation.user?.pincode || reservation.postalCode}`,
       Reservation_Date: formatDate(reservation.reservationDate),
       Booking_Id: reservation.bookingId,
       Room_List: roomList,
@@ -183,9 +183,9 @@ export const initiatePayment = async (req, res) => {
       ru: process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.fullName || 'NA').substring(0, 50),
-        additional_info2: (reservation.phone || 'NA').substring(0, 20),
-        additional_info3: (reservation.email || 'NA').substring(0, 50),
+        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').substring(0, 50),
+        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').substring(0, 20),
+        additional_info3: (reservation.user?.email || reservation.email || 'NA').substring(0, 50),
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",
@@ -207,23 +207,20 @@ export const initiatePayment = async (req, res) => {
     try {
       const fs = await import('fs');
       const debugLog = `
-========================================
+======================================== (TREK)
 Timestamp: ${new Date().toISOString()}
 Booking ID: ${bookingId}
 Merchant ID: '${merchantId}'
 Client ID: '${clientId}'
-Key ID: '${keyId}'
-Settlement LOB: '${settlementLob}'
 Order Data: ${JSON.stringify(orderData, null, 2)}
 ========================================
 `;
-      fs.writeFileSync('debug_payment.log', debugLog, { flag: 'a' });
-      console.log('✅ Wrote payment debug info to debug_payment.log');
+      fs.writeFileSync('debug_trek_payment.log', debugLog, { flag: 'a' });
     } catch (fsErr) {
       console.error('Failed to write debug log', fsErr);
     }
 
-    console.log("\n=== PAYMENT INITIATION ===");
+    console.log("\n=== TREK PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);
     console.log("Order Data:", JSON.stringify(orderData, null, 2));
 
@@ -238,9 +235,6 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
     // Generate trace ID and timestamp
     const traceId = "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
     const timestamp = Date.now().toString();
-    console.log("Trace ID:", traceId);
-    console.log("Timestamp:", timestamp);
-    console.log("=========================\n");
 
     // Store debug info
     debugInfo = {
@@ -266,9 +260,9 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
         timestamp: timestamp,
         encryptedRequest: signed,
         customerDetails: {
-          name: reservation.fullName,
-          phone: reservation.phone,
-          email: reservation.email
+          name: reservation.user?.name || reservation.fullName,
+          phone: reservation.user?.phone || reservation.phone,
+          email: reservation.user?.email || reservation.email
         }
       });
       await paymentTransaction.save();

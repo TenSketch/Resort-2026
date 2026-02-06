@@ -274,6 +274,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
           id: spot.id,
           name: spot.name,
           location: spot.location,
+          difficulty: spot.difficulty,
           counts: spot.counts,
           unitPrices: spot.unitPrices,
           breakdown: spot.breakdown,

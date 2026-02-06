@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TouristBookingSelection } from '../../shared/tourist-spot-selection/tourist-spot-selection.component';
-import { TouristSpotCategory, TouristSpotConfig } from './tourist-spots.data';
+import { TouristSpotCategory, TouristSpotConfig, TOURIST_SPOT_CATEGORIES } from './tourist-spots.data';
 import { TouristSpotService } from '../../services/tourist-spot.service';
 
 export interface BookedTouristSpot {
@@ -11,20 +11,17 @@ export interface BookedTouristSpot {
   name: string;
   location: string;
   type?: string;
+  difficulty?: 'Soft' | 'Medium' | 'Hard';
   counts: {
     adults: number;
     children: number;
     vehicles: number;
     cameras: number;
-    twoWheelers?: number;
-    fourWheelers?: number;
   };
   unitPrices: {
     entry: number;
     parking: number;
     camera: number;
-    parkingTwoWheeler?: number;
-    parkingFourWheeler?: number;
   };
   breakdown: {
     entry: number;
@@ -58,8 +55,11 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   categories: TouristSpotCategory[] = [];
   filteredCategories: TouristSpotCategory[] = [];
 
+  // Flattened local spots for easy lookup
+  private localSpots: TouristSpotConfig[] = [];
+
   // Search state
-  isSearchPerformed: boolean = false;
+  isSearchPerformed: boolean = true; // Always true to keep buttons active
   searchCriteria: any = null;
   isLoadingSpots: boolean = false;
 
@@ -104,6 +104,9 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     ,
     private touristSpotService: TouristSpotService
   ) {
+    // Flatten local spots
+    this.localSpots = TOURIST_SPOT_CATEGORIES.flatMap(c => c.spots);
+
     // Load persisted state if present
     const raw = localStorage.getItem(this.storageKey);
     if (raw) {
@@ -140,6 +143,31 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       .subscribe((result) => {
         this.isMobile = result.matches;
       });
+  }
+
+  private getLocalMapUrl(backendName: string): string | undefined {
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const bName = normalize(backendName);
+
+    // 1. Try exact or fuzzy name match
+    const match = this.localSpots.find(s => {
+      const lName = normalize(s.name);
+      return bName.includes(lName) || lName.includes(bName);
+    });
+    if (match?.mapurl) return match.mapurl;
+
+    // 2. Fallback to keyword matching if name match failed (handling spelling diffs)
+    if (bName.includes('jalatarangini') || (bName.includes('soft') && bName.includes('trek'))) {
+      return this.localSpots.find(s => s.id === 'soft-trek')?.mapurl;
+    }
+    if (bName.includes('amruthadhara')) {
+      return this.localSpots.find(s => s.id === 'amruthadhara')?.mapurl;
+    }
+    if (bName.includes('junglestar') || (bName.includes('very') && bName.includes('hard'))) {
+      return this.localSpots.find(s => s.id === 'hard-trek')?.mapurl;
+    }
+
+    return undefined;
   }
 
   ngAfterViewInit(): void {
@@ -195,6 +223,45 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
         // Store title if not set (first encounter wins, or valid casing)
         if (!categoryTitles[catKey]) categoryTitles[catKey] = rawCategory;
+        
+        // Define Trek Specific Data
+        let capacity = undefined;
+        let timings = 'Morning - Evening';
+        let inclusions = undefined;
+        let notes = undefined;
+        
+        const nameLower = (s.name || s.title || '').toLowerCase();
+        
+        if (nameLower.includes('trek')) {
+            if (nameLower.includes('soft') || nameLower.includes('jalatarangini')) {
+                // Soft Trek Logic (1)
+                capacity = { treksPerDay: 3, membersPerTrek: 30, totalCapacity: 90 };
+                timings = '6:00 AM – 3:00 PM';
+                inclusions = {
+                    breakfast: ['Simple sandwich', 'Banana', 'Small tetra pack drink']
+                };
+            } else if (nameLower.includes('medium') || nameLower.includes('hard') && !nameLower.includes('very hard')) {
+                // Medium/Hard Trek Logic (2) - Jungle Star -> Nellore
+                // Assuming 'medium-trek' matches this
+                capacity = { treksPerDay: 2, membersPerTrek: 30, totalCapacity: 60 };
+                timings = '6:00 AM – 3:00 PM';
+                inclusions = {
+                     breakfast: ['Simple sandwich', 'Banana', 'Small tetra pack drink']
+                };
+            } else if (nameLower.includes('very hard') || nameLower.includes('gudisa')) {
+                // Very Hard Trek Logic (3)
+                 capacity = { treksPerDay: 1, membersPerTrek: 20, totalCapacity: 20 };
+                 timings = '6:00 AM – 3:00 PM';
+                 inclusions = {
+                     lunch: ['Simple lunch included']
+                 };
+                 notes = [
+                     'Vehicle charge is mandatory',
+                     'Till Gudisa hills by vehicle and thereafter trekking to Mothugudem for the entire day.'
+                 ];
+            }
+        }
+
 
         const cfg: TouristSpotConfig = {
           id,
@@ -204,11 +271,16 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
           typeLabel: s.category || '',
           images: Array.isArray(s.images) ? s.images.map((i: any) => typeof i === 'string' ? i : (i.url || '')) : [],
           fees: {
-            entryPerPerson: Number(s.entryFees || 0),
-            parkingPerVehicle: Number(s.parking2W || s.parking || 0),
+            entryPerPerson: (function() {
+              if (nameLower.includes('trek')) {
+                if (nameLower.includes('very hard')) return 1200;
+                if (nameLower.includes('medium') || nameLower.includes('hard')) return 800;
+                return 500; // Soft/Default Trek
+              }
+              return Number(s.entryFees || 0);
+            })(),
+            parkingPerVehicle: 0, // Force 0 for all
             cameraPerCamera: Number(s.cameraFees || 0),
-            parkingTwoWheeler: s.parking2W ? Number(s.parking2W) : undefined,
-            parkingFourWheeler: s.parking4W ? Number(s.parking4W) : undefined,
           },
           addOns: [], // Backend doesn't seem to return addOns yet, keep empty or map if added
           timing: 'morning-evening', // Default, logic to map from backend if available
@@ -216,7 +288,12 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
           difficulty: undefined,
           distanceKm: undefined,
           elevationGainM: undefined,
-          ticketsLeftToday: s.ticketsLeftToday ?? undefined
+          ticketsLeftToday: s.ticketsLeftToday ?? undefined,
+          capacity,
+          timings: timings !== 'Morning - Evening' ? timings : undefined,
+          inclusions,
+          notes,
+          mapurl: s.mapurl || this.getLocalMapUrl(s.name || s.title || '') || undefined // Try backend first, then local fallback
         };
 
         if (!groups[catKey]) groups[catKey] = [];
@@ -273,9 +350,33 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       }
 
       this.categories = built;
+      
+      // Refresh booked spots with latest prices
+      this.refreshBookedSpotsPrices();
     } catch (e) {
       console.warn('Error loading Trek Spots', e);
       // fallback
+    }
+  }
+
+  private refreshBookedSpotsPrices() {
+    let changed = false;
+    this.bookedSpots.forEach(spot => {
+      const freshPrices = this.getSpotPrices(spot.id);
+      
+      // Check if prices changed (simple check or just overwrite)
+      // Overwrite to ensure latest data (e.g. removed parking fields)
+      spot.unitPrices = freshPrices;
+      
+      // If parking fields are removed from data, ensure they are undefined in counts/unitPrices if needed
+      // Cleanup complete: 2W/4W fields removed.
+      
+      this.recalculateSpotTotal(spot);
+      changed = true;
+    });
+
+    if (changed) {
+      this.persist();
     }
   }
 
@@ -313,10 +414,12 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   }
 
   onAddTouristBooking(selection: TouristBookingSelection, spotId: string) {
-    if (!this.isSearchPerformed) {
-      alert('Please select a visit date first');
-      return;
-    }
+    // if (!this.searchCriteria?.visitDate && !localStorage.getItem('tempVisitDate')) {
+    //   alert('Please select a visit date first');
+    //   // Scroll to top or highlight date picker?
+    //   document.querySelector('mat-form-field')?.scrollIntoView({ behavior: 'smooth' });
+    //   return;
+    // }
 
     // Check if spot already exists
     const existingIndex = this.bookedSpots.findIndex(spot => spot.id === spotId);
@@ -324,18 +427,24 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     // Define unit prices for each spot
     const spotPrices = this.getSpotPrices(spotId);
 
+    // Default difficulty for Trek
+    let difficulty: 'Soft' | 'Medium' | 'Hard' | undefined = undefined;
+    if (selection.type?.includes('Trek')) {
+      if (spotId === 'soft-trek') difficulty = 'Soft';
+      else if (spotId === 'medium-trek') difficulty = 'Medium';
+      else if (spotId === 'hard-trek') difficulty = 'Hard';
+      else difficulty = 'Soft'; // Fallback
+
+      // Ensure price matches difficulty
+      if (difficulty === 'Soft') spotPrices.entry = 500;
+      else if (difficulty === 'Medium') spotPrices.entry = 800;
+      else if (difficulty === 'Hard') spotPrices.entry = 1200;
+    }
+
     const peopleCount = selection.counts.adults + selection.counts.children;
 
-    // Calculate parking based on split or generic
-    let parkingTotal = 0;
-    if (spotPrices.parkingTwoWheeler !== undefined && spotPrices.parkingFourWheeler !== undefined) {
-      // Use split parking calculation
-      parkingTotal = (spotPrices.parkingTwoWheeler * (selection.counts.twoWheelers || 0)) +
-        (spotPrices.parkingFourWheeler * (selection.counts.fourWheelers || 0));
-    } else {
-      // Use generic parking calculation
-      parkingTotal = spotPrices.parking * selection.counts.vehicles;
-    }
+    // Calculate parking - simplified to generic parking
+    const parkingTotal = spotPrices.parking * selection.counts.vehicles;
 
     // Calculate breakdown
     const breakdown = {
@@ -350,6 +459,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       name: selection.name,
       location: selection.location,
       type: selection.type,
+      difficulty,
       counts: selection.counts,
       unitPrices: spotPrices,
       breakdown,
@@ -376,28 +486,24 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     this.persist();
   }
 
-  incrementSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras' | 'twoWheelers' | 'fourWheelers') {
+  incrementSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras') {
     const spot = this.bookedSpots[index];
     let currentValue = 0;
 
     if (field === 'adults') currentValue = spot.counts.adults;
     else if (field === 'vehicles') currentValue = spot.counts.vehicles;
     else if (field === 'cameras') currentValue = spot.counts.cameras;
-    else if (field === 'twoWheelers') currentValue = spot.counts.twoWheelers || 0;
-    else if (field === 'fourWheelers') currentValue = spot.counts.fourWheelers || 0;
 
     this.updateSpotCount(index, field, currentValue + 1);
   }
 
-  decrementSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras' | 'twoWheelers' | 'fourWheelers') {
+  decrementSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras') {
     const spot = this.bookedSpots[index];
     let currentValue = 0;
 
     if (field === 'adults') currentValue = spot.counts.adults;
     else if (field === 'vehicles') currentValue = spot.counts.vehicles;
     else if (field === 'cameras') currentValue = spot.counts.cameras;
-    else if (field === 'twoWheelers') currentValue = spot.counts.twoWheelers || 0;
-    else if (field === 'fourWheelers') currentValue = spot.counts.fourWheelers || 0;
 
     // Prevent going below 1 for adults, 0 for others
     if (field === 'adults' && currentValue <= 1) return;
@@ -406,7 +512,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     this.updateSpotCount(index, field, currentValue - 1);
   }
 
-  updateSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras' | 'twoWheelers' | 'fourWheelers', value: number) {
+  updateSpotCount(index: number, field: 'adults' | 'vehicles' | 'cameras', value: number) {
     if (value < 0) return;
 
     const spot = this.bookedSpots[index];
@@ -421,13 +527,22 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       spot.counts.vehicles = value;
     } else if (field === 'cameras') {
       spot.counts.cameras = value;
-    } else if (field === 'twoWheelers') {
-      spot.counts.twoWheelers = value;
-    } else if (field === 'fourWheelers') {
-      spot.counts.fourWheelers = value;
     }
 
     // Recalculate totals
+    this.recalculateSpotTotal(spot);
+    this.persist();
+  }
+
+  updateSpotDifficulty(index: number, difficulty: 'Soft' | 'Medium' | 'Hard') {
+    const spot = this.bookedSpots[index];
+    spot.difficulty = difficulty;
+
+    // Update fee based on difficulty
+    if (difficulty === 'Soft') spot.unitPrices.entry = 500;
+    else if (difficulty === 'Medium') spot.unitPrices.entry = 800;
+    else if (difficulty === 'Hard') spot.unitPrices.entry = 1200;
+
     this.recalculateSpotTotal(spot);
     this.persist();
   }
@@ -436,13 +551,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     const spotPrices = spot.unitPrices;
 
     // Calculate parking
-    let parkingTotal = 0;
-    if (spotPrices.parkingTwoWheeler !== undefined && spotPrices.parkingFourWheeler !== undefined) {
-      parkingTotal = (spotPrices.parkingTwoWheeler * (spot.counts.twoWheelers || 0)) +
-        (spotPrices.parkingFourWheeler * (spot.counts.fourWheelers || 0));
-    } else {
-      parkingTotal = spotPrices.parking * spot.counts.vehicles;
-    }
+    const parkingTotal = spotPrices.parking * spot.counts.vehicles;
 
     // Update breakdown
     spot.breakdown.entry = spotPrices.entry * spot.peopleCount;
@@ -452,8 +561,32 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     spot.total = spot.breakdown.entry + spot.breakdown.parking + spot.breakdown.camera + spot.breakdown.addOns;
   }
 
+  // Booking State
+  visitDate: Date | null = null;
+  minDate: Date = new Date();
+
+  // Helper to get form controls for template
+  // ...
+
+  private showAddedToBookingFeedback(spotName: string) {
+    const feedback = document.createElement('div');
+    feedback.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-5';
+    feedback.style.zIndex = '9999';
+    feedback.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>${spotName} added to booking!`;
+    document.body.appendChild(feedback);
+
+    setTimeout(() => {
+      feedback.remove();
+    }, 2000);
+  }
+
   proceedToCheckout() {
     if (this.bookedSpots.length === 0) return;
+
+    if (!this.visitDate) {
+      alert('Please select a visit date to proceed.');
+      return;
+    }
 
     // Calculate grand total
     const grandTotal = this.grandTotal;
@@ -465,20 +598,17 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         name: spot.name,
         location: spot.location,
         type: spot.type,
+        difficulty: spot.difficulty,
         counts: {
           adults: spot.counts.adults,
           children: spot.counts.children || 0,
           vehicles: spot.counts.vehicles || 0,
           cameras: spot.counts.cameras || 0,
-          twoWheelers: spot.counts.twoWheelers || 0,
-          fourWheelers: spot.counts.fourWheelers || 0
         },
         unitPrices: {
           entry: spot.unitPrices.entry,
           parking: spot.unitPrices.parking,
           camera: spot.unitPrices.camera,
-          parkingTwoWheeler: spot.unitPrices.parkingTwoWheeler,
-          parkingFourWheeler: spot.unitPrices.parkingFourWheeler
         },
         breakdown: {
           entry: spot.breakdown.entry,
@@ -490,7 +620,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         addOns: spot.addOns || []
       })),
       total: grandTotal,
-      visitDate: this.searchCriteria?.visitDate,
+      visitDate: this.visitDate.toISOString(), // Use local visitDate
       timestamp: new Date().toISOString()
     };
 
@@ -500,16 +630,14 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     this.router.navigate(['/tourist-spots-checkout']);
   }
 
-  private getSpotPrices(spotId: string): { entry: number; parking: number; camera: number; parkingTwoWheeler?: number; parkingFourWheeler?: number } {
+  private getSpotPrices(spotId: string): { entry: number; parking: number; camera: number } {
     const cfg = this.spotMap[spotId];
     if (!cfg) return { entry: 0, parking: 0, camera: 0 };
-    const { entryPerPerson, parkingPerVehicle, cameraPerCamera, parkingTwoWheeler, parkingFourWheeler } = cfg.fees;
+    const { entryPerPerson, parkingPerVehicle, cameraPerCamera } = cfg.fees;
     return {
       entry: entryPerPerson,
-      parking: parkingPerVehicle,
+      parking: parkingPerVehicle || 0,
       camera: cameraPerCamera,
-      parkingTwoWheeler,
-      parkingFourWheeler
     };
   }
 
@@ -522,18 +650,6 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       if (typeof a.price === 'number') priceMap[a.id] = a.price;
     });
     return selectedAddOnIds.reduce((sum, id) => sum + (priceMap[id] || 0), 0);
-  }
-
-  private showAddedToBookingFeedback(spotName: string) {
-    const feedback = document.createElement('div');
-    feedback.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-5';
-    feedback.style.zIndex = '9999';
-    feedback.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>${spotName} added to booking!`;
-    document.body.appendChild(feedback);
-
-    setTimeout(() => {
-      feedback.remove();
-    }, 2000);
   }
 
   // Filter methods
@@ -550,7 +666,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       if (shouldFilterByCategory && !selectedCategories.includes(category.key)) {
         return { ...category, spots: [] };
       }
-
+console.log(this.filteredCategories)
       let filteredSpots = category.spots;
 
       // Apply time filter (placeholder logic - adjust based on your data)
@@ -593,6 +709,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   }
 
   hasAnySpots(): boolean {
+    console.log(this.filteredCategories)
     return this.filteredCategories.some(cat => cat.spots.length > 0);
   }
 

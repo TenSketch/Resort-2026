@@ -17,12 +17,7 @@
         <div class="containerg" *ngIf="images?.length">
           <div class="card-containerg" #cardContainer>
             <div class="card py-0" *ngFor="let img of images; let i = index">
-              <img
-                class="img-responsive"
-                [src]="img"
-                [alt]="name"
-                (click)="openLightbox(i)"
-              />
+              <img class="img-responsive" [src]="img" [alt]="name" (click)="openLightbox(i)" />
             </div>
           </div>
 
@@ -41,109 +36,54 @@
         <div class="info-pricing-section">
           <!-- Difficulty, Distance, Elevation -->
           <!-- Only show fee badges (Entry, Parking, Camera) -->
-          <div
-            class="spot-details d-flex flex-wrap gap-3 mb-3"
-            *ngIf="
+          <div class="spot-details d-flex flex-wrap gap-3 mb-3" *ngIf="
               unitEntry !== undefined ||
-              unitParking !== undefined ||
-              parkingTwoWheeler !== undefined ||
-              parkingFourWheeler !== undefined ||
               unitCamera !== undefined
-            "
-          >
+            ">
             <span class="badge fee-badge" *ngIf="unitEntry !== undefined">
-              <strong>Entry:</strong> ₹{{ unitEntry | number : "1.0-0" }}
+              <strong>Tree Fee:</strong> {{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}
             </span>
-            <span
-              class="badge fee-badge"
-              *ngIf="unitEntry === undefined && entryFee"
-            >
-              <strong>Entry:</strong> {{ entryFee }}
-            </span>
-
-            <ng-container
-              *ngIf="
-                parkingTwoWheeler !== undefined ||
-                parkingFourWheeler !== undefined
-              "
-            >
-              <span
-                class="badge fee-badge"
-                *ngIf="parkingTwoWheeler !== undefined"
-              >
-                <strong>Parking 2W:</strong> ₹{{ parkingTwoWheeler }}
-              </span>
-              <span
-                class="badge fee-badge"
-                *ngIf="parkingFourWheeler !== undefined"
-              >
-                <strong>Parking 4W:</strong> ₹{{ parkingFourWheeler }}
-              </span>
-            </ng-container>
-            <span
-              class="badge fee-badge"
-              *ngIf="
-                parkingTwoWheeler === undefined &&
-                parkingFourWheeler === undefined &&
-                unitParking !== undefined
-              "
-            >
-              <strong>Parking:</strong> ₹{{ unitParking | number : "1.0-0" }}
+            <span class="badge fee-badge" *ngIf="unitEntry === undefined && entryFee">
+              <strong>Tree Fee:</strong> {{ entryFee }}
             </span>
 
             <span class="badge fee-badge" *ngIf="unitCamera !== undefined">
-              <strong>Camera:</strong> ₹{{ unitCamera | number : "1.0-0" }}
+              <strong>Camera:</strong> {{ unitCamera | currency: 'INR ':'symbol':'1.0-0' }}
             </span>
-            <span
-              class="badge fee-badge"
-              *ngIf="unitCamera === undefined && cameraFee"
-            >
+            <span class="badge fee-badge" *ngIf="unitCamera === undefined && cameraFee">
               <strong>Camera:</strong> {{ cameraFee }}
             </span>
           </div>
-        </div>
 
-        <!-- Actions (bottom-right) -->
-        <div
-          class="actions actions-bottom-right mt-3 d-flex justify-content-end align-items-center"
-        >
-          <ng-container *ngIf="openInNewTab; else inlineLink">
-            <a
-              mat-stroked-button
-              color="primary"
-              [href]="detailsHref"
-              target="_blank"
-              rel="noopener noreferrer"
-              >View details</a
-            >
-          </ng-container>
-          <ng-template #inlineLink>
-            <a
-              mat-stroked-button
-              color="primary"
-              [routerLink]="detailsLink"
-              [fragment]="detailsFragment"
-              >View details</a
-            >
-          </ng-template>
+          <!-- Map Section -->
+          <div class="map-section w-100 mb-3" style="clear: both;" *ngIf="safeMapUrl">
+            <div class="compact-map-card shadow-sm" style="min-height: 250px; ">
+              <iframe [src]="safeMapUrl" width="100%" height="250" style="border: 0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </div>
 
-          <button
-            mat-raised-button
-            color="primary"
-            [disabled]="isSoldOut || !isSearchPerformed"
-            [title]="
-              !isSearchPerformed
-                ? 'Select a visit date to enable booking'
-                : isSoldOut
-                ? 'Sold Out'
-                : 'Add this spot to your booking'
-            "
-            (click)="onAddToBooking()"
-          >
-            {{ isSoldOut ? "Sold Out" : "Add spot" }}
-          </button>
+          <!-- Actions (bottom-right) -->
+          <div class="actions actions-bottom-right mt-3 d-flex justify-content-end align-items-center">
+            <ng-container *ngIf="openInNewTab; else inlineLink">
+              <a mat-stroked-button color="primary" [href]="detailsHref" target="_blank" rel="noopener noreferrer">View
+                details</a>
+            </ng-container>
+            <ng-template #inlineLink>
+              <a mat-stroked-button color="primary" [routerLink]="detailsLink" [fragment]="detailsFragment">View
+                details</a>
+            </ng-template>
+
+            <button mat-raised-button color="primary" [disabled]="isSoldOut || !isSearchPerformed" [title]="
+            !isSearchPerformed
+              ? 'Select a visit date to enable booking'
+              : isSoldOut
+              ? 'Sold Out'
+              : 'Add this spot to your booking'
+          " (click)="onAddToBooking()">
+              {{ isSoldOut ? "Sold Out" : "Add spot" }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>

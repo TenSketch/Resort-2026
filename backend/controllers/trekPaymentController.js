@@ -281,7 +281,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
 
       // Return data for frontend to submit form
       // Note: Form uses 'merchantid' but BillDesk response has 'mercid'
-      const merchantId = billdeskResponse.mercid || billdeskResponse.links?.[1]?.parameters?.mercid || process.env.BILLDESK_MERCID;
+      const merchantId = billdeskResponse.mercid || billdeskResponse.links?.[1]?.parameters?.mercid || (process.env.BILLDESK_MERCID || "").trim();
       const bdorderid = billdeskResponse.bdorderid;
       const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
       

@@ -1,7 +1,7 @@
 import Resort from '../models/resortModel.js';
 import Room from '../models/roomModel.js';
 import transporter from '../config/nodemailer.js';
-import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE } from '../config/emailTemplates.js';
+import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE, TREK_SUCCESS_EMAIL_TEMPLATE } from '../config/emailTemplates.js';
 
 /**
  * Send reservation success emails to user and admin
@@ -57,8 +57,11 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
       Reservation_Date: formatDate(reservation.reservationDate || reservation.createdAt),
       Booking_Id: reservation.bookingId,
       Room_List: roomList,
+      Spot_List: roomList, // For Trek template
+      Trek_Spot_Name: isTouristSpot ? (reservation.touristSpots[0]?.name || 'Trek Spot') : '', // For Trek template
       Check_In: formatDate(checkInVal),
       Check_Out: formatDate(checkOutVal),
+      Visit_Date: formatDate(checkInVal), // For Trek template
       Total_Guests: isTouristSpot 
         ? reservation.touristSpots.reduce((sum, s) => sum + (s.counts?.adults || 0) + (s.counts?.children || 0), 0)
         : (reservation.guests || 0) + (reservation.extraGuests || 0) + (reservation.children || 0),
@@ -75,7 +78,7 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
     };
 
     // Replace placeholders in templates
-    let userEmail = RESERVATION_SUCCESS_EMAIL_TEMPLATE;
+    let userEmail = isTouristSpot ? TREK_SUCCESS_EMAIL_TEMPLATE : RESERVATION_SUCCESS_EMAIL_TEMPLATE;
     let adminEmail = RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE;
 
     Object.keys(emailData).forEach(key => {

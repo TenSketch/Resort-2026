@@ -327,7 +327,7 @@ export const RESERVATION_REFUND_EMAIL_TEMPLATE =`
 
       <p>
         Vanavihari Booking System<br>
-        +91 98401 66419<br>
+        
         <a href="http://www.vanavihari.com" target="_blank">www.vanavihari.com</a>
       </p>
     </div>
@@ -418,7 +418,7 @@ export const RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE =`
       <p style="font-weight: bold;">Warm Regards,</p>
       <p>
         Vanavihari Booking System<br>
-        +91 98401 66419<br>
+        
         <a href="mailto:info@tensketch.com">info@tensketch.com</a>
       </p>
     </div>
@@ -614,11 +614,102 @@ export const TENT_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
       <p style="font-weight: bold;">Warm Regards,</p>
       <p>
         Vanavihari Booking System<br>
-        +91 98401 66419<br>
+        
         <a href="mailto:info@tensketch.com">info@tensketch.com</a>
       </p>
     </div>
   </div>
+</body>
+</html>
+`;
+
+export const TREK_SUCCESS_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Trek Booking Invoice</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+    table { width: 100%; max-width: 600px; margin: auto; border-collapse: collapse; }
+    th, td { padding: 10px; border: 1px solid #ddd; }
+    th { background-color: #4d9900; color: #fff; font-weight: bold; text-align: center; }
+    tr:nth-child(even) { background-color: #f8f8f8; }
+    tr:nth-child(odd) { background-color: #a3d788; color: #222; }
+    h3, h5 { margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+<h3 style="font-style: italic;">Dear {{Full_Name}},</h3>
+<h3>Greetings!</h3>
+<p>We're thrilled to inform you that your payment has been successfully processed, and your trek reservation is now confirmed. Below, you'll find the invoice detailing your booking and payment information. Should you require any assistance, please feel free to reach out to our support team at the number provided below.</p>
+
+<table>
+  <tr>
+    <td style="font-weight:bold;">GST Invoice</td>
+    <td>GST Number: 37AAAGD3869B1ZL <br>(Composite scheme)</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">From</td>
+    <td>DFO RAMPACHODAVARAM</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Guest Details</td>
+    <td>{{Guest_Details}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Booking Date</td>
+    <td>{{Reservation_Date}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Booking ID</td>
+    <td>{{Booking_Id}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Trek Spot</td>
+    <td>{{Trek_Spot_Name}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Spot Details</td>
+    <td>{{Spot_List}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Visit Date</td>
+    <td>{{Visit_Date}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Total Guests</td>
+    <td>{{Total_Guests}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Total Amount Paid</td>
+    <td>{{Payment_Amount}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Transaction ID</td>
+    <td>{{Transaction_ID}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Amount Paid On</td>
+    <td>{{Payment_Date}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Booking Status</td>
+    <td>{{Payment_Status}}</td>
+  </tr>
+</table>
+
+<p>Looking forward to seeing you on the trail!</p>
+<p style="font-weight:bold;">Warm Regards,</p>
+<p>
+{{Contact_Person_Name}}<br>
+Co-ordinator | {{Trek_Spot_Name}}<br>
+{{Support_Number}}<br>
+<a href="mailto:{{Email}}" style="color:#4d1300; font-style:italic;">{{Email}}</a><br>
+{{Website}}
+</p>
+
 </body>
 </html>
 `;

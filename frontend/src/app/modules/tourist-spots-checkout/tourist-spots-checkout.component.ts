@@ -334,10 +334,10 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     // Create and submit form dynamically
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = paymentData.action || 'https://pgi.billdesk.com/pgidsk/PGIMerchantPayment'; // Default or from response
+    form.action = paymentData.formAction || 'https://pgi.billdesk.com/pgidsk/PGIMerchantPayment'; // Default or from response
 
     Object.keys(paymentData).forEach(key => {
-      if (key !== 'action') {
+      if (key !== 'action' && key !== 'formAction') {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;

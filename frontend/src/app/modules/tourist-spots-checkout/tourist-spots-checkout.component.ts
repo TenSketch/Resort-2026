@@ -289,7 +289,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
     // Use the unified reservation API endpoint
-    this.http.post<any>(`${this.api_url}/api/reservations/book`, bookingPayload, { headers }).subscribe({
+    this.http.post<any>(`${this.api_url}/api/trek-reservations/book`, bookingPayload, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.reservation) {
           // The response returns the reservation object, extract bookingId

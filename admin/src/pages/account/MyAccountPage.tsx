@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react"
 import { User, Shield, Eye, Lock, CheckCircle, XCircle } from "lucide-react"
 import { useAdmin } from "@/lib/AdminProvider"
 import { PAGE_DEFINITIONS } from "@/lib/permissionConfig"
@@ -5,6 +6,13 @@ import type { PageId } from "@/lib/permissionConfig"
 
 const MyAccountPage = () => {
     const { admin } = useAdmin()
+    const [avatar, setAvatar] = useState<string | null>(() => localStorage.getItem('admin_avatar'));
+
+    useEffect(() => {
+        const onUpdated = () => setAvatar(localStorage.getItem('admin_avatar'));
+        window.addEventListener('admin-avatar-updated', onUpdated);
+        return () => window.removeEventListener('admin-avatar-updated', onUpdated);
+    }, []);
 
     if (!admin) {
         return (
@@ -42,8 +50,13 @@ const MyAccountPage = () => {
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center">
-                            <User className="h-8 w-8 text-slate-600" />
+                        <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center overflow-hidden">
+                            {avatar ? (
+                                // eslint-disable-next-line jsx-a11y/img-redundant-alt
+                                <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <User className="h-8 w-8 text-slate-600" />
+                            )}
                         </div>
                         <div>
                             <h1 className="text-2xl font-semibold text-slate-800">{admin.name}</h1>

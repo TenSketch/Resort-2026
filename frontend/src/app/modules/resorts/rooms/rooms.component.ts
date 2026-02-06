@@ -642,6 +642,9 @@ export class RoomsComponent implements OnInit {
     }
   }
 
+  // New Properties for Room Availability Overview (REMOVED)
+
+
   fetchRoomList() {
     this.loadingRooms = true;
     this.showLoader = true;
@@ -756,7 +759,7 @@ export class RoomsComponent implements OnInit {
               );
 
               this.previousFilteredRoomData = [...this.filteredRoomData];
-
+              
               if (this.roomData.length == 0) {
                 this.isRoomDataEmpty = true;
               } else {

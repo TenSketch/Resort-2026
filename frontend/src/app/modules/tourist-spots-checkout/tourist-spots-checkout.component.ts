@@ -274,6 +274,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
           id: spot.id,
           name: spot.name,
           location: spot.location,
+          difficulty: spot.difficulty,
           counts: spot.counts,
           unitPrices: spot.unitPrices,
           breakdown: spot.breakdown,
@@ -288,7 +289,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
     // Use the unified reservation API endpoint
-    this.http.post<any>(`${this.api_url}/api/reservations/book`, bookingPayload, { headers }).subscribe({
+    this.http.post<any>(`${this.api_url}/api/trek-reservations/book`, bookingPayload, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.reservation) {
           // The response returns the reservation object, extract bookingId
@@ -311,7 +312,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
     // Unified payment initiation (no type param needed as it checks unified Reservation collection)
-    this.http.post<any>(`${this.api_url}/api/payment/initiate`, { bookingId }, { headers }).subscribe({
+    this.http.post<any>(`${this.api_url}/api/trek-payment/initiate`, { bookingId }, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.paymentData) {
           localStorage.removeItem('touristSpotsBooking');

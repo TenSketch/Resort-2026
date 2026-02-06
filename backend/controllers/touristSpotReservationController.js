@@ -45,6 +45,23 @@ export const createReservation = async (req, res) => {
                pincode: payload.customer.gpincode,
                country: payload.customer.gcountry
             };
+        } else {
+            // Fallback for flat structure from checkout page
+            payload.user = {
+                name: payload.fullName,
+                email: payload.email,
+                phone: payload.phone,
+                address: payload.address1,
+                city: payload.city,
+                state: payload.state,
+                pincode: payload.postalCode,
+                country: payload.country
+            };
+        }
+
+        // Validate required user fields manually if needed, or let Mongoose handle it
+        if (!payload.user.name || !payload.user.email || !payload.user.phone) {
+            console.error('Missing user details in payload:', payload);
         }
 
         // Map spots data if needed (assuming frontend sends structurally compatible 'spots' array)

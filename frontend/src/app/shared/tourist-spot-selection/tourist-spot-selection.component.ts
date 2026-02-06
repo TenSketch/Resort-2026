@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Lightbox } from 'ng-gallery/lightbox';
 import { Gallery, GalleryItem, ImageItem, ImageSize } from 'ng-gallery';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
 
 export interface TouristAddOn {
   id: string;
@@ -19,8 +21,6 @@ export interface TouristBookingSelection {
     children: number;
     vehicles: number;
     cameras: number;
-    twoWheelers?: number;
-    fourWheelers?: number;
   };
   addOns: string[]; // ids of selected addons
 }
@@ -30,12 +30,15 @@ export interface TouristBookingSelection {
   templateUrl: './tourist-spot-selection.component.html',
   styleUrls: ['./tourist-spot-selection.component.scss'],
 })
-export class TouristSpotSelectionComponent {
+export class TouristSpotSelectionComponent implements OnChanges {
   @Input() category?: string;
   @Input() name = '';
   @Input() location = '';
   @Input() type?: string;
   @Input() images: string[] = [];
+  @Input() mapUrl?: string; // New Input for dynamic map URL
+
+  safeMapUrl: SafeResourceUrl | undefined;
 
   // Quick info
   @Input() entryFee?: string | number;
@@ -49,6 +52,19 @@ export class TouristSpotSelectionComponent {
   @Input() difficulty?: string;
   @Input() distance?: string | number;
   @Input() elevationGain?: string | number;
+
+  @Input() capacity?: {
+    treksPerDay: number;
+    membersPerTrek: number;
+    totalCapacity: number;
+  };
+  @Input() timings?: string;
+  @Input() inclusions?: {
+    breakfast?: string[];
+    lunch?: string[];
+    other?: string[];
+  };
+  @Input() notes?: string[];
 
   // Add-ons
   @Input() addOns: TouristAddOn[] = [];
@@ -64,14 +80,13 @@ export class TouristSpotSelectionComponent {
 
   @Output() addToBooking = new EventEmitter<TouristBookingSelection>();
 
+  // ... (existing constructor)
   // Form state
   // Start adults at 0 per request; Add-to-booking will remain guarded until at least 1 adult
   adults = 1;
   children = 0;
   vehicles = 0;
   cameras = 0;
-  twoWheelers = 0;
-  fourWheelers = 0;
   selectedAddOnIds = new Set<string>();
 
   // Lightbox items
@@ -80,12 +95,23 @@ export class TouristSpotSelectionComponent {
   // Carousel state
   @ViewChild('cardContainer') cardContainer!: ElementRef;
 
+  // ... (existing constructor)
   constructor(
     public lightbox: Lightbox,
     public gallery: Gallery,
     private router: Router,
-    private locationSvc: Location
+    private locationSvc: Location,
+    private sanitizer: DomSanitizer
   ) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['mapUrl']) {
+      this.safeMapUrl = this.mapUrl ? this.sanitizer.bypassSecurityTrustResourceUrl(this.mapUrl) : undefined;
+    }
+  }
+
+
+
 
   private toNumber(val: unknown): number | undefined {
     if (typeof val === 'number' && !isNaN(val)) return val;
@@ -95,6 +121,7 @@ export class TouristSpotSelectionComponent {
     }
     return undefined;
   }
+
 
   get unitEntry(): number | undefined {
     return this.fees?.entryPerPerson ?? this.toNumber(this.entryFee);
@@ -124,25 +151,17 @@ export class TouristSpotSelectionComponent {
   }
   get estimatedTotal(): number | undefined {
     const e = this.unitEntry, p = this.unitParking, c = this.unitCamera;
-    const p2 = this.parkingTwoWheeler, p4 = this.parkingFourWheeler;
 
-    if (e === undefined && p === undefined && c === undefined && p2 === undefined && p4 === undefined && this.addOnsTotal === 0) return undefined;
+    if (e === undefined && p === undefined && c === undefined && this.addOnsTotal === 0) return undefined;
 
-    let parkingTotal = 0;
-    if (p2 !== undefined && p4 !== undefined) {
-      // Use split parking
-      parkingTotal = (p2 || 0) * (this.twoWheelers || 0) + (p4 || 0) * (this.fourWheelers || 0);
-    } else {
-      // Use generic parking
-      parkingTotal = (p || 0) * (this.vehicles || 0);
-    }
+    const parkingTotal = (p || 0) * (this.vehicles || 0);
 
     const base = (e || 0) * this.peopleCount + parkingTotal + (c || 0) * (this.cameras || 0);
     return base + this.addOnsTotal;
   }
 
-  inc(field: 'adults' | 'children' | 'vehicles' | 'cameras' | 'twoWheelers' | 'fourWheelers') { (this as any)[field] = ((this as any)[field] || 0) + 1; }
-  dec(field: 'adults' | 'children' | 'vehicles' | 'cameras' | 'twoWheelers' | 'fourWheelers') {
+  inc(field: 'adults' | 'children' | 'vehicles' | 'cameras') { (this as any)[field] = ((this as any)[field] || 0) + 1; }
+  dec(field: 'adults' | 'children' | 'vehicles' | 'cameras') {
     const next = Math.max(0, ((this as any)[field] || 0) - 1);
     // allow adults to go to zero; the template will disable add-to-booking until adults >= 1
     (this as any)[field] = next;
@@ -167,8 +186,6 @@ export class TouristSpotSelectionComponent {
         children: this.children || 0,
         vehicles: this.vehicles || 0,
         cameras: this.cameras || 0,
-        twoWheelers: this.twoWheelers || 0,
-        fourWheelers: this.fourWheelers || 0,
       },
       addOns: Array.from(this.selectedAddOnIds),
     };

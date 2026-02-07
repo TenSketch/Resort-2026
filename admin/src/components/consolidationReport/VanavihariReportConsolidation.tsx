@@ -337,7 +337,7 @@ const VanavihariConsolidationReport = () => {
                         className="display nowrap w-full border border-gray-400"
                         options={{
                             pageLength: 10,
-                            lengthMenu: [5, 10, 25, 50, 100],
+                            lengthMenu: [5, 10, 25, 30, 50, 100],
                             order: [[0, "asc"]],
                             searching: true,
                             paging: true,
@@ -372,7 +372,7 @@ const VanavihariConsolidationReport = () => {
                         className="display nowrap w-full border border-gray-400"
                         options={{
                             pageLength: 10,
-                            lengthMenu: [5, 10, 25, 50, 100],
+                            lengthMenu: [5, 10, 25, 30, 50, 100],
                             order: [[0, "asc"]],
                             searching: true,
                             paging: true,

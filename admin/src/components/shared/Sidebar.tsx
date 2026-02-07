@@ -194,16 +194,16 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { label: "Add Spot", path: "/touristspots/add", icon: Plus, pageId: "tourist-spots-add" },
       ],
     },
-    {
-      id: "packages",
-      label: "Packages",
-      icon: Globe,
-      viewTypes: ["tourist-spot"] as ViewType[],
-      pageId: "tourist-packages",
-      children: [
-        { label: "All Packages", path: "/tourist/packages", icon: Globe },
-      ],
-    },
+    // {
+    //   id: "packages",
+    //   label: "Packages",
+    //   icon: Globe,
+    //   viewTypes: ["tourist-spot"] as ViewType[],
+    //   pageId: "tourist-packages",
+    //   children: [
+    //     { label: "All Packages", path: "/tourist/packages", icon: Globe },
+    //   ],
+    // },
     {
       id: "tourist-bookings",
       label: "Bookings",

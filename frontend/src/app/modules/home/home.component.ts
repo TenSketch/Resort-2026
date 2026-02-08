@@ -278,6 +278,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.flipInterval) {
       clearInterval(this.flipInterval);
     }
+
+    // Close any open Bootstrap modals to prevent dark overlay persisting on navigation
+    const openModals = document.querySelectorAll('.modal.show');
+    openModals.forEach((modal) => {
+      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    });
+
+    // Remove modal backdrop if it exists
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
+
+    // Reset body scroll
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 
   toggleVideo(video: HTMLVideoElement) {

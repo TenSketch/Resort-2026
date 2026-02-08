@@ -294,7 +294,7 @@ const AddRoomForm = () => {
                 onChange={handleChange}
                 required
                 disabled={resortsLoading}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
               >
                 <option value="">{resortsLoading ? 'Loading...' : '-- Select Resort --'}</option>
                 {resorts.map((resort) => (
@@ -313,7 +313,7 @@ const AddRoomForm = () => {
                 onChange={handleChange}
                 required
                 disabled={cottageTypesLoading}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
               >
                 <option value="">{cottageTypesLoading ? 'Loading...' : '-- Select Cottage Type --'}</option>
                 {cottageTypes.map((cottage) => (
@@ -360,7 +360,7 @@ const AddRoomForm = () => {
                 value={formData.status}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
               >
                 <option value="available">Available</option>
                 <option value="disabled">Disabled</option>
@@ -373,8 +373,8 @@ const AddRoomForm = () => {
               <Label htmlFor="roomImages" className="text-sm font-medium text-slate-700">
                 Room Images {formData.roomImages.length > 0 && `(${formData.roomImages.length} selected)`}
               </Label>
-              <div className="relative">
-                <Upload className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+              <div className="relative flex items-center text-sm">
+                <Upload className="absolute left-3 h-5 w-5 text-slate-400 pointer-events-none" />
                 <Input
                   id="roomImages"
                   name="roomImages"
@@ -382,7 +382,7 @@ const AddRoomForm = () => {
                   accept="image/*"
                   multiple
                   onChange={handleImageChange}
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  className="w-full pl-10 pr-4 py-1 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                   placeholder="Upload multiple room images"
                 />
               </div>

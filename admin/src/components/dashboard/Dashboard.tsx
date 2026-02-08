@@ -66,7 +66,7 @@ const SplitKPI = ({ title, vanaValue, jsValue, footer }: SplitKPIProps) => (
   <div className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden w-full">
     <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: `linear-gradient(to bottom, ${RESORT_COLORS.VANA} 50%, ${RESORT_COLORS.JS} 50%)` }} />
     <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-    <div className="mt-2 space-y-2">
+    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 md:space-y-2 md:grid-cols-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full" style={{ background: RESORT_COLORS.VANA }} />
@@ -178,7 +178,11 @@ export default function AdminDashboard() {
       <div className="flex flex-col md:flex-row justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Today at a Glance</h1>
-          <p className="text-sm text-muted-foreground">Overview of resort operations</p>
+          <p className="text-sm text-muted-foreground">
+            {isSpecificResort && selectedResortName
+              ? `Overview of ${selectedResortName}`
+              : "Overview of resort operations"}
+          </p>
         </div>
         <Select value={selectedResort} onValueChange={setSelectedResort}>
           <SelectTrigger className="w-full sm:w-[220px]">

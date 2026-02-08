@@ -431,13 +431,13 @@ export default function ReservationTable() {
           `"${row.fullName}"`,
           `"${row.phone}"`,
           `"${row.email}"`,
-          `"${address || "N/A"}"`,
+          `"${address || "—"}"`,
           `"${row.resortName}"`,
-          `"${row.cottageTypeNames.join(", ") || "N/A"}"`,
-          `"${row.roomNames.join(", ") || "N/A"}"`,
+          `"${row.cottageTypeNames.join(", ") || "—"}"`,
+          `"${row.roomNames.join(", ") || "—"}"`,
           row.numberOfRooms,
           `"'${formatDateForExcel(row.reservationDate)}"`,
-          `"${row.reservedFrom || "N/A"}"`,
+          `"${row.reservedFrom || "—"}"`,
           // Prefix formatted dates with an apostrophe so Excel treats them as text
           // and doesn't auto-format/overflow them to '#######' when column is narrow
           `"'${formatDateForExcel(row.checkIn)}"`,
@@ -448,22 +448,22 @@ export default function ReservationTable() {
           row.children,
           row.totalGuests,
           foodsBilled,
-          `"${row.foodPreference || "N/A"}"`,
+          `"${row.foodPreference || "—"}"`,
           `"${row.status}"`,
           row.totalPayable,
           `"${row.paymentStatus}"`,
           row.totalPayable,
-          `"${row.paymentTransactionId || "N/A"}"`,
-          `"'${row.paymentTransactionDateTime ? formatDateForExcel(row.paymentTransactionDateTime.slice(0, 10)) : "N/A"}"`,
-          `"N/A"`,
-          `"N/A"`,
-          `"N/A"`,
-          `"${row.cancelBookingReason || "N/A"}"`,
-          `"${row.cancellationMessage || "N/A"}"`,
-          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "N/A"}"`,
+          `"${row.paymentTransactionId || "—"}"`,
+          `"'${row.paymentTransactionDateTime ? formatDateForExcel(row.paymentTransactionDateTime.slice(0, 10)) : "—"}"`,
+          `"—"`,
+          `"—"`,
+          `"—"`,
+          `"${row.cancelBookingReason || "—"}"`,
+          `"${row.cancellationMessage || "—"}"`,
+          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "—"}"`,
           row.refundableAmount || 0,
           row.amountRefunded || 0,
-          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "N/A"}"`,
+          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "—"}"`,
         ].join(",");
       }),
     ].join("\n");
@@ -843,19 +843,19 @@ export default function ReservationTable() {
           row.postalCode,
           row.country,
         ].filter(Boolean);
-        return parts.length > 0 ? parts.join(", ") : "N/A";
+        return parts.length > 0 ? parts.join(", ") : "—";
       },
     },
     { data: "resortName", title: "Resort" },
     {
       data: "cottageTypeNames",
       title: "Cottage Type",
-      render: (data: string[]) => data.join(", ") || "N/A",
+      render: (data: string[]) => data.join(", ") || "—",
     },
     {
       data: "roomNames",
       title: "Room name(s)",
-      render: (data: string[]) => data.join(", ") || "N/A",
+      render: (data: string[]) => data.join(", ") || "—",
     },
     { data: "numberOfRooms", title: "No. of rooms" },
     {
@@ -866,7 +866,7 @@ export default function ReservationTable() {
     {
       data: "reservedFrom",
       title: "Reserved From",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "checkIn",
@@ -893,7 +893,7 @@ export default function ReservationTable() {
     {
       data: "foodPreference",
       title: "Food Preference",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     { data: "status", title: "Status" },
     {
@@ -910,60 +910,60 @@ export default function ReservationTable() {
     {
       data: "paymentTransactionId",
       title: "Payment Transaction Id",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "paymentTransactionDateTime",
       title: "Payment Transaction Date & Time",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: null,
       title: "Payment Transaction SubBillerId",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: null,
       title: "Verification Proof Type",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: null,
       title: "Verification Proof Id",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: "cancelBookingReason",
       title: "Cancel Booking Reason",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "cancellationMessage",
       title: "Cancellation message",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "refundRequestedDateTime",
       title: "Refund Requested Date & Time",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: "refundableAmount",
       title: "Refundable Amount",
-      render: (data: number) => (data ? `₹${data}` : "N/A"),
+      render: (data: number) => (data ? `₹${data}` : "—"),
     },
     {
       data: "amountRefunded",
       title: "Amount Refunded",
-      render: (data: number) => (data ? `₹${data}` : "N/A"),
+      render: (data: number) => (data ? `₹${data}` : "—"),
     },
     {
       data: "dateOfRefund",
       title: "Date of refund",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: null,
@@ -1027,7 +1027,132 @@ export default function ReservationTable() {
   ];
 
   return (
-    <div className="w-full max-w-full overflow-hidden">
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .reservations-table-container .dt-layout-row {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 12px !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+          }
+
+          .reservations-table-container .dt-layout-table {
+            display: flex !important;
+            width: 100% !important;
+          }
+
+          .reservations-table-container .dt-layout-cell {
+            display: inline-flex !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+
+          .reservations-table-container .dt-layout-cell.dt-start {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-start !important;
+            order: 1 !important;
+          }
+
+          .reservations-table-container .dt-layout-cell.dt-end {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+            margin-left: auto !important;
+            order: 2 !important;
+          }
+
+          .reservations-table-container .dt-buttons {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-buttons .dt-button {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+            white-space: nowrap !important;
+            margin: 0 !important;
+          }
+
+          .reservations-table-container .dt-search {
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-search input {
+            padding: 6px 10px !important;
+            font-size: 10px !important;
+            width: 140px !important;
+            max-width: 100% !important;
+          }
+
+          .reservations-table-container .dt-search label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .reservations-table-container .dt-length {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+          }
+
+          .reservations-table-container .dt-length label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            flex-wrap: nowrap !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .reservations-table-container .dt-length select {
+            padding: 4px 8px !important;
+            font-size: 11px !important;
+            margin: 0 4px !important;
+          }
+
+          .reservations-table-container .dt-paging {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-paging .dt-paging-button {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            margin: 0 1px !important;
+            min-width: 28px !important;
+          }
+
+          .reservations-table-container .dt-info {
+            display: none !important;
+          }
+
+          .reservations-table-container .dt-layout-row:last-child {
+            margin-top: 12px !important;
+          }
+        }
+      `}</style>
+      <div className="w-full max-w-full overflow-hidden reservations-table-container">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
         <button
@@ -2182,5 +2307,6 @@ export default function ReservationTable() {
         </SheetContent>
       </Sheet>
     </div>
+    </>
   );
 }

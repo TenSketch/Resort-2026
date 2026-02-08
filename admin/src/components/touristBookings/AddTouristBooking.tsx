@@ -243,7 +243,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Package / Ticket Type</Label>
-              <select name="packageType" value={formData.packageType} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="packageType" value={formData.packageType} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="">-- Select Package --</option>
                 <option value="adult">Adult</option>
                 <option value="child">Child</option>
@@ -261,7 +261,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Guide Required</Label>
-              <select name="guideRequired" value={formData.guideRequired} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="guideRequired" value={formData.guideRequired} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
               </select>
@@ -272,7 +272,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Transport Required</Label>
-              <select name="transportRequired" value={formData.transportRequired} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="transportRequired" value={formData.transportRequired} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
               </select>
@@ -284,7 +284,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Reserved From</Label>
-              <select name="reservedFrom" value={formData.reservedFrom} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="reservedFrom" value={formData.reservedFrom} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Admin">Admin</option>
                 <option value="Online">Online</option>
                 <option value="Phone">Phone</option>
@@ -293,7 +293,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Booking Status</Label>
-              <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="status" value={formData.status} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Pending">Pending</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Cancelled">Cancelled</option>
@@ -314,7 +314,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Payment Status</Label>
-              <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange} className="w-full px-4 py-3 border rounded">
+              <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
                 <option value="Partial">Partial</option>

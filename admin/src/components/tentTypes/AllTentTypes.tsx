@@ -271,6 +271,85 @@ export default function AllTentTypesTable() {
 
   return (
     <div className="flex flex-col h-full max-h-screen overflow-hidden py-6">
+      <style>{`
+        @media (max-width: 768px) {
+          .tent-types-table-container .dt-layout-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+          }
+
+          .tent-types-table-container .dt-layout-cell {
+            display: inline-flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .tent-types-table-container .dt-layout-start {
+            order: 1 !important;
+          }
+
+          .tent-types-table-container .dt-layout-end {
+            order: 2 !important;
+            margin-left: auto !important;
+          }
+
+          .tent-types-table-container .dt-buttons {
+            display: inline-flex !important;
+          }
+
+          .tent-types-table-container .dt-buttons button {
+            font-size: 11px !important;
+            padding: 4px 8px !important;
+            white-space: nowrap !important;
+          }
+
+          .tent-types-table-container .dt-search {
+            display: inline-flex !important;
+            align-items: center !important;
+          }
+
+          .tent-types-table-container .dt-search input {
+            font-size: 10px !important;
+            padding: 4px 6px !important;
+            width: 140px !important;
+          }
+
+          .tent-types-table-container .dt-length {
+            order: 3 !important;
+            flex-basis: 100% !important;
+            margin-top: 8px !important;
+          }
+
+          .tent-types-table-container .dt-length select {
+            font-size: 11px !important;
+            padding: 4px 6px !important;
+          }
+
+          .tent-types-table-container .dt-length label {
+            font-size: 11px !important;
+          }
+
+          .tent-types-table-container .dt-paging {
+            order: 4 !important;
+            flex-basis: 100% !important;
+            margin-top: 8px !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+          }
+
+          .tent-types-table-container .dt-paging button {
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+          }
+
+          .tent-types-table-container .dt-info {
+            display: none !important;
+          }
+        }
+      `}</style>
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 className="text-xl font-semibold text-slate-800">
           Tent Types
@@ -301,7 +380,7 @@ export default function AllTentTypesTable() {
         </button>
       </div>
 
-      <div ref={tableRef} className="flex-1 overflow-hidden">
+      <div ref={tableRef} className="tent-types-table-container flex-1 overflow-hidden">
         {isLoading && (
           <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">Loading tent types...</div>
         )}

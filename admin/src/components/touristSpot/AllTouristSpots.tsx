@@ -260,6 +260,85 @@ export default function AllTouristSpots() {
 
   return (
     <div className="w-full max-w-full overflow-hidden">
+      <style>{`
+        @media (max-width: 768px) {
+          .tourist-spots-table-container .dt-layout-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+          }
+
+          .tourist-spots-table-container .dt-layout-cell {
+            display: inline-flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .tourist-spots-table-container .dt-layout-start {
+            order: 1 !important;
+          }
+
+          .tourist-spots-table-container .dt-layout-end {
+            order: 2 !important;
+            margin-left: auto !important;
+          }
+
+          .tourist-spots-table-container .dt-buttons {
+            display: inline-flex !important;
+          }
+
+          .tourist-spots-table-container .dt-buttons button {
+            font-size: 11px !important;
+            padding: 4px 8px !important;
+            white-space: nowrap !important;
+          }
+
+          .tourist-spots-table-container .dt-search {
+            display: inline-flex !important;
+            align-items: center !important;
+          }
+
+          .tourist-spots-table-container .dt-search input {
+            font-size: 10px !important;
+            padding: 4px 6px !important;
+            width: 140px !important;
+          }
+
+          .tourist-spots-table-container .dt-length {
+            order: 3 !important;
+            flex-basis: 100% !important;
+            margin-top: 8px !important;
+          }
+
+          .tourist-spots-table-container .dt-length select {
+            font-size: 11px !important;
+            padding: 4px 6px !important;
+          }
+
+          .tourist-spots-table-container .dt-length label {
+            font-size: 11px !important;
+          }
+
+          .tourist-spots-table-container .dt-paging {
+            order: 4 !important;
+            flex-basis: 100% !important;
+            margin-top: 8px !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+          }
+
+          .tourist-spots-table-container .dt-paging button {
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+          }
+
+          .tourist-spots-table-container .dt-info {
+            display: none !important;
+          }
+        }
+      `}</style>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Trek Spots</h2>
         <Button
@@ -277,7 +356,7 @@ export default function AllTouristSpots() {
         </Button>
       </div>
 
-      <div ref={tableRef} className="w-full">
+      <div ref={tableRef} className="tourist-spots-table-container w-full">
         {loading && <div className="p-4 text-sm text-gray-500">Loading Trek Spots...</div>}
         <DataTable
           data={spots}

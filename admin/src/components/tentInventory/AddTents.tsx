@@ -249,7 +249,7 @@ const AddTents: React.FC = () => {
                                 value={form.tentSpot}
                                 onChange={(e) => handleChange("tentSpot", e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
                             >
                                 <option value="">-- Select Tent Spot --</option>
                                 {tentSpots.map((spot) => (
@@ -267,7 +267,7 @@ const AddTents: React.FC = () => {
                                 value={form.tentType}
                                 onChange={(e) => handleChange("tentType", e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
                             >
                                 <option value="">-- Select Tent Type --</option>
                                 {tentTypes.map((type) => (
@@ -361,7 +361,7 @@ const AddTents: React.FC = () => {
                                 accept="image/*"
                                 multiple
                                 onChange={handleFiles}
-                                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
                             />
                             <p className="text-xs text-slate-500">Upload multiple images of the tent (JPG, PNG, etc.)</p>
                         </div>

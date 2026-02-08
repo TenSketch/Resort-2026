@@ -130,27 +130,27 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3">
       <div className="flex items-center justify-between flex-nowrap gap-1 sm:gap-2">
         {/* Left side */}
-        <div className="flex items-center space-x-2 sm:space-x-4 flex-nowrap overflow-hidden min-w-0">
+        <div className="flex items-center space-x-2 sm:space-x-4 flex-nowrap overflow-hidden min-w-0 flex-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={onMenuClick}
-            className="lg:hidden p-1 sm:p-2"
+            className="lg:hidden p-1 sm:p-2 flex-shrink-0"
           >
             <Menu className="h-5 w-5" />
           </Button>
 
-          <div className="flex items-center shrink-0">
-            <span className="text-lg sm:text-xl font-semibold text-gray-800 hidden md:block">
+          <div className="flex items-center flex-shrink-0">
+            <span className="text-base sm:text-xl font-semibold text-gray-800 hidden md:block whitespace-nowrap">
               Vanavihari Admin
             </span>
-            <span className="text-sm font-semibold text-gray-800 md:hidden">
+            <span className="text-sm font-semibold text-gray-800 md:hidden whitespace-nowrap">
               Vana Admin
             </span>
           </div>
 
-          {/* Breadcrumb - hidden on very small screens */}
-          <div className="hidden xs:block truncate whitespace-nowrap overflow-hidden min-w-0">
+          {/* Breadcrumb - hidden on mobile */}
+          <div className="hidden sm:block truncate whitespace-nowrap overflow-hidden min-w-0 flex-1">
             <Breadcrumb
               items={breadcrumbs}
               className="text-gray-600 truncate text-xs sm:text-sm"
@@ -159,7 +159,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
         </div>
 
         {/* Right side - reduced spacing for mobile */}
-        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-2 flex-shrink-0">
 
           {/* Guests Dropdown */}
           <DropdownMenu>
@@ -169,7 +169,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 size="sm"
                 className="flex items-center min-h-[44px] h-11 sm:h-9 px-2"
               >
-                <span className="text-[13px] font-medium text-gray-500 mr-1">Guests</span>
+                <span className="text-[13px] font-medium text-gray-500 mr-1 hidden sm:inline">Guests</span>
                 <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -190,8 +190,8 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center justify-between min-h-[44px] h-11 sm:h-9 px-2 md:px-3 min-w-0">
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <span className="text-[13px] font-medium text-gray-500 mr-1 whitespace-nowrap">{currentViewOption?.label}</span>
-                  {currentViewOption && <currentViewOption.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                  <span className="text-[13px] font-medium text-gray-500 mr-1 whitespace-nowrap hidden sm:inline">{currentViewOption?.label}</span>
+                  {currentViewOption && <currentViewOption.icon className="h-4 w-4 sm:h-4 sm:w-4" />}
                 </div>
                 <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 ml-0.5 sm:ml-1" />
               </Button>

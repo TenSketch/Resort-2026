@@ -1,24 +1,36 @@
 <app-layout>
   <div class="main">
-    <section class="page-banner">
-      <div class="hero-slideshow" aria-hidden="false">
-        <div class="slides">
-          <!-- Images referenced from assets/TOURIST-PLACES (can be adjusted in the component TS) -->
-          <img *ngFor="let img of heroImages; let i = index" [src]="img" [class.active]="i === activeSlide"
-            class="slide-img" alt="Tourist place image {{ i + 1 }}" />
-        </div>
+    <!-- Hero Carousel -->
+    <section id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel"
+      data-bs-interval="6000">
+      <div class="carousel-inner">
+        <div *ngFor="let slide of heroSlides; let i = index" class="carousel-item" [class.active]="i === 0">
+          <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0 text-start" style="bottom: 15%; left: 10%; right: 10%">
+            <div class="container">
+              <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+              <p class="h4 text-light mt-3" *ngIf="slide.location">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                {{ slide.location }}
+              </p>
+              <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
 
-        <!-- Overlay title -->
-        <div class="hero-overlay">
-          <h1 class="display-4 text-center">Book Trek Spots</h1>
-        </div>
-
-        <!-- Dots / manual navigation -->
-        <div class="hero-dots">
-          <button *ngFor="let img of heroImages; let i = index" class="dot" [class.active]="i === activeSlide"
-            (click)="goToSlide(i)" [attr.aria-label]="'Show slide ' + (i + 1)"></button>
+              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" (click)="handleSlideAction(slide.action)">
+                {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </section>
 
     <div class="container my-5">

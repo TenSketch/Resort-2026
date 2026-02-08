@@ -4,27 +4,72 @@ $primary-color: #2c5e2e; // Dark Green
 $secondary-color: #6b7280; // Gray
 $accent-color: #f59e0b; // Amber
 
-.page-banner {
-    position: relative;
-    height: 70vh;
-    min-height: 500px;
-    background: url('/assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg') center/cover no-repeat;
-    margin-bottom: 0; // Remove margin for seamless flow
+// .page-banner {
+//     position: relative;
+//     height: 70vh;
+//     min-height: 500px;
+//     background: url('/assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg') center/cover no-repeat;
+//     margin-bottom: 0; // Remove margin for seamless flow
 
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.4); // Dark overlay for text readability
-        z-index: 0;
+//     .overlay {
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         right: 0;
+//         bottom: 0;
+//         background: rgba(0, 0, 0, 0.4); // Dark overlay for text readability
+//         z-index: 0;
+//     }
+
+//     h1 {
+//         font-family: 'Playfair Display', serif;
+//         letter-spacing: -0.02em;
+//     }
+// }
+
+// Desktop Fade Carousel
+#carouselExampleFade {
+  height: 60vh; // Desktop hero height (reduced from 80vh)
+
+  .carousel-inner,
+  .carousel-item {
+    height: 100%;
+  }
+
+  .carousel-item {
+    transition:
+      transform 0.6s ease-in-out,
+      opacity 0.6s ease-in-out;
+
+    .carousel-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        transparent 100%
+      );
+      z-index: 1;
     }
 
-    h1 {
-        font-family: 'Playfair Display', serif;
+    img {
+      object-fit: cover;
+      height: 100%;
+      width: 100%;
+    }
+
+    .carousel-caption {
+      z-index: 2;
+      bottom: 20%;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+
+      h1 {
+        font-weight: 800;
         letter-spacing: -0.02em;
+      }
     }
+  }
 }
 
 .destination-section {

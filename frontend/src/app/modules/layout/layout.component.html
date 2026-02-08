@@ -1,85 +1,42 @@
 <header>
-  <nav
-    class="navbar navbar-light py-2 fixed-top bg-light"
-    [class.sidebar-collapsed]="isSidebarCollapsed"
-  >
+  <nav class="navbar navbar-light py-2 fixed-top bg-light" [class.sidebar-collapsed]="isSidebarCollapsed">
     <div class="container align-items-center">
-      <div
-        class="d-flex flex-column flex-lg-row align-items-center me-1 me-md-3 gap-0 gap-lg-2"
-      >
-        <img
-          class="govt-logo"
-          src="assets/images/AP_gov.png"
-          alt="Government of Andhra Pradesh"
-        />
+      <div class="d-flex flex-column flex-lg-row align-items-center me-1 me-md-3 gap-0 gap-lg-2">
+        <img class="govt-logo" src="assets/images/AP_gov.png" alt="Government of Andhra Pradesh" />
         <!-- Mobile Text -->
-        <span
-          class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
-          style="line-height: 1; font-size: 0.7rem"
-          >Govt. of AP</span
-        >
+        <span class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem">Govt. of AP</span>
         <!-- Desktop Text -->
-        <span
-          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
-          style="line-height: 1.2; font-size: 0.9rem"
-          >Government of Andhra Pradesh</span
-        >
+        <span class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem">Government of Andhra Pradesh</span>
       </div>
       <a class="navbar-brand py-0" href="#">
         <img class="" src="assets/img/logo-vana.png" alt="logo-vana" />
       </a>
 
       <!-- 4. Forest Dept Logo (Right) -->
-      <div
-        class="d-flex flex-column flex-lg-row align-items-center ms-1 ms-md-3 gap-0 gap-lg-2"
-      >
+      <div class="d-flex flex-column flex-lg-row align-items-center ms-1 ms-md-3 gap-0 gap-lg-2">
         <!-- Desktop Text (Left of Image on Desktop) -->
-        <span
-          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
-          style="line-height: 1.2; font-size: 0.9rem"
-          >Andhra Pradesh Forest Department</span
-        >
-        <img
-          class="forest-logo"
-          src="assets/images/AP_forest.png"
-          alt="AP Forest Department"
-        />
+        <span class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem">Andhra Pradesh Forest Department</span>
+        <img class="forest-logo" src="assets/images/AP_forest.png" alt="AP Forest Department" />
         <!-- Mobile Text (Below Image on Mobile) -->
-        <span
-          class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
-          style="line-height: 1; font-size: 0.7rem"
-          >AP Forest Dept.</span
-        >
+        <span class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem">AP Forest Dept.</span>
       </div>
     </div>
   </nav>
-  <div
-    class="sidebar-overlay"
-    [ngClass]="{ active: isSidebarOpen }"
-    (click)="closeSidebar()"
-  ></div>
-  <div
-    id="sidebar"
-    [ngClass]="{ active: isSidebarOpen, collapsed: isSidebarCollapsed }"
-  >
+  <div class="sidebar-overlay" [ngClass]="{ active: isSidebarOpen }" (click)="closeSidebar()"></div>
+  <div id="sidebar" [ngClass]="{ active: isSidebarOpen, collapsed: isSidebarCollapsed }">
     <div class="sidebar-content">
       <!-- Close Button (Mobile Only) -->
-      <button
-        class="sidebar-close-btn d-lg-none"
-        (click)="closeSidebar()"
-        aria-label="Close menu"
-      >
+      <button class="sidebar-close-btn d-lg-none" (click)="closeSidebar()" aria-label="Close menu">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <!-- Mobile Menu Header Text -->
       <div class="d-lg-none mb-3 mt-1 text-start ps-3">
-        <img
-          src="assets/img/logo-vana.png"
-          alt="Vanavihari Logo"
-          class="img-fluid"
-          style="height: 40px"
-        />
+        <img src="assets/img/logo-vana.png" alt="Vanavihari Logo" class="img-fluid" style="height: 40px" />
       </div>
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
@@ -87,55 +44,27 @@
         <!-- Sign In Link (when not logged in) -->
         <li class="sidebar-item d-flex" *ngIf="!isLoggedIn()">
           <a class="sidebar-link" (click)="toggleSidebar(); goToSignin()">
-            <i class="fa-regular fa-user-circle"></i
-            ><span class="ms-3">Sign In</span>
+            <i class="fa-regular fa-user-circle"></i><span class="ms-3">Sign In</span>
           </a>
         </li>
 
         <!-- My Account Group (Accordion - when logged in) -->
-        <div
-          class="accordion mb-2"
-          id="sidebarAccordionAccount"
-          *ngIf="isLoggedIn()"
-        >
+        <div class="accordion mb-2" id="sidebarAccordionAccount" *ngIf="isLoggedIn()">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingAccount">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseAccount"
-                aria-expanded="false"
-                aria-controls="collapseAccount"
-              >
-                <i class="fa-regular fa-user-circle"></i
-                ><span class="menu-text">{{ accountusername }}</span>
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                <i class="fa-regular fa-user-circle"></i><span class="menu-text">{{ accountusername }}</span>
               </button>
             </h2>
-            <div
-              id="collapseAccount"
-              class="accordion-collapse collapse"
-              aria-labelledby="headingAccount"
-              data-bs-parent="#sidebarAccordionAccount"
-            >
+            <div id="collapseAccount" class="accordion-collapse collapse" aria-labelledby="headingAccount"
+              data-bs-parent="#sidebarAccordionAccount">
               <div class="accordion-body ps-4">
-                <a
-                  class="dropdown-item text-nowrap"
-                  routerLink="/my-account/settings"
-                  (click)="toggleSidebar()"
-                  >My Account</a
-                >
-                <a
-                  class="dropdown-item text-nowrap"
-                  routerLink="/my-account/my-bookings"
-                  (click)="toggleSidebar()"
-                  >My Bookings</a
-                >
-                <a
-                  class="dropdown-item text-nowrap"
-                  (click)="toggleSidebar(); triggerModal()"
-                  >Sign Out</a
-                >
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/settings" (click)="toggleSidebar()">My
+                  Account</a>
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/my-bookings" (click)="toggleSidebar()">My
+                  Bookings</a>
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); triggerModal()">Sign Out</a>
               </div>
             </div>
           </div>
@@ -145,10 +74,8 @@
         </li>
 
         <!-- Category: BOOK -->
-        <li
-          class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
-          style="font-size: 0.75rem; letter-spacing: 1px"
-        >
+        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
           Book
         </li>
 
@@ -157,36 +84,19 @@
         <div class="accordion" id="sidebarAccordionResorts">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingResorts">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseResorts"
-                aria-expanded="false"
-                aria-controls="collapseResorts"
-              >
-                <i class="fa-solid fa-hotel"></i
-                ><span class="menu-text">Resorts</span>
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseResorts" aria-expanded="false" aria-controls="collapseResorts">
+                <i class="fa-solid fa-hotel"></i><span class="menu-text">Resorts</span>
               </button>
             </h2>
-            <div
-              id="collapseResorts"
-              class="accordion-collapse collapse"
-              aria-labelledby="headingResorts"
-              data-bs-parent="#sidebarAccordionResorts"
-            >
+            <div id="collapseResorts" class="accordion-collapse collapse" aria-labelledby="headingResorts"
+              data-bs-parent="#sidebarAccordionResorts">
               <div class="accordion-body ps-4">
                 <!-- Links -->
-                <a
-                  class="dropdown-item text-nowrap"
-                  (click)="toggleSidebar(); goToVanavihari()"
-                  >Vanavihari, Maredumilli</a
-                >
-                <a
-                  class="dropdown-item text-nowrap"
-                  (click)="toggleSidebar(); goToJungleStar()"
-                  >Jungle Star, Valamuru</a
-                >
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); goToVanavihari()">Vanavihari,
+                  Maredumilli</a>
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); goToJungleStar()">Jungle Star,
+                  Valamuru</a>
               </div>
             </div>
           </div>
@@ -231,13 +141,8 @@
 
         <!-- Treks -->
         <li class="sidebar-item d-flex">
-          <a
-            class="sidebar-link"
-            (click)="toggleSidebar()"
-            routerLink="/tourist-places"
-          >
-            <i class="fa-solid fa-person-hiking"></i
-            ><span class="ms-3">Treks</span>
+          <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/tourist-places">
+            <i class="fa-solid fa-person-hiking"></i><span class="ms-3">Treks</span>
           </a>
         </li>
 
@@ -246,32 +151,23 @@
         </li>
 
         <!-- Category: EXPLORE -->
-        <li
-          class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
-          style="font-size: 0.75rem; letter-spacing: 1px"
-        >
+        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
           Explore
         </li>
         <li class="sidebar-item d-flex">
-          <a
-            class="sidebar-link"
-            (click)="toggleSidebar()"
-            routerLink="/tourist-destination"
-          >
-            <i class="fa-regular fa-compass"></i
-            ><span class="ms-3">Tourist Destinations</span>
+          <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/tourist-destination">
+            <i class="fa-regular fa-compass"></i><span class="ms-3">Tourist Destinations</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToTribalPg()">
-            <i class="fa-solid fa-users"></i
-            ><span class="ms-3">Tribal Communities</span>
+            <i class="fa-solid fa-users"></i><span class="ms-3">Tribal Communities</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToBiodiversity()">
-            <i class="fa-solid fa-leaf"></i
-            ><span class="ms-3">Biodiversity Zone</span>
+            <i class="fa-solid fa-leaf"></i><span class="ms-3">Biodiversity Zone</span>
           </a>
         </li>
 
@@ -280,38 +176,27 @@
         </li>
 
         <!-- Category: ABOUT -->
-        <li
-          class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
-          style="font-size: 0.75rem; letter-spacing: 1px"
-        >
+        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
           About
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAboutUs()">
-            <i class="fa-solid fa-info-circle"></i
-            ><span class="ms-3">About Vanavihari</span>
+            <i class="fa-solid fa-info-circle"></i><span class="ms-3">About Vanavihari</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAwards()">
-            <i class="fa-solid fa-award"></i
-            ><span class="ms-3">Awards & News</span>
+            <i class="fa-solid fa-award"></i><span class="ms-3">Awards & News</span>
           </a>
         </li>
       </ul>
       <!-- Collapse Toggle Button (Desktop Only - ≥992px) -->
-      <button
-        class="sidebar-collapse-btn d-none d-lg-flex"
-        (click)="toggleSidebarCollapse()"
-        [attr.aria-expanded]="!isSidebarCollapsed"
-        aria-label="Toggle sidebar"
-      >
-        <i
-          class="fa-solid"
-          [ngClass]="
+      <button class="sidebar-collapse-btn d-none d-lg-flex" (click)="toggleSidebarCollapse()"
+        [attr.aria-expanded]="!isSidebarCollapsed" aria-label="Toggle sidebar">
+        <i class="fa-solid" [ngClass]="
             isSidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'
-          "
-        ></i>
+          "></i>
       </button>
     </div>
   </div>
@@ -321,11 +206,7 @@
   <app-loader *ngIf="showLoader"></app-loader>
   <ng-content select=".main"></ng-content>
 </main>
-<footer
-  id="footer"
-  class="footer py-4"
-  [class.sidebar-collapsed]="isSidebarCollapsed"
->
+<footer id="footer" class="footer py-4" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container pt-5">
     <div class="row w-100">
       <div class="col-md-3">
@@ -350,22 +231,13 @@
               <h5>Vanavihari</h5>
               <li class="mt-2">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="mailto:info@vanavihari.com"
-                  title="click to send email"
-                  >info@vanavihari.com</a
-                >
+                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
+                  title="click to send email">info@vanavihari.com</a>
               </li>
               <li class="mt-2">
                 <!-- font awesome email -->
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="tel:+919494151617"
-                  title="call"
-                  >+919494151617</a
-                >
+                <a class="text-decoration-none" href="tel:+919494151617" title="call">+919494151617</a>
               </li>
               <li class="mt-2 d-flex justify-content-start align-items-start">
                 <!-- font awesome email -->
@@ -382,22 +254,13 @@
               <h5>Jungle Star</h5>
               <li class="mt-2">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="mailto:info@vanavihari.com"
-                  title="click to send email"
-                  >junglestarecocamp@gmail.com</a
-                >
+                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
+                  title="click to send email">junglestarecocamp@gmail.com</a>
               </li>
               <li class="mt-2">
                 <!-- font awesome email -->
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="tel:+919494151617"
-                  title="call"
-                  >+9173821 51617</a
-                >
+                <a class="text-decoration-none" href="tel:+919494151617" title="call">+9173821 51617</a>
               </li>
               <li class="mt-2 d-flex justify-content-start align-items-start">
                 <!-- font awesome email -->
@@ -409,12 +272,8 @@
             </ul>
             <!-- Payment Methods -->
             <div class="mt-3">
-              <img
-                src="assets/images/payment-methods.svg"
-                alt="Payment Methods"
-                class="img-fluid"
-                style="max-height: 40px"
-              />
+              <img src="assets/images/payment-methods.svg" alt="Payment Methods" class="img-fluid"
+                style="max-height: 40px" />
             </div>
           </div>
         </div>
@@ -422,16 +281,11 @@
     </div>
   </div>
 </footer>
-<footer
-  class="bottom-footer mt-auto py-3"
-  [class.sidebar-collapsed]="isSidebarCollapsed"
->
+<footer class="bottom-footer mt-auto py-3" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container">
-    <div
-      class="row justify-content-center justify-content-md-between align-items-center gy-2"
-    >
+    <div class="row justify-content-center justify-content-md-between align-items-center gy-2">
       <span class="col-auto">&copy; 2024 - {{ currentYear }} VANAVIHARI</span>
-      <span class="col-auto"
+      <!-- <span class="col-auto"
         >Made with love <i class="fas fa-heart"></i> by
         <a
           class="text-decoration-none"
@@ -441,32 +295,19 @@
         >
           TenSketch
         </a></span
-      >
+      > -->
     </div>
   </div>
 </footer>
 
 <!-- WhatsApp Floating Button (with support options) -->
-<div
-  class="whatsapp-wrapper"
-  [class.sidebar-collapsed]="isSidebarCollapsed"
-  (click)="$event.stopPropagation()"
->
-  <button
-    class="whatsapp-float"
-    (click)="toggleWhatsappOptions($event)"
-    aria-haspopup="true"
-    [attr.aria-expanded]="isWhatsappOptionsOpen"
-  >
+<div class="whatsapp-wrapper" [class.sidebar-collapsed]="isSidebarCollapsed" (click)="$event.stopPropagation()">
+  <button class="whatsapp-float" (click)="toggleWhatsappOptions($event)" aria-haspopup="true"
+    [attr.aria-expanded]="isWhatsappOptionsOpen">
     <i class="fab fa-whatsapp" aria-hidden="true"></i>
   </button>
 
-  <div
-    class="whatsapp-options"
-    *ngIf="isWhatsappOptionsOpen"
-    role="menu"
-    aria-label="WhatsApp support options"
-  >
+  <div class="whatsapp-options" *ngIf="isWhatsappOptionsOpen" role="menu" aria-label="WhatsApp support options">
     <div class="wa-card">
       <div class="wa-item" (click)="openWhatsapp('9494151617')">
         <div class="wa-icon-wrapper">
@@ -497,31 +338,16 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="onCancel()"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to sign out?</p>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          mat-raised-button
-          color="primary"
-          (click)="onCancel()"
-        >
+        <button type="button" mat-raised-button color="primary" (click)="onCancel()">
           Cancel
         </button>
-        <button
-          type="button"
-          mat-raised-button
-          color="primary"
-          (click)="onConfirm()"
-        >
+        <button type="button" mat-raised-button color="primary" (click)="onConfirm()">
           Sign Out
         </button>
       </div>
@@ -530,22 +356,12 @@
 </div>
 
 <nav class="bottom-nav d-lg-none">
-  <div
-    class="nav-item"
-    routerLink="/home"
-    routerLinkActive="active"
-    title="Home"
-  >
+  <div class="nav-item" routerLink="/home" routerLinkActive="active" title="Home">
     <i class="fa-solid fa-house"></i>
     <span>Home</span>
   </div>
-  <div
-    class="nav-item"
-    routerLink="/resorts/rooms"
-    [queryParams]="{ bookingTypeResort: 'Vanavihari, Maredumilli' }"
-    routerLinkActive="active"
-    title="Resorts"
-  >
+  <div class="nav-item" routerLink="/resorts/rooms" [queryParams]="{ bookingTypeResort: 'Vanavihari, Maredumilli' }"
+    routerLinkActive="active" title="Resorts">
     <i class="fa-solid fa-hotel"></i>
     <span>Resorts</span>
   </div>
@@ -561,34 +377,18 @@
   </div> -->
 
   <!-- Treks (temporarily disabled) -->
-  <div
-    class="nav-item"
-    routerLink="/tourist-places"
-    routerLinkActive="active"
-    title="Treks"
-  >
+  <div class="nav-item" routerLink="/tourist-places" routerLinkActive="active" title="Treks">
     <i class="fa-solid fa-person-hiking"></i>
     <span>Treks</span>
   </div>
 
-  <div
-    class="nav-item"
-    *ngIf="isLoggedIn()"
-    routerLink="/my-account/settings"
-    routerLinkActive="active"
-    title="Profile"
-  >
+  <div class="nav-item" *ngIf="isLoggedIn()" routerLink="/my-account/settings" routerLinkActive="active"
+    title="Profile">
     <i class="fa-regular fa-user-circle"></i>
     <span>Profile</span>
   </div>
 
-  <div
-    class="nav-item"
-    *ngIf="!isLoggedIn()"
-    routerLink="/sign-in"
-    routerLinkActive="active"
-    title="Sign In"
-  >
+  <div class="nav-item" *ngIf="!isLoggedIn()" routerLink="/sign-in" routerLinkActive="active" title="Sign In">
     <i class="fa-regular fa-user-circle"></i>
     <span>Profile</span>
   </div>

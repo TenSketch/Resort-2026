@@ -220,7 +220,7 @@ const AddGuestForm = () => {
                 name="emailVerificationStatus"
                 value={formData.emailVerificationStatus}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
                 required
               >
                 <option value="verified">Verified</option>
@@ -363,7 +363,7 @@ const AddGuestForm = () => {
                 name="country"
                 value={formData.country}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm"
                 required
               >
                 <option value="">Select Country</option>

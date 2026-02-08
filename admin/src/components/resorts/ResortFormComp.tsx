@@ -463,7 +463,7 @@ const ResortFormComp = () => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleFileChange(e, 'logo')}
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  className="w-full pl-10 pr-4 py-1 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
                   placeholder="Upload logo file"
                 />
               </div>

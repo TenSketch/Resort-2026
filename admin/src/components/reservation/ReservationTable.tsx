@@ -1027,7 +1027,132 @@ export default function ReservationTable() {
   ];
 
   return (
-    <div className="w-full max-w-full overflow-hidden">
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .reservations-table-container .dt-layout-row {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 12px !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+          }
+
+          .reservations-table-container .dt-layout-table {
+            display: flex !important;
+            width: 100% !important;
+          }
+
+          .reservations-table-container .dt-layout-cell {
+            display: inline-flex !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+
+          .reservations-table-container .dt-layout-cell.dt-start {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-start !important;
+            order: 1 !important;
+          }
+
+          .reservations-table-container .dt-layout-cell.dt-end {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+            margin-left: auto !important;
+            order: 2 !important;
+          }
+
+          .reservations-table-container .dt-buttons {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-buttons .dt-button {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+            white-space: nowrap !important;
+            margin: 0 !important;
+          }
+
+          .reservations-table-container .dt-search {
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-search input {
+            padding: 6px 10px !important;
+            font-size: 10px !important;
+            width: 140px !important;
+            max-width: 100% !important;
+          }
+
+          .reservations-table-container .dt-search label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .reservations-table-container .dt-length {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+          }
+
+          .reservations-table-container .dt-length label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            flex-wrap: nowrap !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .reservations-table-container .dt-length select {
+            padding: 4px 8px !important;
+            font-size: 11px !important;
+            margin: 0 4px !important;
+          }
+
+          .reservations-table-container .dt-paging {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .reservations-table-container .dt-paging .dt-paging-button {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            margin: 0 1px !important;
+            min-width: 28px !important;
+          }
+
+          .reservations-table-container .dt-info {
+            display: none !important;
+          }
+
+          .reservations-table-container .dt-layout-row:last-child {
+            margin-top: 12px !important;
+          }
+        }
+      `}</style>
+      <div className="w-full max-w-full overflow-hidden reservations-table-container">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
         <button
@@ -1998,5 +2123,6 @@ export default function ReservationTable() {
         </SheetContent>
       </Sheet>
     </div>
+    </>
   );
 }

@@ -404,6 +404,137 @@ export default function GuestTable() {
         border-radius: 4px !important;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
       }
+      /* Top toolbar: column visibility left, search right */
+      .dataTables_wrapper .dt-layout-row:first-child {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        flex-wrap: wrap !important;
+      }
+      .dataTables_wrapper .dt-layout-row:first-child .dt-layout-start.dt-layout-cell {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        order: 1 !important;
+      }
+      .dataTables_wrapper .dt-layout-row:first-child .dt-layout-end.dt-layout-cell {
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        order: 2 !important;
+        flex: 1 1 auto !important;
+        justify-content: flex-end !important;
+      }
+      .dataTables_wrapper .dt-layout-row:first-child .dt-search {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        justify-content: flex-end !important;
+      }
+      .dataTables_wrapper .dt-layout-row:first-child .dt-search input,
+      .dataTables_wrapper .dt-layout-row:first-child .dataTables_filter input {
+        max-width: 240px !important;
+      }
+      @media (max-width: 767px) {
+        .dataTables_wrapper .dt-layout-row:first-child {
+          flex-wrap: nowrap !important;
+          width: 100% !important;
+          padding: 0 0.5rem !important;
+        }
+        .dataTables_wrapper .dt-layout-row:first-child .dt-layout-start.dt-layout-cell {
+          display: flex !important;
+          justify-content: flex-start !important;
+        }
+        .dataTables_wrapper .dt-layout-row:first-child .dt-layout-end.dt-layout-cell {
+          margin-left: auto !important;
+          justify-content: flex-end !important;
+          flex: 1 1 auto !important;
+        }
+        .dataTables_wrapper .dt-layout-row:first-child .dt-search,
+        .dataTables_wrapper .dt-layout-row:first-child .dataTables_filter {
+          width: 100% !important;
+          justify-content: flex-end !important;
+        }
+        .dataTables_wrapper .dt-layout-row:first-child .dt-search input,
+        .dataTables_wrapper .dt-layout-row:first-child .dataTables_filter input {
+          width: 100% !important;
+          max-width: 220px !important;
+        }
+      }
+      /* Bottom row layout: page length on left, pagination on right */
+      .dataTables_wrapper .dt-layout-row:last-child,
+      .dataTables_wrapper .dt-layout-table + .dt-layout-row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 1rem !important;
+        margin-top: 1rem !important;
+      }
+      .dataTables_wrapper .dt-length,
+      .dataTables_wrapper .dataTables_length {
+        order: 1 !important;
+        flex: 0 0 auto !important;
+        display: block !important;
+        visibility: visible !important;
+      }
+      .dataTables_wrapper .dt-paging,
+      .dataTables_wrapper .dataTables_paginate {
+        order: 2 !important;
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+      }
+      .dataTables_wrapper .dt-info,
+      .dataTables_wrapper .dataTables_info {
+        display: none !important;
+      }
+      /* Ensure page length select is visible on mobile */
+      @media (max-width: 767px) {
+        .dataTables_wrapper .dt-length,
+        .dataTables_wrapper .dataTables_length {
+          display: block !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+        .dataTables_wrapper .dt-length select,
+        .dataTables_wrapper .dataTables_length select {
+          font-size: 14px !important;
+          padding: 0.5rem !important;
+        }
+        /* Mobile: Keep pagination and page length in same row */
+        .dataTables_wrapper .dt-layout-row:last-child,
+        .dataTables_wrapper .dt-layout-table + .dt-layout-row {
+          display: flex !important;
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          flex-wrap: nowrap !important;
+          gap: 0.5rem !important;
+          margin-top: 1rem !important;
+          padding: 0 0.5rem !important;
+          width: 100% !important;
+        }
+        .dataTables_wrapper .dt-length,
+        .dataTables_wrapper .dataTables_length {
+          order: 1 !important;
+          flex: 0 0 auto !important;
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+        .dataTables_wrapper .dt-paging,
+        .dataTables_wrapper .dataTables_paginate {
+          order: 2 !important;
+          flex: 0 0 auto !important;
+          margin-left: auto !important;
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+        }
+      }
       .dataTables_wrapper {
         position: relative;
         width: 100%;
@@ -655,36 +786,163 @@ export default function GuestTable() {
   ];
 
   return (
-    <div className="flex flex-col h-full max-h-screen overflow-hidden py-6">
-      <div className="flex justify-between items-center mb-4 flex-shrink-0">
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .guests-table-container .dt-layout-row {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 12px !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+          }
+
+          .guests-table-container .dt-layout-table {
+            display: flex !important;
+            width: 100% !important;
+          }
+
+          .guests-table-container .dt-layout-cell {
+            display: inline-flex !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+
+          .guests-table-container .dt-layout-cell.dt-start {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-start !important;
+            order: 1 !important;
+          }
+
+          .guests-table-container .dt-layout-cell.dt-end {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+            margin-left: auto !important;
+            order: 2 !important;
+          }
+
+          .guests-table-container .dt-buttons {
+            display: inline-flex !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .guests-table-container .dt-buttons .dt-button {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+            white-space: nowrap !important;
+            margin: 0 !important;
+          }
+
+          .guests-table-container .dt-search {
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .guests-table-container .dt-search input {
+            padding: 6px 10px !important;
+            font-size: 10px !important;
+            width: 140px !important;
+            max-width: 100% !important;
+          }
+
+          .guests-table-container .dt-search label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .guests-table-container .dt-length {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+          }
+
+          .guests-table-container .dt-length label {
+            font-size: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            flex-wrap: nowrap !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+          }
+
+          .guests-table-container .dt-length select {
+            padding: 4px 8px !important;
+            font-size: 11px !important;
+            margin: 0 4px !important;
+          }
+
+          .guests-table-container .dt-paging {
+            flex: 0 0 auto !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+          }
+
+          .guests-table-container .dt-paging .dt-paging-button {
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            margin: 0 1px !important;
+            min-width: 28px !important;
+          }
+
+          .guests-table-container .dt-info {
+            display: none !important;
+          }
+
+          .guests-table-container .dt-layout-row:last-child {
+            margin-top: 12px !important;
+          }
+        }
+      `}</style>
+      <div className="flex flex-col h-full max-h-screen overflow-hidden py-2 md:py-6 guests-table-container">
+      <div className="flex flex-col md:flex-row gap-2 justify-between items-start md:items-center mb-2 md:mb-4 flex-shrink-0">
         <h2 className="text-xl font-semibold text-slate-800">User Records</h2>
-        <button
-          onClick={() =>
-            perms.canViewDownload ? exportToExcel(guestsState) : null
-          }
-          className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${perms.canViewDownload ? "bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
-          disabled={loading || !perms.canViewDownload}
-          title={
-            perms.canViewDownload
-              ? "Export to Excel"
-              : "You do not have permission to download/export"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex justify-end gap-2 w-full md:w-auto md:ml-auto">
+          <button
+            onClick={() =>
+              perms.canViewDownload ? exportToExcel(guestsState) : null
+            }
+            className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors duration-200 md:ml-auto ${perms.canViewDownload ? "bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
+            disabled={loading || !perms.canViewDownload}
+            title={
+              perms.canViewDownload
+                ? "Export to Excel"
+                : "You do not have permission to download/export"
+            }
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Export to Excel
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -734,7 +992,7 @@ export default function GuestTable() {
               order: [[0, "asc"]],
               searching: true,
               paging: true,
-              info: true,
+              info: false,
               scrollX: true,
               scrollY: "calc(100vh - 350px)",
               scrollCollapse: true,
@@ -1156,5 +1414,6 @@ export default function GuestTable() {
         </SheetContent>
       </Sheet>
     </div>
+    </>
   );
 }

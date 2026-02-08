@@ -105,7 +105,7 @@ const AllResortsPage = () => {
       <div className="p-4">
         {loading && <div className="text-sm text-slate-600">Loading resorts...</div>}
         {error && <div className="text-sm text-red-600">{error}</div>}
-        <div className="grid gap-[1px] grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 mt-3">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 mt-3">
           {(!loading && !error && resorts.length === 0) && (
             <div className="text-sm text-slate-500 col-span-full py-8 text-center">No resorts found. Add one to get started.</div>
           )}

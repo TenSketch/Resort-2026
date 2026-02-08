@@ -1,0 +1,147 @@
+
+// Standard Hero Carousel Styles
+// Desktop: 60vh
+// Mobile: 40vh
+
+@mixin hero-carousel-base {
+  position: relative;
+  // Default desktop height
+  height: 55vh;
+  min-height: 400px;
+  width: 100%;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: 40vh !important; // Mobile standard
+    min-height: 300px;
+  }
+
+  .carousel-inner,
+  .carousel-item {
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  .carousel-item {
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    // Standard Overlay
+    .carousel-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        transparent 100%
+      );
+      z-index: 1;
+    }
+
+    // Standard Caption
+    .carousel-caption {
+      position: absolute;
+      bottom: 20%;
+      left: 10%;
+      right: 10%;
+      z-index: 2;
+      text-align: left;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+      padding-bottom: 0;
+      color: #fff;
+
+      @media (min-width: 992px) {
+        right: 40%; // More space on desktop
+      }
+
+      h1, h2, .display-4, .display-5, .h1 {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin-bottom: 1rem;
+        
+        @media (max-width: 768px) {
+          font-size: 2rem; // Smaller on mobile
+        }
+      }
+
+      p {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.1rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        
+        @media (max-width: 768px) {
+          font-size: 0.95rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      }
+      
+      .btn {
+          @media (max-width: 768px) {
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+          }
+      }
+    }
+  }
+
+  // Standard Controls
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 10%; // Wider touch area
+    opacity: 0.8;
+    z-index: 3;
+    transition: all 0.3s ease;
+
+    @media (min-width: 992px) {
+        width: 5%;
+    }
+
+    &:hover {
+      opacity: 1;
+      // transform: scale(1.05); // Subtle zoom
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      width: 2rem;
+      height: 2rem;
+      background-size: 100%;
+      border-radius: 50%;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+      
+      @media (min-width: 768px) {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+  }
+
+  // Standard Indicators
+  .carousel-indicators {
+    bottom: 1rem;
+    
+    button {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.6);
+      border: none;
+      margin: 0 4px;
+      transition: all 0.3s ease;
+      
+      &.active {
+        background-color: #fff;
+        transform: scale(1.3);
+      }
+    }
+  }
+}

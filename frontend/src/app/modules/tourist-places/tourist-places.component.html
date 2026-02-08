@@ -1,25 +1,38 @@
 <app-layout>
   <div class="main">
     <!-- Hero Section -->
-    <section
-      class="page-banner position-relative d-flex align-items-center justify-content-center text-center text-white"
-    >
-      <div class="overlay"></div>
-      <div class="container position-relative z-1">
-        <span
-          class="d-inline-block py-1 px-3 rounded-pill bg-white text-success fw-bold small mb-3 shadow-sm"
-        >
-          <i class="fas fa-tree me-2"></i>Discover Nature
-        </span>
-        <h1 class="display-2 fw-bold mb-3">Tourist Destinations</h1>
-        <p
-          class="lead mb-4 mx-auto"
-          style="max-width: 700px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)"
-        >
-          Explore the breathtaking waterfalls, lush forests, and serene picnic
-          spots of Maredumilli.
-        </p>
+    <!-- Hero Carousel -->
+    <section id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel"
+      data-bs-interval="6000">
+      <div class="carousel-inner">
+        <div *ngFor="let slide of heroSlides; let i = index" class="carousel-item" [class.active]="i === 0">
+          <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption p-0 text-start" style="bottom: 15%; left: 10%; right: 10%">
+            <div class="container">
+              <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+              <p class="h4 text-light mt-3" *ngIf="slide.location">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                {{ slide.location }}
+              </p>
+              <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
+
+              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 d-none d-md-inline-block"
+                (click)="handleSlideAction(slide.action)">
+                {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </section>
 
     <!-- 1. JALATARANGINI WATERFALL -->
@@ -30,26 +43,17 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg"
-                alt="Jalatarangini Waterfall"
+              <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg" alt="Jalatarangini Waterfall"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
-                <img
-                  src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg"
+                  style="width: 60px; height: 60px; object-fit: cover" />
+                <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -57,8 +61,7 @@
           <!-- Content Column -->
           <div class="col-lg-6">
             <span
-              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
-            >
+              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Seasonal Waterfall
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -66,9 +69,7 @@
             </h2>
             <div class="d-flex align-items-center text-muted mb-4">
               <i class="fa-solid fa-location-dot me-2 text-danger"></i>
-              <span
-                >Maredumilli - Bhadrachalam Highway (7 km from Bus Stand)</span
-              >
+              <span>Maredumilli - Bhadrachalam Highway (7 km from Bus Stand)</span>
             </div>
 
             <p class="text-secondary mb-4" style="line-height: 1.7">
@@ -79,72 +80,40 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-clock text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Timings</small
-                    >
+                    <i class="fa-regular fa-clock text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Timings</small>
                     <div class="fw-bold text-dark">9 AM - 5 PM</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ticket text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Entry Fee</small
-                    >
+                    <i class="fa-solid fa-ticket text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Entry Fee</small>
                     <div class="fw-bold text-dark">₹50 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Best Time</small
-                    >
+                    <i class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Best Time</small>
                     <div class="fw-bold text-dark">Sept - Feb</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-person-hiking text-info mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Trek Distance</small
-                    >
+                    <i class="fa-solid fa-person-hiking text-info mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Trek Distance</small>
                     <div class="fw-bold text-dark">150 m (30 mins)</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-water text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Water Type</small
-                    >
+                    <i class="fa-solid fa-water text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Water Type</small>
                     <div class="fw-bold text-dark">Seasonal</div>
                   </div>
                 </div>
@@ -152,14 +121,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#jalaMap"
-                aria-expanded="false"
-                aria-controls="jalaMap"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#jalaMap" aria-expanded="false" aria-controls="jalaMap">
                 <i class="fa-solid fa-map me-2"></i> View Map
               </button>
             </div>
@@ -168,12 +131,8 @@
               <div class="card card-body p-1 border-0 shadow-sm">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.6307719820206!2d81.6609907!3d17.6202596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724efa9ce126f%3A0x3bc3a36a8f5276ac!2sJalatarangini%20Water%20Fall!5e0!3m2!1sen!2sin!4v1754652808056!5m2!1sen!2sin"
-                  width="100%"
-                  height="250"
-                  style="border: 0; border-radius: 8px"
-                  allowfullscreen=""
-                  loading="lazy"
-                ></iframe>
+                  width="100%" height="250" style="border: 0; border-radius: 8px" allowfullscreen=""
+                  loading="lazy"></iframe>
               </div>
             </div>
           </div>
@@ -183,17 +142,13 @@
     </section>
 
     <!-- 2. AMRUTHADHARA WATERFALL -->
-    <section
-      id="amruthadhara-waterfall"
-      class="destination-section py-5 bg-white"
-    >
+    <section id="amruthadhara-waterfall" class="destination-section py-5 bg-white">
       <div class="container">
         <div class="row align-items-center gx-lg-5">
           <!-- Content Column (Order 1 on Desktop) -->
           <div class="col-lg-6 order-2 order-lg-1">
             <span
-              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
-            >
+              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Perennial Waterfall
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -212,72 +167,40 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-clock text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Timings</small
-                    >
+                    <i class="fa-regular fa-clock text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Timings</small>
                     <div class="fw-bold text-dark">9 AM - 3:30 PM</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ticket text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Entry Fee</small
-                    >
+                    <i class="fa-solid fa-ticket text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Entry Fee</small>
                     <div class="fw-bold text-dark">₹50 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Best Time</small
-                    >
+                    <i class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Best Time</small>
                     <div class="fw-bold text-dark">Sept - Feb</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-person-hiking text-info mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Trek Distance</small
-                    >
+                    <i class="fa-solid fa-person-hiking text-info mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Trek Distance</small>
                     <div class="fw-bold text-dark">1 km (1 hr)</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-water text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Water Type</small
-                    >
+                    <i class="fa-solid fa-water text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Water Type</small>
                     <div class="fw-bold text-dark">Perennial</div>
                   </div>
                 </div>
@@ -285,14 +208,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#amruthaMap"
-                aria-expanded="false"
-                aria-controls="amruthaMap"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#amruthaMap" aria-expanded="false" aria-controls="amruthaMap">
                 <i class="fa-solid fa-map me-2"></i> View Map
               </button>
             </div>
@@ -301,12 +218,8 @@
               <div class="card card-body p-1 border-0 shadow-sm">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.235178402612!2d81.612572!3d17.639017000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725d190325c67%3A0x48ed1479e1ced87b!2sAMRUTHADHARA%20WATER%20FALL!5e0!3m2!1sen!2sin!4v1754669329545!5m2!1sen!2sin"
-                  width="100%"
-                  height="250"
-                  style="border: 0; border-radius: 8px"
-                  allowfullscreen=""
-                  loading="lazy"
-                ></iframe>
+                  width="100%" height="250" style="border: 0; border-radius: 8px" allowfullscreen=""
+                  loading="lazy"></iframe>
               </div>
             </div>
           </div>
@@ -315,26 +228,17 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg"
-                alt="Amruthadhara Waterfall"
+              <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg" alt="Amruthadhara Waterfall"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
-                <img
-                  src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg"
+                  style="width: 60px; height: 60px; object-fit: cover" />
+                <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -351,21 +255,14 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg"
-                alt="Karthikavanam Picnic Spot"
+              <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg" alt="Karthikavanam Picnic Spot"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -373,8 +270,7 @@
           <!-- Content Column -->
           <div class="col-lg-6">
             <span
-              class="badge bg-light text-success mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-success border-opacity-10"
-            >
+              class="badge bg-light text-success mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-success border-opacity-10">
               Picnic Spot
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -393,57 +289,33 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-clock text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Timings</small
-                    >
+                    <i class="fa-regular fa-clock text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Timings</small>
                     <div class="fw-bold text-dark">9 AM - 5 PM</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ticket text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Entry Fee</small
-                    >
+                    <i class="fa-solid fa-ticket text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Entry Fee</small>
                     <div class="fw-bold text-dark">₹50 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Best Time</small
-                    >
+                    <i class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Best Time</small>
                     <div class="fw-bold text-dark">Sept - Feb</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
                     <i class="fa-solid fa-tent text-info mb-2 d-block fs-5"></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Tent Stay</small
-                    >
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Tent Stay</small>
                     <div class="fw-bold text-dark">Available</div>
                   </div>
                 </div>
@@ -451,14 +323,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#karthiMap"
-                aria-expanded="false"
-                aria-controls="karthiMap"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#karthiMap" aria-expanded="false" aria-controls="karthiMap">
                 <i class="fa-solid fa-map me-2"></i> View Map
               </button>
             </div>
@@ -467,12 +333,8 @@
               <div class="card card-body p-1 border-0 shadow-sm">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3895466.2121816296!2d73.58540031250001!3d17.547271000000013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb8fe746215047%3A0x19635d7cad2a8ee1!2sKarthika%20Vanam!5e0!3m2!1sen!2sin!4v1754669557872!5m2!1sen!2sin"
-                  width="100%"
-                  height="250"
-                  style="border: 0; border-radius: 8px"
-                  allowfullscreen=""
-                  loading="lazy"
-                ></iframe>
+                  width="100%" height="250" style="border: 0; border-radius: 8px" allowfullscreen=""
+                  loading="lazy"></iframe>
               </div>
             </div>
           </div>
@@ -481,17 +343,13 @@
       </div>
     </section>
     <!-- 4. MEDICINAL PLANTS CONSERVATION AREA (MPCA) -->
-    <section
-      id="medicinal-plants-conservation-area-mpca-picnic-spot"
-      class="destination-section py-5 bg-white"
-    >
+    <section id="medicinal-plants-conservation-area-mpca-picnic-spot" class="destination-section py-5 bg-white">
       <div class="container">
         <div class="row align-items-center gx-lg-5">
           <!-- Content Column (Order 1 on Desktop) -->
           <div class="col-lg-6 order-2 order-lg-1">
             <span
-              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
-            >
+              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Botanical Tour
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -510,59 +368,33 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-clock text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Timings</small
-                    >
+                    <i class="fa-regular fa-clock text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Timings</small>
                     <div class="fw-bold text-dark">9 AM - 5 PM</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ticket text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Entry Fee</small
-                    >
+                    <i class="fa-solid fa-ticket text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Entry Fee</small>
                     <div class="fw-bold text-dark">₹20 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Best Time</small
-                    >
+                    <i class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Best Time</small>
                     <div class="fw-bold text-dark">Jun - Feb</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-seedling text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Species</small
-                    >
+                    <i class="fa-solid fa-seedling text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Species</small>
                     <div class="fw-bold text-dark">203+ Types</div>
                   </div>
                 </div>
@@ -573,12 +405,8 @@
               <div class="card card-body p-1 border-0 shadow-sm">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.343934074646!2d81.650173!3d17.626803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724f2d6f3c2e1%3A0x8a7f8e7a6f423cfb!2sMedicinal%20Plants%20Conservation%20Area%20(MPCA)!5e0!3m2!1sen!2sin!4v1754652808056!5m2!1sen!2sin"
-                  width="100%"
-                  height="250"
-                  style="border: 0; border-radius: 8px"
-                  allowfullscreen=""
-                  loading="lazy"
-                ></iframe>
+                  width="100%" height="250" style="border: 0; border-radius: 8px" allowfullscreen=""
+                  loading="lazy"></iframe>
               </div>
             </div>
           </div>
@@ -587,21 +415,14 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/MPCA.jpg"
-                alt="MPCA"
+              <img src="assets/img/TOURIST-PLACES/MPCA.jpg" alt="MPCA"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/MPCA-01.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/MPCA-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -611,36 +432,24 @@
     </section>
 
     <!-- 5. SOFT TREK -->
-    <section
-      id="soft-trek-jalatarangi-to-gmvalasa"
-      class="destination-section py-5"
-    >
+    <section id="soft-trek-jalatarangi-to-gmvalasa" class="destination-section py-5">
       <div class="container">
         <div class="row align-items-center gx-lg-5">
           <!-- Image Column -->
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
-                alt="Soft Trek"
+              <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Soft Trek"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
-                <img
-                  src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg"
+                  style="width: 60px; height: 60px; object-fit: cover" />
+                <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -648,8 +457,7 @@
           <!-- Content Column -->
           <div class="col-lg-6">
             <span
-              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
-            >
+              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Soft Trek
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -668,72 +476,40 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-person-walking text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Level</small
-                    >
+                    <i class="fa-solid fa-person-walking text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Level</small>
                     <div class="fw-bold text-dark">Easy</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ruler-horizontal text-success mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Distance</small
-                    >
+                    <i class="fa-solid fa-ruler-horizontal text-success mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Distance</small>
                     <div class="fw-bold text-dark">3.5 km</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-money-bill-wave text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Trek Fee</small
-                    >
+                    <i class="fa-solid fa-money-bill-wave text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Trek Fee</small>
                     <div class="fw-bold text-dark">₹500 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-users text-info mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Batch Size</small
-                    >
+                    <i class="fa-solid fa-users text-info mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Batch Size</small>
                     <div class="fw-bold text-dark">20 Max</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-person-chalkboard text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Guide</small
-                    >
+                    <i class="fa-solid fa-person-chalkboard text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Guide</small>
                     <div class="fw-bold text-dark">Mandatory</div>
                   </div>
                 </div>
@@ -741,14 +517,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#softTrekDetails"
-                aria-expanded="false"
-                aria-controls="softTrekDetails"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#softTrekDetails" aria-expanded="false" aria-controls="softTrekDetails">
                 <i class="fa-solid fa-info-circle me-2"></i> More Details
               </button>
             </div>
@@ -776,17 +546,14 @@
     </section>
 
     <!-- 6. VERY HARD TREK -->
-    <section
-      id="very-hard-trek-jungle-star-eco-camp-to-nellore-tribal-village"
-      class="destination-section py-5 bg-white"
-    >
+    <section id="very-hard-trek-jungle-star-eco-camp-to-nellore-tribal-village"
+      class="destination-section py-5 bg-white">
       <div class="container">
         <div class="row align-items-center gx-lg-5">
           <!-- Content Column (Order 1 on Desktop) -->
           <div class="col-lg-6 order-2 order-lg-1">
             <span
-              class="badge bg-light text-danger mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-danger border-opacity-10"
-            >
+              class="badge bg-light text-danger mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-danger border-opacity-10">
               Hard Trek
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -805,72 +572,40 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-mountain text-danger mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Level</small
-                    >
+                    <i class="fa-solid fa-mountain text-danger mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Level</small>
                     <div class="fw-bold text-dark">Hard</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ruler-horizontal text-secondary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Distance</small
-                    >
+                    <i class="fa-solid fa-ruler-horizontal text-secondary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Distance</small>
                     <div class="fw-bold text-dark">7 km</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-arrow-trend-up text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Elevation</small
-                    >
+                    <i class="fa-solid fa-arrow-trend-up text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Elevation</small>
                     <div class="fw-bold text-dark">600m</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-money-bill-wave text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Trek Fee</small
-                    >
+                    <i class="fa-solid fa-money-bill-wave text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Trek Fee</small>
                     <div class="fw-bold text-dark">₹1200 / head</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-clock text-info mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Timing</small
-                    >
+                    <i class="fa-regular fa-clock text-info mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Timing</small>
                     <div class="fw-bold text-dark">6 AM - 1 PM</div>
                   </div>
                 </div>
@@ -878,14 +613,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#hardTrekDetails"
-                aria-expanded="false"
-                aria-controls="hardTrekDetails"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#hardTrekDetails" aria-expanded="false" aria-controls="hardTrekDetails">
                 <i class="fa-solid fa-list-check me-2"></i> Requirements
               </button>
             </div>
@@ -910,26 +639,17 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
-                alt="Jungle Star Trek"
+              <img src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" alt="Jungle Star Trek"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
-                <img
-                  src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg"
+                  style="width: 60px; height: 60px; object-fit: cover" />
+                <img src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -946,26 +666,17 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img
-                src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg"
-                alt="Gudisa View Point"
+              <img src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" alt="Gudisa View Point"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px"
-              />
+                style="min-height: 400px; max-height: 500px" />
               <!-- Mini Gallery Overlay -->
-              <div
-                class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2"
-              >
-                <img
-                  src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg"
+              <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
+                <img src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
-                <img
-                  src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg"
+                  style="width: 60px; height: 60px; object-fit: cover" />
+                <img src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover"
-                />
+                  style="width: 60px; height: 60px; object-fit: cover" />
               </div>
             </div>
           </div>
@@ -973,8 +684,7 @@
           <!-- Content Column -->
           <div class="col-lg-6">
             <span
-              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
-            >
+              class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               View Point
             </span>
             <h2 class="display-5 fw-bold text-dark-green mb-3">
@@ -993,72 +703,40 @@
             </p>
 
             <!-- Quick Facts Grid -->
-            <div
-              class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start"
-            >
+            <div class="quick-facts-grid bg-light p-4 rounded-4 border border-light mb-4 text-start">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Best Time</small
-                    >
+                    <i class="fa-regular fa-calendar text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Best Time</small>
                     <div class="fw-bold text-dark">Oct - Feb</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-cloud-sun text-warning mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Sunrise</small
-                    >
+                    <i class="fa-solid fa-cloud-sun text-warning mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Sunrise</small>
                     <div class="fw-bold text-dark">4 AM - 10 AM</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-car text-primary mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Parking</small
-                    >
+                    <i class="fa-solid fa-car text-primary mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Parking</small>
                     <div class="fw-bold text-dark">₹300 / car</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-ban text-danger mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Stay</small
-                    >
+                    <i class="fa-solid fa-ban text-danger mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Stay</small>
                     <div class="fw-bold text-dark">Not Allowed</div>
                   </div>
                 </div>
                 <div class="col-6 col-md-4">
                   <div class="fact-item">
-                    <i
-                      class="fa-solid fa-camera text-info mb-2 d-block fs-5"
-                    ></i>
-                    <small
-                      class="text-uppercase text-muted fw-bold"
-                      style="font-size: 0.7rem"
-                      >Photoshoot</small
-                    >
+                    <i class="fa-solid fa-camera text-info mb-2 d-block fs-5"></i>
+                    <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem">Photoshoot</small>
                     <div class="fw-bold text-dark">₹5000</div>
                   </div>
                 </div>
@@ -1066,14 +744,8 @@
             </div>
 
             <div class="d-flex gap-3">
-              <button
-                class="btn btn-outline-dark rounded-pill px-4"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#gudisaMap"
-                aria-expanded="false"
-                aria-controls="gudisaMap"
-              >
+              <button class="btn btn-outline-dark rounded-pill px-4" type="button" data-bs-toggle="collapse"
+                data-bs-target="#gudisaMap" aria-expanded="false" aria-controls="gudisaMap">
                 <i class="fa-solid fa-map me-2"></i> View Map
               </button>
             </div>
@@ -1082,12 +754,8 @@
               <div class="card card-body p-1 border-0 shadow-sm">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7598.71286350315!2d81.693937!3d17.774938!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3731c48301f107%3A0x1ee53ed9481524bf!2sGudisa%20View%20point!5e0!3m2!1sen!2sin!4v1754838945890!5m2!1sen!2sin"
-                  width="100%"
-                  height="250"
-                  style="border: 0; border-radius: 8px"
-                  allowfullscreen=""
-                  loading="lazy"
-                ></iframe>
+                  width="100%" height="250" style="border: 0; border-radius: 8px" allowfullscreen=""
+                  loading="lazy"></iframe>
               </div>
             </div>
           </div>

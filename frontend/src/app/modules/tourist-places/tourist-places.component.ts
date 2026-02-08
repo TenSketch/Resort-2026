@@ -14,6 +14,30 @@ export class TouristPlacesComponent implements OnInit, AfterViewInit {
     private viewportScroller: ViewportScroller
   ) {}
 
+  heroSlides = [
+    {
+      id: 1,
+      image: 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg',
+      title: 'Tourist Destinations',
+      location: 'Explore the breathtaking waterfalls, lush forests, and serene picnic spots of Maredumilli.',
+      subtitle: null,
+      tagline: 'Discover Nature',
+      startText: null,
+      price: null,
+      cta: 'Explore Now',
+      action: 'explore'
+    }
+  ];
+
+  handleSlideAction(action: string) {
+    if (action === 'explore') {
+      const element = document.getElementById('jalatarangini-waterfall');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
   ngOnInit() {
     // Don't scroll to top if there's a fragment
     this.route.fragment.subscribe((fragment: string | null) => {

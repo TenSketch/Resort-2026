@@ -1,34 +1,41 @@
+@use "/src/scss/base/" as *;
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
 $primary-color: #2c5e2e; // Dark Green
 $secondary-color: #6b7280; // Gray
 $accent-color: #f59e0b; // Amber
 
-.page-banner {
-    position: relative;
-    height: 70vh;
-    min-height: 500px;
-    background: url('/assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg') center/cover no-repeat;
-    margin-bottom: 0; // Remove margin for seamless flow
+// .page-banner {
+//     position: relative;
+//     height: 70vh;
+//     min-height: 500px;
+//     background: url('/assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg') center/cover no-repeat;
+//     margin-bottom: 0; // Remove margin for seamless flow
 
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.4); // Dark overlay for text readability
-        z-index: 0;
-    }
+//     .overlay {
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         right: 0;
+//         bottom: 0;
+//         background: rgba(0, 0, 0, 0.4); // Dark overlay for text readability
+//         z-index: 0;
+//     }
 
-    h1 {
-        font-family: 'Playfair Display', serif;
-        letter-spacing: -0.02em;
-    }
+//     h1 {
+//         font-family: 'Playfair Display', serif;
+//         letter-spacing: -0.02em;
+//     }
+// }
+
+// Desktop Fade Carousel
+#carouselExampleFade {
+  @include hero-carousel-base;
 }
 
 .destination-section {
     position: relative;
+    overflow: hidden; // Prevent blobs from causing horizontal scroll
     
     // Blob background for images
     .blob-bg {

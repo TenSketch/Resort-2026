@@ -93,10 +93,27 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   private storageKey = 'touristSpots_currentBooking';
 
   // Hero slideshow state
-  heroImages: string[] = [];
-  activeSlide: number = 0;
-  private slideIntervalMs: number = 3000; // 3s per slide (user requested)
-  private slideTimer: any = null;
+  heroSlides: {
+    id: number;
+    image: string;
+    title: string;
+    location: string;
+    subtitle: string | null;
+    tagline: string;
+    startText: string | null;
+    price: string | null;
+    cta: string;
+    action: string;
+  }[] = [];
+  
+  handleSlideAction(action: string) {
+    if (action === 'explore') {
+      const element = document.querySelector('.tourist-spots-list');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
 
   constructor(
     private router: Router,
@@ -127,14 +144,12 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         }));
 
         this.applyFilters();
-        this.initHeroImages();
-        this.startAutoplay();
+        this.initHeroSlides();
       })
       .catch(err => {
         console.warn('Failed to load Trek Spots from backend', err);
         this.applyFilters();
-        this.initHeroImages();
-        this.startAutoplay();
+        this.initHeroSlides();
       });
 
     // Detect mobile breakpoint
@@ -172,19 +187,27 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     // ensure autoplay started after view init
-    this.startAutoplay();
+    // ensure autoplay started after view init
   }
 
   ngOnDestroy(): void {
-    this.stopAutoplay();
   }
 
-  private initHeroImages() {
-    // Use default placeholder images initially
-    this.heroImages = [
-      'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg',
-      'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg',
-      'assets/img/TOURIST-PLACES/MPCA.jpg'
+  private initHeroSlides() {
+    // Default placeholder
+    const defaultSlides = [
+      {
+        id: 1,
+        image: 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg',
+        title: 'Book Trek Spots',
+        location: 'Maredumilli, Andhra Pradesh',
+        subtitle: null,
+        tagline: 'Discover Nature',
+        startText: null,
+        price: null,
+        cta: 'Book Now',
+        action: 'explore'
+      }
     ];
 
     // If categories are loaded, collect images from spots
@@ -200,9 +223,25 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
       // Deduplicate and keep up to 6 images
       const collected = Array.from(new Set(imgs)).slice(0, 6);
+      
       if (collected.length > 0) {
-        this.heroImages = collected;
+        this.heroSlides = collected.map((img, index) => ({
+          id: index + 1,
+          image: img,
+          title: 'Book Trek Spots',
+          location: 'Maredumilli, Andhra Pradesh',
+          subtitle: null,
+          tagline: 'Discover Nature',
+          startText: null,
+          price: null,
+          cta: 'Book Now',
+          action: 'explore'
+        }));
+      } else {
+        this.heroSlides = defaultSlides;
       }
+    } else {
+      this.heroSlides = defaultSlides;
     }
   }
 
@@ -380,30 +419,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  goToSlide(index: number) {
-    this.activeSlide = index % this.heroImages.length;
-    // reset timer so user interaction delays the next autoplay
-    this.restartAutoplay();
-  }
 
-  private startAutoplay() {
-    if (this.slideTimer) return;
-    this.slideTimer = setInterval(() => {
-      this.activeSlide = (this.activeSlide + 1) % this.heroImages.length;
-    }, this.slideIntervalMs);
-  }
-
-  private stopAutoplay() {
-    if (this.slideTimer) {
-      clearInterval(this.slideTimer);
-      this.slideTimer = null;
-    }
-  }
-
-  private restartAutoplay() {
-    this.stopAutoplay();
-    this.startAutoplay();
-  }
 
   private persist() {
     localStorage.setItem(this.storageKey, JSON.stringify(this.bookedSpots));
@@ -519,6 +535,12 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
     // Update the specific field
     if (field === 'adults') {
+      // Force minimum 1 adult
+      // If value is null, undefined, 0, or negative, reset to 1
+      if (!value || value < 1) {
+        value = 1;
+      }
+
       // For adults, we update the main count. 
       // Note: children are kept as is, but total people count will update
       spot.counts.adults = value;
@@ -570,8 +592,10 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
   private showAddedToBookingFeedback(spotName: string) {
     const feedback = document.createElement('div');
-    feedback.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-5';
+    // Removed top-0 and mt-5, using explicit top style to clear navbar
+    feedback.className = 'alert alert-success position-fixed start-50 translate-middle-x';
     feedback.style.zIndex = '9999';
+    feedback.style.top = '100px'; // Position below the 80px navbar
     feedback.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>${spotName} added to booking!`;
     document.body.appendChild(feedback);
 

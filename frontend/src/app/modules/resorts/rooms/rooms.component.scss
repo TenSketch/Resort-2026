@@ -1,60 +1,9 @@
 @use "/src/scss/base/" as *;
 
 // Rooms Carousel Styles
+// Rooms Carousel Styles
 #roomsCarousel {
-  position: relative;
-  
-  .carousel-item {
-    height: 60vh;
-    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
-    
-    img {
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-  
-  .carousel-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.3) 50%,
-      transparent 100%
-    );
-    z-index: 1;
-  }
-  
-  .carousel-caption {
-    position: absolute;
-    bottom: 15%;
-    left: 10%;
-    right: 40%;
-    z-index: 2;
-    text-align: left;
-    
-    h1 {
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-      font-weight: 700;
-    }
-    
-    p {
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
-  }
-  
-  .carousel-control-prev,
-  .carousel-control-next {
-    width: 5%;
-    opacity: 0.8;
-    
-    &:hover {
-      opacity: 1;
-    }
-  }
+  @include hero-carousel-base;
 }
 
 .breadcrumb {

@@ -7,47 +7,7 @@
 
 // Desktop Fade Carousel
 #carouselExampleFade {
-  height: 60vh; // Desktop hero height (reduced from 80vh)
-
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-
-  .carousel-item {
-    transition:
-      transform 0.6s ease-in-out,
-      opacity 0.6s ease-in-out;
-
-    .carousel-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.7) 0%,
-        rgba(0, 0, 0, 0.3) 50%,
-        transparent 100%
-      );
-      z-index: 1;
-    }
-
-    img {
-      object-fit: cover;
-      height: 100%;
-      width: 100%;
-    }
-
-    .carousel-caption {
-      z-index: 2;
-      bottom: 20%;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-
-      h1 {
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-    }
-  }
+  @include hero-carousel-base;
 }
 
 // .page-banner {

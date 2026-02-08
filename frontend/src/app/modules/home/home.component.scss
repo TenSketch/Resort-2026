@@ -36,145 +36,38 @@ $card-flex-basis: 35%;
 
 // Mobile Hero Carousel
 #mobileHeroCarousel {
-  height: 40vh; // User requested 40% of viewport height
-  position: relative;
+  @include hero-carousel-base;
+  
+  // Mobile-specific override (if absolutely necessary to ensure it shows despite d-md-none)
+  // The mixin already handles height: 40vh for mobile.
+  // We just ensure it displays correctly.
+  display: block;
 
-  // Ensure the carousel itself has the height, so items fill it
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-
-  .carousel-overlay {
-    position: absolute;
-    inset: 0;
-    // Gradient from bottom (dark) to top (transparent) for text readability with blur effect at bottom
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.9) 0%,
-      rgba(0, 0, 0, 0.5) 50%,
-      transparent 100%
-    );
-    z-index: 1;
-  }
-
-  .mobile-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem 1.25rem;
-    z-index: 2;
-    text-align: left;
-    color: #ffffff;
-    // Strong text shadow for legibility
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-
-    h5 {
-      font-size: 1.5rem;
-      letter-spacing: 0.02em;
-      color: #ffffff;
-      margin-bottom: 0.25rem;
-    }
-
-    p.small {
-      font-size: 0.9rem;
-      opacity: 1;
-      color: #e0e0e0;
-    }
-
-    .smaller-text {
-      font-size: 0.85rem;
-      opacity: 0.95;
-      color: #f0f0f0;
-      margin-bottom: 1rem;
-    }
-
-    i {
-      color: #fbbf24; // Gold/Yellow icon for visibility
-    }
-
-    .btn {
-      font-size: 0.85rem;
-      padding: 0.5rem 1.25rem;
-      color: $clr-primary-dark;
-      background-color: #ffffff;
-      border: none;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    width: 1.2rem;
-    height: 1.2rem;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
-    opacity: 0.7;
-  }
-
-  .carousel-indicators {
-    bottom: 10px;
-    margin-bottom: 0;
-
-    button {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin: 0 4px;
-      background-color: rgba(255, 255, 255, 0.6);
-      border: none;
-
-      &.active {
-        background-color: #ffffff;
-        transform: scale(1.2);
+  // Caption adjust for mobile specific content layout if needed
+  .carousel-caption {
+      bottom: 0 !important; // Stick to bottom on mobile for more image visibility
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); // Text readability
+      left: 0 !important;
+      right: 0 !important;
+      padding: 1.5rem;
+      text-align: left;
+      
+      h5 {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+          color: #fff;
       }
-    }
+      
+      .small {
+          font-size: 0.9rem;
+          margin-bottom: 0.25rem;
+      }
   }
 }
 
 // Desktop Fade Carousel
 #carouselExampleFade {
-  height: 60vh; // Desktop hero height (reduced from 80vh)
-
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-
-  .carousel-item {
-    transition:
-      transform 0.6s ease-in-out,
-      opacity 0.6s ease-in-out;
-
-    .carousel-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.7) 0%,
-        rgba(0, 0, 0, 0.3) 50%,
-        transparent 100%
-      );
-      z-index: 1;
-    }
-
-    img {
-      object-fit: cover;
-      height: 100%;
-      width: 100%;
-    }
-
-    .carousel-caption {
-      z-index: 2;
-      bottom: 20%;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-
-      h1 {
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-    }
-  }
+  @include hero-carousel-base;
 }
 
 .about {

@@ -111,7 +111,7 @@
                     <!-- Entry Fee -->
                     <div *ngIf="spot.breakdown.entry > 0" class="mt-5">
                       <mat-form-field appearance="outline" class="mat-small">
-                        <mat-label>No. of Guests</mat-label>
+                        <mat-label>No. of Tourists</mat-label>
 
                         <input matInput type="number" [(ngModel)]="spot.counts.adults"
                           (ngModelChange)="updateSpotCount(i, 'adults', $event)" min="1" max="500" required />
@@ -122,7 +122,7 @@
                         </mat-hint>
 
                         <mat-error *ngIf="spot.counts.adults > 500">
-                          Max 500 guests allowed
+                          Max 500 Tourists allowed
                         </mat-error>
                       </mat-form-field>
                     </div>

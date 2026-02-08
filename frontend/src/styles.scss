@@ -10,6 +10,11 @@ html {
   }
 }
 
+.main {
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
 body {
   // background-color: $clr-light;
   // <uniquifier>: Use a unique and descriptive class name
@@ -129,7 +134,11 @@ h6 {
   background: rgba(0, 0, 0, 0.508) fixed center / cover;
   background-blend-mode: overlay;
   color: white;
-  height: 70vh;
+  height: 55vh;
+  
+  @media (max-width: 768px) {
+    height: 40vh;
+  }
   overflow: hidden;
   display: flex;
   align-items: center;

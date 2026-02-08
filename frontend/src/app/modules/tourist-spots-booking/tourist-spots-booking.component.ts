@@ -535,6 +535,12 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
     // Update the specific field
     if (field === 'adults') {
+      // Force minimum 1 adult
+      // If value is null, undefined, 0, or negative, reset to 1
+      if (!value || value < 1) {
+        value = 1;
+      }
+
       // For adults, we update the main count. 
       // Note: children are kept as is, but total people count will update
       spot.counts.adults = value;

@@ -17,7 +17,8 @@
               </p>
               <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
 
-              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" (click)="handleSlideAction(slide.action)">
+              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 d-none d-md-inline-block"
+                (click)="handleSlideAction(slide.action)">
                 {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>

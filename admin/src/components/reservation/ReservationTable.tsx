@@ -431,13 +431,13 @@ export default function ReservationTable() {
           `"${row.fullName}"`,
           `"${row.phone}"`,
           `"${row.email}"`,
-          `"${address || "N/A"}"`,
+          `"${address || "—"}"`,
           `"${row.resortName}"`,
-          `"${row.cottageTypeNames.join(", ") || "N/A"}"`,
-          `"${row.roomNames.join(", ") || "N/A"}"`,
+          `"${row.cottageTypeNames.join(", ") || "—"}"`,
+          `"${row.roomNames.join(", ") || "—"}"`,
           row.numberOfRooms,
           `"'${formatDateForExcel(row.reservationDate)}"`,
-          `"${row.reservedFrom || "N/A"}"`,
+          `"${row.reservedFrom || "—"}"`,
           // Prefix formatted dates with an apostrophe so Excel treats them as text
           // and doesn't auto-format/overflow them to '#######' when column is narrow
           `"'${formatDateForExcel(row.checkIn)}"`,
@@ -448,22 +448,22 @@ export default function ReservationTable() {
           row.children,
           row.totalGuests,
           foodsBilled,
-          `"${row.foodPreference || "N/A"}"`,
+          `"${row.foodPreference || "—"}"`,
           `"${row.status}"`,
           row.totalPayable,
           `"${row.paymentStatus}"`,
           row.totalPayable,
-          `"${row.paymentTransactionId || "N/A"}"`,
-          `"'${row.paymentTransactionDateTime ? formatDateForExcel(row.paymentTransactionDateTime.slice(0, 10)) : "N/A"}"`,
-          `"N/A"`,
-          `"N/A"`,
-          `"N/A"`,
-          `"${row.cancelBookingReason || "N/A"}"`,
-          `"${row.cancellationMessage || "N/A"}"`,
-          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "N/A"}"`,
+          `"${row.paymentTransactionId || "—"}"`,
+          `"'${row.paymentTransactionDateTime ? formatDateForExcel(row.paymentTransactionDateTime.slice(0, 10)) : "—"}"`,
+          `"—"`,
+          `"—"`,
+          `"—"`,
+          `"${row.cancelBookingReason || "—"}"`,
+          `"${row.cancellationMessage || "—"}"`,
+          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "—"}"`,
           row.refundableAmount || 0,
           row.amountRefunded || 0,
-          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "N/A"}"`,
+          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "—"}"`,
         ].join(",");
       }),
     ].join("\n");
@@ -843,19 +843,19 @@ export default function ReservationTable() {
           row.postalCode,
           row.country,
         ].filter(Boolean);
-        return parts.length > 0 ? parts.join(", ") : "N/A";
+        return parts.length > 0 ? parts.join(", ") : "—";
       },
     },
     { data: "resortName", title: "Resort" },
     {
       data: "cottageTypeNames",
       title: "Cottage Type",
-      render: (data: string[]) => data.join(", ") || "N/A",
+      render: (data: string[]) => data.join(", ") || "—",
     },
     {
       data: "roomNames",
       title: "Room name(s)",
-      render: (data: string[]) => data.join(", ") || "N/A",
+      render: (data: string[]) => data.join(", ") || "—",
     },
     { data: "numberOfRooms", title: "No. of rooms" },
     {
@@ -866,7 +866,7 @@ export default function ReservationTable() {
     {
       data: "reservedFrom",
       title: "Reserved From",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "checkIn",
@@ -893,7 +893,7 @@ export default function ReservationTable() {
     {
       data: "foodPreference",
       title: "Food Preference",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     { data: "status", title: "Status" },
     {
@@ -910,60 +910,60 @@ export default function ReservationTable() {
     {
       data: "paymentTransactionId",
       title: "Payment Transaction Id",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "paymentTransactionDateTime",
       title: "Payment Transaction Date & Time",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: null,
       title: "Payment Transaction SubBillerId",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: null,
       title: "Verification Proof Type",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: null,
       title: "Verification Proof Id",
-      render: () => "N/A",
+      render: () => "—",
     },
     {
       data: "cancelBookingReason",
       title: "Cancel Booking Reason",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "cancellationMessage",
       title: "Cancellation message",
-      render: (data: string) => data || "N/A",
+      render: (data: string) => data || "—",
     },
     {
       data: "refundRequestedDateTime",
       title: "Refund Requested Date & Time",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: "refundableAmount",
       title: "Refundable Amount",
-      render: (data: number) => (data ? `₹${data}` : "N/A"),
+      render: (data: number) => (data ? `₹${data}` : "—"),
     },
     {
       data: "amountRefunded",
       title: "Amount Refunded",
-      render: (data: number) => (data ? `₹${data}` : "N/A"),
+      render: (data: number) => (data ? `₹${data}` : "—"),
     },
     {
       data: "dateOfRefund",
       title: "Date of refund",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "N/A",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
     },
     {
       data: null,

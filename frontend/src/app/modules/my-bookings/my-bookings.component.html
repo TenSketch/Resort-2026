@@ -44,11 +44,14 @@
                 <strong>Trek Spot</strong>
               </h5>
               <p class="mb-0">
+                <strong>Spots:</strong> {{ item.rooms.name }}
+              </p>
+              <p class="mb-0">
                 <strong>Visit Date:</strong> {{ formatDate(item.checkin).day }} {{ formatDate(item.checkin).month }} {{ formatDate(item.checkin).year }}
               </p>
               <p class="mb-0">
                 <strong>Guest info:</strong>
-                {{ item.noof_guest }} guests
+                {{ item.noof_guest }} guests<span *ngIf="item.noof_cameras > 0">, {{ item.noof_cameras }} camera<span *ngIf="item.noof_cameras > 1">s</span></span>
               </p>
               <p class="mb-0">
                 <strong>Total amount:</strong> ₹{{ item.total_payable_amt }}

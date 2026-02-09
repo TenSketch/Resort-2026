@@ -251,6 +251,12 @@ export class MyBookingsComponent {
         return sum + guests;
       }, 0) || 0;
 
+      // Calculate total cameras across all spots
+      const totalCameras = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const cameras = s.counts?.cameras || 0;
+        return sum + cameras;
+      }, 0) || 0;
+
       // Format dates
       const formatDate = (date: string) => {
         if (!date) return '';
@@ -276,6 +282,7 @@ export class MyBookingsComponent {
         checkin: formatDate(visitDate),
         checkout: formatDate(visitDate),
         noof_guest: totalGuests,
+        noof_cameras: totalCameras,
         noof_children: 0,
         noof_extra_guest: 0,
         total_payable_amt: booking.totalPayable || 0,

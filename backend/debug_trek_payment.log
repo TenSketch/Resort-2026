@@ -1,0 +1,31 @@
+
+======================================== (TREK)
+Timestamp: 2026-02-09T15:01:51.952Z
+Booking ID: TS-260209-003
+Merchant ID: 'BDUAT2K673'
+Client ID: 'bduat2k673sj'
+Order Data: {
+  "mercid": "BDUAT2K673",
+  "orderid": "TS-260209-003",
+  "amount": "1500.00",
+  "currency": "356",
+  "order_date": "2026-02-09T20:31:51+05:30",
+  "settlement_lob": "BDUAT2K673001",
+  "ru": "https://api.vanavihari.com/api/payment/callback",
+  "itemcode": "DIRECT",
+  "additional_info": {
+    "additional_info1": "Balaji D",
+    "additional_info2": "9384318546",
+    "additional_info3": "balaji01975@gmail.com",
+    "additional_info4": "NA",
+    "additional_info5": "NA",
+    "additional_info6": "NA",
+    "additional_info7": "NA"
+  },
+  "device": {
+    "init_channel": "internet",
+    "ip": "103.0.0.1",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"
+  }
+}
+========================================

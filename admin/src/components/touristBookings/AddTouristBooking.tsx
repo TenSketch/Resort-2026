@@ -278,13 +278,36 @@ const AddTouristBooking = () => {
 
     try {
       const token = localStorage.getItem("admin_token");
+      
+      // Prepare data with userId if an existing user was selected
+      const submitData = {
+        touristSpotIds: formData.touristSpotIds,
+        visitDate: formData.visitDate,
+        guests: formData.guests,
+        cameras: formData.cameras,
+        reservationDate: formData.reservationDate,
+        status: formData.status,
+        paymentStatus: formData.paymentStatus,
+        bookingId: formData.bookingId,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        address1: formData.address1,
+        address2: formData.address2,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        country: formData.country,
+        userId: formData.existingUser || null, // Map existingUser to userId
+      };
+      
       const res = await fetch(`${apiUrl}/api/trek-reservations/admin-create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
 
       const data = await res.json();

@@ -222,7 +222,7 @@ export const createAdminReservation = async (req, res) => {
             reservationDate: payload.reservationDate ? new Date(payload.reservationDate) : new Date(),
             bookingDate: payload.reservationDate ? new Date(payload.reservationDate) : new Date(),
             reservedFrom: payload.reservedFrom || 'Admin',
-            userId: payload.userId || null
+            userId: payload.userId && mongoose.Types.ObjectId.isValid(payload.userId) ? payload.userId : null
         };
 
         // Don't set expiry for admin bookings

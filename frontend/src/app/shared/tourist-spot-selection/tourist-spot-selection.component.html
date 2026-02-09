@@ -41,10 +41,10 @@
               unitCamera !== undefined
             ">
             <span class="badge fee-badge" *ngIf="unitEntry !== undefined">
-              <strong>Tree Fee:</strong> {{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}
+              <strong>Trek Fee:</strong> {{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}
             </span>
             <span class="badge fee-badge" *ngIf="unitEntry === undefined && entryFee">
-              <strong>Tree Fee:</strong> {{ entryFee }}
+              <strong>Trek Fee:</strong> {{ entryFee }}
             </span>
 
             <span class="badge fee-badge" *ngIf="unitCamera !== undefined">

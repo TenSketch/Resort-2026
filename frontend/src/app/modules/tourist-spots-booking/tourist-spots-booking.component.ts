@@ -585,7 +585,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
   // Booking State
   visitDate: Date | null = null;
-  minDate: Date = new Date();
+  minDate: Date = new Date(new Date().setDate(new Date().getDate() + 1)); // Tomorrow
 
   // Helper to get form controls for template
   // ...
@@ -605,10 +605,24 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   }
 
   proceedToCheckout() {
-    if (this.bookedSpots.length === 0) return;
+    if (this.bookedSpots.length === 0) {
+      alert('Please add trek spots to your booking.');
+      return;
+    }
 
     if (!this.visitDate) {
       alert('Please select a visit date to proceed.');
+      return;
+    }
+
+    // Validate visit date is not past or today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(this.visitDate);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate <= today) {
+      alert('Visit date must be tomorrow or later.');
       return;
     }
 

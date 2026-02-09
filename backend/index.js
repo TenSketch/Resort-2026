@@ -23,7 +23,7 @@ import tentPaymentRouter from './routes/tentPaymentRoutes.js'
 
 import touristSpotRouter from './routes/touristSpotRoutes.js'
 import touristSpotReservationRouter from './routes/touristSpotReservationRoutes.js'
-import trekPaymentRouter from './routes/trekPaymentRoutes.js'
+import touristPaymentRouter from './routes/touristSpotPaymentRoutes.js'
 
 import webhookRouter from './routes/webhookRoutes.js'
 import adminRouter from './routes/adminRoutes.js'
@@ -77,7 +77,7 @@ app.use('/api/tent-payment', tentPaymentRouter)
 
 app.use('/api/touristspots', touristSpotRouter)
 app.use('/api/trek-reservations', touristSpotReservationRouter)
-app.use('/api/trek-payment', trekPaymentRouter)
+app.use('/api/trek-payment', touristPaymentRouter)
 
 app.use('/api/webhook', webhookRouter)
 app.use('/api/admin', adminRouter)

@@ -1,5 +1,5 @@
 import express from "express";
-import { initiatePayment, handlePaymentCallback, retrieveTransactionStatus } from "../controllers/trekPaymentController.js";
+import { initiatePayment, handlePaymentCallback, retrieveTransactionStatus } from "../controllers/touristSpotPaymentController.js";
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();

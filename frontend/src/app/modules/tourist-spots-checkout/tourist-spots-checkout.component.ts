@@ -237,117 +237,152 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Calculate total guests from spots
-    const totalGuests = this.getTotalGuests();
-
-    // Prepare booking payload compatible with Reservation model
-    const visitDate = new Date(this.bookingData.visitDate || new Date());
-    const checkIn = new Date(visitDate);
-    checkIn.setHours(9, 0, 0, 0); // 9 AM entry
-    const checkOut = new Date(visitDate);
-    checkOut.setHours(18, 0, 0, 0); // 6 PM exit
-
-    const bookingPayload = {
-      // Maps to Reservation Model
-      checkIn: checkIn.toISOString(),
-      checkOut: checkOut.toISOString(),
-      reservationDate: new Date().toISOString(),
-      guests: totalGuests,
-      totalPayable: this.bookingData.total,
-      status: 'pending',
-      paymentStatus: 'unpaid',
-
-      // User Details
-      fullName: this.form.value.gname,
-      phone: this.form.value.gphone,
-      email: this.form.value.gemail,
-      address1: this.form.value.gaddress,
-      city: this.form.value.gcity,
-      state: this.form.value.gstate,
-      postalCode: this.form.value.gpincode,
-      country: this.form.value.gcountry,
-
-      // Raw source for Trek spot specific details
-      rawSource: {
-        bookingType: 'tourist-spot',
-        spots: this.bookingData.spots.map((spot: any) => ({
-          id: spot.id,
-          name: spot.name,
-          location: spot.location,
-          difficulty: spot.difficulty,
-          counts: spot.counts,
-          unitPrices: spot.unitPrices,
-          breakdown: spot.breakdown,
-          total: spot.total
-        })),
+    // Prepare reservation data matching backend createReservation expectations
+    const reservationData = {
+      spots: this.bookingData.spots.map((spot: any) => ({
+        id: spot.id,
+        name: spot.name,
         visitDate: this.bookingData.visitDate,
-        gstNumber: this.form.value.gstnumber || '',
-        companyName: this.form.value.companyname || ''
+        counts: spot.counts,
+        breakdown: spot.breakdown,
+        addOns: spot.addOns || []
+      })),
+      total: this.bookingData.total,
+      customer: {
+        gname: this.form.value.gname,
+        gemail: this.form.value.gemail,
+        gphone: this.form.value.gphone,
+        gaddress: this.form.value.gaddress,
+        gcity: this.form.value.gcity,
+        gstate: this.form.value.gstate,
+        gpincode: this.form.value.gpincode,
+        gcountry: this.form.value.gcountry
       }
     };
 
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
-    // Use the unified reservation API endpoint
-    this.http.post<any>(`${this.api_url}/api/trek-reservations/book`, bookingPayload, { headers }).subscribe({
+    // Create trek reservation (status: pending, paymentStatus: unpaid)
+    this.http.post<any>(`${this.api_url}/api/trek-reservations`, reservationData, { headers }).subscribe({
       next: (response) => {
-        if (response.success && response.reservation) {
-          // The response returns the reservation object, extract bookingId
-          this.initiatePayment(response.reservation.bookingId);
+        if (response.success && response.bookingId) {
+          this.initiatePayment(response.bookingId);
         } else {
           this.showLoader = false;
-          this.showSnackBarAlert('Failed to create booking. Please try again.');
+          this.showSnackBarAlert('Failed to create reservation. Please try again.');
         }
       },
       error: (err) => {
-        console.error('Booking error:', err);
+        console.error('Reservation error:', err);
         this.showLoader = false;
-        const errorMsg = err.error?.message || 'An error occurred while processing your booking.';
-        this.showSnackBarAlert(errorMsg);
+        this.handleReservationError(err);
       }
     });
+  }
+
+  handleReservationError(err: any) {
+    let errorMessage = 'We are facing technical issues. Please try again later.';
+    let shouldRedirect = false;
+
+    if (err.status) {
+      switch (err.status) {
+        case 400:
+          errorMessage = 'Invalid booking details. Please check your information and try again.';
+          break;
+        case 401:
+          errorMessage = 'Session expired. Please login again.';
+          setTimeout(() => {
+            this.router.navigate(['/sign-in'], { queryParams: { returnUrl: '/tourist-spots-checkout' } });
+          }, 3000);
+          break;
+        case 409:
+          errorMessage = 'Sorry! The selected trek spot(s) are no longer available for your chosen date. Please select different spots or dates.';
+          shouldRedirect = true;
+          break;
+        default:
+          errorMessage = 'We are facing technical issues. Please try again later.';
+      }
+    }
+
+    this.showSnackBarAlert(errorMessage);
+
+    if (shouldRedirect) {
+      setTimeout(() => {
+        localStorage.removeItem('touristSpotsBooking');
+        this.router.navigate(['/tourist-places']);
+      }, 4000);
+    }
   }
 
   initiatePayment(bookingId: string) {
     const headers = { token: this.authService.getAccessToken() ?? '' };
 
-    // Unified payment initiation (no type param needed as it checks unified Reservation collection)
     this.http.post<any>(`${this.api_url}/api/trek-payment/initiate`, { bookingId }, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.paymentData) {
+          console.log('Payment initiated:', response);
           localStorage.removeItem('touristSpotsBooking');
           this.submitPaymentForm(response.paymentData);
         } else {
           this.showLoader = false;
-          this.showSnackBarAlert('Failed to initiate payment.');
+          this.showSnackBarAlert(
+            'Failed to initiate payment. Your booking (ID: ' + bookingId + ') will expire in 15 minutes. Please contact support if needed.'
+          );
         }
       },
       error: (err) => {
         console.error('Payment initiation error:', err);
         this.showLoader = false;
-        this.showSnackBarAlert('Payment initiation failed.');
+        this.handlePaymentError(err, bookingId);
       }
     });
   }
 
-  submitPaymentForm(paymentData: any) {
-    // Create and submit form dynamically
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = paymentData.formAction || 'https://pgi.billdesk.com/pgidsk/PGIMerchantPayment'; // Default or from response
+  handlePaymentError(err: any, bookingId?: string) {
+    let errorMessage = 'We are facing technical issues. Please try again later.';
+    let shouldShowBookingId = false;
 
-    Object.keys(paymentData).forEach(key => {
-      if (key !== 'action' && key !== 'formAction') {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = paymentData[key];
-        form.appendChild(input);
+    if (err.status) {
+      switch (err.status) {
+        case 400:
+          errorMessage = 'Invalid payment request. Please try again or contact support.';
+          shouldShowBookingId = true;
+          break;
+        case 401:
+          errorMessage = 'Session expired. Please login again.';
+          setTimeout(() => {
+            this.router.navigate(['/sign-in'], { queryParams: { returnUrl: '/tourist-spots-checkout' } });
+          }, 3000);
+          break;
+        case 500:
+        default:
+          errorMessage = 'Payment gateway is temporarily unavailable. Please try again later.';
+          shouldShowBookingId = true;
       }
-    });
+    }
 
-    document.body.appendChild(form);
-    form.submit();
+    if (bookingId && shouldShowBookingId) {
+      errorMessage += ` Your booking ID is: ${bookingId}. It will expire in 15 minutes.`;
+    }
+
+    this.showSnackBarAlert(errorMessage);
+  }
+
+  submitPaymentForm(paymentData: any) {
+    const paymentRedirectData = {
+      action: paymentData.formAction,
+      parameters: {
+        merchantid: paymentData.merchantid,
+        bdorderid: paymentData.bdorderid,
+        rdata: paymentData.rdata
+      }
+    };
+
+    console.log('Redirecting to payment page with data:', paymentRedirectData);
+
+    const encodedData = encodeURIComponent(JSON.stringify(paymentRedirectData));
+    const redirectUrl = `/payment-redirect.html?data=${encodedData}`;
+    window.location.href = redirectUrl;
   }
 
   showSnackBarAlert(message: string) {

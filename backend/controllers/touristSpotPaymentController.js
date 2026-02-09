@@ -4,7 +4,7 @@ import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
 import { sendReservationSuccessEmails } from "../services/reservationEmailService.js";
 import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
-import Reservation from "../models/touristSpotReservationModel.js";
+import TouristSpotReservation from "../models/touristSpotReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
 import Room from "../models/roomModel.js";
@@ -112,7 +112,7 @@ export const initiatePayment = async (req, res) => {
     }
 
     // Fetch reservation details
-    const reservation = await Reservation.findOne({ bookingId }).lean();
+    const reservation = await TouristSpotReservation.findOne({ bookingId }).lean();
     if (!reservation) {
       return res.status(404).json({ success: false, error: 'Reservation not found' });
     }
@@ -271,7 +271,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
       const authToken = billdeskResponse.links?.[1]?.headers?.authorization || null;
       
       // Update reservation with payment transaction reference and auth token
-      await Reservation.findOneAndUpdate(
+      await TouristSpotReservation.findOneAndUpdate(
         { bookingId },
         { 
           paymentTransactionId: paymentTransaction._id.toString(),
@@ -395,7 +395,7 @@ export const handlePaymentCallback = async (req, res) => {
     } = decryptedResponse;
 
     // Find reservation
-    const reservation = await Reservation.findOne({ bookingId });
+    const reservation = await TouristSpotReservation.findOne({ bookingId });
     if (!reservation) {
       console.error("Reservation not found:", bookingId);
       return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=reservation_not_found`);
@@ -453,7 +453,7 @@ export const handlePaymentCallback = async (req, res) => {
               if (result.success && result.data.auth_status === '0300') {
                 console.log('✅ Payment actually successful! Updating now...');
                 
-                await Reservation.findOneAndUpdate(
+                await TouristSpotReservation.findOneAndUpdate(
                   { bookingId },
                   {
                     status: 'reserved',
@@ -481,7 +481,7 @@ export const handlePaymentCallback = async (req, res) => {
                 const { stopTransactionPolling } = await import('../services/transactionPoller.js');
                 stopTransactionPolling(bookingId);
                 
-                const updatedReservation = await Reservation.findOne({ bookingId }).lean();
+                const updatedReservation = await TouristSpotReservation.findOne({ bookingId }).lean();
                 const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
                 
                 sendReservationSuccessEmails(updatedReservation, updatedPaymentTransaction)
@@ -565,7 +565,7 @@ export const retrieveTransactionStatus = async (req, res) => {
     }
 
     // Find reservation to get auth token from rawSource
-    const reservation = await Reservation.findOne({ bookingId }).lean();
+    const reservation = await TouristSpotReservation.findOne({ bookingId }).lean();
     const authToken = reservation?.rawSource?.authToken || null;
 
     const bdOrderId = paymentTransaction.bdOrderId;

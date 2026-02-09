@@ -102,7 +102,6 @@ export const PASSWORD_ADMIN_SEND_TEMPLATE = `
 </div>
 `;
 
-
 export const EMAIL_VERIFICATION_TEMPLATE = `
 <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
 
@@ -623,12 +622,12 @@ export const TENT_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
 </html>
 `;
 
-export const TREK_SUCCESS_EMAIL_TEMPLATE = `
+export const TREK_RESERVATION_SUCCESS_EMAIL_TEMPLATE = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Trek Booking Invoice</title>
+  <title>Tourist Spot Booking Invoice</title>
   <style>
     body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
     table { width: 100%; max-width: 600px; margin: auto; border-collapse: collapse; }
@@ -643,7 +642,7 @@ export const TREK_SUCCESS_EMAIL_TEMPLATE = `
 
 <h3 style="font-style: italic;">Dear {{Full_Name}},</h3>
 <h3>Greetings!</h3>
-<p>We're thrilled to inform you that your payment has been successfully processed, and your trek reservation is now confirmed. Below, you'll find the invoice detailing your booking and payment information. Should you require any assistance, please feel free to reach out to our support team at the number provided below.</p>
+<p>We're thrilled to inform you that your payment has been successfully processed, and your tourist spot entry reservation is now confirmed. Below, you'll find the invoice detailing your booking and payment information. Should you require any assistance, please feel free to reach out to our support team at the number provided below.</p>
 
 <table>
   <tr>
@@ -667,11 +666,7 @@ export const TREK_SUCCESS_EMAIL_TEMPLATE = `
     <td>{{Booking_Id}}</td>
   </tr>
   <tr>
-    <td style="font-weight:bold;">Trek Spot</td>
-    <td>{{Trek_Spot_Name}}</td>
-  </tr>
-  <tr>
-    <td style="font-weight:bold;">Spot Details</td>
+    <td style="font-weight:bold;">Tourist Spot(s)</td>
     <td>{{Spot_List}}</td>
   </tr>
   <tr>
@@ -681,6 +676,10 @@ export const TREK_SUCCESS_EMAIL_TEMPLATE = `
   <tr>
     <td style="font-weight:bold;">Total Guests</td>
     <td>{{Total_Guests}}</td>
+  </tr>
+  <tr>
+    <td style="font-weight:bold;">Total Cameras</td>
+    <td>{{Total_Cameras}}</td>
   </tr>
   <tr>
     <td style="font-weight:bold;">Total Amount Paid</td>
@@ -700,16 +699,119 @@ export const TREK_SUCCESS_EMAIL_TEMPLATE = `
   </tr>
 </table>
 
-<p>Looking forward to seeing you on the trail!</p>
+<p><strong>Important Notes:</strong></p>
+<ul>
+  <li>Please carry a valid ID proof for verification at the entry point</li>
+  <li>Entry timings and spot-specific guidelines will be shared at the location</li>
+  <li>This booking is valid only for the date mentioned above</li>
+</ul>
+
+<p>Looking forward to welcoming you to our beautiful tourist spots!</p>
 <p style="font-weight:bold;">Warm Regards,</p>
 <p>
 {{Contact_Person_Name}}<br>
-Co-ordinator | {{Trek_Spot_Name}}<br>
+Co-ordinator | Tourist Spots<br>
 {{Support_Number}}<br>
 <a href="mailto:{{Email}}" style="color:#4d1300; font-style:italic;">{{Email}}</a><br>
 {{Website}}
 </p>
 
+</body>
+</html>
+`;
+
+export const TREK_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tourist Spot Booking Payment Invoice</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; background-color: #f9f9f9; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px; }
+    .header { background-color: #4d9900; color: #fff; padding: 10px; text-align: center; border-radius: 4px 4px 0 0; }
+    h2, h3 { margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    td { padding: 10px; border: 1px solid #ddd; }
+    tr:nth-child(even) { background-color: #f8f8f8; }
+    tr:nth-child(odd) { background-color: #a3d788; color: #222; }
+    a { color: #4d1300; text-decoration: none; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Tourist Spot Booking Payment Invoice</h2>
+    </div>
+    <div class="content" style="padding: 20px;">
+      <h3>Dear Vanavihari Coordinator,</h3>
+      <h3>Greetings from Vanavihari Booking System!</h3>
+      <p>We're thrilled to inform you that your guest's payment has been successfully processed, and the tourist spot entry reservation is now confirmed. Below is the invoice detailing the guest's booking and payment information.</p>
+      
+      <table>
+        <tr>
+          <td style="font-weight: bold;">Invoice</td>
+          <td>GST Number: 37AAAGD3869B1ZL</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">From</td>
+          <td>DFO RAMPACHODAVARAM</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Guest Details</td>
+          <td>{{Guest_Details}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Booking Date</td>
+          <td>{{Reservation_Date}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Booking ID</td>
+          <td>{{Booking_Id}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Tourist Spot(s)</td>
+          <td>{{Spot_List}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Visit Date</td>
+          <td>{{Visit_Date}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total Guests</td>
+          <td>{{Total_Guests}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total Cameras</td>
+          <td>{{Total_Cameras}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Total Amount Paid</td>
+          <td>{{Payment_Amount}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Transaction ID</td>
+          <td>{{Transaction_ID}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Amount Paid On</td>
+          <td>{{Payment_Date}}</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">Booking Status</td>
+          <td>{{Payment_Status}}</td>
+        </tr>
+      </table>
+
+      <br>
+      <p style="font-weight: bold;">Warm Regards,</p>
+      <p>
+        Vanavihari Booking System<br>
+        
+        <a href="mailto:info@tensketch.com">info@tensketch.com</a>
+      </p>
+    </div>
+  </div>
 </body>
 </html>
 `;

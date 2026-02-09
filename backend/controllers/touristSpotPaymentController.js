@@ -2,103 +2,12 @@ import { encryptRequest, signEncryptedRequest, decryptResponse, verifySignature 
 import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
-import { sendReservationSuccessEmails } from "../services/reservationEmailService.js";
+import { sendTrekReservationEmails } from "../services/trekReservationEmailService.js";
 import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
 import TouristSpotReservation from "../models/touristSpotReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
 import Room from "../models/roomModel.js";
-
-// Email function moved to backend/services/emailService.js for reusability
-
-// Legacy function kept for reference (now using shared service)
-async function sendReservationSuccessEmailsLegacy(reservation, paymentTransaction) {
-  try {
-    // Fetch resort details
-    let resortData = null;
-    if (reservation.resort) {
-      resortData = await Resort.findById(reservation.resort).lean();
-    }
-
-    // Fetch room details
-    let roomsData = [];
-    if (reservation.rooms && Array.isArray(reservation.rooms)) {
-      roomsData = await Room.find({ _id: { $in: reservation.rooms } }).lean();
-    }
-
-    const resortName = resortData?.resortName || reservation.rawSource?.resortName || 'Resort';
-    const roomList = roomsData.map(r => r.roomName || r.roomNumber).join(', ') || 'N/A';
-    
-    // Format dates
-    const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { 
-      year: 'numeric', month: 'long', day: 'numeric' 
-    });
-
-    // Prepare email data
-    const emailData = {
-      Full_Name: reservation.user?.name || reservation.fullName,
-      Guest_Details: `${reservation.user?.name || reservation.fullName}\n${reservation.user?.email || reservation.email}\n${reservation.user?.phone || reservation.phone}\n${reservation.user?.address || reservation.address1}, ${reservation.user?.city || reservation.city}, ${reservation.user?.state || reservation.state} - ${reservation.user?.pincode || reservation.postalCode}`,
-      Reservation_Date: formatDate(reservation.reservationDate),
-      Booking_Id: reservation.bookingId,
-      Room_List: roomList,
-      Check_In: formatDate(reservation.checkIn),
-      Check_Out: formatDate(reservation.checkOut),
-      Total_Guests: (reservation.guests || 0) + (reservation.extraGuests || 0) + (reservation.children || 0),
-      Payment_Amount: `INR ${reservation.totalPayable?.toFixed(2)}`,
-      Transaction_ID: reservation.rawSource?.transactionId || paymentTransaction.transactionId || 'N/A',
-      Payment_Date: formatDate(paymentTransaction.updatedAt || new Date()),
-      Payment_Status: 'Confirmed',
-      Food_Providing: resortName.includes('Jungle Star') ? 'Yes' : 'No',
-      Contact_Person_Name: 'Mr. Veerababu',
-      Resort_Name: resortName,
-      Support_Number: '+919494151617',
-      Email: 'info@vanavihari.com',
-      Website: 'www.vanavihari.com'
-    };
-
-    // Replace placeholders in templates
-    let userEmail = RESERVATION_SUCCESS_EMAIL_TEMPLATE;
-    let adminEmail = RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE;
-
-    Object.keys(emailData).forEach(key => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      userEmail = userEmail.replace(regex, emailData[key]);
-      adminEmail = adminEmail.replace(regex, emailData[key]);
-    });
-
-    // Handle conditional food menu (Nunjucks-style)
-    if (emailData.Food_Providing === 'Yes') {
-      userEmail = userEmail.replace(/{% if Food_Providing == "Yes" %}/g, '');
-      userEmail = userEmail.replace(/{% endif %}/g, '');
-    } else {
-      userEmail = userEmail.replace(/{% if Food_Providing == "Yes" %}[\s\S]*?{% endif %}/g, '');
-    }
-
-    // Send email to user
-    await transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: reservation.email,
-      subject: `Booking Confirmation - ${reservation.bookingId}`,
-      html: userEmail
-    });
-
-    console.log(`✅ Confirmation email sent to user: ${reservation.email}`);
-
-    // Send email to admin
-    await transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: process.env.ADMIN_EMAIL || 'info@vanavihari.com',
-      subject: `New Booking - ${reservation.bookingId} - ${resortName}`,
-      html: adminEmail
-    });
-
-    console.log(`✅ Notification email sent to admin`);
-
-  } catch (error) {
-    console.error('❌ Error sending reservation emails:', error);
-    // Don't throw error - email failure shouldn't break the payment flow
-  }
-}
 
 // Initiate payment - creates BillDesk order and returns data for form submission
 export const initiatePayment = async (req, res) => {
@@ -484,8 +393,9 @@ export const handlePaymentCallback = async (req, res) => {
                 const updatedReservation = await TouristSpotReservation.findOne({ bookingId }).lean();
                 const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
                 
-                sendReservationSuccessEmails(updatedReservation, updatedPaymentTransaction)
-                  .catch(err => console.error('Email error:', err.message));
+                const { sendTrekReservationEmails } = await import('../services/trekReservationEmailService.js');
+                sendTrekReservationEmails(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Trek email error:', err.message));
                 sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
                   .catch(err => console.error('SMS error:', err.message));
               }
@@ -514,29 +424,30 @@ export const handlePaymentCallback = async (req, res) => {
 
       // Send email notifications for successful payments
       if (paymentTransaction.status === 'success') {
-        console.log(`📧 Sending confirmation emails to ${reservation.email}...`);
+        const userEmail = reservation.user?.email || reservation.email;
+        console.log(`📧 Sending trek confirmation emails to ${userEmail}...`);
         // Stop polling since payment is confirmed
         stopTransactionPolling(bookingId);
         // Send emails asynchronously (don't wait for completion)
-        sendReservationSuccessEmails(reservation, paymentTransaction)
-          .then(() => console.log('✅ Emails sent successfully'))
-          .catch(err => console.error('❌ Email sending failed:', err.message));
+        sendTrekReservationEmails(reservation, paymentTransaction)
+          .then(() => console.log('✅ Trek emails sent successfully'))
+          .catch(err => console.error('❌ Trek email sending failed:', err.message));
         
         // Send SMS asynchronously (don't wait for completion)
         sendRoomReservationSMS(reservation, paymentTransaction)
-          .then(() => console.log('✅ Room reservation SMS sent successfully'))
+          .then(() => console.log('✅ Trek reservation SMS sent successfully'))
           .catch(err => console.error('❌ SMS sending failed:', err.message));
       }
 
-      // Redirect based on status (Angular uses hash routing)
+      // Redirect based on status (Angular uses hash routing with type=trek)
       if (paymentTransaction.status === 'success') {
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}`);
+        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&type=trek`);
       } else if (paymentTransaction.status === 'pending') {
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending`);
+        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending&type=trek`);
       } else {
         // URL encode the error message to handle special characters
         const errorMsg = encodeURIComponent(transaction_error_desc || 'payment_failed');
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=failed&error=${errorMsg}`);
+        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=failed&error=${errorMsg}&type=trek`);
       }
     } else {
       console.error("Payment transaction not found");

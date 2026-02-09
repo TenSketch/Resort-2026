@@ -65,11 +65,12 @@ export class MyBookingsComponent {
       token: this.userService.getUserToken() ?? ''
     };
 
-    // Fetch both room and tent bookings
+    // Fetch room, tent, and trek bookings
     Promise.all([
       this.http.get<any>(`${this.api_url}/api/reservations/my-bookings`, { headers }).toPromise(),
-      this.http.get<any>(`${this.api_url}/api/tent-reservations/my-bookings`, { headers }).toPromise()
-    ]).then(([roomResponse, tentResponse]) => {
+      this.http.get<any>(`${this.api_url}/api/tent-reservations/my-bookings`, { headers }).toPromise(),
+      this.http.get<any>(`${this.api_url}/api/trek-reservations/my-bookings`, { headers }).toPromise()
+    ]).then(([roomResponse, tentResponse, trekResponse]) => {
       let allBookings: any[] = [];
 
       // Process room bookings
@@ -82,6 +83,12 @@ export class MyBookingsComponent {
       if (tentResponse?.success && tentResponse?.bookings) {
         const tentBookings = this.transformTentBookingData(tentResponse.bookings);
         allBookings = [...allBookings, ...tentBookings];
+      }
+
+      // Process trek bookings
+      if (trekResponse?.success && trekResponse?.bookings) {
+        const trekBookings = this.transformTrekBookingData(trekResponse.bookings);
+        allBookings = [...allBookings, ...trekBookings];
       }
 
       this.bookingData = allBookings;
@@ -215,6 +222,61 @@ export class MyBookingsComponent {
         food_preference: '',
         reservation_date: formatDate(booking.reservationDate),
         reservation_timestamp: new Date(booking.reservationDate).getTime(),
+        status: booking.status || 'reserved',
+        pay_status: booking.paymentStatus || 'Not Paid',
+        pay_trans_id: booking.rawSource?.transactionId || '',
+        pay_trans_date: booking.rawSource?.transactionDate || '',
+        pay_trans_amt: booking.totalPayable || 0
+      };
+    });
+  }
+
+  // Transform trek booking data to match the same structure
+  transformTrekBookingData(bookings: any[]): any[] {
+    return bookings.map(booking => {
+      // Get trek spot names
+      let spotNames = 'N/A';
+      if (Array.isArray(booking.touristSpots) && booking.touristSpots.length > 0) {
+        const names = booking.touristSpots
+          .map((s: any) => s?.name)
+          .filter((name: any) => name);
+        spotNames = names.length > 0 ? names.join(', ') : 'N/A';
+      }
+
+      // Calculate total guests
+      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => 
+        sum + (s.counts?.guests || 0), 0) || 0;
+
+      // Format dates
+      const formatDate = (date: string) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      // Use first spot's visit date
+      const visitDate = booking.touristSpots?.[0]?.visitDate || booking.createdAt;
+
+      return {
+        booking_id: booking.bookingId,
+        booking_type: 'trek', // Mark as trek booking
+        rooms: {
+          name: spotNames,
+          cottage: 'Trek Entry',
+          restort: 'Tourist Spots'
+        },
+        checkin: formatDate(visitDate),
+        checkout: formatDate(visitDate),
+        noof_guest: totalGuests,
+        noof_children: 0,
+        noof_extra_guest: 0,
+        total_payable_amt: booking.totalPayable || 0,
+        food_preference: '',
+        reservation_date: formatDate(booking.reservationDate || booking.bookingDate),
+        reservation_timestamp: new Date(booking.reservationDate || booking.bookingDate).getTime(),
         status: booking.status || 'reserved',
         pay_status: booking.paymentStatus || 'Not Paid',
         pay_trans_id: booking.rawSource?.transactionId || '',

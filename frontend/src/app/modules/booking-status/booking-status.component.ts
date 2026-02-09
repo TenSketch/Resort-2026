@@ -314,9 +314,10 @@ export class BookingStatusComponent {
         
         return {
           room_name: spot.name || 'Trek Spot',
-          cottage_type: `${guests} Guests, ${cameras} Cameras`
+          cottage_type: `${guests} Guests, ${cameras} Cameras`,
+          images: spot.images || [] // Include images for display
         };
-      }) || [{ room_name: 'N/A', cottage_type: 'N/A' }];
+      }) || [{ room_name: 'N/A', cottage_type: 'N/A', images: [] }];
 
       const transactionId = booking.rawSource?.transactionId
         || booking.rawSource?.bankRefNo
@@ -336,7 +337,7 @@ export class BookingStatusComponent {
 
       this.reservationDetails = {
         guestName: booking.user?.name || 'Guest',
-        resortName: 'Trek Spot Booking',
+        resortName: 'Trek Spot',
         transactionId: transactionId,
         resortLocation: 'Tourist Spots',
         bookingId: booking.bookingId,
@@ -355,6 +356,8 @@ export class BookingStatusComponent {
         totalChildren: booking.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0) || 0,
         stayDuration: 1, // Trek is single day
         email: booking.user?.email || '',
+        isTrek: true, // Flag to identify trek bookings in template
+        touristSpots: booking.touristSpots // Include full spots data
       };
     } else if (booking.paymentStatus === 'pending') {
       this.bookingStatus = 'pending';

@@ -103,8 +103,24 @@ export const getReservations = async (req, res) => {
              query.userId = req.user._id;
         }
 
-        const reservations = await TouristSpotReservation.find(query).sort({ createdAt: -1 });
-        res.json({ success: true, bookings: reservations }); // Changed 'reservations' to 'bookings' for consistency
+        const reservations = await TouristSpotReservation.find(query).sort({ createdAt: -1 }).lean();
+        
+        // Enrich touristSpots with images from TouristSpot collection
+        for (let reservation of reservations) {
+            if (reservation.touristSpots && Array.isArray(reservation.touristSpots)) {
+                for (let spot of reservation.touristSpots) {
+                    if (spot.spotId) {
+                        // Fetch the full spot data to get images
+                        const fullSpot = await TouristSpot.findById(spot.spotId).select('images').lean();
+                        if (fullSpot && fullSpot.images) {
+                            spot.images = fullSpot.images;
+                        }
+                    }
+                }
+            }
+        }
+        
+        res.json({ success: true, bookings: reservations });
     } catch (err) {
         console.error('Get Tourist Bookings Error:', err);
         res.status(500).json({ success: false, error: err.message });
@@ -114,10 +130,23 @@ export const getReservations = async (req, res) => {
 export const getReservationByBookingId = async (req, res) => {
     try {
         const { bookingId } = req.params;
-        const reservation = await TouristSpotReservation.findOne({ bookingId });
+        const reservation = await TouristSpotReservation.findOne({ bookingId }).lean();
         
         if (!reservation) {
             return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        // Enrich touristSpots with images from TouristSpot collection
+        if (reservation.touristSpots && Array.isArray(reservation.touristSpots)) {
+            for (let spot of reservation.touristSpots) {
+                if (spot.spotId) {
+                    // Fetch the full spot data to get images
+                    const fullSpot = await TouristSpot.findById(spot.spotId).select('images').lean();
+                    if (fullSpot && fullSpot.images) {
+                        spot.images = fullSpot.images;
+                    }
+                }
+            }
         }
 
         res.json({ success: true, reservation });

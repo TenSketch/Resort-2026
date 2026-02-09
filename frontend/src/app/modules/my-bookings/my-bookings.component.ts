@@ -267,6 +267,7 @@ export class MyBookingsComponent {
       return {
         booking_id: booking.bookingId,
         booking_type: 'trek', // Mark as trek booking
+        touristSpots: booking.touristSpots, // Include full touristSpots array with images
         rooms: {
           name: spotNames,
           cottage: 'Trek Entry',
@@ -361,8 +362,35 @@ export class MyBookingsComponent {
     window.location.href = 'tel:' + this.resortNumber;
   }
 
-  getRoomImages(roomname: any): string[] {
+  getRoomImages(roomname: any, bookingItem?: any): string[] {
+    // For trek bookings, use actual spot images from the booking data
+    if (bookingItem?.booking_type === 'trek' && bookingItem?.touristSpots) {
+      const spotImages: string[] = [];
+      
+      // Collect images from all tourist spots in the booking
+      bookingItem.touristSpots.forEach((spot: any) => {
+        if (spot.images && Array.isArray(spot.images) && spot.images.length > 0) {
+          // Add the first image from each spot
+          spotImages.push(spot.images[0].url);
+        }
+      });
+      
+      // If we found spot images, return them
+      if (spotImages.length > 0) {
+        return spotImages;
+      }
+      
+      // Fallback to default trek images if no spot images found
+      return ['assets/img/MAREDUMILLI-waterfalls.jpg', 'assets/img/Rampa-falls.jpg'];
+    }
+    
     const lowercaseRoomName = roomname.toLowerCase();
+
+    // Check if it's a trek booking (contains "trek" in the name) - fallback
+    if (lowercaseRoomName.includes('trek') || lowercaseRoomName.includes('jalatarangi') || lowercaseRoomName.includes('rampa') || lowercaseRoomName.includes('nellore')) {
+      // Return default trek/nature images
+      return ['assets/img/MAREDUMILLI-waterfalls.jpg', 'assets/img/Rampa-falls.jpg'];
+    }
 
     switch (lowercaseRoomName) {
       case 'panther':

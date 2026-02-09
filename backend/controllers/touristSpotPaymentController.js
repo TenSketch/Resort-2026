@@ -180,7 +180,7 @@ export const initiatePayment = async (req, res) => {
       currency: "356",
       order_date: orderDate,
       settlement_lob: settlementLob,
-      ru: process.env.BILLDESK_RETURN_URL.trim(),
+      ru: process.env.BILLDESK_TREK_RETURN_URL || process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
         additional_info1: (reservation.user?.name || reservation.fullName || 'NA').substring(0, 50),
@@ -286,8 +286,8 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
       const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
       
       // Start polling for transaction status (every 5 mins for 15 mins)
-      startTransactionPolling(bookingId, bdorderid, merchantId, authToken);
-      console.log(`🔄 Started transaction polling for booking: ${bookingId}`);
+      startTransactionPolling(bookingId, bdorderid, merchantId, authToken, 'trek');
+      console.log(`🔄 Started transaction polling for trek booking: ${bookingId}`);
       const formAction = billdeskResponse.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';
       
       console.log('\n=== Payment Data for Frontend ===');

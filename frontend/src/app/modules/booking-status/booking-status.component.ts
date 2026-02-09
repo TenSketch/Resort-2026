@@ -29,6 +29,8 @@ interface ReservationDetails {
   totalChildren: any;
   stayDuration: any;
   email: any;
+  isTrek?: boolean; // Flag to identify trek bookings
+  touristSpots?: any[]; // Trek spot data with images
 }
 
 @Component({

@@ -1,49 +1,31 @@
 import Resort from '../models/resortModel.js';
 import Room from '../models/roomModel.js';
 import transporter from '../config/nodemailer.js';
-import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE, TREK_SUCCESS_EMAIL_TEMPLATE } from '../config/emailTemplates.js';
+import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE } from '../config/emailTemplates.js';
 
 /**
- * Send reservation success emails to user and admin
+ * Send reservation success emails to user and admin (for room bookings only)
+ * Note: Trek bookings use trekReservationEmailService.js
  * @param {Object} reservation - Reservation document
  * @param {Object} paymentTransaction - Payment transaction document
  */
 export async function sendReservationSuccessEmails(reservation, paymentTransaction) {
   try {
     // Fetch resort details
-    // Detect if it's a Trek Spot Reservation
-    const isTouristSpot = reservation.touristSpots && reservation.touristSpots.length > 0;
-    
-    let resortName = 'Resort';
-    let roomList = 'N/A';
-    let checkInVal = reservation.checkIn;
-    let checkOutVal = reservation.checkOut;
-    let foodProviding = 'No';
-
-    if (isTouristSpot) {
-      resortName = 'Trek Spot Booking';
-      roomList = reservation.touristSpots.map(s => `${s.name} (${s.counts?.adults || 0} Adults)`).join(', ');
-      // Use visitDate for both checkin/checkout or just one
-      const visitDate = reservation.touristSpots[0]?.visitDate || reservation.createdAt;
-      checkInVal = visitDate;
-      checkOutVal = visitDate;
-    } else {
-      // Fetch resort details for Resort Booking
-      let resortData = null;
-      if (reservation.resort) {
-        resortData = await Resort.findById(reservation.resort).lean();
-      }
-
-      // Fetch room details
-      let roomsData = [];
-      if (reservation.rooms && Array.isArray(reservation.rooms)) {
-        roomsData = await Room.find({ _id: { $in: reservation.rooms } }).lean();
-      }
-
-      resortName = resortData?.resortName || reservation.rawSource?.resortName || 'Resort';
-      roomList = roomsData.map(r => r.roomName || r.roomNumber).join(', ') || 'N/A';
-      foodProviding = resortName.includes('Jungle Star') ? 'Yes' : 'No';
+    let resortData = null;
+    if (reservation.resort) {
+      resortData = await Resort.findById(reservation.resort).lean();
     }
+
+    // Fetch room details
+    let roomsData = [];
+    if (reservation.rooms && Array.isArray(reservation.rooms)) {
+      roomsData = await Room.find({ _id: { $in: reservation.rooms } }).lean();
+    }
+
+    const resortName = resortData?.resortName || reservation.rawSource?.resortName || 'Resort';
+    const roomList = roomsData.map(r => r.roomName || r.roomNumber).join(', ') || 'N/A';
+    const foodProviding = resortName.includes('Jungle Star') ? 'Yes' : 'No';
     
     // Format dates
     const formatDate = (date) => date ? new Date(date).toLocaleDateString('en-US', { 
@@ -57,14 +39,9 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
       Reservation_Date: formatDate(reservation.reservationDate || reservation.createdAt),
       Booking_Id: reservation.bookingId,
       Room_List: roomList,
-      Spot_List: roomList, // For Trek template
-      Trek_Spot_Name: isTouristSpot ? (reservation.touristSpots[0]?.name || 'Trek Spot') : '', // For Trek template
-      Check_In: formatDate(checkInVal),
-      Check_Out: formatDate(checkOutVal),
-      Visit_Date: formatDate(checkInVal), // For Trek template
-      Total_Guests: isTouristSpot 
-        ? reservation.touristSpots.reduce((sum, s) => sum + (s.counts?.adults || 0) + (s.counts?.children || 0), 0)
-        : (reservation.guests || 0) + (reservation.extraGuests || 0) + (reservation.children || 0),
+      Check_In: formatDate(reservation.checkIn),
+      Check_Out: formatDate(reservation.checkOut),
+      Total_Guests: (reservation.guests || 0) + (reservation.extraGuests || 0) + (reservation.children || 0),
       Payment_Amount: `INR ${reservation.totalPayable?.toFixed(2)}`,
       Transaction_ID: reservation.rawSource?.transactionId || paymentTransaction?.transactionId || 'N/A',
       Payment_Date: formatDate(paymentTransaction?.updatedAt || new Date()),
@@ -78,7 +55,7 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
     };
 
     // Replace placeholders in templates
-    let userEmail = isTouristSpot ? TREK_SUCCESS_EMAIL_TEMPLATE : RESERVATION_SUCCESS_EMAIL_TEMPLATE;
+    let userEmail = RESERVATION_SUCCESS_EMAIL_TEMPLATE;
     let adminEmail = RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE;
 
     Object.keys(emailData).forEach(key => {

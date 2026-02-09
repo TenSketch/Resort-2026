@@ -28,8 +28,12 @@ export async function sendTrekReservationEmails(reservation, paymentTransaction)
 
     if (reservation.touristSpots && Array.isArray(reservation.touristSpots) && reservation.touristSpots.length > 0) {
       spotList = reservation.touristSpots.map(spot => {
-        const guests = spot.counts?.guests || 0;
+        // Use adults + children if guests is 0 (legacy data structure)
+        const adults = spot.counts?.adults || 0;
+        const children = spot.counts?.children || 0;
+        const guests = spot.counts?.guests || (adults + children);
         const cameras = spot.counts?.cameras || 0;
+        
         totalGuests += guests;
         totalCameras += cameras;
         

@@ -104,7 +104,7 @@ export const getReservations = async (req, res) => {
         }
 
         const reservations = await TouristSpotReservation.find(query).sort({ createdAt: -1 });
-        res.json({ success: true, reservations });
+        res.json({ success: true, bookings: reservations }); // Changed 'reservations' to 'bookings' for consistency
     } catch (err) {
         console.error('Get Tourist Bookings Error:', err);
         res.status(500).json({ success: false, error: err.message });

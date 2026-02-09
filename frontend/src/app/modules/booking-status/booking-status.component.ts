@@ -177,23 +177,45 @@ export class BookingStatusComponent {
       let roomsArray = [];
       let checkInDate = booking.checkIn;
       let checkOutDate = booking.checkOut;
+      let totalGuests = 0;
+      let totalChildren = 0;
 
       if (isTouristSpot) {
         resortName = 'Trek Spot Booking';
-        roomsArray = booking.touristSpots.map((spot: any) => ({
-          room_name: spot.name,
-          cottage_type: 'Entry'
-        }));
+        roomsArray = booking.touristSpots.map((spot: any) => {
+          // Use adults + children if guests is 0 (legacy data structure)
+          const adults = spot.counts?.adults || 0;
+          const children = spot.counts?.children || 0;
+          const guests = spot.counts?.guests || (adults + children);
+          const cameras = spot.counts?.cameras || 0;
+          
+          return {
+            room_name: spot.name,
+            cottage_type: `${guests} Guests, ${cameras} Cameras`
+          };
+        });
         // Use visitDate
         const visitDate = booking.touristSpots[0]?.visitDate || booking.createdAt;
         checkInDate = visitDate;
         checkOutDate = visitDate;
+        
+        // Calculate total guests (adults + children across all spots)
+        totalGuests = booking.touristSpots.reduce((sum: number, s: any) => {
+          const adults = s.counts?.adults || 0;
+          const children = s.counts?.children || 0;
+          const guests = s.counts?.guests || (adults + children);
+          return sum + guests;
+        }, 0);
+        
+        totalChildren = booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0);
       } else {
         resortName = booking.resort?.resortName || booking.rawSource?.resortName || 'Resort';
         roomsArray = booking.rooms?.map((room: any) => ({
           room_name: room.roomName || room.roomNumber || 'Room',
           cottage_type: room.cottageType?.name || 'Standard'
         })) || [{ room_name: 'N/A', cottage_type: 'N/A' }];
+        totalGuests = booking.guests || 0;
+        totalChildren = booking.children || 0;
       }
 
       // Get transaction ID from rawSource (stored during payment callback)
@@ -219,13 +241,9 @@ export class BookingStatusComponent {
         contactEmail: 'info@vanavihari.com',
         guestEmail: booking.email || booking.user?.email,
         rooms: roomsArray,
-        totalGuest: isTouristSpot
-          ? booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.adults || 0) + (s.counts?.children || 0), 0)
-          : (booking.guests || 0),
+        totalGuest: totalGuests,
         totalExtraGuests: booking.extraGuests || 0,
-        totalChildren: isTouristSpot
-          ? booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0)
-          : (booking.children || 0),
+        totalChildren: totalChildren,
         stayDuration: isTouristSpot ? 1 : this.durationOfStay(booking.checkIn, booking.checkOut),
         email: booking.email || booking.user?.email,
       };
@@ -287,10 +305,18 @@ export class BookingStatusComponent {
       this.bookingStatus = 'success';
 
       // Build trek spots array for display
-      const trekSpotsArray = booking.touristSpots?.map((spot: any) => ({
-        room_name: spot.name || 'Trek Spot',
-        cottage_type: `${spot.counts?.guests || 0} Guests, ${spot.counts?.cameras || 0} Cameras`
-      })) || [{ room_name: 'N/A', cottage_type: 'N/A' }];
+      const trekSpotsArray = booking.touristSpots?.map((spot: any) => {
+        // Use adults + children if guests is 0 (legacy data structure)
+        const adults = spot.counts?.adults || 0;
+        const children = spot.counts?.children || 0;
+        const guests = spot.counts?.guests || (adults + children);
+        const cameras = spot.counts?.cameras || 0;
+        
+        return {
+          room_name: spot.name || 'Trek Spot',
+          cottage_type: `${guests} Guests, ${cameras} Cameras`
+        };
+      }) || [{ room_name: 'N/A', cottage_type: 'N/A' }];
 
       const transactionId = booking.rawSource?.transactionId
         || booking.rawSource?.bankRefNo
@@ -299,6 +325,14 @@ export class BookingStatusComponent {
 
       // Use first spot's visit date
       const visitDate = booking.touristSpots?.[0]?.visitDate || booking.createdAt;
+
+      // Calculate total guests (adults + children across all spots)
+      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const adults = s.counts?.adults || 0;
+        const children = s.counts?.children || 0;
+        const guests = s.counts?.guests || (adults + children);
+        return sum + guests;
+      }, 0) || 0;
 
       this.reservationDetails = {
         guestName: booking.user?.name || 'Guest',
@@ -316,9 +350,9 @@ export class BookingStatusComponent {
         contactEmail: 'info@vanavihari.com',
         guestEmail: booking.user?.email || '',
         rooms: trekSpotsArray,
-        totalGuest: booking.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.guests || 0), 0) || 0,
+        totalGuest: totalGuests,
         totalExtraGuests: 0,
-        totalChildren: 0,
+        totalChildren: booking.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0) || 0,
         stayDuration: 1, // Trek is single day
         email: booking.user?.email || '',
       };

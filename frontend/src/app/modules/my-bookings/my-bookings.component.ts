@@ -243,9 +243,13 @@ export class MyBookingsComponent {
         spotNames = names.length > 0 ? names.join(', ') : 'N/A';
       }
 
-      // Calculate total guests
-      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => 
-        sum + (s.counts?.guests || 0), 0) || 0;
+      // Calculate total guests (adults + children across all spots)
+      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const adults = s.counts?.adults || 0;
+        const children = s.counts?.children || 0;
+        const guests = s.counts?.guests || (adults + children);
+        return sum + guests;
+      }, 0) || 0;
 
       // Format dates
       const formatDate = (date: string) => {

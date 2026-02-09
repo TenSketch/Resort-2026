@@ -949,8 +949,7 @@ $card-flex-basis: 35%;
       top: auto !important;
       left: auto !important;
       transform: none !important;
-      // margin: auto !important; // Was pure auto
-      margin: 15vh auto auto auto !important; // deeply lowered
+      margin: auto !important; // Centered vertically and horizontally
 
       width: 100% !important;
       max-width: 800px !important;

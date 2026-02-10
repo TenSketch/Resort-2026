@@ -59,12 +59,16 @@
             </h2>
             <div id="collapseAccount" class="accordion-collapse collapse" aria-labelledby="headingAccount"
               data-bs-parent="#sidebarAccordionAccount">
-              <div class="accordion-body ps-4">
-                <a class="dropdown-item text-nowrap" routerLink="/my-account/settings" (click)="toggleSidebar()">My
-                  Account</a>
-                <a class="dropdown-item text-nowrap" routerLink="/my-account/my-bookings" (click)="toggleSidebar()">My
-                  Bookings</a>
-                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); triggerModal()">Sign Out</a>
+              <div class="accordion-body">
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/settings" (click)="toggleSidebar()">
+                  <i class="fa-solid fa-user-gear"></i><span class="menu-text">My Account</span>
+                </a>
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/my-bookings" (click)="toggleSidebar()">
+                  <i class="fa-solid fa-list-check"></i><span class="menu-text">My Bookings</span>
+                </a>
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); triggerModal()">
+                  <i class="fa-solid fa-right-from-bracket"></i><span class="menu-text">Sign Out</span>
+                </a>
               </div>
             </div>
           </div>
@@ -74,7 +78,7 @@
         </li>
 
         <!-- Category: BOOK -->
-        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
           style="font-size: 0.75rem; letter-spacing: 1px">
           Book
         </li>
@@ -146,12 +150,12 @@
           </a>
         </li>
 
-        <li class="sidebar-item mt-3">
+        <li class="sidebar-item ">
           <hr class="mx-3 my-2 text-muted" />
         </li>
 
         <!-- Category: EXPLORE -->
-        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
           style="font-size: 0.75rem; letter-spacing: 1px">
           Explore
         </li>
@@ -171,12 +175,12 @@
           </a>
         </li>
 
-        <li class="sidebar-item mt-3">
+        <li class="sidebar-item ">
           <hr class="mx-3 my-2 text-muted" />
         </li>
 
         <!-- Category: ABOUT -->
-        <li class="menu-category mt-3 mb-2 px-4 text-muted text-uppercase fw-bold"
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
           style="font-size: 0.75rem; letter-spacing: 1px">
           About
         </li>
@@ -192,14 +196,16 @@
         </li>
       </ul>
       <!-- Collapse Toggle Button (Desktop Only - ≥992px) -->
-      <button class="sidebar-collapse-btn d-none d-lg-flex" (click)="toggleSidebarCollapse()"
-        [attr.aria-expanded]="!isSidebarCollapsed" aria-label="Toggle sidebar">
-        <i class="fa-solid" [ngClass]="
+
+    </div>
+    <button class="sidebar-collapse-btn d-none d-lg-flex" (click)="toggleSidebarCollapse()"
+      [attr.aria-expanded]="!isSidebarCollapsed" aria-label="Toggle sidebar">
+      <i class="fa-solid" [ngClass]="
             isSidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'
           "></i>
-      </button>
-    </div>
+    </button>
   </div>
+
 </header>
 <!-- End Header -->
 <main [class.sidebar-collapsed]="isSidebarCollapsed">
@@ -271,7 +277,7 @@
               </li>
             </ul>
             <!-- Payment Methods -->
-            <div class="mt-3">
+            <div class="">
               <img src="assets/images/payment-methods.svg" alt="Payment Methods" class="img-fluid"
                 style="max-height: 40px" />
             </div>
@@ -285,17 +291,10 @@
   <div class="container">
     <div class="row justify-content-center justify-content-md-between align-items-center gy-2">
       <span class="col-auto">&copy; 2024 - {{ currentYear }} VANAVIHARI</span>
-      <!-- <span class="col-auto"
-        >Made with love <i class="fas fa-heart"></i> by
-        <a
-          class="text-decoration-none"
-          href="https://tensketch.com/"
-          target="_blank"
-          link="no-referrer"
-        >
+      <span class="col-auto">Made with love <i class="fas fa-heart"></i> by
+        <a class="text-decoration-none" href="https://tensketch.com/" target="_blank" link="no-referrer">
           TenSketch
-        </a></span
-      > -->
+        </a></span>
     </div>
   </div>
 </footer>
@@ -385,12 +384,12 @@
   <div class="nav-item" *ngIf="isLoggedIn()" routerLink="/my-account/settings" routerLinkActive="active"
     title="Profile">
     <i class="fa-regular fa-user-circle"></i>
-    <span>Profile</span>
+    <span>My Profile</span>
   </div>
 
   <div class="nav-item" *ngIf="!isLoggedIn()" routerLink="/sign-in" routerLinkActive="active" title="Sign In">
     <i class="fa-regular fa-user-circle"></i>
-    <span>Profile</span>
+    <span>Sign In</span>
   </div>
 
   <div class="nav-item menu-toggle" (click)="toggleSidebar()" title="More">

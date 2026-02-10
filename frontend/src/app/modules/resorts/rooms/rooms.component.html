@@ -341,10 +341,10 @@
           <div *ngIf="!loadingRooms">
             <div *ngIf="!isRoomDataEmpty">
               <div class="row my-2 w-100 d-flex align-items-center justify-content-center">
-                <div>
+                <!-- <div>
                   <pre *ngIf="showMessage" class="text-center">
 *** Select dates and search rooms ****</pre>
-                </div>
+                </div> -->
               </div>
               <div class="card mb-3" *ngFor="let room of filteredRoomData">
                 <div class="row">
@@ -436,7 +436,7 @@
                 <small>(for 1 Extra Bed)</small> -->
                     </div>
                     <div class="col my-2 pe-0">
-                      <button mat-raised-button color="primary" class="float-end float-md-start"
+                      <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 float-end float-md-start"
                         [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
                         Add room
                       </button>

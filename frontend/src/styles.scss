@@ -62,12 +62,15 @@ h6 {
 //   margin-top: 1rem;
 // }
 
-// .container,
-// .container-fluid {
-//   @media (max-width: 576px) {
-//     padding-inline: 2rem;
-//   }
-// }
+.container,
+.container-fluid {
+  max-width: 100% !important; // Force full width as requested
+  padding-inline: 1.5rem; // Default (Mobile/Tablet)
+
+  @media (min-width: 992px) { // Desktop
+    padding-inline: 2rem;
+  }
+}
 
 .logo {
   width: min(65%, 200px);
@@ -343,8 +346,8 @@ mat-hint {
 }
 
 .btn:disabled {
-  background-color: #97a786;
-
+  background-color: #aaaaaa;
+border: none;
 }
 
 
@@ -476,9 +479,5 @@ body.sidebar-collapsed .cdk-global-overlay-wrapper {
     height: 100%;
     object-fit: cover;
   }
-
-  @media (max-width: 768px) {
-    height: 200px;
-    margin-top: 1rem;
-  }
 }
+

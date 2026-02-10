@@ -8,19 +8,23 @@ $card-flex-basis: 35%;
   letter-spacing: -0.02em;
 }
 
-// Mobile Container Consistency - Same width/padding for all sections
-@media (max-width: 767.98px) {
-  .main {
-    // Ensure all containers have consistent padding on mobile (matching quick filter section)
-    > section .container,
-    > section > .container {
-      padding-left: 24px !important;
-      padding-right: 24px !important;
-      max-width: 100% !important;
+// Mobile Container Consistency - Handled globally in styles.scss
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $clr-dark;
+    margin-bottom: 1rem;
+    text-align: center;
+    
+    @media (max-width: 768px) {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
     }
-  }
 }
 
+.fw-bold {
+font-weight: 600 !important;
+}
 // Quick Search Section (10%)
 .hero-search-section {
   height: auto;
@@ -62,6 +66,18 @@ $card-flex-basis: 35%;
           font-size: 0.9rem;
           margin-bottom: 0.25rem;
       }
+
+      // Ensure content (buttons/text) is clickable
+      pointer-events: none;
+      .container {
+          pointer-events: auto;
+      }
+  }
+
+  // Ensure controls are on top
+  .carousel-control-prev,
+  .carousel-control-next {
+      z-index: 100 !important;
   }
 }
 
@@ -852,10 +868,14 @@ $card-flex-basis: 35%;
       }
 
       .resort-actions {
+        flex-direction: column;
+        
         .btn {
-          flex: 1;
-          min-width: 140px;
+          width: 100%;
+          flex: auto; // Reset flex: 1
+          min-width: unset; // Reset min-width
           text-align: center;
+          justify-content: center; // Ensure icon and text are centered if flex
         }
       }
     }

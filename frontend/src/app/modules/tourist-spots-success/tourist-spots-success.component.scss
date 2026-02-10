@@ -87,7 +87,7 @@
   transition: all 0.3s ease;
   
   &.btn-primary {
-    background: linear-gradient(135deg, #2c5aa0 0%, #1a4480 100%);
+   
     border: none;
     
     &:hover {
@@ -97,7 +97,6 @@
   }
   
   &.btn-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     border: none;
     
     &:hover {
@@ -111,8 +110,7 @@
     color: #6c757d;
     
     &:hover {
-      background-color: #6c757d;
-      border-color: #6c757d;
+  
       transform: translateY(-1px);
     }
   }

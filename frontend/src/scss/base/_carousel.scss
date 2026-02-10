@@ -6,8 +6,8 @@
 @mixin hero-carousel-base {
   position: relative;
   // Default desktop height
-  height: 55vh;
-  min-height: 400px;
+  height: 50vh;
+  min-height: 350px;
   width: 100%;
   overflow: hidden;
 
@@ -46,6 +46,7 @@
     // Standard Caption
     .carousel-caption {
       position: absolute;
+      top: 26%;
       bottom: 20%;
       left: 10%;
       right: 10%;
@@ -57,6 +58,7 @@
 
       @media (min-width: 992px) {
         right: 40%; // More space on desktop
+        top: 35%;
       }
 
       h1, h2, .display-4, .display-5, .h1 {

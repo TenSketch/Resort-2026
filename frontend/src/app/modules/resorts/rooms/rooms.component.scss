@@ -58,12 +58,14 @@
 
 aside {
   position: sticky;
-  background-color: $clr-primary-lighter;
+ position: sticky;
+  background-color: hsl(89, 100%, 90%); // $clr-primary-lighter
   padding-bottom: 1rem;
   left: 0;
   right: 0;
   z-index: 1000;
-  top: $nav-bar-height;
+  top: 80px; // nav bar height
+
 
   @media (min-width: 991px) {
     overflow-y: auto;
@@ -91,6 +93,11 @@ aside {
   }
 }
 
+  @media (max-width: 575.98px) {
+    aside {
+      top: 100px !important;
+    }
+  }
 main {
   &.rooms-listing {
     @media (min-width: 768px) {}

@@ -20,12 +20,6 @@ interface Resort {
   extraGuestCharges?: number;
 }
 
-interface CottageType {
-  _id: string;
-  name: string;
-  resort: string | { _id: string; resortName?: string; name?: string };
-}
-
 interface Room {
   _id: string;
   roomNumber: string;
@@ -70,10 +64,10 @@ export default function AddReservationForm() {
     country: "",
     roomPrice: 0,
     extraBedCharges: 0,
+    referredBy: "",
   });
 
   const [resorts, setResorts] = useState<Resort[]>([]);
-  const [cottageTypes, setCottageTypes] = useState<CottageType[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedResortData, setSelectedResortData] = useState<Resort | null>(null);
@@ -113,6 +107,21 @@ export default function AddReservationForm() {
 
     return { maxGuests, maxExtraGuests, maxChildren };
   }, [formData.rooms, rooms]);
+
+  // Calculate days and nights from check-in and check-out
+  const bookingDuration = useMemo(() => {
+    if (!formData.checkIn || !formData.checkOut) {
+      return { days: 0, nights: 0 };
+    }
+    const checkInDate = new Date(formData.checkIn);
+    const checkOutDate = new Date(formData.checkOut);
+    const diffTime = checkOutDate.getTime() - checkInDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return {
+      days: diffDays > 0 ? diffDays : 0,
+      nights: diffDays > 0 ? diffDays : 0,
+    };
+  }, [formData.checkIn, formData.checkOut]);
 
   // Auto-generate booking ID when resort is selected
   useEffect(() => {
@@ -307,44 +316,11 @@ export default function AddReservationForm() {
     fetchUsers();
   }, [apiUrl]);
 
-  // Fetch cottage types when resort changes
+
+
+  // Fetch rooms when resort changes
   useEffect(() => {
     if (!formData.resort) {
-      setCottageTypes([]);
-      setRooms([]);
-      return;
-    }
-
-    const fetchCottageTypes = async () => {
-      setLoading((prev) => ({ ...prev, cottageTypes: true }));
-      try {
-        const res = await fetch(`${apiUrl}/api/cottage-types`);
-        const data = await res.json();
-        if (data.cottageTypes) {
-          // Filter cottage types by selected resort
-          // Handle both populated (object) and unpopulated (string) resort field
-          const filtered = data.cottageTypes.filter((ct: CottageType) => {
-            const resortId =
-              typeof ct.resort === "string" ? ct.resort : ct.resort?._id;
-            return resortId === formData.resort;
-          });
-          console.log("Selected resort:", formData.resort);
-          console.log("All cottage types:", data.cottageTypes);
-          console.log("Filtered cottage types:", filtered);
-          setCottageTypes(filtered);
-        }
-      } catch (err) {
-        console.error("Error fetching cottage types:", err);
-      } finally {
-        setLoading((prev) => ({ ...prev, cottageTypes: false }));
-      }
-    };
-    fetchCottageTypes();
-  }, [formData.resort]);
-
-  // Fetch rooms when cottage types change
-  useEffect(() => {
-    if (!formData.cottageTypes || formData.cottageTypes.length === 0) {
       setRooms([]);
       return;
     }
@@ -355,17 +331,12 @@ export default function AddReservationForm() {
         const res = await fetch(`${apiUrl}/api/rooms`);
         const data = await res.json();
         if (data.rooms) {
-          // Filter rooms by selected cottage types (multiple)
-          // Handle both populated (object) and unpopulated (string) cottageType field
+          // Filter rooms by selected resort
           const filtered = data.rooms.filter((room: Room) => {
-            const cottageTypeId =
-              typeof room.cottageType === "string"
-                ? room.cottageType
-                : room.cottageType?._id;
-            return formData.cottageTypes.includes(cottageTypeId);
+            const resortId = typeof room.resort === "string" ? room.resort : room.resort?._id;
+            return resortId === formData.resort;
           });
-          console.log("Selected cottage types:", formData.cottageTypes);
-          console.log("Filtered rooms:", filtered);
+          console.log("Filtered rooms by resort:", filtered);
           setRooms(filtered);
         }
       } catch (err) {
@@ -375,7 +346,7 @@ export default function AddReservationForm() {
       }
     };
     fetchRooms();
-  }, [apiUrl, formData.cottageTypes]);
+  }, [apiUrl, formData.resort]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -490,8 +461,8 @@ export default function AddReservationForm() {
       country: "",
       roomPrice: 0,
       extraBedCharges: 0,
+      referredBy: "",
     });
-    setCottageTypes([]);
     setRooms([]);
     setSelectedResortData(null);
   };
@@ -561,8 +532,8 @@ export default function AddReservationForm() {
           country: "",
           roomPrice: 0,
           extraBedCharges: 0,
+          referredBy: "",
         });
-        setCottageTypes([]);
         setRooms([]);
         setSelectedResortData(null);
       } catch (err) {
@@ -574,7 +545,7 @@ export default function AddReservationForm() {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="w-full max-w-6xl">
         {/* Header */}
         <div className="mb-8">
@@ -586,210 +557,106 @@ export default function AddReservationForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Room Details */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* ROOM DETAILS */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-slate-800">Room Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Room Details</h3>
+            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Select Resort
-                </Label>
-                <Select
-                  value={formData.resort}
-                  onValueChange={(value) => handleSelect("resort", value)}
-                >
-                  <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50">
-                    <SelectValue
-                      placeholder={
-                        loading.resorts ? "Loading..." : "Choose Resort"
-                      }
-                    />
+                <Label className="text-sm font-medium text-slate-700">Select Resort</Label>
+                <Select value={formData.resort} onValueChange={(value) => handleSelect("resort", value)}>
+                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-slate-50">
+                    <SelectValue placeholder={loading.resorts ? "Loading..." : "Choose Resort"} />
                   </SelectTrigger>
                   <SelectContent>
                     {resorts.map((resort) => (
-                      <SelectItem key={resort._id} value={resort._id}>
-                        {resort.resortName}
-                      </SelectItem>
+                      <SelectItem key={resort._id} value={resort._id}>{resort.resortName}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Cottage Type
-                </Label>
+              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">Choose Rooms</Label>
                 <MultiSelect
-                  options={cottageTypes.map((ct) => ({
-                    label: ct.name,
-                    value: ct._id,
-                  }))}
-                  selected={formData.cottageTypes}
-                  onChange={(values) =>
-                    handleMultiSelect("cottageTypes", values)
-                  }
-                  placeholder={
-                    !formData.resort
-                      ? "Select Resort First"
-                      : loading.cottageTypes
-                        ? "Loading..."
-                        : cottageTypes.length === 0
-                          ? "No Cottage Types"
-                          : "Choose Cottage Types"
-                  }
+                  options={rooms.map((room) => ({ label: room.roomName || room.roomId || room.roomNumber, value: room._id }))}
+                  selected={formData.rooms}
+                  onChange={(values) => handleMultiSelect("rooms", values)}
+                  placeholder={!formData.resort ? "Select Resort First" : loading.rooms ? "Loading..." : rooms.length === 0 ? "No Rooms Available" : "Choose Rooms"}
                   disabled={!formData.resort}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Choose Rooms
-                </Label>
-                <MultiSelect
-                  options={rooms.map((room) => ({
-                    label: room.roomName || room.roomId || room.roomNumber,
-                    value: room._id,
-                  }))}
-                  selected={formData.rooms}
-                  onChange={(values) => handleMultiSelect("rooms", values)}
-                  placeholder={
-                    formData.cottageTypes.length === 0
-                      ? "Select Cottage Type First"
-                      : loading.rooms
-                        ? "Loading..."
-                        : rooms.length === 0
-                          ? "No Rooms Available"
-                          : "Choose Rooms"
-                  }
-                  disabled={formData.cottageTypes.length === 0}
-                />
+                <Label className="text-sm font-medium text-slate-700">No. of Rooms</Label>
+                <Input name="numberOfRooms" value={formData.numberOfRooms} readOnly placeholder="Auto-counted"
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
               </div>
             </div>
           </div>
 
-          {/* Booking Details */}
+          {/* BOOKING DETAILS - DATES */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-slate-800">
-              Booking Details
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Booking Details</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Check In
-                </Label>
-                <Input
-                  type="date"
-                  name="checkIn"
-                  value={formData.checkIn}
-                  onChange={handleChange}
-                  min={dateLimits.minDate}
-                  max={dateLimits.maxDate}
-                  disabled={!formData.resort}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Check In</Label>
+                <Input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange}
+                  min={dateLimits.minDate} max={dateLimits.maxDate} disabled={!formData.resort}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Check Out
-                </Label>
-                <Input
-                  type="date"
-                  name="checkOut"
-                  value={formData.checkOut}
-                  onChange={handleChange}
-                  min={formData.checkIn ? (() => {
-                    const checkInDate = new Date(formData.checkIn);
-                    checkInDate.setDate(checkInDate.getDate() + 1);
-                    return checkInDate.toISOString().split('T')[0];
-                  })() : dateLimits.minDate}
-                  max={dateLimits.maxDate}
-                  disabled={!formData.resort || !formData.checkIn}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Check Out</Label>
+                <Input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange}
+                  min={formData.checkIn ? (() => { const d = new Date(formData.checkIn); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })() : dateLimits.minDate}
+                  max={dateLimits.maxDate} disabled={!formData.resort || !formData.checkIn}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Guests{" "}
-                  {formData.rooms.length > 0 && (
-                    <span className="text-slate-500">
-                      (Max: {guestLimits.maxGuests})
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type="number"
-                  name="guests"
-                  value={formData.guests}
-                  onChange={handleChange}
-                  min="0"
-                  max={guestLimits.maxGuests || undefined}
-                  disabled={formData.rooms.length === 0}
-                  placeholder={
-                    formData.rooms.length === 0
-                      ? "Select rooms first"
-                      : "Enter guests"
-                  }
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Days</Label>
+                <Input value={bookingDuration.days} readOnly className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Extra Guests{" "}
-                  {formData.rooms.length > 0 && (
-                    <span className="text-slate-500">
-                      (Max: {guestLimits.maxExtraGuests})
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type="number"
-                  name="extraGuests"
-                  value={formData.extraGuests}
-                  onChange={handleChange}
-                  min="0"
-                  max={guestLimits.maxExtraGuests || undefined}
-                  disabled={formData.rooms.length === 0}
-                  placeholder={
-                    formData.rooms.length === 0
-                      ? "Select rooms first"
-                      : "Enter extra guests"
-                  }
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Nights</Label>
+                <Input value={bookingDuration.nights} readOnly className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
+              </div>
+              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">Reservation Date</Label>
+                <Input type="date" name="reservationDate" value={formData.reservationDate} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">Booking ID</Label>
+                <Input name="bookingId" value={formData.bookingId} readOnly placeholder="Auto-generated"
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
+              </div>
+            </div>
+          </div>
+
+          {/* GUEST COUNTS & STATUS */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Guest Counts & Status</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">Guests {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxGuests})</span>}</Label>
+                <Input type="number" name="guests" value={formData.guests} onChange={handleChange} min="0" max={guestLimits.maxGuests || undefined}
+                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter guests"}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Children (under 5){" "}
-                  {formData.rooms.length > 0 && (
-                    <span className="text-slate-500">
-                      (Max: {guestLimits.maxChildren})
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  type="number"
-                  name="children"
-                  value={formData.children}
-                  onChange={handleChange}
-                  min="0"
-                  max={guestLimits.maxChildren || undefined}
-                  disabled={formData.rooms.length === 0}
-                  placeholder={
-                    formData.rooms.length === 0
-                      ? "Select rooms first"
-                      : "Enter children"
-                  }
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Extra Guests {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxExtraGuests})</span>}</Label>
+                <Input type="number" name="extraGuests" value={formData.extraGuests} onChange={handleChange} min="0" max={guestLimits.maxExtraGuests || undefined}
+                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter extra"}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Status
-                </Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleSelect("status", value)}
-                >
-                  <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50">
+                <Label className="text-sm font-medium text-slate-700">Children {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxChildren})</span>}</Label>
+                <Input type="number" name="children" value={formData.children} onChange={handleChange} min="0" max={guestLimits.maxChildren || undefined}
+                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter children"}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">Status</Label>
+                <Select value={formData.status} onValueChange={(value) => handleSelect("status", value)}>
+                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Choose Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -800,66 +667,10 @@ export default function AddReservationForm() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Booking ID
-                </Label>
-                <Input
-                  name="bookingId"
-                  value={formData.bookingId}
-                  readOnly
-                  placeholder="Auto-generated"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Reservation Date
-                </Label>
-                <Input
-                  type="date"
-                  name="reservationDate"
-                  value={formData.reservationDate}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  No. of Rooms
-                </Label>
-                <Input
-                  type="number"
-                  name="numberOfRooms"
-                  value={formData.numberOfRooms}
-                  readOnly
-                  placeholder="Auto-counted"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Refund %
-                </Label>
-                <Input
-                  type="number"
-                  name="refundPercentage"
-                  value={formData.refundPercentage}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Payment Status
-                </Label>
-                <Select
-                  value={formData.paymentStatus}
-                  onValueChange={(value) =>
-                    handleSelect("paymentStatus", value)
-                  }
-                >
-                  <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50">
+              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">Payment Status</Label>
+                <Select value={formData.paymentStatus} onValueChange={(value) => handleSelect("paymentStatus", value)}>
+                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
@@ -872,129 +683,79 @@ export default function AddReservationForm() {
             </div>
           </div>
 
-          {/* Guest Details */}
+          {/* USER DETAILS */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-slate-800">User Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">User Details</h3>
+            {/* Row 1: Select User, Guest Name, Referred By, Phone */}
+            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Add Existing User
-                </Label>
-                <Select
-                  value={formData.existingGuest}
-                  onValueChange={(value) =>
-                    handleSelect("existingGuest", value)
-                  }
-                >
-                  <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50">
-                    <SelectValue placeholder={loading.users ? "Loading users..." : "Select User"} />
+                <Label className="text-sm font-medium text-slate-700">Select User</Label>
+                <Select value={formData.existingGuest} onValueChange={(value) => handleSelect("existingGuest", value)}>
+                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
+                    <SelectValue placeholder={loading.users ? "Loading..." : "Select User"} />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map((user) => (
-                      <SelectItem key={user._id} value={user._id}>
-                        {user.name} ({user.email})
-                      </SelectItem>
+                      <SelectItem key={user._id} value={user._id}>{user.name} ({user.email})</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Full Name
-                </Label>
-                <Input
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Guest Name</Label>
+                <Input name="fullName" value={formData.fullName} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Phone
-                </Label>
-                <Input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Referred By</Label>
+                <Input name="referredBy" value={formData.referredBy} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Email
-                </Label>
-                <Input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Phone</Label>
+                <Input name="phone" value={formData.phone} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+            </div>
+            {/* Row 2: Email, Address Line 1, Address Line 2 */}
+            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-8 gap-4">
+              <div className="space-y-2 col-span-2 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">Email</Label>
+                <Input name="email" value={formData.email} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+              <div className="space-y-2 col-span-2 xl:col-span-3">
+                <Label className="text-sm font-medium text-slate-700">Address Line 1</Label>
+                <Input name="address1" value={formData.address1} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+              <div className="space-y-2 col-span-2 xl:col-span-3">
+                <Label className="text-sm font-medium text-slate-700">Address Line 2</Label>
+                <Input name="address2" value={formData.address2} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+              </div>
+            </div>
+            {/* Row 3: City, State, Postal Code, Country */}
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">City</Label>
+                <Input name="city" value={formData.city} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Address Line 1
-                </Label>
-                <Input
-                  name="address1"
-                  value={formData.address1}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">State</Label>
+                <Input name="state" value={formData.state} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Address Line 2
-                </Label>
-                <Input
-                  name="address2"
-                  value={formData.address2}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <Label className="text-sm font-medium text-slate-700">Postal Code</Label>
+                <Input name="postalCode" value={formData.postalCode} onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  City / District
-                </Label>
-                <Input
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  State / Province
-                </Label>
-                <Input
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Postal Code
-                </Label>
-                <Input
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Country
-                </Label>
-                <Select
-                  value={formData.country}
-                  onValueChange={(value) => handleSelect("country", value)}
-                >
-                  <SelectTrigger className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50">
+                <Label className="text-sm font-medium text-slate-700">Country</Label>
+                <Select value={formData.country} onValueChange={(value) => handleSelect("country", value)}>
+                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select Country" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1011,53 +772,39 @@ export default function AddReservationForm() {
             </div>
           </div>
 
-          {/* Pricing */}
+          {/* AMOUNT */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-slate-800">Room Amount</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Amount</h3>
+            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Room Price
-                </Label>
-                <p className="text-sm text-slate-800 mt-1 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50">
+                <Label className="text-sm font-medium text-slate-700">Room Price</Label>
+                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800">
                   ₹{formData.roomPrice}
-                </p>
-              </div>
-              {formData.extraBedCharges > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-slate-700">
-                    Extra Bed Charges
-                  </Label>
-                  <p className="text-sm text-slate-800 mt-1 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50">
-                    ₹{formData.extraBedCharges}
-                  </p>
                 </div>
-              )}
+              </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Grand Total
-                </Label>
-                <p className="text-sm text-slate-800 mt-1 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50">
+                <Label className="text-sm font-medium text-slate-700">Extra Guest Charges</Label>
+                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800">
+                  ₹{formData.extraBedCharges}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">Grand Total</Label>
+                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm font-semibold text-slate-800">
                   ₹{formData.totalPayable}
-                </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-4 pt-6">
-            <PermissionButton
-              permission="canAddReservations"
-              type="submit"
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
-            >
+          {/* ACTION BUTTONS */}
+          <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 pt-4 sticky bottom-0 bg-white pb-4 border-t border-slate-200">
+            <PermissionButton permission="canAddReservations" type="submit"
+              className="h-10 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-sm transition-colors">
               Submit
             </PermissionButton>
-            <Button
-              type="button"
-              onClick={handleReset}
-              className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-3 px-4 rounded-lg transition-colors"
-            >
+            <Button type="button" onClick={handleReset}
+              className="h-10 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium rounded-sm transition-colors">
               Reset
             </Button>
           </div>

@@ -1604,14 +1604,14 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
                       Guest Details
                     </h3>
-                    <div className="grid grid-cols-4 gap-3">
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Guests
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="mt-1"
                             type="number"
                             value={String(editForm?.guests ?? 0)}
                             onChange={(e) =>
@@ -1622,21 +1622,21 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.guests}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Children
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="mt-1"
                             type="number"
                             value={String(editForm?.children ?? 0)}
                             onChange={(e) =>
@@ -1647,21 +1647,21 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.children}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Extra Guests
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="mt-1"
                             type="number"
                             value={String(editForm?.extraGuests ?? 0)}
                             onChange={(e) =>
@@ -1672,20 +1672,20 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.extraGuests}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Total Guests
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-blue-50 rounded-md border border-blue-200">
-                          <span className="text-xl font-bold text-blue-900">
+                        <div className="mt-1 p-3 bg-blue-50 rounded-md border border-blue-200">
+                          <span className="text-sm font-semibold text-blue-900">
                             {Number(editForm?.guests || 0) +
                               Number(editForm?.children || 0) +
                               Number(editForm?.extraGuests || 0)}
@@ -1700,14 +1700,14 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
                       Room Information
                     </h3>
-                    <div className="grid grid-cols-1 gap-3">
-                      <div className="flex flex-col max-w-xs">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Number of Rooms
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="mt-1"
                             type="number"
                             value={String(editForm?.numberOfRooms ?? 0)}
                             onChange={(e) =>
@@ -1718,8 +1718,8 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.numberOfRooms}
                             </span>
                           </div>
@@ -1733,36 +1733,36 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
                       Pricing Information
                     </h3>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Room Price
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                          <span className="text-base font-semibold text-gray-900">
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <span className="text-sm font-semibold text-gray-900">
                             ₹{selectedReservation.roomPrice.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Extra Bed Charges
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                          <span className="text-base font-semibold text-gray-900">
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <span className="text-sm font-semibold text-gray-900">
                             ₹
                             {selectedReservation.extraBedCharges.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div className="md:col-span-2">
+                        <Label className="text-sm font-medium text-gray-700">
                           Total Payable
                         </Label>
-                        <div className="h-12 flex items-center justify-center bg-green-50 rounded-md border border-green-200">
-                          <span className="text-xl font-bold text-green-900">
+                        <div className="mt-1 p-3 bg-green-50 rounded-md border border-green-200">
+                          <span className="text-sm font-semibold text-green-900">
                             ₹{selectedReservation.totalPayable.toLocaleString()}
                           </span>
                         </div>
@@ -1817,9 +1817,9 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
                       Status Information
                     </h3>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Reservation Status
                         </Label>
                         {sheetMode === "edit" ? (
@@ -1829,7 +1829,7 @@ export default function ReservationTable() {
                               handleEditChange("status", value)
                             }
                           >
-                            <SelectTrigger className="h-12 text-base font-medium">
+                            <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1842,16 +1842,16 @@ export default function ReservationTable() {
                             </SelectContent>
                           </Select>
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.status}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Payment Status
                         </Label>
                         {sheetMode === "edit" ? (
@@ -1861,7 +1861,7 @@ export default function ReservationTable() {
                               handleEditChange("paymentStatus", value)
                             }
                           >
-                            <SelectTrigger className="h-12 text-base font-medium">
+                            <SelectTrigger className="mt-1">
                               <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1870,21 +1870,21 @@ export default function ReservationTable() {
                             </SelectContent>
                           </Select>
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.paymentStatus}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col">
-                        <Label className="text-xs font-medium text-gray-600 mb-1.5">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
                           Refund Percentage
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="h-12 text-center text-base font-medium"
+                            className="mt-1"
                             type="number"
                             value={String(editForm?.refundPercentage ?? 0)}
                             onChange={(e) =>
@@ -1895,8 +1895,8 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="h-12 flex items-center justify-center bg-gray-50 rounded-md border">
-                            <span className="text-base font-medium text-gray-900">
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
                               {selectedReservation.refundPercentage}%
                             </span>
                           </div>
@@ -2091,15 +2091,37 @@ export default function ReservationTable() {
               </div>
 
               {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
-                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
+                  <>
+                    <Button
+                      onClick={() => setSheetMode("edit")}
+                      disabled={!perms.canEdit}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to edit"
+                          : undefined
+                      }
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Button
                       variant="outline"
                       onClick={() => {
                         setSheetMode("view");
+                        if (selectedReservation) {
+                          setEditForm({ ...selectedReservation });
+                        }
                       }}
                     >
                       Cancel
@@ -2113,7 +2135,14 @@ export default function ReservationTable() {
                           : undefined
                       }
                     >
-                      {isSaving ? "Saving..." : "Update"}
+                      {isSaving ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 )}

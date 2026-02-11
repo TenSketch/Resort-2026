@@ -181,7 +181,7 @@ const AddTouristBooking = () => {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="w-full max-w-6xl">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Trek Spot Booking</h1>
@@ -189,7 +189,7 @@ const AddTouristBooking = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Customer Information</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-800 border-b border-slate-200 pb-2 md:pb-3 mb-4 md:mb-6">Customer Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-sm font-medium text-slate-700">Full Name <span className="text-red-500">*</span></Label>
@@ -227,7 +227,7 @@ const AddTouristBooking = () => {
             
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Booking Details</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-800 border-b border-slate-200 pb-2 md:pb-3 mb-4 md:mb-6 mt-6 md:mt-8">Booking Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label>Visit Date <span className="text-red-500">*</span></Label>
@@ -243,7 +243,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Package / Ticket Type</Label>
-              <select name="packageType" value={formData.packageType} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="packageType" value={formData.packageType} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="">-- Select Package --</option>
                 <option value="adult">Adult</option>
                 <option value="child">Child</option>
@@ -261,7 +261,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Guide Required</Label>
-              <select name="guideRequired" value={formData.guideRequired} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="guideRequired" value={formData.guideRequired} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
               </select>
@@ -272,7 +272,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Transport Required</Label>
-              <select name="transportRequired" value={formData.transportRequired} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="transportRequired" value={formData.transportRequired} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
               </select>
@@ -284,7 +284,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Reserved From</Label>
-              <select name="reservedFrom" value={formData.reservedFrom} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="reservedFrom" value={formData.reservedFrom} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Admin">Admin</option>
                 <option value="Online">Online</option>
                 <option value="Phone">Phone</option>
@@ -293,7 +293,7 @@ const AddTouristBooking = () => {
 
             <div className="space-y-2">
               <Label>Booking Status</Label>
-              <select name="status" value={formData.status} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="status" value={formData.status} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Pending">Pending</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Cancelled">Cancelled</option>
@@ -302,7 +302,7 @@ const AddTouristBooking = () => {
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Payment</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-800 border-b border-slate-200 pb-2 md:pb-3 mb-4 md:mb-6 mt-6 md:mt-8">Payment</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label>Ticket Price (₹)</Label>
@@ -314,7 +314,7 @@ const AddTouristBooking = () => {
             </div>
             <div className="space-y-2">
               <Label>Payment Status</Label>
-              <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange} className="w-full h-[36px] px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
+              <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange} className="w-full h-10 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50 text-sm">
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
                 <option value="Partial">Partial</option>
@@ -332,7 +332,7 @@ const AddTouristBooking = () => {
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Cancellation & Refund</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-slate-800 border-b border-slate-200 pb-2 md:pb-3 mb-4 md:mb-6 mt-6 md:mt-8">Cancellation & Refund</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label>Cancel Booking Reason</Label>
@@ -352,19 +352,19 @@ const AddTouristBooking = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 mt-6">
             <Label>Cancellation Message</Label>
-            <textarea name="cancellationMessage" value={formData.cancellationMessage} onChange={handleChange} rows={4} className="w-full px-4 py-3 border rounded" />
+            <textarea name="cancellationMessage" value={formData.cancellationMessage} onChange={handleChange} rows={4} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50" />
           </div>
 
           <div className="space-y-2">
             <Label>Internal Notes</Label>
-            <textarea name="internalNotes" value={formData.internalNotes} onChange={handleChange} rows={3} className="w-full px-4 py-3 border rounded" />
+            <textarea name="internalNotes" value={formData.internalNotes} onChange={handleChange} rows={3} className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50" />
           </div>
 
-          <div className="flex gap-4 pt-6">
-            <Button type="submit" className="flex-1 bg-slate-800 text-white">Submit</Button>
-            <Button type="button" variant="outline" onClick={handleReset} className="flex-1">Reset</Button>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6">
+            <Button type="submit" className="w-full sm:flex-1 bg-slate-800 text-white py-6 sm:py-3">Submit</Button>
+            <Button type="button" variant="outline" onClick={handleReset} className="w-full sm:flex-1 py-6 sm:py-3">Reset</Button>
           </div>
         </form>
       </div>

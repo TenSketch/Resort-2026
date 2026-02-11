@@ -231,8 +231,8 @@ const AddTouristSpot = () => {
     };
 
     return (
-        <div className="min-h-screen p-8">
-            <div className="w-full max-w-3xl">
+        <div className="min-h-screen p-4 md:p-8">
+            <div className="w-full max-w-3xl mx-auto">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Trek Spot</h1>
                     <p className="text-slate-600">Create a new Trek spot with fees and parking details.</p>
@@ -259,19 +259,19 @@ const AddTouristSpot = () => {
                                 <p className="text-xs text-gray-500 mt-1">Defaulted to 'TREK' for trek spots</p>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">Entry Fee (₹) <span className="text-red-600">*</span></Label>
+                                    <Label className="text-sm font-medium text-gray-700">Entry Fee (₹) <span className="text-red-600">*</span></Label>
                                     <Input required type="number" min={0} placeholder="e.g. 800" value={form.entryFees} onChange={(e) => setForm(s => ({ ...s, entryFees: e.target.value }))} className="w-full" />
                                 </div>
 
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">2W Parking Fee (Optional)</Label>
+                                    <Label className="text-sm font-medium text-gray-700">2W Parking Fee (Optional)</Label>
                                     <Input type="number" min={0} value={form.parking2W} onChange={(e) => setForm(s => ({ ...s, parking2W: e.target.value }))} className="w-full" />
                                 </div>
 
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">4W Parking Fee (Optional)</Label>
+                                    <Label className="text-sm font-medium text-gray-700">4W Parking Fee (Optional)</Label>
                                     <Input type="number" min={0} value={form.parking4W} onChange={(e) => setForm(s => ({ ...s, parking4W: e.target.value }))} className="w-full" />
                                 </div>
                             </div>
@@ -281,7 +281,7 @@ const AddTouristSpot = () => {
                                 <Input type="number" min={0} value={form.cameraFees} onChange={(e) => setForm(s => ({ ...s, cameraFees: e.target.value }))} className="w-full" />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label className="text-sm font-medium text-gray-700">Max Treks/Slots per Day</Label>
                                     <Input type="number" min={1} placeholder="e.g. 2" value={form.maxSlotsPerDay} onChange={(e) => setForm(s => ({ ...s, maxSlotsPerDay: e.target.value }))} className="w-full" />
@@ -294,7 +294,7 @@ const AddTouristSpot = () => {
               
                                             <div>
                                                 <Label className="text-sm font-medium text-gray-700">Description</Label>
-                                                <textarea value={form.description} onChange={(e) => setForm(s => ({ ...s, description: e.target.value }))} rows={4} className="w-full px-3 py-2 border rounded-md bg-slate-50" />
+                                                <textarea value={form.description} onChange={(e) => setForm(s => ({ ...s, description: e.target.value }))} rows={4} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50" />
                                             </div>
 
                                             <div>
@@ -321,11 +321,11 @@ const AddTouristSpot = () => {
                         </div>
                     </div>
 
-                    <div className="flex gap-4 pt-2">
-                        <Button type="button" onClick={handleAdd} disabled={isSaving} className="bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-6 rounded-lg">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
+                        <Button type="button" onClick={handleAdd} disabled={isSaving} className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-6 rounded-lg">
                             {isSaving ? (isEditMode ? 'Updating...' : 'Saving...') : (isEditMode ? 'Update Trek Spot' : 'Add Trek Spot')}
                         </Button>
-                        <Button type="button" onClick={handleReset} variant="ghost" disabled={isSaving} className="bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-3 px-6 rounded-lg">
+                        <Button type="button" onClick={handleReset} variant="ghost" disabled={isSaving} className="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-3 px-6 rounded-lg">
                             Reset
                         </Button>
                     </div>

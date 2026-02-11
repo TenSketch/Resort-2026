@@ -600,23 +600,23 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Guest Information
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                         <div>
-                          <Label>Full Name</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.fullName}</span>
+                          <Label className="text-xs">Full Name</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border">
+                            <span className="text-sm">{selected.fullName}</span>
                           </div>
                         </div>
                         <div>
-                          <Label>Phone</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.phone}</span>
+                          <Label className="text-xs">Phone</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border">
+                            <span className="text-sm">{selected.phone}</span>
                           </div>
                         </div>
                         <div className="md:col-span-2">
-                          <Label>Email</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.email}</span>
+                          <Label className="text-xs">Email</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border">
+                            <span className="text-sm">{selected.email}</span>
                           </div>
                         </div>
                       </div>
@@ -625,47 +625,47 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Booking Information
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                         <div>
-                          <Label>Booking ID</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span className="font-mono">
+                          <Label className="text-xs">Booking ID</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm font-mono">
                               {selected.bookingId}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <Label>Reservation Date</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>
+                          <Label className="text-xs">Reservation Date</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">
                               {formatDateForDisplay(selected.reservationDate)}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <Label>Visit Date</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>
+                          <Label className="text-xs">Visit Date</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">
                               {formatDateForDisplay(selected.visitDate)}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <Label>Visit Time</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.visitTime}</span>
+                          <Label className="text-xs">Visit Time</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">{selected.visitTime}</span>
                           </div>
                         </div>
                         <div>
-                          <Label>Spot</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.touristSpotName}</span>
+                          <Label className="text-xs">Spot</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">{selected.touristSpotName}</span>
                           </div>
                         </div>
                         <div>
-                          <Label>Visitors (A/C)</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{formatVisitors(selected)}</span>
+                          <Label className="text-xs">Visitors (A/C)</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">{formatVisitors(selected)}</span>
                           </div>
                         </div>
                       </div>
@@ -674,23 +674,23 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Status & Payment
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                      <div className="grid grid-cols-3 gap-3 mt-2">
                         <div>
-                          <Label>Status</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.status}</span>
+                          <Label className="text-xs">Status</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">{selected.status}</span>
                           </div>
                         </div>
                         <div>
-                          <Label>Payment Status</Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span>{selected.paymentStatus}</span>
+                          <Label className="text-xs">Payment Status</Label>
+                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
+                            <span className="text-sm">{selected.paymentStatus}</span>
                           </div>
                         </div>
                         <div>
-                          <Label>Amount Payable</Label>
-                          <div className="mt-1 p-3 bg-green-50 rounded border">
-                            <span>
+                          <Label className="text-xs">Amount Payable</Label>
+                          <div className="mt-1 p-2 bg-green-50 rounded border text-center">
+                            <span className="text-sm font-semibold">
                               ₹{selected.amountPayable?.toLocaleString()}
                             </span>
                           </div>
@@ -831,7 +831,7 @@ export default function AllTouristBookings() {
                 )}
               </div>
 
-              <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
                   <>
                     <Button
@@ -840,7 +840,6 @@ export default function AllTouristBookings() {
                         setSheetMode("edit");
                         setEditForm({ ...selected });
                       }}
-                      className="flex-1"
                       disabled={!perms.canEdit}
                       title={
                         !perms.canEdit
@@ -848,7 +847,7 @@ export default function AllTouristBookings() {
                           : undefined
                       }
                     >
-                      Edit Booking
+                      Edit
                     </Button>
                     <Button
                       variant="destructive"
@@ -867,6 +866,13 @@ export default function AllTouristBookings() {
                     >
                       Delete
                     </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -874,6 +880,9 @@ export default function AllTouristBookings() {
                       variant="outline"
                       onClick={() => {
                         setSheetMode("view");
+                        if (selected) {
+                          setEditForm({ ...selected });
+                        }
                       }}
                     >
                       Cancel
@@ -887,7 +896,14 @@ export default function AllTouristBookings() {
                           : undefined
                       }
                     >
-                      {isSaving ? "Saving..." : "Update"}
+                      {isSaving ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 )}

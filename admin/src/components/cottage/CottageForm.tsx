@@ -135,7 +135,7 @@ const AddCottageTypeForm = () => {
   }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="w-full max-w-4xl">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">

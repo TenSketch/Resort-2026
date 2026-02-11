@@ -1349,7 +1349,7 @@ export default function GuestTable() {
               </div>
 
               {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === "view" ? (
                   <>
                     <Button
@@ -1360,7 +1360,6 @@ export default function GuestTable() {
                         setEditingGuest(selectedGuest);
                         setFormData({ ...selectedGuest });
                       }}
-                      className="flex-1"
                       disabled={!perms.canEdit}
                       title={
                         !perms.canEdit
@@ -1368,7 +1367,7 @@ export default function GuestTable() {
                           : undefined
                       }
                     >
-                      Edit User
+                      Edit
                     </Button>
                     <Button
                       variant="destructive"
@@ -1384,7 +1383,14 @@ export default function GuestTable() {
                           : undefined
                       }
                     >
-                      Delete User
+                      Delete
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 ) : (
@@ -1404,7 +1410,14 @@ export default function GuestTable() {
                           : undefined
                       }
                     >
-                      Update
+                      Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 )}

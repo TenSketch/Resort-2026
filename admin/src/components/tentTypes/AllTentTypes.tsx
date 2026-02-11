@@ -522,11 +522,24 @@ export default function AllTentTypesTable() {
 
               </div>
 
-              <div className="flex-shrink-0 flex gap-2 p-6 border-t bg-white">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 {sheetMode === 'view' ? (
-                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">
-                    Close
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() => setSheetMode('edit')}
+                      disabled={!perms.canEdit}
+                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
@@ -598,6 +611,13 @@ export default function AllTentTypesTable() {
                       title={!perms.canEdit ? 'You do not have permission to save' : undefined}
                     >
                       Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 )}

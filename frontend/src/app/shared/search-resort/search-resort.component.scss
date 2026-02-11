@@ -14,6 +14,10 @@ $clr-neutral--700: #374151;
   width: 100%;
   position: relative;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 }
 
 // Glassmorphism Card
@@ -168,7 +172,7 @@ $clr-neutral--700: #374151;
     width: 100%;
     
     @media (max-width: 768px) {
-        flex-direction: column; // Stack on mobile
+        flex-direction: row; // Horizontal on mobile too
         gap: 1rem;
     }
 }
@@ -203,12 +207,12 @@ $clr-neutral--700: #374151;
     }
     
     @media (max-width: 768px) {
-        flex-direction: row; // Row on mobile for compactness
+        flex-direction: column; // Column on mobile to stack icon/text
         padding: 1rem;
         min-width: 0;
-        text-align: left;
-        align-items: center;
-        justify-content: flex-start;
+        text-align: center; // Center align text
+        align-items: center; // Center align items
+        justify-content: center;
     }
 }
 
@@ -228,8 +232,8 @@ $clr-neutral--700: #374151;
     @media (max-width: 768px) {
         width: 48px;
         height: 48px;
-        margin-bottom: 0;
-        margin-right: 1rem;
+        margin-bottom: 0.5rem; // Add margin bottom like desktop
+        margin-right: 0; // Remove margin right
         font-size: 1.25rem;
     }
 }
@@ -261,8 +265,9 @@ $clr-neutral--700: #374151;
     margin-top: 0rem;
     
     @media (max-width: 768px) {
-       transform: translateX(-10px); // Slide right
+       transform: translateY(10px); // Slide up like desktop
        margin-top: 0;
+       display: none; // Hide arrow on mobile to save space/reduce clutter
     }
 }
 

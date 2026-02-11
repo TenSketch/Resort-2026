@@ -203,7 +203,6 @@ aside {
     position: sticky !important;
     top: 80px !important;
     z-index: 900;
-    background: white;
     padding-bottom: 10px;
   }
 
@@ -213,7 +212,7 @@ aside {
 
   @media (max-width: 575.98px) {
     aside {
-      top: 90px !important;
+      top: 100px !important;
     }
   }
 }
@@ -254,4 +253,21 @@ aside {
 .btn-proceed {
   background-color: $clr-secondary !important;
   color: $white !important;
+}
+
+// Disable hover color changes for pill buttons on this page
+::ng-deep app-tourist-spots-booking {
+  .btn.rounded-pill {
+    &.btn-primary:hover {
+      background-color: $clr-primary !important;
+      border-color: $clr-primary !important;
+      color: $white !important;
+    }
+
+    &.btn-outline-secondary:hover {
+      background-color: transparent !important;
+      color: $clr-secondary !important;
+      border-color: $clr-secondary !important;
+    }
+  }
 }

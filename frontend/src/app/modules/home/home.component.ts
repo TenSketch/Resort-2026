@@ -98,8 +98,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       tagline: 'Sleep Under the Stars',
       startText: null,
       price: 'From ₹1,500 / night',
-      cta: 'Book Tents',
-      action: 'tents'
+      cta: 'Comming Soon',
+      action: ''
     },
     {
       id: 4,

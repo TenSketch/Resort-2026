@@ -9,7 +9,7 @@
         <header class="header header-left">
           <h3 class="title">
             {{ name }}<span class="sep">,</span>
-            <span class="loc">{{ location }}</span>
+            <!-- <span class="loc">{{ location }}</span> -->
           </h3>
           <div class="sub" *ngIf="type">{{ type }}</div>
         </header>
@@ -66,15 +66,18 @@
           <!-- Actions (bottom-right) -->
           <div class="actions actions-bottom-right mt-3 d-flex justify-content-end align-items-center">
             <ng-container *ngIf="openInNewTab; else inlineLink">
-              <a mat-stroked-button color="primary" [href]="detailsHref" target="_blank" rel="noopener noreferrer">View
+              <a class="btn btn-lg btn-outline-secondary  mt-4 rounded-pill px-4" [href]="detailsHref" target="_blank"
+                rel="noopener noreferrer">View
                 details</a>
             </ng-container>
             <ng-template #inlineLink>
-              <a mat-stroked-button color="primary" [routerLink]="detailsLink" [fragment]="detailsFragment">View
+              <a class="btn btn-lg btn-outline-secondary  mt-4 rounded-pill px-4" [routerLink]="detailsLink"
+                [fragment]="detailsFragment">View
                 details</a>
             </ng-template>
 
-            <button mat-raised-button color="primary" [disabled]="isSoldOut || !isSearchPerformed" [title]="
+            <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" [disabled]="isSoldOut || !isSearchPerformed"
+              [title]="
             !isSearchPerformed
               ? 'Select a visit date to enable booking'
               : isSoldOut

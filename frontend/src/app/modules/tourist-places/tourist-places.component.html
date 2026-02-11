@@ -43,17 +43,20 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg" alt="Jalatarangini Waterfall"
+              <img [src]="currentImages['jalatarangini']" alt="Jalatarangini Waterfall"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('jalatarangini', 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('jalatarangini', 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-01.jpg')" />
                 <img src="assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('jalatarangini', 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls-02.jpg')" />
               </div>
             </div>
           </div>
@@ -228,17 +231,20 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg" alt="Amruthadhara Waterfall"
+              <img [src]="currentImages['amruthadhara']" alt="Amruthadhara Waterfall"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('amruthadhara', 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('amruthadhara', 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-01.jpg')" />
                 <img src="assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('amruthadhara', 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls-02.jpg')" />
               </div>
             </div>
           </div>
@@ -255,14 +261,16 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg" alt="Karthikavanam Picnic Spot"
+              <img [src]="currentImages['karthikavanam']" alt="Karthikavanam Picnic Spot"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('karthikavanam', 'assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('karthikavanam', 'assets/img/TOURIST-PLACES/karthikavanam-picnic-spot-01.jpg')" />
               </div>
             </div>
           </div>
@@ -415,14 +423,19 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img src="assets/img/TOURIST-PLACES/MPCA.jpg" alt="MPCA"
+              <img [src]="currentImages['mpca']" alt="MPCA"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('mpca', 'assets/img/TOURIST-PLACES/MPCA.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/MPCA-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('mpca', 'assets/img/TOURIST-PLACES/MPCA-01.jpg')" />
+                <img src="assets/img/TOURIST-PLACES/MPCA.jpg" class="rounded-3 shadow-sm border border-2 border-white"
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('mpca', 'assets/img/TOURIST-PLACES/MPCA.jpg')" />
               </div>
             </div>
           </div>
@@ -439,17 +452,20 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Soft Trek"
+              <img [src]="currentImages['softTrek']" alt="Soft Trek"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('softTrek', 'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('softTrek', 'assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg')" />
                 <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('softTrek', 'assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg')" />
               </div>
             </div>
           </div>
@@ -639,17 +655,20 @@
           <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
             <div class="position-relative">
               <div class="blob-bg blob-right"></div>
-              <img src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" alt="Jungle Star Trek"
+              <img [src]="currentImages['hardTrek']" alt="Jungle Star Trek"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('hardTrek', 'assets/img/TOURIST-PLACES/junglestar-trek-01.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 start-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('hardTrek', 'assets/img/TOURIST-PLACES/junglestar-trek-02.jpg')" />
                 <img src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('hardTrek', 'assets/img/TOURIST-PLACES/junglestar-trek-03.jpg')" />
               </div>
             </div>
           </div>
@@ -666,17 +685,20 @@
           <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-              <img src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" alt="Gudisa View Point"
+              <img [src]="currentImages['gudisa']" alt="Gudisa View Point"
                 class="img-fluid rounded-4 shadow-lg position-relative z-1 w-100 object-fit-cover"
-                style="min-height: 400px; max-height: 500px" />
+                style="min-height: 400px; max-height: 500px; cursor: pointer;"
+                (click)="setMainImage('gudisa', 'assets/img/TOURIST-PLACES/gudisa-hills-1.jpg')" />
               <!-- Mini Gallery Overlay -->
               <div class="mini-gallery-overlay position-absolute bottom-0 end-0 m-3 z-2 d-flex gap-2">
                 <img src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('gudisa', 'assets/img/TOURIST-PLACES/gudisa-hills-2.jpg')" />
                 <img src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg"
                   class="rounded-3 shadow-sm border border-2 border-white"
-                  style="width: 60px; height: 60px; object-fit: cover" />
+                  style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                  (click)="setMainImage('gudisa', 'assets/img/TOURIST-PLACES/gudisa-hills-3.jpg')" />
               </div>
             </div>
           </div>

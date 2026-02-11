@@ -61,10 +61,10 @@ export class SearchResortOnlyComponent implements OnInit {
     const previousCheckin = this.authService.getSearchData('checkin');
     const previousCheckout = this.authService.getSearchData('checkout');
     
-    if (previousResort) {
-      this.searchForm.patchValue({ selectedResort: previousResort });
-      this.setMinDate(); // Set min date based on resort
-    }
+    // Set default resort if none stored
+    const defaultResort = previousResort || this.resortLocations[0];
+    this.searchForm.patchValue({ selectedResort: defaultResort });
+    this.setMinDate(); // Set min date based on resort
     
     // Auto-fill dates if available from home page quick filter
     if (previousCheckin) {
@@ -73,9 +73,28 @@ export class SearchResortOnlyComponent implements OnInit {
       this.updateMinCheckoutDate(checkinDate);
     }
     
-    if (previousCheckout) {
-      const checkoutDate = new Date(previousCheckout);
-      this.searchForm.patchValue({ checkoutDate: checkoutDate });
+    // If no checkin, trigger logic to default dates
+    if (!previousCheckin) {
+      // For Jungle Star, we force logic even if checkin was present (based on user request)
+      // Actually, let's just call onResortChange logic which handles existing date check for Vanavihari
+      this.onResortChange();
+    } else {
+       // If checkin exists, just ensure checkout logic
+       if (previousCheckout) {
+         const checkoutDate = new Date(previousCheckout);
+         this.searchForm.patchValue({ checkoutDate: checkoutDate });
+       } else {
+         // Auto-calculate checkout if checkin present but checkout missing
+         this.updateMinCheckoutDate(new Date(previousCheckin));
+       }
+       
+       // Special case for Jungle Star: Force T+1 logic? 
+       // User requested: "for jungle-star it should be next day".
+       // If I restore a past date, maybe I should respect it?
+       // Let's assume onResortChange logic is the source of truth
+       if (defaultResort && defaultResort.includes('Jungle Star')) {
+          this.onResortChange(); // This will force T+1 for Jungle Star as per previous logic
+       }
     }
   }
 
@@ -88,37 +107,51 @@ export class SearchResortOnlyComponent implements OnInit {
     
     // Autofill check-in date logic
     const selectedResort = this.searchForm.get('selectedResort')?.value;
+    const currentCheckin = this.searchForm.get('checkinDate')?.value;
     const today = new Date();
     let autoDate = new Date();
     let shouldAutofill = false;
 
     if (selectedResort && selectedResort.includes('Vanavihari')) {
-      autoDate = today;
-      shouldAutofill = true;
+      // For Vanavihari: Only autofill if empty, otherwise keep user selection
+      if (!currentCheckin) {
+        autoDate = today;
+        shouldAutofill = true;
+      }
     } else if (selectedResort && selectedResort.includes('Jungle Star')) {
+      // For Jungle Star: Always force to T+1 (Tomorrow)
       autoDate.setDate(today.getDate() + 1);
       shouldAutofill = true;
     }
 
     if (shouldAutofill) {
-      // Format to YYYY-MM-DD for native date input
-      const year = autoDate.getFullYear();
-      const month = ('0' + (autoDate.getMonth() + 1)).slice(-2);
-      const day = ('0' + autoDate.getDate()).slice(-2);
-      const formattedDate = `${year}-${month}-${day}`;
+      // Format to YYYY-MM-DD for native date input (if used) or Date object for mat-datepicker
+      // Ideally keeping it as Date object for consistency with reactive forms and material
+      // But the existing code used string formatting, let's stick to Date object if possible or format if needed.
+      // Looking at previous code, it patched formattedDate string. Material datepicker usually handles Date objects.
+      // Let's use Date objects to be safe, or strings if the form controls expect strings.
+      // The previous code formatted to YYYY-MM-DD. I will respect that pattern but also try to just pass the Date object
+      // if the control handles it. Howerver, to match previous code style:
       
+      // const year = autoDate.getFullYear();
+      // const month = ('0' + (autoDate.getMonth() + 1)).slice(-2);
+      // const day = ('0' + autoDate.getDate()).slice(-2);
+      // const formattedDate = `${year}-${month}-${day}`;
+      
+      // Actually, passing Date object is usually better for Angular Material.
+      // Let's try passing the Date object directly.
       this.searchForm.patchValue({
-        checkinDate: formattedDate,
-        checkoutDate: null
+        checkinDate: autoDate
       });
-      // Allow minCheckoutDate to update via subscription
+      // Checkout date will be handled by the valueChanges subscription or updated explicitly here?
+      // valueChanges handles minCheckoutDate, let's also update checkoutDate there or here.
+      // trigger update manually just in case
+      this.updateMinCheckoutDate(autoDate);
     } else {
-        // Reset dates when resort changes if no autofill matches (or fallback)
-        this.searchForm.patchValue({
-          checkinDate: null,
-          checkoutDate: null
-        });
-        this.minCheckoutDate = null;
+       // If we switched to Vanavihari and had a date, we might want to ensure checkout is valid
+       if (currentCheckin) {
+           this.updateMinCheckoutDate(currentCheckin);
+       }
     }
   }
 
@@ -146,8 +179,16 @@ export class SearchResortOnlyComponent implements OnInit {
       const minDate = new Date(checkinDate);
       minDate.setDate(minDate.getDate() + 1);
       this.minCheckoutDate = minDate;
+      
+      // Auto-set checkout date to next day
+      this.searchForm.patchValue({
+        checkoutDate: minDate
+      });
     } else {
       this.minCheckoutDate = null;
+      this.searchForm.patchValue({
+        checkoutDate: null
+      });
     }
   }
 

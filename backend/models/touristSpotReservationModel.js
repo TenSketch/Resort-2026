@@ -9,10 +9,12 @@ const touristSpotReservationSchema = new mongoose.Schema({
     name: String,
     visitDate: Date,
     counts: {
+        guests: { type: Number, default: 0 }, // Total guests
+        cameras: { type: Number, default: 0 },
+        // Legacy fields for backward compatibility
         adults: { type: Number, default: 0 },
         children: { type: Number, default: 0 },
         vehicles: { type: Number, default: 0 },
-        cameras: { type: Number, default: 0 },
         twoWheelers: { type: Number, default: 0 },
         fourWheelers: { type: Number, default: 0 }
     },
@@ -30,13 +32,13 @@ const touristSpotReservationSchema = new mongoose.Schema({
   status: { 
     type: String, 
     default: 'pending', 
-    enum: ['pending', 'reserved', 'cancelled', 'failed'] 
+    enum: ['pending', 'reserved', 'not-reserved', 'cancelled', 'failed'] 
   },
   
   paymentStatus: { 
     type: String, 
     default: 'unpaid', 
-    enum: ['unpaid', 'paid', 'failed', 'pending', 'refunded'] 
+    enum: ['unpaid', 'paid', 'failed', 'pending', 'refunded', 'cancelled'] 
   },
   
   paymentTransactionId: String, // Link to PaymentTransaction model
@@ -47,14 +49,20 @@ const touristSpotReservationSchema = new mongoose.Schema({
     email: { type: String, required: true },
     phone: { type: String, required: true },
     address: String,
+    address2: String,
     city: String,
     state: String,
     pincode: String,
     country: String
   },
 
-  bookingDate: { type: Date, default: Date.now },
+  reservationDate: { type: Date, default: Date.now }, // When booking was made
+  bookingDate: { type: Date, default: Date.now }, // Alias for reservationDate
   expiresAt: Date, // For pending bookings cleanup
+  
+  // Admin-specific fields
+  reservedFrom: { type: String, default: 'Online', enum: ['Online', 'Admin', 'Phone', 'Walk-in'] },
+  internalNotes: String,
   
   // Metadata for payment gateway
   rawSource: { type: mongoose.Schema.Types.Mixed },

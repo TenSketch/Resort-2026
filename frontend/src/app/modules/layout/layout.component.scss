@@ -39,10 +39,30 @@
 .navbar {
   min-height: 10vh;
   height: auto;
-  // Adjust for top nav bar on all devices
-  // top: 0 !important;
   z-index: 10001;
-  transition: transform 0.3s ease-in-out; // Smooth slide logic
+  transition: transform 0.3s ease-in-out, right 0.3s ease;
+  
+  // Large screens (992px - 1199px): Navbar accounts for sidebar
+  @media (min-width: 992px) and (max-width: 1199px) {
+    right: min(40%, 320px);
+    width: auto;
+    left: 0;
+    
+    &.sidebar-collapsed {
+      right: 70px;
+    }
+  }
+  
+  // Desktop (≥1200px): Navbar accounts for sidebar
+  @media (min-width: 1200px) {
+    right: 260px;
+    width: auto;
+    left: 0;
+    
+    &.sidebar-collapsed {
+      right: 70px;
+    }
+  }
 
   &.is-nav-hidden {
     transform: translateY(-100%);
@@ -60,6 +80,16 @@
       gap: 0.5rem; // Add small gap between logos
     }
     position: relative; // Needed for absolute positioning context
+  }
+  
+  // Use .container for tablet/desktop
+  & > .container {
+    @media (min-width: 768px) {
+      justify-content: space-between;
+      // max-width: 100%; // Handled globally
+    }
+
+    // Padding handled globally in styles.scss
   }
 
   // Show the toggler on all screen sizes so hamburger is visible on large screens too
@@ -206,25 +236,99 @@
   left: auto;
   height: 100vh;
   width: 100%;
+  max-width: 300px; // Mobile/tablet max width (drawer mode)
   background-color: #f0fdf4;
   border-left: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: 10000;
+  z-index: 12000; // Above bottom nav (11000) on mobile
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, width 0.3s ease;
 
-  // Tablet/Desktop: Fixed Left Sidebar
-  @media (min-width: 992px) {
+  // Large screens (992px - 1199px): Always visible, collapsible
+  @media (min-width: 992px) and (max-width: 1199px) {
     top: 0;
-    left: 0;
-    right: auto;
-    width: 280px;
+    right: 0;
+    left: auto;
+    width: min(40%, 320px);
+    max-width: 40%;
     height: 100vh;
     transform: none !important;
-    border-left: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
-    z-index: 10000; // Behind navbar (10001)
-    padding-top: 10vh; // Clear the navbar area so content starts below
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.02);
+    z-index: 10000;
+    padding-top: 0;
+    
+    &.collapsed {
+      width: 70px;
+      max-width: 70px;
+      
+      .sidebar-link span,
+      .menu-category,
+      .menu-text,
+      .accordion-button::after,
+      .accordion-body,
+      .sidebar-link.fw-bold span { 
+        display: none !important; 
+      }
+      
+      .sidebar-link, .accordion-button {
+        justify-content: center;
+        padding: 0.75rem 0.5rem !important;
+        margin: 0 0.25rem;
+      }
+      
+      .sidebar-content {
+        padding: 0.5rem 0.25rem;
+      }
+    }
+  }
+
+  // Desktop (≥1200px): Full collapsible sidebar
+  @media (min-width: 1200px) {
+    top: 0;
+    left: auto;
+    right: 0;
+    width: 260px;
+    max-width: 260px;
+    height: 100vh;
+    transform: none !important;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.02);
+    z-index: 10000;
+    padding-top: 0;
+    
+    &.collapsed {
+      width: 70px;
+      max-width: 70px;
+      
+      .sidebar-link span,
+      .menu-category,
+      .menu-text,
+      .accordion-button::after,
+      .accordion-body,
+      .sidebar-link.fw-bold span { 
+        display: none !important; 
+      }
+      
+      .sidebar-link, .accordion-button {
+        justify-content: center;
+        padding: 0.75rem 0.5rem !important;
+        margin: 0 0.25rem;
+        
+        i {
+          margin: 0;
+        }
+      }
+      
+      .sidebar-content {
+        padding: 0.5rem 0.25rem;
+      }
+      
+      .sidebar-collapse-btn {
+        i {
+          transform: rotate(0deg);
+        }
+      }
+    }
   }
 
   &.active {
@@ -244,7 +348,7 @@
     &.active {
       display: block;
 
-      // Hide overlay on desktop as sidebar is always visible and doesn't partially cover
+      // Hide overlay on large screens as sidebar is always visible
       @media (min-width: 992px) {
         display: none !important;
       }
@@ -253,14 +357,46 @@
 
   .sidebar-content {
     padding: 0.75rem;
-    margin-top: calc(10vh + 1rem);
+    padding-top: calc(10vh + 1rem);
+    position: relative;
+    overflow: visible; // Allow close button to be visible
+    overflow-y: auto;
+    padding-bottom: 80px; // Space for collapse button
 
-    // Desktop: Remove top margin valid for mobile overlay
-    @media (min-width: 992px) {
-      margin-top: 1rem;
+    // Close button for mobile sidebar (top-right corner)
+    .sidebar-close-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #166534;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: $clr-primary-dark;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    // Tablet/Desktop: Start from very top
+    @media (min-width: 768px) {
+      padding-top: 1.5rem;
     }
     color: $clr-primary-dark;
-    overflow-y: auto;
     height: 100%;
 
     .sidebar-menu {
@@ -274,8 +410,8 @@
           font-size: 0.95rem;
           color: #166534 !important; // Green-700
           text-decoration: none !important;
-          padding: 0.75rem 1rem !important;
-          margin: 0 0.75rem;
+          padding: 0.5rem 1rem !important;
+          margin: 0 0.5rem;
           border-radius: 8px;
           display: flex;
           align-items: center;
@@ -330,7 +466,15 @@
         }
       }
 
-      .accordion {
+        // Static Item (Non-link header container)
+        .sidebar-item-static {
+          margin-top: 0.5rem;
+          .header-text {
+             color: #166534; // Match .sidebar-link color
+          }
+        }
+
+        .accordion {
         --bs-accordion-bg: transparent;
         --bs-accordion-border-width: 0;
         margin-bottom: 0; // Removed bottom margin to prevent double gap
@@ -368,6 +512,10 @@
           min-width: 1.5rem;
           text-align: center;
           color: #15803d;
+        }
+        
+        .menu-text {
+          margin-left: 0.75rem;
         }
 
         &:not(.collapsed) {
@@ -417,14 +565,39 @@
         padding: 0;
         margin-bottom: 1rem;
 
+        // Update styling to match sidebar-link
         .dropdown-item {
-          // color: $white!important;
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          margin: 0 0.75rem 0.25rem 0.75rem;
+          border-radius: 8px;
+          color: #166534 !important; // Green-700
           text-decoration: none !important;
-          transition: color 0.3s;
-          margin-top: 0.5rem;
-          // padding-left: 1rem;
-          // &+.dropdown-item{
-          // }
+          transition: all 0.2s ease;
+          font-size: 0.95rem;
+
+          i {
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+            text-align: center;
+            color: #15803d;
+            transition: color 0.2s ease;
+          }
+
+          .menu-text {
+            margin-left: 1rem; // Match ms-3 (1rem)
+            font-weight: 500;
+          }
+
+          &:hover {
+            background-color: #f3f4f6;
+            color: #111827 !important;
+            
+            i {
+              color: $clr-primary-dark;
+            }
+          }
         }
       }
     }
@@ -442,29 +615,97 @@
 
 // Main Content Area
 main {
-  // Mobile: Navbar logos ~65px + py-2 (~8px*2) = ~81px. 
-  // Adjusted to 85px to be safe but close.
-  padding-top: 85px; 
+  // Mobile/tablet (<992px): Full width, no sidebar margin
+  padding-top: 8px; 
 
-  @media (min-width: 992px) {
-    margin-left: 280px; // Match sidebar width
-    transition: margin-left 0.3s ease;
-    // Desktop: Logos max 95px + py-2 = ~111px. 
-    // Adjusted to 115px.
-    padding-top: 115px; 
+  // Large screens (992px - 1199px): Account for sidebar
+  @media (min-width: 992px) and (max-width: 1199px) {
+    margin-right: min(40%, 320px);
+    margin-left: 0;
+    transition: margin-right 0.3s ease;
+    padding-top: 11px;
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
+  }
+
+  // Desktop (≥1200px): Account for sidebar
+  @media (min-width: 1200px) {
+    margin-right: 260px;
+    margin-left: 0;
+    transition: margin-right 0.3s ease;
+    padding-top: 11px; 
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
   }
 }
 
 .footer {
+  transition: margin-right 0.3s ease;
+  
   .container {
     border-top: 1px solid rgba(0, 0, 0, 0.233);
   }
 
-  @media (min-width: 992px) {
-    margin-left: 280px; // Match sidebar width
-    width: auto; // Let it take remaining width
+  // Large screens (992px - 1199px): Account for sidebar
+  @media (min-width: 992px) and (max-width: 1199px) {
+    margin-right: min(40%, 320px);
+    margin-left: 0;
+    width: auto;
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
+  }
+
+  // Desktop (≥1200px): Account for sidebar
+  @media (min-width: 1200px) {
+    margin-right: 260px;
+    margin-left: 0;
+    width: auto;
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
   }
 }
+
+// Sidebar Collapse Button
+.sidebar-collapse-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 0%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #166534;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: $clr-primary-dark;
+  }
+  
+  &:active {
+    transform: translateX(-50%) scale(0.95);
+  }
+  
+  i {
+    transition: transform 0.3s ease;
+  }
+}
+
+
 
 .dropdown-toggle {
   &::after {
@@ -483,9 +724,29 @@ main {
 
 .bottom-footer {
   background-color: $clr-primary-lighter;
+  transition: margin-right 0.3s ease;
 
+  // Mobile/tablet (<992px): Prevent overlap with bottom nav
   @media (max-width: 991px) {
-    padding-bottom: 80px !important; // Prevent overlap with bottom nav
+    padding-bottom: 80px !important;
+  }
+  
+  // Large screens (992px - 1199px): Account for sidebar
+  @media (min-width: 992px) and (max-width: 1199px) {
+    margin-right: min(40%, 320px);
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
+  }
+  
+  // Desktop (≥1200px): Account for sidebar
+  @media (min-width: 1200px) {
+    margin-right: 260px;
+    
+    &.sidebar-collapsed {
+      margin-right: 70px;
+    }
   }
 }
 
@@ -494,13 +755,39 @@ main {
 .whatsapp-wrapper {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 35px;
   z-index: 1200;
   display: flex;
   flex-direction: row;
   /* Changed to row to place pill next to button */
   align-items: center;
   gap: 12px;
+  transition: right 0.3s ease;
+  
+  // Mobile/tablet (<992px): Account for bottom nav
+  @media (max-width: 991px) {
+    bottom: 80px; // Above bottom nav
+  }
+  
+  // Large screens (992px - 1199px): Account for sidebar
+  @media (min-width: 992px) and (max-width: 1199px) {
+    right: calc(min(40%, 320px) + 20px);
+    bottom: 20px;
+    
+    &.sidebar-collapsed {
+      right: 90px;
+    }
+  }
+  
+  // Desktop (≥1200px): Account for sidebar
+  @media (min-width: 1200px) {
+    right: 280px;
+    bottom: 35px;
+    
+    &.sidebar-collapsed {
+      right: 90px;
+    }
+  }
 }
 
 .whatsapp-float {
@@ -509,12 +796,12 @@ main {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px; // Reduced from 60px
+  height: 50px; // Reduced from 60px
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 26px; // Reduced from 32px
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
   z-index: 1201;
@@ -527,98 +814,7 @@ main {
   }
 }
 
-.whatsapp-options {
-  position: absolute;
-  bottom: 80px;
-  right: 0;
-  z-index: 1202;
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.wa-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-}
-
-.wa-item {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-decoration: none;
-
-  &:hover {
-    background-color: #f8f9fa;
-  }
-}
-
-.wa-icon-wrapper {
-  color: #25d366;
-  font-size: 28px;
-  margin-right: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.wa-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.wa-name {
-  color: #333;
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 2px;
-}
-
-.wa-number {
-  color: #666;
-  font-size: 0.85rem;
-}
-
-.wa-divider {
-  height: 1px;
-  background-color: #eee;
-  margin: 0 16px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 991px) {
-  .whatsapp-wrapper {
-    bottom: 80px !important;
-  }
-}
+// ... existing .whatsapp-options code ...
 
 @media (max-width: 480px) {
   .whatsapp-wrapper {
@@ -626,9 +822,9 @@ main {
   }
 
   .whatsapp-float {
-    width: 50px;
-    height: 50px;
-    font-size: 28px;
+    width: 40px; // Reduced from 50px
+    height: 40px; // Reduced from 50px
+    font-size: 22px; // Reduced from 28px
   }
 
   .wa-card {

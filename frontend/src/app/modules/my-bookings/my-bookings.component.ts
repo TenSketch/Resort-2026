@@ -65,11 +65,12 @@ export class MyBookingsComponent {
       token: this.userService.getUserToken() ?? ''
     };
 
-    // Fetch both room and tent bookings
+    // Fetch room, tent, and trek bookings
     Promise.all([
       this.http.get<any>(`${this.api_url}/api/reservations/my-bookings`, { headers }).toPromise(),
-      this.http.get<any>(`${this.api_url}/api/tent-reservations/my-bookings`, { headers }).toPromise()
-    ]).then(([roomResponse, tentResponse]) => {
+      this.http.get<any>(`${this.api_url}/api/tent-reservations/my-bookings`, { headers }).toPromise(),
+      this.http.get<any>(`${this.api_url}/api/trek-reservations/my-bookings`, { headers }).toPromise()
+    ]).then(([roomResponse, tentResponse, trekResponse]) => {
       let allBookings: any[] = [];
 
       // Process room bookings
@@ -82,6 +83,12 @@ export class MyBookingsComponent {
       if (tentResponse?.success && tentResponse?.bookings) {
         const tentBookings = this.transformTentBookingData(tentResponse.bookings);
         allBookings = [...allBookings, ...tentBookings];
+      }
+
+      // Process trek bookings
+      if (trekResponse?.success && trekResponse?.bookings) {
+        const trekBookings = this.transformTrekBookingData(trekResponse.bookings);
+        allBookings = [...allBookings, ...trekBookings];
       }
 
       this.bookingData = allBookings;
@@ -224,6 +231,73 @@ export class MyBookingsComponent {
     });
   }
 
+  // Transform trek booking data to match the same structure
+  transformTrekBookingData(bookings: any[]): any[] {
+    return bookings.map(booking => {
+      // Get trek spot names
+      let spotNames = 'N/A';
+      if (Array.isArray(booking.touristSpots) && booking.touristSpots.length > 0) {
+        const names = booking.touristSpots
+          .map((s: any) => s?.name)
+          .filter((name: any) => name);
+        spotNames = names.length > 0 ? names.join(', ') : 'N/A';
+      }
+
+      // Calculate total guests (adults + children across all spots)
+      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const adults = s.counts?.adults || 0;
+        const children = s.counts?.children || 0;
+        const guests = s.counts?.guests || (adults + children);
+        return sum + guests;
+      }, 0) || 0;
+
+      // Calculate total cameras across all spots
+      const totalCameras = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const cameras = s.counts?.cameras || 0;
+        return sum + cameras;
+      }, 0) || 0;
+
+      // Format dates
+      const formatDate = (date: string) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      // Use first spot's visit date
+      const visitDate = booking.touristSpots?.[0]?.visitDate || booking.createdAt;
+
+      return {
+        booking_id: booking.bookingId,
+        booking_type: 'trek', // Mark as trek booking
+        touristSpots: booking.touristSpots, // Include full touristSpots array with images
+        rooms: {
+          name: spotNames,
+          cottage: 'Trek Entry',
+          restort: 'Tourist Spots'
+        },
+        checkin: formatDate(visitDate),
+        checkout: formatDate(visitDate),
+        noof_guest: totalGuests,
+        noof_cameras: totalCameras,
+        noof_children: 0,
+        noof_extra_guest: 0,
+        total_payable_amt: booking.totalPayable || 0,
+        food_preference: '',
+        reservation_date: formatDate(booking.reservationDate || booking.bookingDate),
+        reservation_timestamp: new Date(booking.reservationDate || booking.bookingDate).getTime(),
+        status: booking.status || 'reserved',
+        pay_status: booking.paymentStatus || 'Not Paid',
+        pay_trans_id: booking.rawSource?.transactionId || '',
+        pay_trans_date: booking.rawSource?.transactionDate || '',
+        pay_trans_amt: booking.totalPayable || 0
+      };
+    });
+  }
+
   generateCalendar(year: number, month: number): void {
     const date = new Date(year, month, 1);
     this.monthName = date.toLocaleString('default', { month: 'long' });
@@ -295,8 +369,35 @@ export class MyBookingsComponent {
     window.location.href = 'tel:' + this.resortNumber;
   }
 
-  getRoomImages(roomname: any): string[] {
+  getRoomImages(roomname: any, bookingItem?: any): string[] {
+    // For trek bookings, use actual spot images from the booking data
+    if (bookingItem?.booking_type === 'trek' && bookingItem?.touristSpots) {
+      const spotImages: string[] = [];
+      
+      // Collect images from all tourist spots in the booking
+      bookingItem.touristSpots.forEach((spot: any) => {
+        if (spot.images && Array.isArray(spot.images) && spot.images.length > 0) {
+          // Add the first image from each spot
+          spotImages.push(spot.images[0].url);
+        }
+      });
+      
+      // If we found spot images, return them
+      if (spotImages.length > 0) {
+        return spotImages;
+      }
+      
+      // Fallback to default trek images if no spot images found
+      return ['assets/img/MAREDUMILLI-waterfalls.jpg', 'assets/img/Rampa-falls.jpg'];
+    }
+    
     const lowercaseRoomName = roomname.toLowerCase();
+
+    // Check if it's a trek booking (contains "trek" in the name) - fallback
+    if (lowercaseRoomName.includes('trek') || lowercaseRoomName.includes('jalatarangi') || lowercaseRoomName.includes('rampa') || lowercaseRoomName.includes('nellore')) {
+      // Return default trek/nature images
+      return ['assets/img/MAREDUMILLI-waterfalls.jpg', 'assets/img/Rampa-falls.jpg'];
+    }
 
     switch (lowercaseRoomName) {
       case 'panther':

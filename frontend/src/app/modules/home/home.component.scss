@@ -1,6 +1,30 @@
 @use "./src/scss/base/" as *;
 $card-flex-basis: 35%;
 
+
+// Typography Utilities
+.font-heading {
+  font-family: "Noto Sans", sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+// Mobile Container Consistency - Handled globally in styles.scss
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $clr-dark;
+    margin-bottom: 1rem;
+    text-align: center;
+    
+    @media (max-width: 768px) {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.fw-bold {
+font-weight: 600 !important;
+}
 // Quick Search Section (10%)
 .hero-search-section {
   height: auto;
@@ -16,145 +40,50 @@ $card-flex-basis: 35%;
 
 // Mobile Hero Carousel
 #mobileHeroCarousel {
-  height: 40vh; // User requested 40% of viewport height
-  position: relative;
+  @include hero-carousel-base;
+  
+  // Mobile-specific override (if absolutely necessary to ensure it shows despite d-md-none)
+  // The mixin already handles height: 40vh for mobile.
+  // We just ensure it displays correctly.
+  display: block;
 
-  // Ensure the carousel itself has the height, so items fill it
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-
-  .carousel-overlay {
-    position: absolute;
-    inset: 0;
-    // Gradient from bottom (dark) to top (transparent) for text readability with blur effect at bottom
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.9) 0%,
-      rgba(0, 0, 0, 0.5) 50%,
-      transparent 100%
-    );
-    z-index: 1;
-  }
-
-  .mobile-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1.5rem 1.25rem;
-    z-index: 2;
-    text-align: left;
-    color: #ffffff;
-    // Strong text shadow for legibility
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-
-    h5 {
-      font-size: 1.5rem;
-      letter-spacing: 0.02em;
-      color: #ffffff;
-      margin-bottom: 0.25rem;
-    }
-
-    p.small {
-      font-size: 0.9rem;
-      opacity: 1;
-      color: #e0e0e0;
-    }
-
-    .smaller-text {
-      font-size: 0.85rem;
-      opacity: 0.95;
-      color: #f0f0f0;
-      margin-bottom: 1rem;
-    }
-
-    i {
-      color: #fbbf24; // Gold/Yellow icon for visibility
-    }
-
-    .btn {
-      font-size: 0.85rem;
-      padding: 0.5rem 1.25rem;
-      color: $clr-primary-dark;
-      background-color: #ffffff;
-      border: none;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    width: 1.2rem;
-    height: 1.2rem;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
-    opacity: 0.7;
-  }
-
-  .carousel-indicators {
-    bottom: 10px;
-    margin-bottom: 0;
-
-    button {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin: 0 4px;
-      background-color: rgba(255, 255, 255, 0.6);
-      border: none;
-
-      &.active {
-        background-color: #ffffff;
-        transform: scale(1.2);
+  // Caption adjust for mobile specific content layout if needed
+  .carousel-caption {
+      bottom: 0 !important; // Stick to bottom on mobile for more image visibility
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); // Text readability
+      left: 0 !important;
+      right: 0 !important;
+      padding: 1.5rem;
+      text-align: left;
+      
+      h5 {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+          color: #fff;
       }
-    }
+      
+      .small {
+          font-size: 0.9rem;
+          margin-bottom: 0.25rem;
+      }
+
+      // Ensure content (buttons/text) is clickable
+      pointer-events: none;
+      .container {
+          pointer-events: auto;
+      }
+  }
+
+  // Ensure controls are on top
+  .carousel-control-prev,
+  .carousel-control-next {
+      z-index: 100 !important;
   }
 }
 
 // Desktop Fade Carousel
 #carouselExampleFade {
-  height: 80vh; // Standard desktop hero height
-
-  .carousel-inner,
-  .carousel-item {
-    height: 100%;
-  }
-
-  .carousel-item {
-    transition:
-      transform 0.6s ease-in-out,
-      opacity 0.6s ease-in-out;
-
-    .carousel-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.7) 0%,
-        rgba(0, 0, 0, 0.3) 50%,
-        transparent 100%
-      );
-      z-index: 1;
-    }
-
-    img {
-      object-fit: cover;
-      height: 100%;
-      width: 100%;
-    }
-
-    .carousel-caption {
-      z-index: 2;
-      bottom: 20%;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-
-      h1 {
-        font-weight: 800;
-        letter-spacing: -0.02em;
-      }
-    }
-  }
+  @include hero-carousel-base;
 }
 
 .about {
@@ -263,66 +192,141 @@ $card-flex-basis: 35%;
   }
 }
 
-// Feature Cards Section
+// Feature Cards Section (Zig-Zag Redesign)
 .feature-cards-section {
-  background-color: transparent; // Or a very light subtle gray if preferred
+  background-color: transparent;
+  position: relative;
 
-  .feature-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    height: 100%;
+  .zigzag-row {
+    position: relative;
+    z-index: 2;
+  }
 
-    // Icon Styling
-    .icon-wrapper {
-      width: 60px;
-      height: 60px;
-      background: $clr-primary-lighter; // Light green bg
-      color: $clr-primary;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem auto;
-      font-size: 1.5rem;
-      transition: all 0.3s ease;
+  .font-body {
+    line-height: 1.7;
+  }
+
+  .text-dark-green {
+    color: $clr-primary-dark;
+  }
+
+  .image-wrapper {
+    perspective: 1000px;
+
+    img {
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      height: 350px; // Fixed height for consistency
+      object-fit: cover;
     }
 
-    .card-content {
-      h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: $clr-primary-dark;
-      }
+    &:hover img.hover-scale {
+      transform: scale(1.02) rotate(1deg);
+    }
+  }
 
-      p {
-        font-size: 0.9rem;
-        color: $clr-neutral--600;
-        margin-bottom: 0;
-        line-height: 1.5;
+  // Flip Card Styles
+  .flip-card {
+    background-color: transparent;
+    perspective: 1000px; // Remove fixed width/height to let bootstrap handle it
+    height: 350px; // Consistent height
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      z-index: 2; // Above blob
+    }
+
+    &:hover .flip-card-inner,
+    .flip-card-inner.auto-flip {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 1rem; // Match rounded-4
+    }
+
+    .flip-card-front {
+      background-color: transparent;
+      z-index: 2;
+      // Ensure front image covers
+      img {
+        border-radius: 1rem;
       }
     }
 
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-      border-color: transparent;
+    .flip-card-back {
+      transform: rotateY(180deg);
+      background-color: transparent;
+      z-index: 1;
 
-      .icon-wrapper {
-        background: $clr-primary;
-        color: white;
-        transform: scale(1.1) rotate(5deg);
+      // Ensure back image covers
+      img {
+        border-radius: 1rem;
+        transform: scaleX(
+          -1
+        ); // Check if we want to mirror the back image or not. Usually no for photos. Removing this line if text is involved.
+        transform: none; // Reset
       }
 
-      .card-content h3 {
-        color: $clr-primary;
+      .flip-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.1); // Slight overlay for depth if needed
+        pointer-events: none;
       }
     }
+  }
+
+  // Abstract Decoration Blobs
+  .blob-bg {
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    z-index: 0;
+    opacity: 0.15;
+    border-radius: 50%;
+    filter: blur(60px);
+    transition: all 0.5s ease;
+  }
+
+  .blob-right {
+    top: -10%;
+    right: -20%;
+    background: radial-gradient(circle, $clr-primary, transparent 70%);
+  }
+
+  .blob-left {
+    bottom: -10%;
+    left: -20%;
+    background: radial-gradient(circle, #fbbf24, transparent 70%); // Goldish
+  }
+
+  .blob-right-alt {
+    top: 20%;
+    right: -20%;
+    background: radial-gradient(circle, #0ea5e9, transparent 70%); // Sky blue
+  }
+
+  // List Icons
+  ul.list-unstyled li i {
+    font-size: 1.1em;
+  }
+
+  // Button adjustments
+  .btn-primary {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
@@ -514,5 +518,605 @@ $card-flex-basis: 35%;
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+// Bento Grid Styles
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-template-rows: 200px 200px;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .bento-item {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    &.item-main {
+      grid-row: span 2;
+
+      @media (max-width: 768px) {
+        grid-row: auto;
+        height: 250px;
+      }
+    }
+
+    &.item-side-top,
+    &.item-side-bottom {
+      @media (max-width: 768px) {
+        height: 200px;
+      }
+    }
+  }
+}
+
+// NEW OUR RESORTS SECTION (Wireframe-based)
+.our-resorts-new {
+  background-color: #fafbfc;
+
+  .section-title {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    color: $clr-primary-dark;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .resort-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .resort-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      background: linear-gradient(
+        135deg,
+        $clr-primary-lighter 0%,
+        #ffffff 100%
+      );
+
+      .resort-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $clr-primary-dark;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &::before {
+          content: "";
+          display: inline-block;
+          width: 4px;
+          height: 1.25em;
+          background: $clr-primary;
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .resort-card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  // Mini Gallery Grid (2x2) - Legacy
+  .mini-gallery {
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 140px);
+      gap: 0.75rem;
+
+      @media (min-width: 992px) {
+        grid-template-rows: repeat(2, 160px);
+      }
+    }
+
+    // Bento Grid Layout (Card 1 large left, Cards 2+3 stacked right)
+    .gallery-bento {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      grid-template-rows: 140px 140px;
+      gap: 0.75rem;
+
+      @media (min-width: 992px) {
+        grid-template-rows: 160px 160px;
+      }
+
+      .bento-main,
+      .bento-side-top,
+      .bento-side-bottom {
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        &:hover img {
+          transform: scale(1.08);
+        }
+      }
+
+      .bento-main {
+        grid-row: span 2;
+      }
+
+      .bento-side-top {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .bento-side-bottom {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .gallery-more {
+        .gallery-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.3s ease;
+
+          span {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        &:hover .gallery-overlay {
+          background: rgba(0, 0, 0, 0.7);
+        }
+      }
+    }
+
+    .gallery-item {
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      &:hover img {
+        transform: scale(1.08);
+      }
+
+      &.gallery-more {
+        .gallery-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.3s ease;
+
+          span {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        &:hover .gallery-overlay {
+          background: rgba(0, 0, 0, 0.7);
+        }
+      }
+    }
+  }
+
+  // Resort Info Section
+  .resort-info {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+
+    .resort-description {
+      color: #6b7280;
+      line-height: 1.7;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .resort-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        i {
+          width: 20px;
+          text-align: center;
+          font-size: 1rem;
+        }
+
+        span {
+          color: #374151;
+          font-size: 0.95rem;
+        }
+
+        .price strong {
+          color: $clr-primary-dark;
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .resort-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .btn-how-to-reach {
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-color: #d1d5db;
+        color: #374151;
+
+        &:hover {
+          background-color: #f3f4f6;
+          border-color: #9ca3af;
+        }
+      }
+
+      .btn-view-resort {
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        background: linear-gradient(
+          135deg,
+          $clr-primary 0%,
+          $clr-primary-dark 100%
+        );
+        border: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(77, 153, 0, 0.35);
+        }
+      }
+    }
+  }
+
+  // Mobile Responsive
+  @media (max-width: 991.98px) {
+    .resort-card-body {
+      padding: 1rem !important;
+    }
+
+    .mini-gallery .gallery-grid {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 100px;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+
+      .gallery-item {
+        scroll-snap-align: start;
+        min-width: 120px;
+      }
+    }
+
+    .resort-info {
+      margin-top: 1rem;
+
+      .resort-description {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .resort-actions {
+        flex-direction: column;
+        
+        .btn {
+          width: 100%;
+          flex: auto; // Reset flex: 1
+          min-width: unset; // Reset min-width
+          text-align: center;
+          justify-content: center; // Ensure icon and text are centered if flex
+        }
+      }
+    }
+  }
+}
+
+// How to Reach Modal Styles
+#vanavihariHowToReachModal,
+#jungleStarHowToReachModal {
+  .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, $clr-primary-lighter 0%, #ffffff 100%);
+
+    .modal-title {
+      font-weight: 600;
+      color: $clr-primary-dark;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .map-embed iframe {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .distance-info {
+    background: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 12px;
+
+    .distance-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e5e7eb;
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      &:first-of-type {
+        padding-top: 0;
+      }
+
+      i {
+        font-size: 1.25rem;
+        margin-top: 2px;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        strong {
+          font-size: 0.9rem;
+          color: #374151;
+        }
+
+        span {
+          font-size: 0.85rem;
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  // Desktop Centered Modal Style - Robust Flexbox Approach
+  @media (min-width: 768px) {
+    // Make the modal container a flexbox to center its child (dialog)
+    &.modal.show {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-dialog {
+      // Reset all positioning to let Flexbox handle centering
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+      margin: auto !important; // Centered vertically and horizontally
+
+      width: 100% !important;
+      max-width: 800px !important;
+      max-height: 85vh !important;
+
+      display: flex !important;
+      flex-direction: column !important;
+      pointer-events: auto;
+    }
+
+    // Ensure proper pointer events behavior
+    &.modal:not(.show) {
+      display: none !important;
+      pointer-events: none;
+    }
+
+    .modal-content {
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+    }
+  }
+
+  // Mobile Centered Modal Style - Fixed viewport positioning
+  @media (max-width: 767.98px) {
+    &.modal {
+      padding: 0 !important;
+    }
+
+    .modal-dialog {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      width: calc(100% - 1rem) !important;
+      max-width: calc(100% - 1rem) !important;
+      max-height: 80vh !important;
+    }
+
+    .modal-content {
+      border-radius: 12px;
+      max-height: 78vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: white;
+      padding: 0.75rem 1rem;
+
+      .modal-title {
+        font-size: 0.95rem;
+      }
+    }
+
+    .modal-body {
+      padding: 0.75rem;
+    }
+
+    .row {
+      flex-direction: column;
+    }
+
+    .map-embed iframe {
+      height: 160px !important;
+    }
+
+    .distance-info {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+
+      h6 {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem !important;
+      }
+
+      .distance-item {
+        padding: 0.5rem 0;
+        gap: 0.75rem;
+
+        i {
+          font-size: 1rem;
+        }
+
+        div {
+          strong {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+
+    .btn-outline-primary {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      margin-top: 0.75rem !important;
+    }
+  }
+
+  // Extra small devices (under 400px width)
+  @media (max-width: 400px) {
+    .modal-dialog {
+      max-height: 75vh !important;
+    }
+
+    .modal-content {
+      max-height: 73vh;
+    }
+
+    .map-embed iframe {
+      height: 140px !important;
+    }
+
+    .distance-info {
+      padding: 0.5rem;
+
+      .distance-item {
+        padding: 0.4rem 0;
+
+        i {
+          font-size: 0.9rem;
+        }
+
+        div {
+          strong {
+            font-size: 0.75rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
   }
 }

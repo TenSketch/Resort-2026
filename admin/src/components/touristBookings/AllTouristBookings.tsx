@@ -13,14 +13,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePermissions } from "@/lib/AdminProvider";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -33,33 +25,39 @@ DataTable.use(DT);
 
 interface TouristBooking {
   id: string;
+  _id: string;
   bookingId: string;
   fullName: string;
   phone: string;
   email: string;
-  touristSpotName?: string;
-  packageType?: string;
-  visitDate?: string;
-  visitTime?: string;
-  adults?: number;
-  children?: number;
-  totalVisitors?: number;
-  guideRequired?: string;
-  transportRequired?: string;
-  pickupLocation?: string;
-  reservedFrom?: string;
-  reservationDate?: string;
+  touristSpots?: Array<{
+    spotId: string;
+    name: string;
+    visitDate: string;
+    counts: {
+      guests: number;
+      cameras: number;
+    };
+    amounts: {
+      entry: number;
+      camera: number;
+      total: number;
+    };
+  }>;
+  totalPayable?: number;
   status?: string;
-  amountPayable?: number;
   paymentStatus?: string;
-  amountPaid?: number;
-  paymentTransactionId?: string;
-  cancelBookingReason?: string;
-  cancellationMessage?: string;
-  refundableAmount?: number;
-  amountRefunded?: number;
-  dateOfRefund?: string;
-  internalNotes?: string;
+  reservationDate?: string;
+  reservedFrom?: string;
+  user?: {
+    name: string;
+    email: string;
+    phone: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+  };
 }
 
 export default function AllTouristBookings() {
@@ -75,8 +73,6 @@ export default function AllTouristBookings() {
     null,
   );
   const [isSaving, setIsSaving] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [disabling, setDisabling] = useState<TouristBooking | null>(null);
 
   useEffect(() => {
     bookingsRef.current = bookings;
@@ -110,45 +106,57 @@ export default function AllTouristBookings() {
   };
 
   const formatVisitors = (b?: TouristBooking) => {
-    if (!b) return "N/A";
-    return `${b.adults || 0} / ${b.children || 0}`;
+    if (!b || !b.touristSpots || b.touristSpots.length === 0) return "N/A";
+    const totalGuests = b.touristSpots.reduce((sum, spot) => sum + (spot.counts?.guests || 0), 0);
+    const totalCameras = b.touristSpots.reduce((sum, spot) => sum + (spot.counts?.cameras || 0), 0);
+    return `${totalGuests}G / ${totalCameras}C`;
+  };
+
+  const getTouristSpotNames = (b?: TouristBooking) => {
+    if (!b || !b.touristSpots || b.touristSpots.length === 0) return "N/A";
+    return b.touristSpots.map(s => s.name).join(", ");
+  };
+
+  const getVisitDate = (b?: TouristBooking) => {
+    if (!b || !b.touristSpots || b.touristSpots.length === 0) return "";
+    return b.touristSpots[0].visitDate;
   };
 
   const fetchBookings = async () => {
-    const demo: TouristBooking[] = [
-      {
-        id: "demo-1",
-        bookingId: "TS-0001",
-        fullName: "Asha Kumar",
-        phone: "+91-9876543210",
-        email: "asha.kumar@example.com",
-        touristSpotName: "Jungle Star",
-        packageType: "Adult",
-        visitDate: new Date().toISOString().slice(0, 10),
-        visitTime: "09:00 - 11:00",
-        adults: 2,
-        children: 1,
-        totalVisitors: 3,
-        guideRequired: "Yes",
-        transportRequired: "No",
-        pickupLocation: "",
-        reservedFrom: "Website",
-        reservationDate: new Date().toISOString().slice(0, 10),
-        status: "Confirmed",
-        amountPayable: 1500,
-        paymentStatus: "Paid",
-        amountPaid: 1500,
-        paymentTransactionId: "TXN-DEMO-TS-001",
-        cancelBookingReason: "",
-        cancellationMessage: "",
-        refundableAmount: 0,
-        amountRefunded: 0,
-        dateOfRefund: "",
-        internalNotes: "",
-      },
-    ];
+    try {
+      const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('admin_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    setBookings(demo);
+      const res = await fetch(`${apiUrl}/api/trek-reservations/all-bookings`, { headers });
+      const data = await res.json();
+      
+      if (data.success && Array.isArray(data.reservations)) {
+        const mapped = data.reservations.map((r: any) => ({
+          id: r._id,
+          _id: r._id,
+          bookingId: r.bookingId,
+          fullName: r.user?.name || 'N/A',
+          phone: r.user?.phone || 'N/A',
+          email: r.user?.email || 'N/A',
+          touristSpots: r.touristSpots || [],
+          totalPayable: r.totalPayable || 0,
+          status: r.status || 'pending',
+          paymentStatus: r.paymentStatus || 'unpaid',
+          reservationDate: r.reservationDate || r.createdAt,
+          reservedFrom: r.reservedFrom || 'Online',
+          user: r.user || {},
+        }));
+        setBookings(mapped);
+      } else {
+        console.warn('No bookings found or invalid response');
+        setBookings([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch trek bookings:', err);
+      setBookings([]);
+    }
   };
 
   useEffect(() => {
@@ -156,7 +164,7 @@ export default function AllTouristBookings() {
 
     const handleClick = (e: Event) => {
       const t = e.target as HTMLElement;
-      const btn = t.closest(".edit-btn, .delete-btn") as HTMLElement | null;
+      const btn = t.closest(".edit-btn") as HTMLElement | null;
       if (!btn) return;
       e.stopPropagation();
       const id = btn.getAttribute("data-id");
@@ -168,16 +176,12 @@ export default function AllTouristBookings() {
         setEditForm({ ...booking });
         setSheetMode("edit");
         setIsDetailOpen(true);
-      } else if (btn.classList.contains("delete-btn")) {
-        if (!permsRef.current.canDisable) return;
-        setDisabling(booking);
-        setIsConfirmOpen(true);
       }
     };
 
     const handleRowClick = (e: Event) => {
       const target = e.target as HTMLElement;
-      if (target.closest(".edit-btn, .delete-btn")) return;
+      if (target.closest(".edit-btn")) return;
       const row = target.closest("tr");
       if (row && row.parentElement?.tagName === "TBODY") {
         const idx = Array.from(row.parentElement.children).indexOf(row);
@@ -211,77 +215,68 @@ export default function AllTouristBookings() {
     { data: "fullName", title: "<strong>Full Name</strong>" },
     { data: "phone", title: "<strong>Phone</strong>" },
     { data: "email", title: "<strong>Email</strong>" },
-    { data: "touristSpotName", title: "<strong>Spot</strong>" },
-    { data: "packageType", title: "<strong>Package</strong>" },
-    {
-      data: "visitDate",
-      title: "<strong>Visit Date</strong>",
-      render: (d: string) => formatDateForDisplay(d),
-    },
-    { data: "visitTime", title: "<strong>Visit Time</strong>" },
     {
       data: null,
-      title: "<strong>Visitors (A/C)</strong>",
+      title: "<strong>Trek Spots</strong>",
+      render: (_d: any, _t: any, row: TouristBooking) => getTouristSpotNames(row),
+    },
+    {
+      data: null,
+      title: "<strong>Visit Date</strong>",
+      render: (_d: any, _t: any, row: TouristBooking) => formatDateForDisplay(getVisitDate(row)),
+    },
+    {
+      data: null,
+      title: "<strong>Visitors (G/C)</strong>",
       render: (_d: any, _t: any, row: TouristBooking) => formatVisitors(row),
     },
-    { data: "guideRequired", title: "<strong>Guide</strong>" },
-    { data: "transportRequired", title: "<strong>Transport</strong>" },
     { data: "reservedFrom", title: "<strong>Reserved From</strong>" },
     {
       data: "reservationDate",
       title: "<strong>Reservation Date</strong>",
       render: (d: string) => formatDateForDisplay(d),
     },
-    { data: "status", title: "<strong>Status</strong>" },
-    {
-      data: "amountPayable",
-      title: "<strong>Amount Payable</strong>",
-      render: (d: number) => (d != null ? `₹${d}` : "N/A"),
-    },
-    { data: "paymentStatus", title: "<strong>Payment Status</strong>" },
-    {
-      data: "amountPaid",
-      title: "<strong>Amount Paid</strong>",
-      render: (d: number) => (d != null ? `₹${d}` : "N/A"),
-    },
-    {
-      data: "paymentTransactionId",
-      title: "<strong>Payment Transaction ID</strong>",
+    { 
+      data: "status", 
+      title: "<strong>Status</strong>",
+      render: (d: string) => {
+        const colors: Record<string, string> = {
+          reserved: 'bg-green-100 text-green-800',
+          pending: 'bg-yellow-100 text-yellow-800',
+          cancelled: 'bg-red-100 text-red-800',
+          'not-reserved': 'bg-gray-100 text-gray-800',
+        };
+        const color = colors[d] || 'bg-gray-100 text-gray-800';
+        return `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${d}</span>`;
+      }
     },
     {
-      data: "cancelBookingReason",
-      title: "<strong>Cancel Booking Reason</strong>",
+      data: "totalPayable",
+      title: "<strong>Amount</strong>",
+      render: (d: number) => (d != null ? `₹${d.toLocaleString()}` : "N/A"),
     },
-    {
-      data: "cancellationMessage",
-      title: "<strong>Cancellation Message</strong>",
-    },
-    {
-      data: "refundableAmount",
-      title: "<strong>Refundable Amount</strong>",
-      render: (d: number) => (d != null ? `₹${d}` : "N/A"),
-    },
-    {
-      data: "amountRefunded",
-      title: "<strong>Amount Refunded</strong>",
-      render: (d: number) => (d != null ? `₹${d}` : "N/A"),
-    },
-    { data: "dateOfRefund", title: "<strong>Date of Refund</strong>" },
-    {
-      data: "internalNotes",
-      title: "<strong>Notes</strong>",
-      render: (d: any) => (d ? String(d).slice(0, 50) : "N/A"),
+    { 
+      data: "paymentStatus", 
+      title: "<strong>Payment</strong>",
+      render: (d: string) => {
+        const colors: Record<string, string> = {
+          paid: 'bg-green-100 text-green-800',
+          unpaid: 'bg-red-100 text-red-800',
+          pending: 'bg-yellow-100 text-yellow-800',
+          cancelled: 'bg-gray-100 text-gray-800',
+        };
+        const color = colors[d] || 'bg-gray-100 text-gray-800';
+        return `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${d}</span>`;
+      }
     },
     {
       data: null,
       title: "Actions",
-      visible: false,
       orderable: false,
       searchable: false,
       render: (_d: any, _t: any, row: TouristBooking) => `
       <div style="display:flex;gap:8px;align-items:center;">
         ${perms.canEdit ? `<button class="edit-btn" data-id="${row.id}" style="background:#3b82f6;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Edit</button>` : ""}
-        ${perms.canDisable ? `<button class="delete-btn" data-id="${row.id}" style="background:#dc2626;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Delete</button>` : ""}
       </div>
     `,
     },
@@ -318,67 +313,48 @@ export default function AllTouristBookings() {
       "Full Name",
       "Phone",
       "Email",
-      "Spot",
-      "Package",
+      "Trek Spots",
       "Visit Date",
-      "Visit Time",
-      "Visitors (A/C)",
-      "Guide",
-      "Transport",
-      "Pickup Location",
+      "Guests",
+      "Cameras",
       "Reserved From",
       "Reservation Date",
       "Status",
-      "Amount Payable",
+      "Amount",
       "Payment Status",
-      "Amount Paid",
-      "Payment Transaction ID",
-      "Cancel Booking Reason",
-      "Cancellation Message",
-      "Refundable Amount",
-      "Amount Refunded",
-      "Date of Refund",
-      "Notes",
     ];
 
     const csv = [
       headers.join(","),
-      ...bookingsRef.current.map((r, i) =>
-        [
+      ...bookingsRef.current.map((r, i) => {
+        const guests = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.guests || 0), 0) || 0;
+        const cameras = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.cameras || 0), 0) || 0;
+        const spotNames = r.touristSpots?.map(s => s.name).join('; ') || 'N/A';
+        const visitDate = r.touristSpots?.[0]?.visitDate || '';
+        
+        return [
           i + 1,
           `"${r.bookingId}"`,
           `"${r.fullName}"`,
           `"${r.phone}"`,
           `"${r.email}"`,
-          `"${r.touristSpotName || "N/A"}"`,
-          `"${r.packageType || ""}"`,
-          `"${formatDateForExcel(r.visitDate)}"`,
-          `"${r.visitTime || ""}"`,
-          `"${r.adults || 0}/${r.children || 0}"`,
-          `"${r.guideRequired || ""}"`,
-          `"${r.transportRequired || ""}"`,
-          `"${r.pickupLocation || ""}"`,
+          `"${spotNames}"`,
+          `"${formatDateForExcel(visitDate)}"`,
+          guests,
+          cameras,
           `"${r.reservedFrom || ""}"`,
-          `"${r.reservationDate || ""}"`,
+          `"${formatDateForExcel(r.reservationDate)}"`,
           `"${r.status || ""}"`,
-          r.amountPayable,
+          r.totalPayable || 0,
           `"${r.paymentStatus || ""}"`,
-          r.amountPaid,
-          `"${r.paymentTransactionId || ""}"`,
-          `"${r.cancelBookingReason || ""}"`,
-          `"${r.cancellationMessage || ""}"`,
-          r.refundableAmount,
-          r.amountRefunded,
-          `"${r.dateOfRefund || ""}"`,
-          `"${r.internalNotes || ""}"`,
-        ].join(","),
-      ),
+        ].join(",");
+      }),
     ].join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "Tourist_Spot_Bookings.csv";
+    link.download = "Trek_Spot_Bookings.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -389,29 +365,59 @@ export default function AllTouristBookings() {
     if (!editForm || !selected) return;
     setIsSaving(true);
     try {
+      const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('admin_token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      // Update only the fields that can be edited
+      const updateData = {
+        status: editForm.status,
+        paymentStatus: editForm.paymentStatus,
+        totalPayable: editForm.totalPayable,
+        user: {
+          name: editForm.fullName,
+          phone: editForm.phone,
+          email: editForm.email,
+        }
+      };
+
+      const res = await fetch(`${apiUrl}/api/trek-reservations/${selected._id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updateData),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to update booking');
+      }
+
+      const data = await res.json();
+      
+      // Update local state
       const updated: TouristBooking = {
         ...selected,
-        ...(editForm as TouristBooking),
+        fullName: editForm.fullName || selected.fullName,
+        phone: editForm.phone || selected.phone,
+        email: editForm.email || selected.email,
+        status: editForm.status || selected.status,
+        paymentStatus: editForm.paymentStatus || selected.paymentStatus,
+        totalPayable: editForm.totalPayable ?? selected.totalPayable,
       };
+      
       setBookings((prev) =>
         prev.map((b) => (b.id === updated.id ? updated : b)),
       );
       setSelected(updated);
       setSheetMode("view");
       setIsSaving(false);
-      alert("Changes saved locally (demo data).");
+      alert("Booking updated successfully!");
     } catch (err) {
       console.error("Save error", err);
       alert("Failed to save changes: " + String(err));
       setIsSaving(false);
     }
-  };
-
-  const disableBooking = async (b: TouristBooking | null) => {
-    if (!permsRef.current.canDisable) return;
-    if (!b) return;
-    setBookings((prev) => prev.filter((x) => x.id !== b.id));
-    alert("This is frontend-only demo data: booking removed locally.");
   };
 
   return (
@@ -547,42 +553,6 @@ export default function AllTouristBookings() {
         />
       </div>
 
-      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Disable</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to disable this booking?
-            </DialogDescription>
-          </DialogHeader>
-          {disabling && (
-            <div className="py-4">
-              <p>
-                <strong>Booking ID:</strong> {disabling.bookingId}
-              </p>
-              <p>
-                <strong>Name:</strong> {disabling.fullName}
-              </p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                await disableBooking(disabling);
-                setIsConfirmOpen(false);
-                setDisabling(null);
-              }}
-            >
-              Yes, Disable
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
           <SheetHeader className="flex-shrink-0">
@@ -619,6 +589,17 @@ export default function AllTouristBookings() {
                             <span className="text-sm">{selected.email}</span>
                           </div>
                         </div>
+                        {selected.user?.address && (
+                          <div className="md:col-span-2">
+                            <Label>Address</Label>
+                            <div className="mt-1 p-3 bg-gray-50 rounded border">
+                              <span>{selected.user.address}</span>
+                              {selected.user.city && `, ${selected.user.city}`}
+                              {selected.user.state && `, ${selected.user.state}`}
+                              {selected.user.country && ` - ${selected.user.country}`}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="border-b pb-4">
@@ -670,6 +651,47 @@ export default function AllTouristBookings() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Trek Spots Details */}
+                    <div className="border-b pb-4">
+                      <h3 className="text-lg font-semibold mb-3">Trek Spots</h3>
+                      {selected.touristSpots && selected.touristSpots.length > 0 ? (
+                        selected.touristSpots.map((spot, idx) => (
+                          <div key={idx} className="mb-4 p-4 bg-slate-50 rounded-lg border">
+                            <h4 className="font-medium text-slate-800 mb-2">{idx + 1}. {spot.name}</h4>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <Label className="text-xs">Visit Date</Label>
+                                <div className="mt-1">{formatDateForDisplay(spot.visitDate)}</div>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Guests</Label>
+                                <div className="mt-1">{spot.counts?.guests || 0}</div>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Cameras</Label>
+                                <div className="mt-1">{spot.counts?.cameras || 0}</div>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Entry Fees</Label>
+                                <div className="mt-1">₹{spot.amounts?.entry || 0}</div>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Camera Fees</Label>
+                                <div className="mt-1">₹{spot.amounts?.camera || 0}</div>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Spot Total</Label>
+                                <div className="mt-1 font-semibold">₹{spot.amounts?.total || 0}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-slate-500">No trek spots information</div>
+                      )}
+                    </div>
+
                     <div>
                       <h3 className="text-lg font-semibold">
                         Status & Payment
@@ -744,49 +766,8 @@ export default function AllTouristBookings() {
                         </div>
 
                         <div>
-                          <Label>Visit Date</Label>
-                          <input
-                            type="date"
-                            className="mt-1 p-2 w-full border rounded"
-                            value={editForm?.visitDate || ""}
-                            onChange={(e) =>
-                              setEditForm((prev) => ({
-                                ...(prev || {}),
-                                visitDate: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label>Visit Time</Label>
-                          <input
-                            className="mt-1 p-2 w-full border rounded"
-                            value={editForm?.visitTime || ""}
-                            onChange={(e) =>
-                              setEditForm((prev) => ({
-                                ...(prev || {}),
-                                visitTime: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label>Spot</Label>
-                          <input
-                            className="mt-1 p-2 w-full border rounded"
-                            value={editForm?.touristSpotName || ""}
-                            onChange={(e) =>
-                              setEditForm((prev) => ({
-                                ...(prev || {}),
-                                touristSpotName: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-
-                        <div>
                           <Label>Status</Label>
-                          <input
+                          <select
                             className="mt-1 p-2 w-full border rounded"
                             value={editForm?.status || ""}
                             onChange={(e) =>
@@ -795,32 +776,41 @@ export default function AllTouristBookings() {
                                 status: e.target.value,
                               }))
                             }
-                          />
+                          >
+                            <option value="reserved">Reserved</option>
+                            <option value="pending">Pending</option>
+                            <option value="not-reserved">Not Reserved</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
                         </div>
                         <div>
-                          <Label>Amount Payable</Label>
-                          <input
-                            type="number"
+                          <Label>Payment Status</Label>
+                          <select
                             className="mt-1 p-2 w-full border rounded"
-                            value={editForm?.amountPayable ?? 0}
+                            value={editForm?.paymentStatus || ""}
                             onChange={(e) =>
                               setEditForm((prev) => ({
                                 ...(prev || {}),
-                                amountPayable: Number(e.target.value),
+                                paymentStatus: e.target.value,
                               }))
                             }
-                          />
+                          >
+                            <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
                         </div>
                         <div>
-                          <Label>Amount Paid</Label>
+                          <Label>Total Amount</Label>
                           <input
                             type="number"
                             className="mt-1 p-2 w-full border rounded"
-                            value={editForm?.amountPaid ?? 0}
+                            value={editForm?.totalPayable ?? 0}
                             onChange={(e) =>
                               setEditForm((prev) => ({
                                 ...(prev || {}),
-                                amountPaid: Number(e.target.value),
+                                totalPayable: Number(e.target.value),
                               }))
                             }
                           />

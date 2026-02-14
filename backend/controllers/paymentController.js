@@ -155,26 +155,32 @@ export const initiatePayment = async (req, res) => {
     
     // Validate IP format - must be valid IPv4
     const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (!clientIp || !ipv4Regex.test(clientIp)) {
-      // Use a placeholder public IP if we can't get real one
+    if (!clientIp || !ipv4Regex.test(clientIp) || clientIp === '127.0.0.1' || clientIp === '::1') {
+      // Use a hardcoded valid public IP for UAT/Testing if local or invalid
+      // BillDesk often rejects private IPs or localhost
+      console.warn(`⚠️ Invalid or local IP deteced (${clientIp}), using public fallback IP for BillDesk UAT`);
       clientIp = "103.0.0.1";
     }
 
     // Truncate user agent to reasonable length
     let userAgent = req.headers['user-agent'] || "Mozilla/5.0";
-    if (userAgent.length > 100) {
-      userAgent = "Mozilla/5.0";
+    if (userAgent.length > 255) {
+      userAgent = userAgent.substring(0, 255);
     }
 
     // Prepare order data - match BillDesk expected format exactly
+    const merchantId = (process.env.BILLDESK_MERCID || "").trim();
+    const clientIdEnv = (process.env.BILLDESK_CLIENTID || "").trim();
+    const settlementLob = (process.env.BILLDESK_SETTLEMENT_LOB || "BDUAT2K673001").trim();
+    
     const orderData = {
-      mercid: process.env.BILLDESK_MERCID,
+      mercid: merchantId,
       orderid: orderId,
       amount: reservation.totalPayable.toFixed(2),
       currency: "356",
       order_date: orderDate,
-      settlement_lob: process.env.BILLDESK_SETTLEMENT_LOB,
-      ru: process.env.BILLDESK_RETURN_URL,
+      settlement_lob: settlementLob,
+      ru: process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
         additional_info1: (reservation.fullName || 'NA').substring(0, 50),
@@ -192,10 +198,30 @@ export const initiatePayment = async (req, res) => {
       }
     };
 
-    const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
-    const signKey = process.env.BILLDESK_SIGNING_KEY;
-    const keyId = process.env.KEY_ID;
-    const clientId = process.env.BILLDESK_CLIENTID;
+    const encKey = (process.env.BILLDESK_ENCRYPTION_KEY || "").trim();
+    const signKey = (process.env.BILLDESK_SIGNING_KEY || "").trim();
+    const keyId = (process.env.KEY_ID || "").trim();
+    const clientId = clientIdEnv;
+
+    // DEBUG: Write to file to ensure we catch the logs
+    try {
+      const fs = await import('fs');
+      const debugLog = `
+========================================
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Merchant ID: '${merchantId}'
+Client ID: '${clientId}'
+Key ID: '${keyId}'
+Settlement LOB: '${settlementLob}'
+Order Data: ${JSON.stringify(orderData, null, 2)}
+========================================
+`;
+      fs.writeFileSync('debug_payment.log', debugLog, { flag: 'a' });
+      console.log('✅ Wrote payment debug info to debug_payment.log');
+    } catch (fsErr) {
+      console.error('Failed to write debug log', fsErr);
+    }
 
     console.log("\n=== PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);

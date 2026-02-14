@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/auth.service';
 import { UserService } from 'src/app/user.service';
 
+// test d
+
 interface ReservationDetails {
   guestName: string;
   resortName: string;
@@ -29,6 +31,8 @@ interface ReservationDetails {
   totalChildren: any;
   stayDuration: any;
   email: any;
+  isTrek?: boolean; // Flag to identify trek bookings
+  touristSpots?: any[]; // Trek spot data with images
 }
 
 @Component({
@@ -76,6 +80,8 @@ export class BookingStatusComponent {
       // Fetch based on booking type
       if (bookingType === 'tent' || this.bookingId.startsWith('TENT-')) {
         this.fetchTentBookingDetails();
+      } else if (bookingType === 'trek' || this.bookingId.startsWith('TREK-')) {
+        this.fetchTrekBookingDetails();
       } else {
         this.fetchRoomBookingDetails();
       }
@@ -136,6 +142,29 @@ export class BookingStatusComponent {
       });
   }
 
+  fetchTrekBookingDetails(): void {
+    // Fetch trek reservation details - use correct endpoint with auth
+    this.http
+      .get<any>(`${this.api_url}/api/trek-reservations/${this.bookingId}`, {
+        headers: { token: this.authService.getAccessToken() ?? '' }
+      })
+      .subscribe({
+        next: (response) => {
+          this.showLoader = false;
+
+          if (response.success && response.reservation) {
+            this.processTrekBooking(response.reservation);
+          } else {
+            this.bookingStatus = 'failed';
+          }
+        },
+        error: (err) => {
+          this.showLoader = false;
+          this.bookingStatus = 'failed';
+        },
+      });
+  }
+
   processRoomBooking(booking: any): void {
     // Check payment status
     if (booking.paymentStatus === 'paid' && booking.status === 'reserved') {
@@ -152,23 +181,45 @@ export class BookingStatusComponent {
       let roomsArray = [];
       let checkInDate = booking.checkIn;
       let checkOutDate = booking.checkOut;
+      let totalGuests = 0;
+      let totalChildren = 0;
 
       if (isTouristSpot) {
         resortName = 'Trek Spot Booking';
-        roomsArray = booking.touristSpots.map((spot: any) => ({
-          room_name: spot.name,
-          cottage_type: 'Entry'
-        }));
+        roomsArray = booking.touristSpots.map((spot: any) => {
+          // Use adults + children if guests is 0 (legacy data structure)
+          const adults = spot.counts?.adults || 0;
+          const children = spot.counts?.children || 0;
+          const guests = spot.counts?.guests || (adults + children);
+          const cameras = spot.counts?.cameras || 0;
+          
+          return {
+            room_name: spot.name,
+            cottage_type: `${guests} Guests, ${cameras} Cameras`
+          };
+        });
         // Use visitDate
         const visitDate = booking.touristSpots[0]?.visitDate || booking.createdAt;
         checkInDate = visitDate;
         checkOutDate = visitDate;
+        
+        // Calculate total guests (adults + children across all spots)
+        totalGuests = booking.touristSpots.reduce((sum: number, s: any) => {
+          const adults = s.counts?.adults || 0;
+          const children = s.counts?.children || 0;
+          const guests = s.counts?.guests || (adults + children);
+          return sum + guests;
+        }, 0);
+        
+        totalChildren = booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0);
       } else {
         resortName = booking.resort?.resortName || booking.rawSource?.resortName || 'Resort';
         roomsArray = booking.rooms?.map((room: any) => ({
           room_name: room.roomName || room.roomNumber || 'Room',
           cottage_type: room.cottageType?.name || 'Standard'
         })) || [{ room_name: 'N/A', cottage_type: 'N/A' }];
+        totalGuests = booking.guests || 0;
+        totalChildren = booking.children || 0;
       }
 
       // Get transaction ID from rawSource (stored during payment callback)
@@ -194,13 +245,9 @@ export class BookingStatusComponent {
         contactEmail: 'info@vanavihari.com',
         guestEmail: booking.email || booking.user?.email,
         rooms: roomsArray,
-        totalGuest: isTouristSpot
-          ? booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.adults || 0) + (s.counts?.children || 0), 0)
-          : (booking.guests || 0),
+        totalGuest: totalGuests,
         totalExtraGuests: booking.extraGuests || 0,
-        totalChildren: isTouristSpot
-          ? booking.touristSpots.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0)
-          : (booking.children || 0),
+        totalChildren: totalChildren,
         stayDuration: isTouristSpot ? 1 : this.durationOfStay(booking.checkIn, booking.checkOut),
         email: booking.email || booking.user?.email,
       };
@@ -248,6 +295,73 @@ export class BookingStatusComponent {
         totalChildren: booking.children || 0,
         stayDuration: this.durationOfStay(booking.checkinDate, booking.checkoutDate),
         email: booking.email,
+      };
+    } else if (booking.paymentStatus === 'pending') {
+      this.bookingStatus = 'pending';
+    } else {
+      this.bookingStatus = 'failed';
+    }
+  }
+
+  processTrekBooking(booking: any): void {
+    // Check payment status - trek bookings use 'reserved' status
+    if (booking.paymentStatus === 'paid' && booking.status === 'reserved') {
+      this.bookingStatus = 'success';
+
+      // Build trek spots array for display
+      const trekSpotsArray = booking.touristSpots?.map((spot: any) => {
+        // Use adults + children if guests is 0 (legacy data structure)
+        const adults = spot.counts?.adults || 0;
+        const children = spot.counts?.children || 0;
+        const guests = spot.counts?.guests || (adults + children);
+        const cameras = spot.counts?.cameras || 0;
+        
+        return {
+          room_name: spot.name || 'Trek Spot',
+          cottage_type: `${guests} Guests, ${cameras} Cameras`,
+          images: spot.images || [] // Include images for display
+        };
+      }) || [{ room_name: 'N/A', cottage_type: 'N/A', images: [] }];
+
+      const transactionId = booking.rawSource?.transactionId
+        || booking.rawSource?.bankRefNo
+        || booking.paymentTransactionId
+        || booking.bookingId;
+
+      // Use first spot's visit date
+      const visitDate = booking.touristSpots?.[0]?.visitDate || booking.createdAt;
+
+      // Calculate total guests (adults + children across all spots)
+      const totalGuests = booking.touristSpots?.reduce((sum: number, s: any) => {
+        const adults = s.counts?.adults || 0;
+        const children = s.counts?.children || 0;
+        const guests = s.counts?.guests || (adults + children);
+        return sum + guests;
+      }, 0) || 0;
+
+      this.reservationDetails = {
+        guestName: booking.user?.name || 'Guest',
+        resortName: 'Trek Spot',
+        transactionId: transactionId,
+        resortLocation: 'Tourist Spots',
+        bookingId: booking.bookingId,
+        checkInDate: this.formatDate(visitDate),
+        checkOutDate: this.formatDate(visitDate),
+        amount: `INR ${booking.totalPayable?.toFixed(2) || '0.00'}`,
+        upiId: 'QR917382151617-5587@unionbankofindia',
+        qrCodeUrl: '1711639164121_qr2.pdf',
+        contactPerson: 'Mr. Veerababu',
+        contactNumber: '+919494151617',
+        contactEmail: 'info@vanavihari.com',
+        guestEmail: booking.user?.email || '',
+        rooms: trekSpotsArray,
+        totalGuest: totalGuests,
+        totalExtraGuests: 0,
+        totalChildren: booking.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.children || 0), 0) || 0,
+        stayDuration: 1, // Trek is single day
+        email: booking.user?.email || '',
+        isTrek: true, // Flag to identify trek bookings in template
+        touristSpots: booking.touristSpots // Include full spots data
       };
     } else if (booking.paymentStatus === 'pending') {
       this.bookingStatus = 'pending';

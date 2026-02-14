@@ -25,12 +25,13 @@
               <h5><strong>Trek Spot Details</strong></h5>
               <p *ngIf="bookingData?.visitDate"><strong>Visit Date:</strong> {{ formatVisitDate() }}</p>
               <p><strong>Rating:</strong> 4.5/5</p>
-              
+
               <h5>Spot & Visitor Details</h5>
               <div class="pb-4">
                 <div class="pt-2" *ngFor="let spot of bookingData?.spots">
                   <h6 class="fst-italic">
-                    <strong>Spot:</strong><span> {{ spot.name }}</span>
+                    <strong>Spot:</strong><span> {{ spot.difficulty ? (spot.difficulty + ' Trek: ') : '' }}{{ spot.name
+                      }}</span>
                   </h6>
                   <div class="small text-muted ms-2">
                     <div *ngIf="spot.counts?.adults > 0">
@@ -40,10 +41,12 @@
                       <strong>Vehicles:</strong> {{ spot.counts.vehicles }} | ₹{{ spot.breakdown?.parking || 0 }}
                     </div>
                     <div *ngIf="spot.counts?.twoWheelers > 0">
-                      <strong>2 Wheelers:</strong> {{ spot.counts.twoWheelers }} | ₹{{ (spot.unitPrices?.parkingTwoWheeler || 0) * spot.counts.twoWheelers }}
+                      <strong>2 Wheelers:</strong> {{ spot.counts.twoWheelers }} | ₹{{
+                      (spot.unitPrices?.parkingTwoWheeler || 0) * spot.counts.twoWheelers }}
                     </div>
                     <div *ngIf="spot.counts?.fourWheelers > 0">
-                      <strong>4 Wheelers:</strong> {{ spot.counts.fourWheelers }} | ₹{{ (spot.unitPrices?.parkingFourWheeler || 0) * spot.counts.fourWheelers }}
+                      <strong>4 Wheelers:</strong> {{ spot.counts.fourWheelers }} | ₹{{
+                      (spot.unitPrices?.parkingFourWheeler || 0) * spot.counts.fourWheelers }}
                     </div>
                     <div *ngIf="spot.counts?.cameras > 0">
                       <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{ spot.breakdown?.camera || 0 }}
@@ -51,15 +54,16 @@
                   </div>
                   <hr class="my-2">
                 </div>
-                
+
                 <h6>
                   <strong>Number of spot(s): </strong><span>{{ bookingData?.spots?.length || 0 }}</span>
                 </h6>
                 <p class="mb-1">
-                  <strong>Total Guests: </strong><span>{{ getTotalGuests() }}</span>
+                  <strong>Total Tourists: </strong><span>{{ getTotalGuests() }}</span>
                 </p>
                 <hr class="my-2">
-                <a class="font-weight-bold" title="go back to change selection" (click)="triggerModal()">Change your selection</a>
+                <a class="font-weight-bold" title="go back to change selection" (click)="triggerModal()">Change your
+                  selection</a>
               </div>
             </div>
 
@@ -166,8 +170,8 @@
                 <input type="text" matInput required placeholder="Enter your country" formControlName="gcountry" />
               </mat-form-field>
 
-              <button mat-raised-button color="primary" class="w-100"
-                (click)="triggerInfoModal()" [disabled]="!form.valid">
+              <button mat-raised-button color="primary" class="w-100" (click)="triggerInfoModal()"
+                [disabled]="!form.valid">
                 Confirm and Pay
               </button>
               <br><br>
@@ -176,7 +180,8 @@
                   🛑 Please avoid closing or returning to the previous page before completing payment.
                 </p>
                 <p>
-                  💳 If payment isn't successful, you won't receive an invoice via email. However, you'll still get booking details. Contact support with your booking ID to confirm your reservation.
+                  💳 If payment isn't successful, you won't receive an invoice via email. However, you'll still get
+                  booking details. Contact support with your booking ID to confirm your reservation.
                 </p>
                 <h5 class="mb-3">Review the terms before booking.</h5>
                 <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -201,7 +206,8 @@
                           <i class="fas fa-money-bill-wave"></i> Payment and Pricing
                         </h6>
                         <ul>
-                          <li>Full payment is required upon reservation, with accepted modes including cash, credit & debit cards, net banking, UPI, etc.</li>
+                          <li>Full payment is required upon reservation, with accepted modes including cash, credit &
+                            debit cards, net banking, UPI, etc.</li>
                         </ul>
                       </div>
                     </div>
@@ -273,31 +279,34 @@
         <h5 class="modal-title">Confirmation</h5>
         <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
-      <div class="modal-body">  
-        <ul>  
-            <li>🛑 <strong>Payment Instructions:</strong>  
-                <ul>  
-                    <li>Please avoid refreshing, closing, or returning to the previous page before completing payment.</li>  
-                    <li>Avoid swapping apps manually from the payment UPI app to the browser after completing payment. Wait until you are automatically redirected to the browser (this usually takes up to 2 minutes).</li>  
-                </ul>  
-            </li>  
-            <li>💳 <strong>Booking Confirmation</strong>:  
-                <ul>  
-                    <li>If you do not receive booking confirmation immediately after the payment is debited, you will receive it within 10 to 15 minutes.</li>  
-                    <li>Do not attempt rebooking, as the spot will stay blocked for 10 to 15 minutes.</li>  
-                    <li>If not confirmed, it means your payment is either pending or failed.</li>  
-                    <li>For payments successful after 15 minutes from booking, the amount will be auto-refunded to your account in 7 days.</li>  
-                    <li>If the payment is not debited, then you can rebook.</li>  
-                </ul>  
-            </li>  
-            <li>⚠️ <strong>Payment Issues:</strong>  
-                <ul>  
-                    <li>If the payment page doesn't open or fails, do not attempt rebooking.</li>  
-                    <li>Contact the support team with the booking ID (check the "My Bookings" page under your profile).</li>  
-                </ul>  
-            </li>  
-        </ul>  
-    </div>
+      <div class="modal-body">
+        <ul>
+          <li>🛑 <strong>Payment Instructions:</strong>
+            <ul>
+              <li>Please avoid refreshing, closing, or returning to the previous page before completing payment.</li>
+              <li>Avoid swapping apps manually from the payment UPI app to the browser after completing payment. Wait
+                until you are automatically redirected to the browser (this usually takes up to 2 minutes).</li>
+            </ul>
+          </li>
+          <li>💳 <strong>Booking Confirmation</strong>:
+            <ul>
+              <li>If you do not receive booking confirmation immediately after the payment is debited, you will receive
+                it within 10 to 15 minutes.</li>
+              <li>Do not attempt rebooking, as the spot will stay blocked for 10 to 15 minutes.</li>
+              <li>If not confirmed, it means your payment is either pending or failed.</li>
+              <li>For payments successful after 15 minutes from booking, the amount will be auto-refunded to your
+                account in 7 days.</li>
+              <li>If the payment is not debited, then you can rebook.</li>
+            </ul>
+          </li>
+          <li>⚠️ <strong>Payment Issues:</strong>
+            <ul>
+              <li>If the payment page doesn't open or fails, do not attempt rebooking.</li>
+              <li>Contact the support team with the booking ID (check the "My Bookings" page under your profile).</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
       <div class="modal-footer justify-content-center">
         <button mat-raised-button color="primary" class="font-weight-bold w-25" (click)="onOk()"> OK </button>
       </div>

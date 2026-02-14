@@ -1,77 +1,179 @@
 <section class="search-rooms-container">
-  <form #searchForm="ngForm" class="search-bar">
-    <!-- Section 1: Resort -->
-    <div class="search-section">
-      <div class="search-label">Location</div>
-      <mat-select
-        (selectionChange)="setMinDate()"
-        required
-        [(ngModel)]="selectedResort"
-        name="SelectResort"
-        placeholder="Select Destination"
-        disableOptionCentering
-        panelClass="custom-select-panel"
-        class="custom-mat-select"
-      >
-        <mat-option value="Vanavihari, Maredumilli"
-          >Vanavihari, Maredumilli</mat-option
+  <div class="search-widget card-glass">
+    <!-- Widget Title -->
+   
+     <h3 class="step-title text-center mb-4 text-uppercase fw-bold">Choose your experience</h3>
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+      <div class="progress-track">
+        <div
+          class="progress-fill"
+          [style.width.%]="(currentStep - 1) * 50"
+        ></div>
+      </div>
+      <div class="progress-steps">
+        <div
+          class="step-dot"
+          [class.active]="currentStep >= 1"
+          (click)="currentStep > 1 ? (currentStep = 1) : null"
         >
-        <mat-option value="Jungle Star, Valamuru"
-          >Jungle Star, Valamuru</mat-option
+          1
+        </div>
+        <div
+          class="step-dot"
+          [class.active]="currentStep >= 2"
+          (click)="currentStep > 2 ? (currentStep = 2) : null"
         >
-      </mat-select>
+          2
+        </div>
+        <div class="step-dot" [class.active]="currentStep >= 3">3</div>
+      </div>
     </div>
 
-    <div class="divider"></div>
+    <div class="widget-content">
+      <!-- Step 1: Experience -->
+      <div class="step-view" *ngIf="currentStep === 1">
+       
+        <div class="options-grid">
+          <div class="option-card" (click)="selectType('resort')">
+            <div class="icon-box resort-bg">
+              <i class="fa-solid fa-hotel"></i>
+            </div>
+            <div class="option-info">
+              <span class="option-name">Resorts</span>
+              <span class="option-desc">Luxury stays in nature</span>
+            </div>
+            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+          </div>
 
-    <!-- Section 2: Check-in -->
-    <div class="search-section" (click)="picker.open()">
-      <div class="search-label">Check in</div>
-      <input
-        matInput
-        [min]="minDate"
-        [max]="maxDate"
-        [matDatepicker]="picker"
-        name="CheckinDate"
-        [(ngModel)]="checkinDate"
-        required
-        placeholder="Add Date"
-        readonly
-        class="custom-date-input"
-      />
-      <mat-datepicker #picker></mat-datepicker>
+          <!-- <div class="option-card" (click)="selectType('tent')">
+            <div class="icon-box tent-bg">
+              <i class="fa-solid fa-campground"></i>
+            </div>
+            <div class="option-info">
+              <span class="option-name">Tents</span>
+              <span class="option-desc">Camping adventures</span>
+            </div>
+            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+          </div> -->
+
+          <div class="option-card" (click)="selectType('trek')">
+            <div class="icon-box trek-bg">
+              <i class="fa-solid fa-person-hiking"></i>
+            </div>
+            <div class="option-info">
+              <span class="option-name">Treks</span>
+              <span class="option-desc">Explore availability</span>
+            </div>
+            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Location -->
+      <div class="step-view" *ngIf="currentStep === 2">
+        <div class="step-nav">
+          <button class="nav-back-btn" (click)="prevStep()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </button>
+          <h3 class="step-title mb-0">Select Location</h3>
+        </div>
+
+        <div class="locations-list">
+          <div
+            class="location-item"
+            *ngFor="let loc of currentLocations"
+            (click)="selectLocation(loc)"
+          >
+            <i class="fa-solid fa-location-dot loc-icon"></i>
+            <span class="loc-name">{{ loc }}</span>
+            <i class="fa-solid fa-check select-icon"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Dates -->
+      <div class="step-view" *ngIf="currentStep === 3">
+        <div class="step-nav">
+          <button class="nav-back-btn" (click)="prevStep()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+          </button>
+          <h3 class="step-title mb-0">Select Dates</h3>
+        </div>
+
+        <!-- Selected Place Display -->
+
+        <!-- Selected Place Display (Aligned Left) -->
+        <div class="w-100 mb-2" *ngIf="selectedResort">
+          <span
+            class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1"
+          >
+            <i class="fa-solid fa-location-dot me-2"></i>{{ selectedResort }}
+          </span>
+        </div>
+
+        <div class="dates-container" *ngIf="selectedType !== 'trek'">
+          <div class="date-input-group" (click)="picker.open()">
+            <label>Check-in</label>
+            <div class="input-display">
+              <i class="fa-regular fa-calendar"></i>
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker"
+                [(ngModel)]="checkinDate"
+                readonly
+                placeholder="Add Date"
+              />
+              <mat-datepicker #picker></mat-datepicker>
+            </div>
+          </div>
+
+          <div class="date-input-group" (click)="picker1.open()">
+            <label>Check-out</label>
+            <div class="input-display">
+              <i class="fa-regular fa-calendar"></i>
+              <input
+                matInput
+                [matDatepicker]="picker1"
+                [(ngModel)]="checkoutDate"
+                [min]="setMinCheckoutDate()"
+                readonly
+                placeholder="Add Date"
+              />
+              <mat-datepicker #picker1></mat-datepicker>
+            </div>
+          </div>
+        </div>
+
+        <div class="dates-container" *ngIf="selectedType === 'trek'">
+          <div class="date-input-group full-width" (click)="pickerTrek.open()">
+            <label>Trek Date</label>
+            <div class="input-display">
+              <i class="fa-regular fa-calendar"></i>
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="pickerTrek"
+                [(ngModel)]="checkinDate"
+                readonly
+                placeholder="Select Date"
+              />
+              <mat-datepicker #pickerTrek></mat-datepicker>
+            </div>
+          </div>
+        </div>
+
+        <button class="main-search-btn" (click)="submitSearch()">
+          <span>Search Availability</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
-
-    <div class="divider"></div>
-
-    <!-- Section 3: Check-out -->
-    <div class="search-section" (click)="picker1.open()">
-      <div class="search-label">Check out</div>
-      <input
-        matInput
-        [matDatepicker]="picker1"
-        name="CheckOutDate"
-        [(ngModel)]="checkoutDate"
-        [min]="setMinCheckoutDate()"
-        required
-        placeholder="Add Date"
-        readonly
-        class="custom-date-input"
-      />
-      <mat-datepicker #picker1></mat-datepicker>
-    </div>
-
-    <!-- Search Button -->
-    <div class="search-action">
-      <button
-        class="search-btn"
-        [disabled]="!searchForm.valid"
-        (click)="submitSearch()"
-      >
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
-    </div>
-  </form>
+  </div>
 </section>
 
 <!-- Add this HTML structure to your component's template -->

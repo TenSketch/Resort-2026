@@ -1,5 +1,11 @@
 @use "/src/scss/base/" as *;
 
+// Vanavihari Carousel Styles
+// Vanavihari Carousel Styles
+#vanavihariCarousel {
+  @include hero-carousel-base;
+}
+
 .page-banner {
   background-image: url("/assets/img/home-gallery/vanavihari-home-gallery-1.jpg");
 }

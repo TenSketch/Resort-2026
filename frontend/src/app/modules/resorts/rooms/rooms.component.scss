@@ -1,8 +1,10 @@
 @use "/src/scss/base/" as *;
 
-// .page-banner {
-//   background-image: url("/assets/img/home-gallery/vanavihari-home-gallery-1.jpg");
-// }
+// Rooms Carousel Styles
+// Rooms Carousel Styles
+#roomsCarousel {
+  @include hero-carousel-base;
+}
 
 .breadcrumb {
   padding: 10px;
@@ -56,12 +58,14 @@
 
 aside {
   position: sticky;
-  background-color: $clr-primary-lighter;
+ position: sticky;
+  background-color: hsl(89, 100%, 90%); // $clr-primary-lighter
   padding-bottom: 1rem;
   left: 0;
   right: 0;
   z-index: 1000;
-  top: $nav-bar-height;
+  top: 80px; // nav bar height
+
 
   @media (min-width: 991px) {
     overflow-y: auto;
@@ -89,6 +93,11 @@ aside {
   }
 }
 
+  @media (max-width: 575.98px) {
+    aside {
+      top: 100px !important;
+    }
+  }
 main {
   &.rooms-listing {
     @media (min-width: 768px) {}
@@ -242,9 +251,3 @@ pre {
 //   &::before {
 //     content: "\2605\2605\2605\2605";
 //   }
-
-//   &::after {
-//     content: "\2606";
-//     margin-left: 3px;
-//   }
-// }

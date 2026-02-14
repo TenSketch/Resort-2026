@@ -117,12 +117,41 @@ export class RoomsComponent implements OnInit {
       about: 'Vanavihari, Maredumilli',
       backgroundImageUrl:
         '/assets/img/home-gallery/vanavihari-home-gallery-1.jpg',
+      carouselImages: [
+        {
+          url: '/assets/img/home-gallery/vanavihari-home-gallery-1.jpg',
+          description:
+            'Nestled in serene landscapes, beckoning eco-tourism aficionados with its abundance of bamboo trees.',
+        },
+        {
+          url: '/assets/img/home-gallery/vanavihari-home-gallery-2.jpg',
+          description:
+            'Snug cottages and rooms conveniently located close to Amruthadhara Waterfalls.',
+        },
+      ],
     },
     'Jungle Star, Valamuru': {
       title: 'Jungle Star, Valamuru',
       about: 'Jungle Star, Valamuru',
       backgroundImageUrl:
         '/assets/img/home-gallery-junglestar/junglestar-home-gallery-11.jpg',
+      carouselImages: [
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-2.jpg',
+          description:
+            'An island-like setting with seven cottages atop a hillock, accessible only via a hanging bridge.',
+        },
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg',
+          description:
+            'Crossing the bridge is thrilling as it sways over the flowing river below.',
+        },
+        {
+          url: '/assets/img/home-gallery-junglestar/junglestar-home-gallery-4.jpg',
+          description:
+            'Stunning mountain views with eco-friendly adventures like treks and campfires.',
+        },
+      ],
     },
   };
 
@@ -205,7 +234,7 @@ export class RoomsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private galleryService: GalleryService,
     public lightbox: Lightbox,
-    public gallery: Gallery
+    public gallery: Gallery,
   ) {
     // this.authService.clearBookingRooms(this.bookingTypeResort);
     this.api_url = environment.API_URL;
@@ -310,12 +339,12 @@ export class RoomsComponent implements OnInit {
     this.subscription = this.authService.refreshRoomsComponent$.subscribe(
       () => {
         this.getSelectedResortInfo();
-      }
+      },
     );
     this.roomIds =
       this.authService.getBookingRooms(this.bookingTypeResort) != null &&
-        this.authService.getBookingRooms(this.bookingTypeResort) != '' &&
-        this.authService.getBookingRooms(this.bookingTypeResort).length > 0
+      this.authService.getBookingRooms(this.bookingTypeResort) != '' &&
+      this.authService.getBookingRooms(this.bookingTypeResort).length > 0
         ? this.authService.getBookingRooms(this.bookingTypeResort)
         : [];
 
@@ -341,7 +370,7 @@ export class RoomsComponent implements OnInit {
       if (
         this.cardContainer.nativeElement.scrollLeft <
         this.cardContainer.nativeElement.scrollWidth -
-        this.cardContainer.nativeElement.clientWidth
+          this.cardContainer.nativeElement.clientWidth
       ) {
         this.scrollRightIcon.nativeElement.style.opacity = '1';
         this.rightTooltip.nativeElement.style.opacity = '1';
@@ -354,7 +383,7 @@ export class RoomsComponent implements OnInit {
 
   setGalleryData(index: number, id: any) {
     this.items = this.getRoomImages(id).map(
-      (item) => new ImageItem({ src: item })
+      (item) => new ImageItem({ src: item }),
     );
 
     const lightboxRef = this.gallery.ref('lightbox');
@@ -493,7 +522,10 @@ export class RoomsComponent implements OnInit {
     const timeDifferenceMs = checkoutDate.getTime() - checkinDate.getTime();
 
     // Convert milliseconds to days (should be exact whole number after normalization)
-    const durationDays = Math.max(1, Math.round(timeDifferenceMs / (1000 * 60 * 60 * 24)));
+    const durationDays = Math.max(
+      1,
+      Math.round(timeDifferenceMs / (1000 * 60 * 60 * 24)),
+    );
     return durationDays;
   }
 
@@ -561,7 +593,7 @@ export class RoomsComponent implements OnInit {
 
   filterByResort(selectResort: string): any[] {
     return this.roomData.filter(
-      (room: { Select_Resort: string }) => room.Select_Resort == selectResort
+      (room: { Select_Resort: string }) => room.Select_Resort == selectResort,
     );
   }
 
@@ -569,24 +601,24 @@ export class RoomsComponent implements OnInit {
     if (this.selectedSortOption === 'lowToHigh') {
       this.filteredRoomData.sort(
         (a: { Week_Days_Rate: number }, b: { Week_Days_Rate: number }) =>
-          a.Week_Days_Rate - b.Week_Days_Rate
+          a.Week_Days_Rate - b.Week_Days_Rate,
       );
     } else if (this.selectedSortOption === 'highToLow') {
       this.filteredRoomData.sort(
         (a: { Week_Days_Rate: number }, b: { Week_Days_Rate: number }) =>
-          b.Week_Days_Rate - a.Week_Days_Rate
+          b.Week_Days_Rate - a.Week_Days_Rate,
       );
     }
   }
 
   filterRoomsByCottageType() {
     const selectedCottageTypes = Object.keys(this.cottageTypes).filter(
-      (key) => this.cottageTypes[key]
+      (key) => this.cottageTypes[key],
     );
     if (selectedCottageTypes.length > 0 && selectedCottageTypes.length < 2) {
       this.filteredRoomData = this.filteredRoomData.filter(
         (room: { Cottage_Type: string }) =>
-          selectedCottageTypes.includes(room.Cottage_Type)
+          selectedCottageTypes.includes(room.Cottage_Type),
       );
     }
 
@@ -599,7 +631,7 @@ export class RoomsComponent implements OnInit {
 
   onCottageTypeChange(): void {
     const selectedCottageTypes = Object.keys(this.cottageTypes).filter(
-      (key) => this.cottageTypes[key]
+      (key) => this.cottageTypes[key],
     );
     if (selectedCottageTypes.length == 0) {
       this.filteredRoomData = [...this.previousFilteredRoomData]; // Restore the previous state
@@ -609,6 +641,9 @@ export class RoomsComponent implements OnInit {
       }
     }
   }
+
+  // New Properties for Room Availability Overview (REMOVED)
+
 
   fetchRoomList() {
     this.loadingRooms = true;
@@ -649,91 +684,96 @@ export class RoomsComponent implements OnInit {
           }
 
           // Now fetch available rooms from the REST API
-          this.http
-            .get<any>(roomsUrl)
-            .subscribe({
-              next: (response) => {
-                this.showLoader = false;
-                this.loadingRooms = false;
+          this.http.get<any>(roomsUrl).subscribe({
+            next: (response) => {
+              this.showLoader = false;
+              this.loadingRooms = false;
 
-                // Transform the API response to match the frontend interface
-                this.roomData = response.rooms.map((room: any) => {
-                  return {
-                    Room_Id: room._id,
-                    Charges_per_Bed_Week_Days: room.bedChargeWeekday || room.price || 0,
-                    Cottage_Type: room.cottageType?.name || room.cottageType || '',
-                    Max_Allowed_Guest: room.guests || 2,
-                    Week_Days_Rate: room.weekdayRate || room.price || 0,
-                    Charges_per_Bed_Week_End: room.bedChargeWeekend || room.price || 0,
-                    Week_End_Rate: room.weekendRate || room.price || 0,
-                    Room_Name: room.roomName,
-                    Select_Resort: room.resort?.resortName || this.selectedResort,
-                    Max_Allowed_Adult: room.guests || 2,
-                    Room_Image: room.images && room.images.length > 0 ? room.images[0].url : '',
-                    ID: room._id,
-                    is_button_disabled: room.canBook === false, // Disable if canBook is false
-                    isExtraGuestChecked: false,
-                    extra_guest: false,
-                    images: room.images || [], // Store images array for gallery
-                    isAvailable: room.isAvailable !== undefined ? room.isAvailable : true,
-                    canBook: room.canBook !== undefined ? room.canBook : true,
-                    message: room.message || '',
-                  };
+              // Transform the API response to match the frontend interface
+              this.roomData = response.rooms.map((room: any) => {
+                return {
+                  Room_Id: room._id,
+                  Charges_per_Bed_Week_Days:
+                    room.bedChargeWeekday || room.price || 0,
+                  Cottage_Type:
+                    room.cottageType?.name || room.cottageType || '',
+                  Max_Allowed_Guest: room.guests || 2,
+                  Week_Days_Rate: room.weekdayRate || room.price || 0,
+                  Charges_per_Bed_Week_End:
+                    room.bedChargeWeekend || room.price || 0,
+                  Week_End_Rate: room.weekendRate || room.price || 0,
+                  Room_Name: room.roomName,
+                  Select_Resort: room.resort?.resortName || this.selectedResort,
+                  Max_Allowed_Adult: room.guests || 2,
+                  Room_Image:
+                    room.images && room.images.length > 0
+                      ? room.images[0].url
+                      : '',
+                  ID: room._id,
+                  is_button_disabled: room.canBook === false, // Disable if canBook is false
+                  isExtraGuestChecked: false,
+                  extra_guest: false,
+                  images: room.images || [], // Store images array for gallery
+                  isAvailable:
+                    room.isAvailable !== undefined ? room.isAvailable : true,
+                  canBook: room.canBook !== undefined ? room.canBook : true,
+                  message: room.message || '',
+                };
+              });
+
+              this.filteredRoomData = this.roomData;
+
+              // Sort rooms based on predefined order
+              const roomIndexMap = new Map<string, number>();
+              if (this.selectedResort == 'Jungle Star, Valamuru') {
+                this.junglestarOrder.forEach((roomName, index) => {
+                  roomIndexMap.set(roomName, index);
                 });
+              } else {
+                this.vanavihariOrder.forEach((roomName, index) => {
+                  roomIndexMap.set(roomName, index);
+                });
+              }
 
-                this.filteredRoomData = this.roomData;
+              this.filteredRoomData = this.filteredRoomData.sort(
+                (a: any, b: any) => {
+                  const indexA = roomIndexMap.get(a.Room_Name);
+                  const indexB = roomIndexMap.get(b.Room_Name);
 
-                // Sort rooms based on predefined order
-                const roomIndexMap = new Map<string, number>();
-                if (this.selectedResort == 'Jungle Star, Valamuru') {
-                  this.junglestarOrder.forEach((roomName, index) => {
-                    roomIndexMap.set(roomName, index);
-                  });
-                } else {
-                  this.vanavihariOrder.forEach((roomName, index) => {
-                    roomIndexMap.set(roomName, index);
-                  });
-                }
-
-                this.filteredRoomData = this.filteredRoomData.sort(
-                  (a: any, b: any) => {
-                    const indexA = roomIndexMap.get(a.Room_Name);
-                    const indexB = roomIndexMap.get(b.Room_Name);
-
-                    // If both Room_Names are in the order array, compare their indices
-                    if (indexA !== undefined && indexB !== undefined) {
-                      return indexA - indexB;
-                    }
-
-                    // If one of the Room_Names is not in the order array, prioritize the one that is
-                    if (indexA !== undefined) {
-                      return -1; // Place a before b
-                    }
-                    if (indexB !== undefined) {
-                      return 1; // Place b before a
-                    }
-
-                    // If neither Room_Name is in the order array, maintain the current order
-                    return 0;
+                  // If both Room_Names are in the order array, compare their indices
+                  if (indexA !== undefined && indexB !== undefined) {
+                    return indexA - indexB;
                   }
-                );
 
-                this.previousFilteredRoomData = [...this.filteredRoomData];
+                  // If one of the Room_Names is not in the order array, prioritize the one that is
+                  if (indexA !== undefined) {
+                    return -1; // Place a before b
+                  }
+                  if (indexB !== undefined) {
+                    return 1; // Place b before a
+                  }
 
-                if (this.roomData.length == 0) {
-                  this.isRoomDataEmpty = true;
-                } else {
-                  this.isRoomDataEmpty = false;
-                }
-              },
-              error: (err) => {
-                console.error('Error fetching rooms:', err);
-                this.showLoader = false;
-                this.loadingRooms = false;
+                  // If neither Room_Name is in the order array, maintain the current order
+                  return 0;
+                },
+              );
+
+              this.previousFilteredRoomData = [...this.filteredRoomData];
+              
+              if (this.roomData.length == 0) {
                 this.isRoomDataEmpty = true;
-                this.showErrorAlert('Failed to load rooms. Please try again.');
-              },
-            });
+              } else {
+                this.isRoomDataEmpty = false;
+              }
+            },
+            error: (err) => {
+              console.error('Error fetching rooms:', err);
+              this.showLoader = false;
+              this.loadingRooms = false;
+              this.isRoomDataEmpty = true;
+              this.showErrorAlert('Failed to load rooms. Please try again.');
+            },
+          });
         },
         error: (err) => {
           console.error('Error fetching resort:', err);
@@ -822,7 +862,7 @@ export class RoomsComponent implements OnInit {
   removeRoom(roomIds: any, roomId: any) {
     this.isRoomAdded(roomId);
     const room = this.roomData.find(
-      (room: { Room_Id: any }) => room.Room_Id === roomId
+      (room: { Room_Id: any }) => room.Room_Id === roomId,
     );
     if (room) {
       room.is_button_disabled = false;
@@ -860,7 +900,7 @@ export class RoomsComponent implements OnInit {
     let totalPrice = 0;
     for (const roomId of this.roomIds) {
       const room = this.roomData.find(
-        (room: { Room_Id: any }) => room.Room_Id === roomId
+        (room: { Room_Id: any }) => room.Room_Id === roomId,
       );
 
       if (room) {
@@ -894,7 +934,7 @@ export class RoomsComponent implements OnInit {
 
     for (const roomId of this.roomIds) {
       const room = this.roomData.find(
-        (r: { Room_Id: any }) => r.Room_Id === roomId
+        (r: { Room_Id: any }) => r.Room_Id === roomId,
       );
       if (room) {
         roomCharges += parseFloat(room.Week_Days_Rate);
@@ -1010,7 +1050,7 @@ export class RoomsComponent implements OnInit {
 
   isGuestSelectEmpty(): boolean {
     const roomIdsWithNoValue = this.roomIds.filter(
-      (roomId) => !this.selectedValues[roomId]
+      (roomId) => !this.selectedValues[roomId],
     );
     return roomIdsWithNoValue.length > 0;
   }

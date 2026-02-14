@@ -1,284 +1,222 @@
 <header>
-  <nav
-    class="navbar navbar-light py-2 fixed-top bg-light"
-    [class.is-nav-hidden]="isNavHidden"
-  >
+  <nav class="navbar navbar-light py-2 fixed-top bg-light" [class.sidebar-collapsed]="isSidebarCollapsed">
     <div class="container align-items-center">
-      <div class="d-flex flex-row align-items-center me-1 me-md-3 gap-2">
-        <img
-          class="govt-logo"
-          src="assets/images/AP_gov.png"
-          alt="Government of Andhra Pradesh"
-        />
-        <span
-          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
-          style="line-height: 1.2; font-size: 0.9rem"
-          >Government of Andhra Pradesh</span
-        >
+      <div class="d-flex flex-column flex-lg-row align-items-center me-1 me-md-3 gap-0 gap-lg-2">
+        <img class="govt-logo" src="assets/images/AP_gov.png" alt="Government of Andhra Pradesh" />
+        <!-- Mobile Text -->
+        <span class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem">Govt. of AP</span>
+        <!-- Desktop Text -->
+        <span class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem">Government of Andhra Pradesh</span>
       </div>
       <a class="navbar-brand py-0" href="#">
         <img class="" src="assets/img/logo-vana.png" alt="logo-vana" />
       </a>
-      <div
-        class="d-none d-lg-flex align-items-center gap-3 me-3 top-bar-actions"
-      >
-        <a
-          *ngIf="!isLoggedIn()"
-          routerLink="/sign-in"
-          class="text-decoration-none fw-medium text-dark"
-          >Sign In</a
-        >
-        <a
-          *ngIf="isLoggedIn()"
-          routerLink="/my-account/settings"
-          class="text-decoration-none fw-medium text-dark d-flex align-items-center gap-2"
-        >
-          <span>Profile</span>
-          <i class="fa-regular fa-user-circle fa-lg"></i>
-        </a>
-      </div>
 
       <!-- 4. Forest Dept Logo (Right) -->
-      <div class="d-flex flex-row align-items-center ms-1 ms-md-3 gap-2">
-        <span
-          class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
-          style="line-height: 1.2; font-size: 0.9rem"
-          >Andhra Pradesh Forest Department</span
-        >
-        <img
-          class="forest-logo"
-          src="assets/images/AP_forest.png"
-          alt="AP Forest Department"
-        />
+      <div class="d-flex flex-column flex-lg-row align-items-center ms-1 ms-md-3 gap-0 gap-lg-2">
+        <!-- Desktop Text (Left of Image on Desktop) -->
+        <span class="logo-text d-none d-lg-block text-uppercase fw-bold text-center"
+          style="line-height: 1.2; font-size: 0.9rem">Andhra Pradesh Forest Department</span>
+        <img class="forest-logo" src="assets/images/AP_forest.png" alt="AP Forest Department" />
+        <!-- Mobile Text (Below Image on Mobile) -->
+        <span class="logo-text d-lg-none text-uppercase fw-bold text-center mt-1"
+          style="line-height: 1; font-size: 0.7rem">AP Forest Dept.</span>
       </div>
     </div>
   </nav>
-  <div
-    class="sidebar-overlay"
-    [ngClass]="{ active: isSidebarOpen }"
-    (click)="closeSidebar()"
-  ></div>
-  <div id="sidebar" [ngClass]="{ active: isSidebarOpen }">
+  <div class="sidebar-overlay" [ngClass]="{ active: isSidebarOpen }" (click)="closeSidebar()"></div>
+  <div id="sidebar" [ngClass]="{ active: isSidebarOpen, collapsed: isSidebarCollapsed }">
     <div class="sidebar-content">
+      <!-- Close Button (Mobile Only) -->
+      <button class="sidebar-close-btn d-lg-none" (click)="closeSidebar()" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Mobile Menu Header Text -->
+      <div class="d-lg-none mb-3 mt-1 text-start ps-3">
+        <img src="assets/img/logo-vana.png" alt="Vanavihari Logo" class="img-fluid" style="height: 40px" />
+      </div>
       <!-- Sidebar content goes here -->
       <ul class="sidebar-menu list-unstyled">
-        <li class="sidebar-item d-flex mt-0">
-          <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/home">
-            <i class="fa-solid fa-home"></i><span class="ms-3">Home</span>
-          </a>
-        </li>
-        <li class="sidebar-item d-flex">
-          <a class="sidebar-link" (click)="toggleSidebar(); goToAboutUs()">
-            <i class="fa-solid fa-info-circle"></i
-            ><span class="ms-3">About VANAVIHARI</span>
+        <!-- Profile / Sign In Section (Top) -->
+        <!-- Sign In Link (when not logged in) -->
+        <li class="sidebar-item d-flex" *ngIf="!isLoggedIn()">
+          <a class="sidebar-link" (click)="toggleSidebar(); goToSignin()">
+            <i class="fa-regular fa-user-circle"></i><span class="ms-3">Sign In</span>
           </a>
         </li>
 
-        <!-- Book Resort Accordion -->
-        <li class="sidebar-item">
-          <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseOne"
-                  aria-expanded="false"
-                  aria-controls="collapseOne"
-                >
-                  <i class="fa-solid fa-hotel"></i
-                  ><span class="ms-3">Book Resort</span>
-                </button>
-              </h2>
-              <div
-                id="collapseOne"
-                class="accordion-collapse collapse"
-                aria-labelledby="headingOne"
-                data-bs-parent="#accordionExample"
-              >
-                <div class="accordion-body mb-0">
-                  <a
-                    class="dropdown-item ps-4 py-1"
-                    (click)="toggleSidebar(); goToVanavihari()"
-                    >Vanavihari, Maredumilli</a
-                  >
-                  <a
-                    class="dropdown-item ps-4"
-                    (click)="toggleSidebar(); goToJungleStar()"
-                    >Jungle Star, Valamuru</a
-                  >
-                </div>
-              </div>
-            </div>
-
-            <!-- Book Tents Accordion -->
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingTwo">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseTwo"
-                  aria-expanded="false"
-                  aria-controls="collapseTwo"
-                >
-                  <i class="fa-solid fa-tent"></i
-                  ><span class="ms-3">Book Tents</span>
-                </button>
-              </h2>
-              <div
-                id="collapseTwo"
-                class="accordion-collapse collapse"
-                aria-labelledby="headingTwo"
-                data-bs-parent="#accordionExample"
-              >
-                <div class="accordion-body mb-0">
-                  <a
-                    class="dropdown-item ps-4 py-1"
-                    (click)="toggleSidebar(); goToTents()"
-                    >Vanavihari, Maredumilli</a
-                  >
-                  <a
-                    class="dropdown-item ps-4"
-                    (click)="toggleSidebar(); goToKarthikavanamTents()"
-                    >Karthikavanam, Valamuru</a
-                  >
-                </div>
+        <!-- My Account Group (Accordion - when logged in) -->
+        <div class="accordion mb-2" id="sidebarAccordionAccount" *ngIf="isLoggedIn()">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAccount">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                <i class="fa-regular fa-user-circle"></i><span class="menu-text">{{ accountusername }}</span>
+              </button>
+            </h2>
+            <div id="collapseAccount" class="accordion-collapse collapse" aria-labelledby="headingAccount"
+              data-bs-parent="#sidebarAccordionAccount">
+              <div class="accordion-body">
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/settings" (click)="toggleSidebar()">
+                  <i class="fa-solid fa-user-gear"></i><span class="menu-text">My Account</span>
+                </a>
+                <a class="dropdown-item text-nowrap" routerLink="/my-account/my-bookings" (click)="toggleSidebar()">
+                  <i class="fa-solid fa-list-check"></i><span class="menu-text">My Bookings</span>
+                </a>
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); triggerModal()">
+                  <i class="fa-solid fa-right-from-bracket"></i><span class="menu-text">Sign Out</span>
+                </a>
               </div>
             </div>
           </div>
+        </div>
+        <li class="sidebar-item mt-2">
+          <hr class="mx-3 my-2 text-muted" />
         </li>
 
-        <!-- Treks (New) -->
+        <!-- Category: BOOK -->
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
+          Book
+        </li>
+
+        <!-- Resorts Group -->
+        <!-- Resorts Group (Accordion) -->
+        <div class="accordion" id="sidebarAccordionResorts">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingResorts">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseResorts" aria-expanded="false" aria-controls="collapseResorts">
+                <i class="fa-solid fa-hotel"></i><span class="menu-text">Resorts</span>
+              </button>
+            </h2>
+            <div id="collapseResorts" class="accordion-collapse collapse" aria-labelledby="headingResorts"
+              data-bs-parent="#sidebarAccordionResorts">
+              <div class="accordion-body ps-4">
+                <!-- Links -->
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); goToVanavihari()">Vanavihari,
+                  Maredumilli</a>
+                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); goToJungleStar()">Jungle Star,
+                  Valamuru</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tents Group (Accordion) -->
+        <!-- <div class="accordion mt-2" id="sidebarAccordionTents">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTents">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseTents"
+                aria-expanded="false"
+                aria-controls="collapseTents"
+              >
+                <i class="fa-solid fa-tent"></i><span class="menu-text">Tent Accommodation</span>
+              </button>
+            </h2>
+            <div
+              id="collapseTents"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingTents"
+              data-bs-parent="#sidebarAccordionTents"
+            >
+              <div class="accordion-body ps-4">
+                <a
+                  class="dropdown-item text-nowrap"
+                  (click)="toggleSidebar(); goToTents()"
+                  >Vanavihari, Maredumilli</a
+                >
+                <a
+                  class="dropdown-item text-nowrap"
+                  (click)="toggleSidebar(); goToKarthikavanamTents()"
+                  >Karthikavanam, Valamuru</a
+                >
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Treks -->
         <li class="sidebar-item d-flex">
-          <a
-            class="sidebar-link"
-            (click)="toggleSidebar()"
-            routerLink="/tourist-places"
-          >
-            <!-- Note: routerLink='/treks' is assumed, verify actual route or use placeholder -->
-            <i class="fa-solid fa-person-hiking"></i
-            ><span class="ms-3">Treks</span>
+          <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/tourist-places">
+            <i class="fa-solid fa-person-hiking"></i><span class="ms-3">Treks</span>
           </a>
         </li>
 
+        <li class="sidebar-item ">
+          <hr class="mx-3 my-2 text-muted" />
+        </li>
+
+        <!-- Category: EXPLORE -->
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
+          Explore
+        </li>
         <li class="sidebar-item d-flex">
-          <a
-            class="sidebar-link"
-            (click)="toggleSidebar()"
-            routerLink="/tourist-destination"
-          >
-            <i class="fa-regular fa-compass"></i
-            ><span class="ms-3">Tourist Destinations</span>
+          <a class="sidebar-link" (click)="toggleSidebar()" routerLink="/tourist-destination">
+            <i class="fa-regular fa-compass"></i><span class="ms-3">Tourist Destinations</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToTribalPg()">
-            <i class="fa-solid fa-users"></i
-            ><span class="ms-3">Tribal Community</span>
+            <i class="fa-solid fa-users"></i><span class="ms-3">Tribal Communities</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToBiodiversity()">
-            <i class="fa-solid fa-leaf"></i
-            ><span class="ms-3">Biodiversity Zone</span>
+            <i class="fa-solid fa-leaf"></i><span class="ms-3">Biodiversity Zone</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item ">
+          <hr class="mx-3 my-2 text-muted" />
+        </li>
+
+        <!-- Category: ABOUT -->
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
+          About
+        </li>
+        <li class="sidebar-item d-flex">
+          <a class="sidebar-link" (click)="toggleSidebar(); goToAboutUs()">
+            <i class="fa-solid fa-info-circle"></i><span class="ms-3">About Vanavihari</span>
           </a>
         </li>
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAwards()">
-            <i class="fa-solid fa-award"></i
-            ><span class="ms-3">Awards and News</span>
+            <i class="fa-solid fa-award"></i><span class="ms-3">Awards & News</span>
           </a>
         </li>
-
-        <li class="sidebar-item mt-4">
-          <hr class="mx-3 my-2 text-muted" />
-        </li>
-
-        <!-- Help / Policies (New) -->
-        <li class="sidebar-item d-flex">
-          <a class="sidebar-link" (click)="toggleSidebar()">
-            <i class="fa-solid fa-gear"></i
-            ><span class="ms-3">Help / Policies</span>
-          </a>
-        </li>
-
-        <!-- <li class="sidebar-item">
-          <a class="sidebar-link d-flex gap-2 align-items-center" href="#">
-            <i class="fa-regular fa-images"></i><span>Gallery</span>
-          </a>
-        </li> -->
-        <!-- <li class="sidebar-item">
-          <a class="sidebar-link" (click)="goToContact()" >
-            <i class="fa-regular fa-envelope me-2"></i><span>Contact Us</span>
-          </a>
-        </li> -->
-        <!-- <li class="sidebar-item">
-          <a class="sidebar-link d-lg-none" routerLink="/sign-in" routerLinkActive="active"
-            ariaCurrentWhenActive="page"><i class="fa-solid fa-key"></i> Sign in</a>
-        </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link d-lg-none" routerLink="/sign-up" routerLinkActive="active"
-            ariaCurrentWhenActive="page"><i class="fa-solid fa-sign-in"></i> Sign up</a>
-        </li> -->
       </ul>
+      <!-- Collapse Toggle Button (Desktop Only - ≥992px) -->
+
     </div>
+    <button class="sidebar-collapse-btn d-none d-lg-flex" (click)="toggleSidebarCollapse()"
+      [attr.aria-expanded]="!isSidebarCollapsed" aria-label="Toggle sidebar">
+      <i class="fa-solid" [ngClass]="
+            isSidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'
+          "></i>
+    </button>
   </div>
+
 </header>
 <!-- End Header -->
-<main>
+<main [class.sidebar-collapsed]="isSidebarCollapsed">
   <app-loader *ngIf="showLoader"></app-loader>
   <ng-content select=".main"></ng-content>
 </main>
-<footer id="footer" class="footer py-4">
+<footer id="footer" class="footer py-4" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container pt-5">
     <div class="row w-100">
-      <div class="col-md-2">
-        <h3>Pages</h3>
-        <ul class="list-unstyled">
-          <li class="mt-2">
-            <a class="" (click)="toggleSidebar(); goToVanavihari()">
-              <span class="">Vanavihar, Maredumilli</span>
-            </a>
-          </li>
-          <li class="d-flex mt-2">
-            <a class="sidebar-link" (click)="toggleSidebar(); goToJungleStar()">
-              <span class="">Jungle star, Valamuru</span>
-            </a>
-          </li>
-          <li class="sidebar-item d-flex mt-2">
-            <a class="sidebar-link" (click)="toggleSidebar(); goToAboutUs()">
-              <span class="">About Us</span>
-            </a>
-          </li>
-          <li class="sidebar-item d-flex mt-2">
-            <a class="sidebar-link" (click)="toggleSidebar(); goToTourist()">
-              <span class="">Tourist Destinations</span>
-            </a>
-          </li>
-          <li class="sidebar-item d-flex mt-2">
-            <a class="sidebar-link" (click)="toggleSidebar(); goToTribalPg()">
-              <span class="">Tribal Community</span>
-            </a>
-          </li>
-          <li class="sidebar-item d-flex mt-2">
-            <a
-              class="sidebar-link d-flex"
-              (click)="toggleSidebar(); goToBiodiversity()"
-            >
-              <span class="">Biodiversity Zone</span>
-            </a>
-          </li>
-          <li class="sidebar-item d-flex mt-2">
-            <a class="sidebar-link" (click)="goToAwards()">
-              <span class="">Awards and News</span></a
-            >
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-2">
-        <h3>Links</h3>
+      <div class="col-md-3">
+        <h3>Policies</h3>
         <ul class="list-unstyled">
           <li class="mt-2">
             <a class="" (click)="goToPrivacy()">Privacy Policy</a>
@@ -291,7 +229,7 @@
           </li>
         </ul>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-9">
         <h3 class=" ">Contact Info</h3>
         <div class="row">
           <div class="col-lg-6">
@@ -299,22 +237,13 @@
               <h5>Vanavihari</h5>
               <li class="mt-2">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="mailto:info@vanavihari.com"
-                  title="click to send email"
-                  >info@vanavihari.com</a
-                >
+                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
+                  title="click to send email">info@vanavihari.com</a>
               </li>
               <li class="mt-2">
                 <!-- font awesome email -->
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="tel:+919494151617"
-                  title="call"
-                  >+919494151617</a
-                >
+                <a class="text-decoration-none" href="tel:+919494151617" title="call">+919494151617</a>
               </li>
               <li class="mt-2 d-flex justify-content-start align-items-start">
                 <!-- font awesome email -->
@@ -331,22 +260,13 @@
               <h5>Jungle Star</h5>
               <li class="mt-2">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="mailto:info@vanavihari.com"
-                  title="click to send email"
-                  >junglestarecocamp@gmail.com</a
-                >
+                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
+                  title="click to send email">junglestarecocamp@gmail.com</a>
               </li>
               <li class="mt-2">
                 <!-- font awesome email -->
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a
-                  class="text-decoration-none"
-                  href="tel:+919494151617"
-                  title="call"
-                  >+9173821 51617</a
-                >
+                <a class="text-decoration-none" href="tel:+919494151617" title="call">+9173821 51617</a>
               </li>
               <li class="mt-2 d-flex justify-content-start align-items-start">
                 <!-- font awesome email -->
@@ -356,50 +276,37 @@
                 </address>
               </li>
             </ul>
+            <!-- Payment Methods -->
+            <div class="">
+              <img src="assets/images/payment-methods.svg" alt="Payment Methods" class="img-fluid"
+                style="max-height: 40px" />
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </footer>
-<footer class="bottom-footer mt-auto py-3">
+<footer class="bottom-footer mt-auto py-3" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container">
-    <div
-      class="row justify-content-center justify-content-md-between align-items-center gy-2"
-    >
+    <div class="row justify-content-center justify-content-md-between align-items-center gy-2">
       <span class="col-auto">&copy; 2024 - {{ currentYear }} VANAVIHARI</span>
-      <span class="col-auto"
-        >Made with love <i class="fas fa-heart"></i> by
-        <a
-          class="text-decoration-none"
-          href="https://tensketch.com/"
-          target="_blank"
-          link="no-referrer"
-        >
+      <span class="col-auto">Made with love <i class="fas fa-heart"></i> by
+        <a class="text-decoration-none" href="https://tensketch.com/" target="_blank" link="no-referrer">
           TenSketch
-        </a></span
-      >
+        </a></span>
     </div>
   </div>
 </footer>
 
 <!-- WhatsApp Floating Button (with support options) -->
-<div class="whatsapp-wrapper" (click)="$event.stopPropagation()">
-  <button
-    class="whatsapp-float"
-    (click)="toggleWhatsappOptions($event)"
-    aria-haspopup="true"
-    [attr.aria-expanded]="isWhatsappOptionsOpen"
-  >
+<div class="whatsapp-wrapper" [class.sidebar-collapsed]="isSidebarCollapsed" (click)="$event.stopPropagation()">
+  <button class="whatsapp-float" (click)="toggleWhatsappOptions($event)" aria-haspopup="true"
+    [attr.aria-expanded]="isWhatsappOptionsOpen">
     <i class="fab fa-whatsapp" aria-hidden="true"></i>
   </button>
 
-  <div
-    class="whatsapp-options"
-    *ngIf="isWhatsappOptionsOpen"
-    role="menu"
-    aria-label="WhatsApp support options"
-  >
+  <div class="whatsapp-options" *ngIf="isWhatsappOptionsOpen" role="menu" aria-label="WhatsApp support options">
     <div class="wa-card">
       <div class="wa-item" (click)="openWhatsapp('9494151617')">
         <div class="wa-icon-wrapper">
@@ -430,31 +337,16 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="onCancel()"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to sign out?</p>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          mat-raised-button
-          color="primary"
-          (click)="onCancel()"
-        >
+        <button type="button" mat-raised-button color="primary" (click)="onCancel()">
           Cancel
         </button>
-        <button
-          type="button"
-          mat-raised-button
-          color="primary"
-          (click)="onConfirm()"
-        >
+        <button type="button" mat-raised-button color="primary" (click)="onConfirm()">
           Sign Out
         </button>
       </div>
@@ -463,17 +355,17 @@
 </div>
 
 <nav class="bottom-nav d-lg-none">
-  <div
-    class="nav-item"
-    routerLink="/resort-listing"
-    routerLinkActive="active"
-    title="Resorts"
-  >
+  <div class="nav-item" routerLink="/home" routerLinkActive="active" title="Home">
+    <i class="fa-solid fa-house"></i>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" routerLink="/resorts/rooms" [queryParams]="{ bookingTypeResort: 'Vanavihari, Maredumilli' }"
+    routerLinkActive="active" title="Resorts">
     <i class="fa-solid fa-hotel"></i>
     <span>Resorts</span>
   </div>
-
-  <div
+  <!-- Tents (temporarily disabled) -->
+  <!-- <div
     class="nav-item"
     routerLink="/book-tent/vanavihari-maredumilli"
     routerLinkActive="active"
@@ -481,38 +373,23 @@
   >
     <i class="fa-solid fa-tent"></i>
     <span>Tents</span>
-  </div>
+  </div> -->
 
-  <div
-    class="nav-item"
-    routerLink="/tourist-places"
-    routerLinkActive="active"
-    title="Treks"
-  >
+  <!-- Treks (temporarily disabled) -->
+  <div class="nav-item" routerLink="/tourist-places" routerLinkActive="active" title="Treks">
     <i class="fa-solid fa-person-hiking"></i>
     <span>Treks</span>
   </div>
 
-  <div
-    class="nav-item"
-    *ngIf="isLoggedIn()"
-    routerLink="/my-account/settings"
-    routerLinkActive="active"
-    title="Profile"
-  >
+  <div class="nav-item" *ngIf="isLoggedIn()" routerLink="/my-account/settings" routerLinkActive="active"
+    title="Profile">
     <i class="fa-regular fa-user-circle"></i>
-    <span>Profile</span>
+    <span>My Profile</span>
   </div>
 
-  <div
-    class="nav-item"
-    *ngIf="!isLoggedIn()"
-    routerLink="/sign-in"
-    routerLinkActive="active"
-    title="Sign In"
-  >
+  <div class="nav-item" *ngIf="!isLoggedIn()" routerLink="/sign-in" routerLinkActive="active" title="Sign In">
     <i class="fa-regular fa-user-circle"></i>
-    <span>Profile</span>
+    <span>Sign In</span>
   </div>
 
   <div class="nav-item menu-toggle" (click)="toggleSidebar()" title="More">

@@ -14,6 +14,52 @@ export class TouristPlacesComponent implements OnInit, AfterViewInit {
     private viewportScroller: ViewportScroller
   ) {}
 
+  heroSlides = [
+    {
+      id: 1,
+      image: 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg',
+      title: 'Tourist Destinations',
+      location: 'Explore the breathtaking waterfalls, lush forests, and serene picnic spots of Maredumilli.',
+      subtitle: null,
+      tagline: 'Discover Nature',
+      startText: null,
+      price: null,
+      cta: 'Explore Now',
+      action: 'explore'
+    }
+  ];
+
+  // Store current main image for each section
+  currentImages: { [key: string]: string } = {
+    jalatarangini: 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg',
+    amruthadhara: 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg',
+    karthikavanam: 'assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg',
+    mpca: 'assets/img/TOURIST-PLACES/MPCA.jpg',
+    softTrek: 'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg',
+    hardTrek: 'assets/img/TOURIST-PLACES/junglestar-trek-01.jpg',
+    gudisa: 'assets/img/TOURIST-PLACES/gudisa-hills-1.jpg'
+  };
+
+  /**
+   * Updates the main image for a specific section.
+   * @param sectionKey - The key identifying the section (e.g., 'jalatarangini').
+   * @param imagePath - The new image path to display.
+   */
+  setMainImage(sectionKey: string, imagePath: string): void {
+    if (this.currentImages[sectionKey]) {
+      this.currentImages[sectionKey] = imagePath;
+    }
+  }
+
+  handleSlideAction(action: string) {
+    if (action === 'explore') {
+      const element = document.getElementById('jalatarangini-waterfall');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
   ngOnInit() {
     // Don't scroll to top if there's a fragment
     this.route.fragment.subscribe((fragment: string | null) => {

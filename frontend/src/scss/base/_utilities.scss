@@ -3,7 +3,9 @@
 @use './variables' as *;
 
 $nav-bar-height: 8vh;
-
+.fw-bold {
+font-weight: 600 !important;
+}
 
 .text-warning{
     color: hsl(32, 95%, 44%)!important

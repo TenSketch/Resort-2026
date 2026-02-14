@@ -66,7 +66,7 @@ td {
 // timer
 .count-down-timer {
   position: fixed;
-  top: 80px;
+  top: 110px;
   right: 20px;
   z-index: 500;
   box-shadow: 2px 6px 9px 2px rgb(0 0 0 / 20%);
@@ -135,7 +135,8 @@ td {
   .count-down-timer {
     max-width: 150px;
     padding: 5px;
-    top: 55px;
+    top: 110px;
+    right: 20px;
     .wrapper {
       margin-top: -5px;
       .title{
@@ -180,7 +181,8 @@ td {
   .count-down-timer {
     max-width: 150px;
     padding: 5px;
-    top: 55px;
+    top: 110px;
+    right: 20px;
 
     .wrapper {
       margin-top: -5px;
@@ -225,7 +227,8 @@ td {
   .count-down-timer {
     max-width: 150px;
     padding: 5px;
-    top: 80px;
+    top: 110px;
+    right: 20px;
 
     .wrapper {
       margin-top: -5px;

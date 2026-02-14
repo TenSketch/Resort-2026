@@ -4,6 +4,7 @@ import {
   OnInit,
   Renderer2,
   ViewChild,
+  OnDestroy
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -28,7 +29,7 @@ import { EnvService } from '@/app/env.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   //user
   currentUser: string;
   // Define an array to hold the image filenames
@@ -72,11 +73,11 @@ export class HomeComponent implements OnInit {
       image: 'assets/img/Vihari-outer.jpg',
       title: 'Welcome to Vanavihari Adventures',
       subtitle: 'Discover Nature, Trek Trails & Unforgettable Stays',
-      tagline: 'New Online Booking for Resorts, Tents & Treks!',
+      tagline: 'New Online Booking for Resorts & Treks!',
       startText: 'Book Easily. Explore Deeply.',
       price: null,
       cta: 'Explore Now',
-      action: 'about'
+      action: 'resorts'
     },
     {
       id: 2,
@@ -85,7 +86,7 @@ export class HomeComponent implements OnInit {
       location: 'Maredumilli, Andhra Pradesh',
       tagline: 'Comfort Amidst Nature',
       startText: null,
-      price: 'Starts at ₹3,499 / night',
+      price: 'Starts at ₹2,500 / night',
       cta: 'View Resorts',
       action: 'resorts'
     },
@@ -97,17 +98,17 @@ export class HomeComponent implements OnInit {
       tagline: 'Sleep Under the Stars',
       startText: null,
       price: 'From ₹1,500 / night',
-      cta: 'Book Tents',
-      action: 'tents'
+      cta: 'Comming Soon',
+      action: ''
     },
     {
       id: 4,
       image: 'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg',
       title: 'Thrilling Trek Escapes',
-      location: 'Jalatarangini / Jungle Star / Gudisa',
+      location: 'Jalatarangini / Jungle Star',
       tagline: 'Choose Your Path, Feel the Rush',
       startText: null,
-      price: 'Entry from ₹800',
+      price: 'Entry from ₹50',
       cta: 'Explore Treks',
       action: 'treks'
     }
@@ -168,6 +169,17 @@ export class HomeComponent implements OnInit {
     const user = this.userService.getFullUser();
     this.currentUser = user ? user : '';
     //alert('Registration successful!');
+
+    // Start Staggered Auto-Flip
+    this.flipInterval = setInterval(() => {
+      this.isResortFlipped = !this.isResortFlipped;
+      setTimeout(() => {
+        this.isTentFlipped = !this.isTentFlipped;
+      }, 200);
+      setTimeout(() => {
+        this.isTrekkingFlipped = !this.isTrekkingFlipped;
+      }, 400);
+    }, 3000);
   }
 
   // timer starts
@@ -255,6 +267,38 @@ export class HomeComponent implements OnInit {
   }
 
   isVideoPlaying: boolean = true;
+
+  // Auto-Flip Logic
+  isResortFlipped = false;
+  isTentFlipped = false;
+  isTrekkingFlipped = false;
+  private flipInterval: any;
+
+  ngOnDestroy() {
+    if (this.flipInterval) {
+      clearInterval(this.flipInterval);
+    }
+
+    // Close any open Bootstrap modals to prevent dark overlay persisting on navigation
+    const openModals = document.querySelectorAll('.modal.show');
+    openModals.forEach((modal) => {
+      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    });
+
+    // Remove modal backdrop if it exists
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
+
+    // Reset body scroll
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
 
   toggleVideo(video: HTMLVideoElement) {
     if (video.paused) {

@@ -30,7 +30,9 @@
               </div> -->
               <div class="col-md-6 text-center mx-auto" >
                 <h3 class="mb-3">
-                  <strong>Resort:</strong> {{ reservationDetails.resortName }}
+                  <strong *ngIf="!reservationDetails.isTrek">Resort:</strong>
+                  <strong *ngIf="reservationDetails.isTrek">Trek Spot</strong>
+                  {{ reservationDetails.isTrek ? '' : reservationDetails.resortName }}
                 </h3>
                 <h3>
 
@@ -53,41 +55,72 @@
                     <strong>Transaction Id:</strong>
                     {{ reservationDetails.transactionId }}
                   </p>
-                  <p>
-                    <strong>Check-in:</strong>
-                    {{ reservationDetails.checkInDate }}
-                  </p>
-                  <p>
-                    <strong>Check-out:</strong>
-                    {{ reservationDetails.checkOutDate }}
-                  </p>
-                  <p>
-                    <strong>Duration of Stay:</strong
-                    >{{ reservationDetails.stayDuration }}
-                  </p>
-                  <strong>Rooms Booked:</strong>
-                  <p *ngFor="let room of reservationDetails.rooms">
-                    {{ room.room_name }} ({{ room.cottage_type }})
-                  </p>
-                  <p>
-                    <strong>Guests:</strong
-                    >{{ reservationDetails.totalGuest }}
-                  </p>
-                  <p>
-                    <strong>Extra Guests:</strong
-                    >{{ reservationDetails.totalExtraGuests }}
-                  </p>
-                  <p>
-                    <strong>Children:</strong
-                    >{{ reservationDetails.totalChildren }}
-                  </p>
+                  
+                  <!-- Trek-specific display -->
+                  <div *ngIf="reservationDetails.isTrek">
+                    <p>
+                      <strong>Visit Date:</strong>
+                      {{ reservationDetails.checkInDate }}
+                    </p>
+                    <strong>Spots Booked:</strong>
+                    <p *ngFor="let spot of reservationDetails.rooms">
+                      {{ spot.room_name }} ({{ spot.cottage_type }})
+                    </p>
+                    <p>
+                      <strong>Total Guests:</strong>
+                      {{ reservationDetails.totalGuest }}
+                    </p>
+                  </div>
+                  
+                  <!-- Room/Tent display -->
+                  <div *ngIf="!reservationDetails.isTrek">
+                    <p>
+                      <strong>Check-in:</strong>
+                      {{ reservationDetails.checkInDate }}
+                    </p>
+                    <p>
+                      <strong>Check-out:</strong>
+                      {{ reservationDetails.checkOutDate }}
+                    </p>
+                    <p>
+                      <strong>Duration of Stay:</strong>
+                      {{ reservationDetails.stayDuration }}
+                    </p>
+                    <strong>Rooms Booked:</strong>
+                    <p *ngFor="let room of reservationDetails.rooms">
+                      {{ room.room_name }} ({{ room.cottage_type }})
+                    </p>
+                    <p>
+                      <strong>Guests:</strong>
+                      {{ reservationDetails.totalGuest }}
+                    </p>
+                    <p>
+                      <strong>Extra Guests:</strong>
+                      {{ reservationDetails.totalExtraGuests }}
+                    </p>
+                    <p>
+                      <strong>Children:</strong>
+                      {{ reservationDetails.totalChildren }}
+                    </p>
+                  </div>
 
+                  <!-- Display trek spot images or room images -->
+                  <div *ngIf="reservationDetails.isTrek && reservationDetails.touristSpots && reservationDetails.touristSpots.length > 0">
+                    <img
+                      *ngIf="reservationDetails.touristSpots[0].images && reservationDetails.touristSpots[0].images.length > 0"
+                      src="{{ reservationDetails.touristSpots[0].images[0].url }}"
+                      class="img-fluid rounded-3 my-3"
+                      alt="Trek Spot Image"
+                    />
+                  </div>
+                  
                   <img
-                *ngIf="reservationDetails.rooms && reservationDetails.rooms[0]"
-                src="{{ getRoomImages(reservationDetails.rooms[0].room_name)[0] }}"
-                class="img-fluid"
-                alt="Room Image"
-              />
+                    *ngIf="!reservationDetails.isTrek && reservationDetails.rooms && reservationDetails.rooms[0]"
+                    src="{{ getRoomImages(reservationDetails.rooms[0].room_name)[0] }}"
+                    class="img-fluid rounded-3 my-3"
+                    alt="Room Image"
+                  />
+                  
                   <!-- <p><strong>Number of Children:</strong></p> -->
                 </div>
                 <div class="mb-4">

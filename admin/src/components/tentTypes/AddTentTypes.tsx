@@ -148,7 +148,7 @@ const AddTentTypes = () => {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-2 md:p-8">
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="mb-8">

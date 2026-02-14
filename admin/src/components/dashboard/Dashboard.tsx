@@ -6,10 +6,20 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { 
+  CalendarCheck, 
+  Home, 
+  DoorOpen, 
+  Users, 
+  LogIn, 
+  LogOut, 
+  XCircle 
+} from "lucide-react";
 import {
   PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip,
   BarChart, Bar, Legend
 } from "recharts";
+import type { LucideIcon } from "lucide-react";
 
 // removed unused icon types and legacy chart colors
 
@@ -55,6 +65,7 @@ type SplitKPIProps = {
   jsValue: number;
   total?: number;
   footer?: string | number;
+  Icon?: LucideIcon;
 };
 
 const RESORT_COLORS = {
@@ -62,10 +73,13 @@ const RESORT_COLORS = {
   JS: "#8B4513"
 };
 
-const SplitKPI = ({ title, vanaValue, jsValue, footer }: SplitKPIProps) => (
+const SplitKPI = ({ title, vanaValue, jsValue, footer, Icon }: SplitKPIProps) => (
   <div className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden w-full">
     <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: `linear-gradient(to bottom, ${RESORT_COLORS.VANA} 50%, ${RESORT_COLORS.JS} 50%)` }} />
-    <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+    <div className="flex items-center justify-between">
+      <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+      {Icon && <Icon className="w-5 h-5 text-gray-400" />}
+    </div>
     <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 md:space-y-2 md:grid-cols-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -204,25 +218,37 @@ export default function AdminDashboard() {
           <>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Bookings</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Bookings</h3>
+                <CalendarCheck className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{bookingsToday}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Occupancy</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Occupancy</h3>
+                <Home className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{occupancyPercent}%</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Vacancy</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Vacancy</h3>
+                <DoorOpen className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{vacant}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Total Guests Today</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Total Guests Today</h3>
+                <Users className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{stats.totalGuestsToday}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
@@ -233,7 +259,7 @@ export default function AdminDashboard() {
             {/* Today's Bookings */}
             {(() => {
               const { vana, js } = splitValue(bookingsToday, (dashboardData as any)?.stats?.vanaBookings, (dashboardData as any)?.stats?.jsBookings);
-              return <SplitKPI title={"Today\u2019s Bookings"} vanaValue={vana} jsValue={js} footer={bookingsToday} />;
+              return <SplitKPI title={"Today\u2019s Bookings"} vanaValue={vana} jsValue={js} footer={bookingsToday} Icon={CalendarCheck} />;
             })()}
 
             {/* Today's Occupancy */}
@@ -241,7 +267,7 @@ export default function AdminDashboard() {
               const occTotal = occupancyPercent;
               const vana = Math.round(occTotal * 0.6);
               const js = occTotal - vana;
-              return <SplitKPI title={"Today\u2019s Occupancy"} vanaValue={vana} jsValue={js} footer={`${occupancyPercent}%`} />;
+              return <SplitKPI title={"Today\u2019s Occupancy"} vanaValue={vana} jsValue={js} footer={`${occupancyPercent}%`} Icon={Home} />;
             })()}
 
             {/* Today's Vacancy */}
@@ -249,7 +275,7 @@ export default function AdminDashboard() {
               const vacTotal = vacant;
               const vana = Math.round(vacTotal * 0.6);
               const js = vacTotal - vana;
-              return <SplitKPI title={"Today\u2019s Vacancy"} vanaValue={vana} jsValue={js} footer={vacTotal} />;
+              return <SplitKPI title={"Today\u2019s Vacancy"} vanaValue={vana} jsValue={js} footer={vacTotal} Icon={DoorOpen} />;
             })()}
 
             {/* Total Guests Today */}
@@ -257,7 +283,7 @@ export default function AdminDashboard() {
               const guests = stats.totalGuestsToday || 0;
               const vana = Math.round(guests * 0.6);
               const js = guests - vana;
-              return <SplitKPI title={"Total Guests Today"} vanaValue={vana} jsValue={js} footer={guests} />;
+              return <SplitKPI title={"Total Guests Today"} vanaValue={vana} jsValue={js} footer={guests} Icon={Users} />;
             })()}
           </>
         )}
@@ -270,19 +296,28 @@ export default function AdminDashboard() {
           <>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Check-ins</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Check-ins</h3>
+                <LogIn className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{checkinsToday}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Check-outs</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Check-outs</h3>
+                <LogOut className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{checkoutsToday}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
             <Card className="p-4 border rounded-lg shadow-sm bg-white relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: resortColor }} />
-              <h3 className="text-sm font-medium text-gray-600">Today's Cancellations</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600">Today's Cancellations</h3>
+                <XCircle className="w-5 h-5 text-gray-400" />
+              </div>
               <div className="mt-2 text-2xl font-bold" style={{ color: resortColor }}>{cancellationsToday}</div>
               <div className="text-xs text-gray-500 mt-1">{selectedResortName}</div>
             </Card>
@@ -293,19 +328,19 @@ export default function AdminDashboard() {
             {(() => {
               const checkins = (dashboardData as any)?.stats?.checkinsToday ?? Math.round(bookingsToday * 0.5);
               const { vana, js } = splitValue(checkins, (dashboardData as any)?.stats?.vanaCheckins, (dashboardData as any)?.stats?.jsCheckins);
-              return <SplitKPI title={"Today\u2019s Check-ins"} vanaValue={vana} jsValue={js} footer={checkins} />;
+              return <SplitKPI title={"Today\u2019s Check-ins"} vanaValue={vana} jsValue={js} footer={checkins} Icon={LogIn} />;
             })()}
 
             {(() => {
               const checkouts = checkoutsToday || 0;
               const { vana, js } = splitValue(checkouts, (dashboardData as any)?.stats?.vanaCheckouts, (dashboardData as any)?.stats?.jsCheckouts);
-              return <SplitKPI title={"Today\u2019s Check-outs"} vanaValue={vana} jsValue={js} footer={checkouts} />;
+              return <SplitKPI title={"Today\u2019s Check-outs"} vanaValue={vana} jsValue={js} footer={checkouts} Icon={LogOut} />;
             })()}
 
             {(() => {
               const cancels = cancellationsToday || 0;
               const { vana, js } = splitValue(cancels, (dashboardData as any)?.stats?.vanaCancellations, (dashboardData as any)?.stats?.jsCancellations);
-              return <SplitKPI title={"Today\u2019s Cancellations"} vanaValue={vana} jsValue={js} footer={cancels} />;
+              return <SplitKPI title={"Today\u2019s Cancellations"} vanaValue={vana} jsValue={js} footer={cancels} Icon={XCircle} />;
             })()}
           </>
         )}

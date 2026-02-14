@@ -553,11 +553,18 @@ export default function LogsTable() {
             </div>
           )}
 
-          <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+          <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleUpdate}>Update</Button>
+            <Button onClick={handleUpdate}>Save</Button>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              className="flex-1 sm:flex-none"
+            >
+              Close
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
@@ -714,16 +721,15 @@ export default function LogsTable() {
               </div>
 
               {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex gap-2 p-6 pt-4 border-t bg-white">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 <Button
                   onClick={() => {
                     setIsDetailSheetOpen(false);
                     handleEdit(selectedLog);
                   }}
-                  className="flex-1"
                   disabled={disabledLogs.has(selectedLog.bookingId)}
                 >
-                  Edit Log
+                  Edit
                 </Button>
                 <Button
                   variant="destructive"
@@ -734,6 +740,13 @@ export default function LogsTable() {
                   disabled={disabledLogs.has(selectedLog.bookingId)}
                 >
                   Disable
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDetailSheetOpen(false)}
+                  className="flex-1 sm:flex-none"
+                >
+                  Close
                 </Button>
               </div>
             </>

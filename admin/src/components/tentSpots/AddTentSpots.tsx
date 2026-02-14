@@ -138,7 +138,7 @@ const AddSpots = () => {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="w-full max-w-6xl">
         {/* Header */}
         <div className="mb-8">
@@ -326,7 +326,7 @@ const AddSpots = () => {
 
           {/* Check-in/Check-out Information */}
           <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Check-in & Check-out</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="checkIn" className="text-sm font-medium text-slate-700">Check-in Time <span className="text-red-500">*</span></Label>
               <Input

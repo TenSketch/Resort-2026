@@ -640,8 +640,8 @@ export default function CottageDataTable() {
 
       {/* Cottage Details Sheet */}
       <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-[400px] sm:max-w-[600px] sm:w-[700px] lg:w-[800px]">
-          <SheetHeader>
+        <SheetContent className="w-[400px] sm:max-w-[600px] sm:w-[700px] lg:w-[800px] flex flex-col">
+          <SheetHeader className="flex-shrink-0">
             <SheetTitle>Cottage Details</SheetTitle>
             <SheetDescription>
               Complete information about the selected cottage type
@@ -649,130 +649,169 @@ export default function CottageDataTable() {
           </SheetHeader>
 
           {selectedCottage && (
-            <div className="flex flex-col gap-6 py-4 p-6">
-              {/* Basic Information */}
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Cottage ID</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                    <span className="text-sm text-gray-900">{selectedCottage._id}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Cottage Name</Label>
-                  {editMode ? (
-                    <Input value={formData.name || ''} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} />
-                  ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border"><span className="text-sm text-gray-900">{selectedCottage.name}</span></div>
-                  )}
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Resort</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[48px]">
-                    <span className="text-sm text-gray-900">
-                      {typeof selectedCottage.resort === 'string'
-                        ? selectedCottage.resort
-                        : (selectedCottage.resort?.resortName || selectedCottage.resort?.name || '')}
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Description</Label>
-                  {editMode ? (
-                    <Input value={formData.description || ''} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} />
-                  ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]"><span className="text-sm text-gray-900">{selectedCottage.description}</span></div>
-                  )}
-                </div>
-
-                <div>
-                  <Collapsible open={isAmenitiesOpen} onOpenChange={setIsAmenitiesOpen}>
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-gray-700">Room Amenities</Label>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-9 p-0">
-                          {isAmenitiesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          <span className="sr-only">Toggle amenities</span>
-                        </Button>
-                      </CollapsibleTrigger>
+            <>
+              <div className="flex-1 overflow-y-auto px-6 py-4">
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Cottage ID</Label>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      <span className="text-sm text-gray-900">{selectedCottage._id}</span>
                     </div>
-                    <CollapsibleContent className="mt-2">
-                      {editMode ? (
-                        <div className="flex flex-col gap-2">
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Cottage Name</Label>
+                    {editMode ? (
+                      <Input value={formData.name || ''} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} />
+                    ) : (
+                      <div className="mt-1 p-3 bg-gray-50 rounded-md border"><span className="text-sm text-gray-900">{selectedCottage.name}</span></div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Resort</Label>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[48px]">
+                      <span className="text-sm text-gray-900">
+                        {typeof selectedCottage.resort === 'string'
+                          ? selectedCottage.resort
+                          : (selectedCottage.resort?.resortName || selectedCottage.resort?.name || '')}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Description</Label>
+                    {editMode ? (
+                      <Input value={formData.description || ''} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} />
+                    ) : (
+                      <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]"><span className="text-sm text-gray-900">{selectedCottage.description}</span></div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Collapsible open={isAmenitiesOpen} onOpenChange={setIsAmenitiesOpen}>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-gray-700">Room Amenities</Label>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="w-9 p-0">
+                            {isAmenitiesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            <span className="sr-only">Toggle amenities</span>
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="mt-2">
+                        {editMode ? (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex flex-wrap gap-2">
+                              {(formData.amenities || []).map((amenity, idx) => (
+                                <Badge key={amenity + idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
+                                  <span>{amenity}</span>
+                                  <button
+                                    type="button"
+                                    className="text-red-500 hover:text-red-700 leading-none"
+                                    onClick={() => removeAmenity(amenity)}
+                                    aria-label={`Remove ${amenity}`}
+                                  >×</button>
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="flex gap-2">
+                              <Input
+                                value={amenityDraft}
+                                onChange={e => setAmenityDraft(e.target.value)}
+                                onKeyDown={e => {
+                                  if ((e.key === 'Enter' || e.key === ',') && amenityDraft.trim()) {
+                                    e.preventDefault();
+                                    addAmenity();
+                                  }
+                                }}
+                                placeholder="Type amenity & press Enter"
+                              />
+                              <Button type="button" onClick={addAmenity} disabled={!amenityDraft.trim()}>Add</Button>
+                            </div>
+                          </div>
+                        ) : (
                           <div className="flex flex-wrap gap-2">
-                            {(formData.amenities || []).map((amenity, idx) => (
-                              <Badge key={amenity + idx} variant="secondary" className="px-2 py-1 text-xs flex items-center gap-1">
-                                <span>{amenity}</span>
-                                <button
-                                  type="button"
-                                  className="text-red-500 hover:text-red-700 leading-none"
-                                  onClick={() => removeAmenity(amenity)}
-                                  aria-label={`Remove ${amenity}`}
-                                >×</button>
+                            {selectedCottage.amenities.map((amenity, index) => (
+                              <Badge key={index} variant="secondary" className="px-2 py-1 text-xs">
+                                {amenity}
                               </Badge>
                             ))}
                           </div>
-                          <div className="flex gap-2">
-                            <Input
-                              value={amenityDraft}
-                              onChange={e => setAmenityDraft(e.target.value)}
-                              onKeyDown={e => {
-                                if ((e.key === 'Enter' || e.key === ',') && amenityDraft.trim()) {
-                                  e.preventDefault();
-                                  addAmenity();
-                                }
-                              }}
-                              placeholder="Type amenity & press Enter"
-                            />
-                            <Button type="button" onClick={addAmenity} disabled={!amenityDraft.trim()}>Add</Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {selectedCottage.amenities.map((amenity, index) => (
-                            <Badge key={index} variant="secondary" className="px-2 py-1 text-xs">
-                              {amenity}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </CollapsibleContent>
-                  </Collapsible>
+                        )}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
                 </div>
-
-
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-4 border-t">
+              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
                 {!editMode ? (
-                  <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)} className="flex-1">Close</Button>
+                  <>
+                    <Button
+                      onClick={() => {
+                        if (!perms.canEdit) return;
+                        setEditMode(true);
+                        setFormData({ ...selectedCottage });
+                      }}
+                      disabled={!perms.canEdit}
+                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
+                  </>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={() => { setEditMode(false); setFormData(selectedCottage); }}>Cancel</Button>
-                    <Button onClick={async () => {
-                      if (!perms.canEdit) return
-                      try {
-                        const token = localStorage.getItem('admin_token')
-                        const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
-                        if (!res.ok) throw new Error('Update failed');
-                        const data = await res.json();
-                        setCottageTypes(prev => prev.map(c => c._id === data.cottageType._id ? data.cottageType : c));
-                        setSelectedCottage(data.cottageType);
-                        setFormData(data.cottageType);
+                    <Button
+                      variant="outline"
+                      onClick={() => {
                         setEditMode(false);
-                        setVersion(v => v + 1);
-                      } catch (e: any) {
-                        alert(e.message || 'Update failed');
-                      }
-                    }} disabled={!perms.canEdit} title={!perms.canEdit ? 'You do not have permission to save' : undefined}>Save</Button>
+                        setFormData(selectedCottage);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        if (!perms.canEdit) return
+                        try {
+                          const token = localStorage.getItem('admin_token')
+                          const res = await fetch(`${API_BASE}/api/cottage-types/${selectedCottage._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }, body: JSON.stringify({ name: formData.name, description: formData.description, amenities: formData.amenities }) });
+                          if (!res.ok) throw new Error('Update failed');
+                          const data = await res.json();
+                          setCottageTypes(prev => prev.map(c => c._id === data.cottageType._id ? data.cottageType : c));
+                          setSelectedCottage(data.cottageType);
+                          setFormData(data.cottageType);
+                          setEditMode(false);
+                          setVersion(v => v + 1);
+                        } catch (e: any) {
+                          alert(e.message || 'Update failed');
+                        }
+                      }}
+                      disabled={!perms.canEdit}
+                      title={!perms.canEdit ? 'You do not have permission to save' : undefined}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
                   </>
                 )}
               </div>
-            </div>
+            </>
           )}
         </SheetContent>
       </Sheet>

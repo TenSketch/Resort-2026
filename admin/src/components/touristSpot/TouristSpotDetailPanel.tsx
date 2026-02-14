@@ -224,7 +224,7 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
 
           <Section title="Pricing">
             {isEditing ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Field label="Entry Fees (₹)" value={formData.entryFees} onChange={(v) => setFormData({ ...formData, entryFees: v })} inputMode="numeric" />
                 <Field label="2W Parking (₹)" value={formData.parking2W} onChange={(v) => setFormData({ ...formData, parking2W: v })} inputMode="numeric" />
                 <Field label="4W Parking (₹)" value={formData.parking4W} onChange={(v) => setFormData({ ...formData, parking4W: v })} inputMode="numeric" />

@@ -289,7 +289,7 @@ export default function AddTentBookings() {
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="w-full max-w-6xl">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Tent Booking</h1>
@@ -338,18 +338,20 @@ export default function AddTentBookings() {
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-slate-800">Booking Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Check In</Label>
-                <Input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange}
-                  min={dateLimits.minDate} max={dateLimits.maxDate} disabled={!formData.tentSpot}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Check Out</Label>
-                <Input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange}
-                  min={formData.checkIn ? (() => { const d = new Date(formData.checkIn); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })() : dateLimits.minDate}
-                  max={dateLimits.maxDate} disabled={!formData.tentSpot || !formData.checkIn}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50" />
+              <div className="col-span-full grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">Check In</Label>
+                  <Input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange}
+                    min={dateLimits.minDate} max={dateLimits.maxDate} disabled={!formData.tentSpot}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">Check Out</Label>
+                  <Input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange}
+                    min={formData.checkIn ? (() => { const d = new Date(formData.checkIn); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })() : dateLimits.minDate}
+                    max={dateLimits.maxDate} disabled={!formData.tentSpot || !formData.checkIn}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50" />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">Guests {formData.tents.length > 0 && <span className="text-slate-500">(Max: {guestLimits.maxGuests})</span>}</Label>

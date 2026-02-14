@@ -466,7 +466,6 @@ export default function AllRoomAmenitiesTable() {
                       onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
                       disabled={!perms.canEdit}
                       title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                      className="flex-1"
                     >
                       Edit
                     </Button>
@@ -478,7 +477,13 @@ export default function AllRoomAmenitiesTable() {
                     >
                       {updatingId === selectedAmenity._id ? 'Updating...' : (selectedAmenity.isActive ? 'Deactivate' : 'Activate')}
                     </Button>
-                    <Button variant="outline" onClick={() => setIsDetailSheetOpen(false)}>Close</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -513,6 +518,13 @@ export default function AllRoomAmenitiesTable() {
                       title={!perms.canEdit ? 'You do not have permission to save' : undefined}
                     >
                       {saving ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDetailSheetOpen(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
                     </Button>
                   </>
                 )}

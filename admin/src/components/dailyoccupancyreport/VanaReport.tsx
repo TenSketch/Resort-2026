@@ -22,7 +22,6 @@ interface Reservation {
   extraGuests?: number;
   children?: number;
   totalGuests?: number;
-  totalFoods?: number;
   noOfDays?: number;
   remainingDays?: number;
 }
@@ -71,7 +70,6 @@ export default function DailyOccupancyReport() {
       "Extra Guest(s)",
       "Children",
       "Total Guests",
-      "Foods Billed",
       "No. of Days",
       "Remaining Days",
     ];
@@ -90,7 +88,6 @@ export default function DailyOccupancyReport() {
             row.extraGuests ?? "",
             row.children ?? "",
             row.totalGuests ?? "",
-            row.totalFoods ?? "",
             row.noOfDays ?? "",
             row.remainingDays ?? "",
           ].join(","),
@@ -192,7 +189,6 @@ export default function DailyOccupancyReport() {
       extraGuests: sum("extraGuests"),
       children: sum("children"),
       totalGuests: sum("totalGuests"),
-      totalFoods: sum("totalFoods"),
       noOfDays: sum("noOfDays"),
       remainingDays: sum("remainingDays"),
     };
@@ -211,7 +207,6 @@ export default function DailyOccupancyReport() {
     { title: "Extra Guest(s)", data: "extraGuests", defaultContent: "—" },
     { title: "Children", data: "children", defaultContent: "—" },
     { title: "Total Guests", data: "totalGuests", defaultContent: "—" },
-    { title: "Foods Billed", data: "totalFoods", defaultContent: "—" },
     { title: "No. of Days", data: "noOfDays", defaultContent: "—" },
     { title: "Remaining Days", data: "remainingDays", defaultContent: "—" },
   ];
@@ -290,7 +285,6 @@ export default function DailyOccupancyReport() {
                 <th>Extra Guest(s)</th>
                 <th>Children</th>
                 <th>Total Guests</th>
-                <th>Foods Billed</th>
                 <th>No. of Days</th>
                 <th>Remaining Days</th>
               </tr>
@@ -305,7 +299,6 @@ export default function DailyOccupancyReport() {
                 <th>{totals.extraGuests}</th>
                 <th>{totals.children}</th>
                 <th>{totals.totalGuests}</th>
-                <th>{totals.totalFoods}</th>
                 <th>{totals.noOfDays}</th>
                 <th>{totals.remainingDays}</th>
               </tr>

@@ -132,27 +132,44 @@ export default function AllTouristBookings() {
       const res = await fetch(`${apiUrl}/api/trek-reservations/all-bookings`, { headers });
       const data = await res.json();
       
-      if (data.success && Array.isArray(data.reservations)) {
-        const mapped = data.reservations.map((r: any) => ({
-          id: r._id,
-          _id: r._id,
-          bookingId: r.bookingId,
-          fullName: r.user?.name || 'N/A',
-          phone: r.user?.phone || 'N/A',
-          email: r.user?.email || 'N/A',
-          touristSpots: r.touristSpots || [],
-          totalPayable: r.totalPayable || 0,
-          status: r.status || 'pending',
-          paymentStatus: r.paymentStatus || 'unpaid',
-          reservationDate: r.reservationDate || r.createdAt,
-          reservedFrom: r.reservedFrom || 'Online',
-          user: r.user || {},
-        }));
-        setBookings(mapped);
+      console.log('API Response:', data); // Debug log
+      
+      // Handle different response formats
+      let reservations = [];
+      if (data.success && Array.isArray(data.bookings)) {
+        reservations = data.bookings;
+      } else if (data.success && Array.isArray(data.reservations)) {
+        reservations = data.reservations;
+      } else if (Array.isArray(data.data)) {
+        reservations = data.data;
+      } else if (Array.isArray(data)) {
+        reservations = data;
       } else {
-        console.warn('No bookings found or invalid response');
+        console.warn('Unexpected response format:', data);
         setBookings([]);
+        return;
       }
+      
+      console.log('Found reservations:', reservations.length); // Debug log
+      
+      const mapped = reservations.map((r: any) => ({
+        id: r._id,
+        _id: r._id,
+        bookingId: r.bookingId,
+        fullName: r.user?.name || 'N/A',
+        phone: r.user?.phone || 'N/A',
+        email: r.user?.email || 'N/A',
+        touristSpots: r.touristSpots || [],
+        totalPayable: r.totalPayable || 0,
+        status: r.status || 'pending',
+        paymentStatus: r.paymentStatus || 'unpaid',
+        reservationDate: r.reservationDate || r.createdAt,
+        reservedFrom: r.reservedFrom || 'Online',
+        user: r.user || {},
+      }));
+      
+      console.log('Mapped bookings:', mapped); // Debug log
+      setBookings(mapped);
     } catch (err) {
       console.error('Failed to fetch trek bookings:', err);
       setBookings([]);
@@ -162,15 +179,20 @@ export default function AllTouristBookings() {
   useEffect(() => {
     fetchBookings();
 
-    const handleClick = (e: Event) => {
+    const handleButtonClick = (e: Event) => {
       const t = e.target as HTMLElement;
-      const btn = t.closest(".edit-btn") as HTMLElement | null;
+      const btn = t.closest(".view-btn, .edit-btn") as HTMLElement | null;
       if (!btn) return;
       e.stopPropagation();
       const id = btn.getAttribute("data-id");
       const booking = bookingsRef.current.find((b) => b.id === id);
       if (!booking) return;
-      if (btn.classList.contains("edit-btn")) {
+      
+      if (btn.classList.contains("view-btn")) {
+        setSelected(booking);
+        setSheetMode("view");
+        setIsDetailOpen(true);
+      } else if (btn.classList.contains("edit-btn")) {
         if (!permsRef.current.canEdit) return;
         setSelected(booking);
         setEditForm({ ...booking });
@@ -181,7 +203,7 @@ export default function AllTouristBookings() {
 
     const handleRowClick = (e: Event) => {
       const target = e.target as HTMLElement;
-      if (target.closest(".edit-btn")) return;
+      if (target.closest(".view-btn, .edit-btn")) return;
       const row = target.closest("tr");
       if (row && row.parentElement?.tagName === "TBODY") {
         const idx = Array.from(row.parentElement.children).indexOf(row);
@@ -194,10 +216,10 @@ export default function AllTouristBookings() {
       }
     };
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener("click", handleButtonClick);
     document.addEventListener("click", handleRowClick);
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener("click", handleButtonClick);
       document.removeEventListener("click", handleRowClick);
     };
   }, []);
@@ -275,8 +297,51 @@ export default function AllTouristBookings() {
       orderable: false,
       searchable: false,
       render: (_d: any, _t: any, row: TouristBooking) => `
-      <div style="display:flex;gap:8px;align-items:center;">
-        ${perms.canEdit ? `<button class="edit-btn" data-id="${row.id}" style="background:#3b82f6;color:#fff;border:none;padding:6px 10px;border-radius:6px;">Edit</button>` : ""}
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+        <button 
+          class="view-btn" 
+          data-id="${row.id}" 
+          title="View Booking"
+          style="
+            background:#10b981;
+            color:white;
+            border:none;
+            padding:6px 12px;
+            border-radius:6px;
+            font-size:12px;
+            font-weight:500;
+            cursor:pointer;
+            transition:all 0.2s ease;
+            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+          "
+          onmouseover="this.style.background='#059669';this.style.transform='translateY(-1px)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.15)'"
+          onmouseout="this.style.background='#10b981';this.style.transform='translateY(0)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'"
+        >
+          View
+        </button>
+        ${perms.canEdit ? `
+        <button 
+          class="edit-btn" 
+          data-id="${row.id}" 
+          title="Edit Booking"
+          style="
+            background:#3b82f6;
+            color:white;
+            border:none;
+            padding:6px 12px;
+            border-radius:6px;
+            font-size:12px;
+            font-weight:500;
+            cursor:pointer;
+            transition:all 0.2s ease;
+            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+          "
+          onmouseover="this.style.background='#2563eb';this.style.transform='translateY(-1px)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.15)'"
+          onmouseout="this.style.background='#3b82f6';this.style.transform='translateY(0)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'"
+        >
+          Edit
+        </button>
+        ` : ""}
       </div>
     `,
     },
@@ -506,11 +571,29 @@ export default function AllTouristBookings() {
           Trek Spot Bookings
         </h2>
         <button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${perms.canViewDownload ? "bg-green-600 hover:bg-green-700" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canViewDownload}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          disabled={!perms.canExport}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
-          ⬇ Export to Excel
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Export to Excel
         </button>
       </div>
 
@@ -570,23 +653,23 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Guest Information
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div>
-                          <Label className="text-xs">Full Name</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border">
-                            <span className="text-sm">{selected.fullName}</span>
+                          <Label>Full Name</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span>{selected.fullName}</span>
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs">Phone</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border">
-                            <span className="text-sm">{selected.phone}</span>
+                          <Label>Phone</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span>{selected.phone}</span>
                           </div>
                         </div>
                         <div className="md:col-span-2">
-                          <Label className="text-xs">Email</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border">
-                            <span className="text-sm">{selected.email}</span>
+                          <Label>Email</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span>{selected.email}</span>
                           </div>
                         </div>
                         {selected.user?.address && (
@@ -606,47 +689,27 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Booking Information
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div>
-                          <Label className="text-xs">Booking ID</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm font-mono">
+                          <Label>Booking ID</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span className="font-mono">
                               {selected.bookingId}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs">Reservation Date</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">
+                          <Label>Reservation Date</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span>
                               {formatDateForDisplay(selected.reservationDate)}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs">Visit Date</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">
-                              {formatDateForDisplay(selected.visitDate)}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Visit Time</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.visitTime}</span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Spot</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.touristSpotName}</span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Visitors (A/C)</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{formatVisitors(selected)}</span>
+                          <Label>Reserved From</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span>{selected.reservedFrom}</span>
                           </div>
                         </div>
                       </div>
@@ -696,24 +759,24 @@ export default function AllTouristBookings() {
                       <h3 className="text-lg font-semibold">
                         Status & Payment
                       </h3>
-                      <div className="grid grid-cols-3 gap-3 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
                         <div>
-                          <Label className="text-xs">Status</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.status}</span>
+                          <Label>Status</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span className="capitalize">{selected.status}</span>
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs">Payment Status</Label>
-                          <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.paymentStatus}</span>
+                          <Label>Payment Status</Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded border">
+                            <span className="capitalize">{selected.paymentStatus}</span>
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs">Amount Payable</Label>
-                          <div className="mt-1 p-2 bg-green-50 rounded border text-center">
-                            <span className="text-sm font-semibold">
-                              ₹{selected.amountPayable?.toLocaleString()}
+                          <Label>Total Amount</Label>
+                          <div className="mt-1 p-3 bg-green-50 rounded border">
+                            <span className="font-semibold text-green-700">
+                              ₹{selected.totalPayable?.toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -840,23 +903,6 @@ export default function AllTouristBookings() {
                       Edit
                     </Button>
                     <Button
-                      variant="destructive"
-                      onClick={() => {
-                        if (!perms.canDisable) return;
-                        setIsDetailOpen(false);
-                        setDisabling(selected);
-                        setIsConfirmOpen(true);
-                      }}
-                      disabled={!perms.canDisable}
-                      title={
-                        !perms.canDisable
-                          ? "You do not have permission to delete"
-                          : undefined
-                      }
-                    >
-                      Delete
-                    </Button>
-                    <Button
                       variant="outline"
                       onClick={() => setIsDetailOpen(false)}
                       className="flex-1 sm:flex-none"
@@ -874,12 +920,14 @@ export default function AllTouristBookings() {
                           setEditForm({ ...selected });
                         }
                       }}
+                      className="flex-1"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={saveChanges}
                       disabled={isSaving || !perms.canEdit}
+                      className="flex-1"
                       title={
                         !perms.canEdit
                           ? "You do not have permission to update"

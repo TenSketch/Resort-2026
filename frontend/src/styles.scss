@@ -139,7 +139,7 @@ h6 {
   color: white;
   height: 55vh;
   
-  @media (max-width: 768px) {
+  @media (max-width: 991px) {
     height: 40vh;
   }
   overflow: hidden;
@@ -150,6 +150,25 @@ h6 {
   h1 {
     color: $clr-light;
   }
+}
+
+.global-page-title {
+  color: #fff !important; // Ensure visibility on dark banners
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Enhance readability
+  
+  // Mobile First (Default)
+  font-size: 2rem !important;
+  font-weight: 500 !important;
+  
+  // Desktop
+  @media (min-width: 992px) {
+    font-size: 3rem !important;
+    font-weight: 600 !important;
+  }
+}
+
+p {
+  text-align: justify;
 }
 
 .breadcrumb {

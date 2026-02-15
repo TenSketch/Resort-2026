@@ -458,7 +458,7 @@ export default function AllTouristBookings() {
         throw new Error(data.error || 'Failed to update booking');
       }
 
-      const data = await res.json();
+      await res.json();
       
       // Update local state
       const updated: TouristBooking = {

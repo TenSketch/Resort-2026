@@ -1,22 +1,11 @@
 <app-layout>
   <div class="main">
     <app-loader *ngIf="showLoader"> </app-loader>
-    <section
-      id="roomsCarousel"
-      class="carousel slide carousel-fade"
-      *ngIf="selectedResortInfo"
-    >
+    <section id="roomsCarousel" class="carousel slide carousel-fade" *ngIf="selectedResortInfo">
       <div class="carousel-inner">
-        <div
-          class="carousel-item"
-          *ngFor="let image of selectedResortInfo.carouselImages; let i = index"
-          [class.active]="i === currentSlideIndex"
-        >
-          <img
-            [src]="image.url"
-            class="d-block w-100"
-            [alt]="selectedResortInfo.title + ' View ' + (i + 1)"
-          />
+        <div class="carousel-item" *ngFor="let image of selectedResortInfo.carouselImages; let i = index"
+          [class.active]="i === currentSlideIndex">
+          <img [src]="image.url" class="d-block w-100" [alt]="selectedResortInfo.title + ' View ' + (i + 1)" />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
@@ -26,17 +15,14 @@
       </div>
 
       <!-- Custom Slide Counter -->
-      <div
-        class="carousel-indicators-counter"
-        *ngIf="selectedResortInfo.carouselImages?.length > 1"
-      >
+      <div class="carousel-indicators-counter" *ngIf="selectedResortInfo.carouselImages?.length > 1">
         <span class="current">{{
           (currentSlideIndex + 1).toString().padStart(2, "0")
-        }}</span>
+          }}</span>
         <span class="divider">/</span>
         <span class="total">{{
           selectedResortInfo.carouselImages.length.toString().padStart(2, "0")
-        }}</span>
+          }}</span>
       </div>
 
       <button class="carousel-control-prev" type="button" (click)="prevSlide()">
@@ -108,10 +94,7 @@
               <i class="fa-solid fa-toilet me-2 text-primary"></i> Western
               toilets
             </li>
-            <li
-              class="mb-1"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
+            <li class="mb-1" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
               <i class="fa-solid fa-utensils me-2 text-primary"></i> Nearby
               local food options
             </li>
@@ -143,7 +126,8 @@
           <ul class="mb-2 ps-3">
             <li><strong>> 48 hrs:</strong> 90% refund</li>
             <li><strong>24–48 hrs:</strong> 80% refund</li>
-            <li><strong> < 24 hrs:</strong> No refund</li>
+            <li><strong>
+                < 24 hrs:</strong> No refund</li>
           </ul>
         </div>
 
@@ -151,28 +135,16 @@
         <div class="col-lg-4 col-12 mb-4 order-3">
           <div class="compact-map-card shadow-sm">
             <!-- Vanavihari Map -->
-            <iframe
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
+            <iframe *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
               src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+              width="100%" height="100%" style="border: 0" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
 
             <!-- Jungle Star Map -->
-            <iframe
-              *ngIf="selectedResort == 'Jungle Star, Valamuru'"
+            <iframe *ngIf="selectedResort == 'Jungle Star, Valamuru'"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+              width="100%" height="100%" style="border: 0" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
       </div>
@@ -185,117 +157,48 @@
       <div class="row mt-3" id="roomsListing" #roomsListing>
         <aside class="col-lg-4 mt-3">
           <!-- filter icon mobile -->
-          <div
-            *ngIf="datesSelected"
-            class="text-center py-1 d-none"
-            (click)="toggleFilter()"
-          >
-            <img
-              class="icon-small me-3"
-              src="/assets/images/icons/filter.svg"
-              alt="filter svg"
-            />
+          <div *ngIf="datesSelected" class="text-center py-1 d-none" (click)="toggleFilter()">
+            <img class="icon-small me-3" src="/assets/images/icons/filter.svg" alt="filter svg" />
             Filter
           </div>
 
-          <div
-            id="filterCottage"
-            *ngIf="datesSelected"
-            class="p-3 p-lg-0 d-none"
-            [ngClass]="{ active: isFilterOpen }"
-          >
+          <div id="filterCottage" *ngIf="datesSelected" class="p-3 p-lg-0 d-none" [ngClass]="{ active: isFilterOpen }">
             <div class="d-flex justify-content-end mt-2 d-lg-none">
               <i class="fa-solid fa-xmark fa-2xl" (click)="toggleFilter()"></i>
             </div>
 
             <h4>Filter by Cottage Type</h4>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="deluxe"
-                [(ngModel)]="cottageTypes['Deluxe Rooms']"
-                (change)="onCottageTypeChange()"
-                >Deluxe Rooms</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="deluxe" [(ngModel)]="cottageTypes['Deluxe Rooms']"
+                (change)="onCottageTypeChange()">Deluxe Rooms</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="pre-fabricated"
-                [(ngModel)]="cottageTypes['Pre-Fabricated Cottages']"
-                (change)="onCottageTypeChange()"
-                >Pre-Fabricated Cottages</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="pre-fabricated" [(ngModel)]="cottageTypes['Pre-Fabricated Cottages']"
+                (change)="onCottageTypeChange()">Pre-Fabricated Cottages</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="hilltop"
-                [(ngModel)]="cottageTypes['Hill Top Guest House']"
-                (change)="onCottageTypeChange()"
-                >Hilltop Guest House</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="hilltop" [(ngModel)]="cottageTypes['Hill Top Guest House']"
+                (change)="onCottageTypeChange()">Hilltop Guest House</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="hilltop"
-                [(ngModel)]="cottageTypes['Bison Cottages']"
-                (change)="onCottageTypeChange()"
-                >Bison</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="hilltop" [(ngModel)]="cottageTypes['Bison Cottages']"
+                (change)="onCottageTypeChange()">Bison</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="vihari"
-                [(ngModel)]="cottageTypes['Vihari']"
-                (change)="onCottageTypeChange()"
-                >Vihari</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="vihari" [(ngModel)]="cottageTypes['Vihari']"
+                (change)="onCottageTypeChange()">Vihari</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Vanavihari, Maredumilli'"
-            >
-              <mat-checkbox
-                id="wooden"
-                [(ngModel)]="cottageTypes['Wooden Cottages']"
-                (change)="onCottageTypeChange()"
-                >Wooden Cottages</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Vanavihari, Maredumilli'">
+              <mat-checkbox id="wooden" [(ngModel)]="cottageTypes['Wooden Cottages']"
+                (change)="onCottageTypeChange()">Wooden Cottages</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Jungle Star, Valamuru'"
-            >
-              <mat-checkbox
-                id="tented"
-                [(ngModel)]="cottageTypes['Tented Cottage']"
-                (change)="onCottageTypeChange()"
-                >Tented Cottages</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Jungle Star, Valamuru'">
+              <mat-checkbox id="tented" [(ngModel)]="cottageTypes['Tented Cottage']"
+                (change)="onCottageTypeChange()">Tented Cottages</mat-checkbox>
             </div>
-            <div
-              class="d-block"
-              *ngIf="selectedResort == 'Jungle Star, Valamuru'"
-            >
-              <mat-checkbox
-                id="tented"
-                [(ngModel)]="cottageTypes['Permanent Cottage']"
-                (change)="onCottageTypeChange()"
-                >Permanent Cottages</mat-checkbox
-              >
+            <div class="d-block" *ngIf="selectedResort == 'Jungle Star, Valamuru'">
+              <mat-checkbox id="tented" [(ngModel)]="cottageTypes['Permanent Cottage']"
+                (change)="onCottageTypeChange()">Permanent Cottages</mat-checkbox>
             </div>
             <!-- <mat-form-field>
               <mat-label>Sort by Price</mat-label>
@@ -309,28 +212,20 @@
           <!-- Booking Summary section -->
           <!-- Common Booking Summary Content -->
           <ng-template #bookingSummaryContent>
-            <div
-              class="border-top pt-2"
-              *ngIf="showBookingSummary; else noBookings"
-            >
+            <div class="border-top pt-2" *ngIf="showBookingSummary; else noBookings">
               <div *ngFor="let roomId of roomIds">
                 <div *ngIf="findRoomById(roomId)">
-                  <a
-                    href="javascript:void(0)"
-                    class="float-end"
-                    (click)="removeRoom(roomIds, roomId)"
-                    ><i class="fa fa-trash"></i
-                  ></a>
+                  <a href="javascript:void(0)" class="float-end" (click)="removeRoom(roomIds, roomId)"><i
+                      class="fa fa-trash"></i></a>
                   <div class="mb-3">
-                    <strong class="me-2">Room Name: </strong
-                    >{{ findRoomById(roomId).Room_Name }}
+                    <strong class="me-2">Room Name: </strong>{{ findRoomById(roomId).Room_Name }}
                   </div>
                   <div class="d-flex flex-column gap-3">
                     <small>
                       <strong>Room Tariff:</strong>
                       {{
-                        findRoomById(roomId).Week_Days_Rate
-                          | currency: "INR " : true : "1.2-2"
+                      findRoomById(roomId).Week_Days_Rate
+                      | currency: "INR " : true : "1.2-2"
                       }}
                     </small>
                     <small>
@@ -342,13 +237,8 @@
                   <div class="custom-dropdown mt-5">
                     <mat-form-field appearance="outline" class="mat-small">
                       <mat-label>No. of Guests</mat-label>
-                      <mat-select
-                        (selectionChange)="noOfGuestAction($event, roomId)"
-                        [(ngModel)]="selectedValues[roomId]"
-                        size="small"
-                        #guestSelect="matSelect"
-                        required
-                      >
+                      <mat-select (selectionChange)="noOfGuestAction($event, roomId)"
+                        [(ngModel)]="selectedValues[roomId]" size="small" #guestSelect="matSelect" required>
                         <mat-option value="1">1</mat-option>
                         <mat-option value="2">2</mat-option>
                       </mat-select>
@@ -358,10 +248,7 @@
                     <div class="custom-dropdown mt-5">
                       <mat-form-field appearance="outline" class="mat-small">
                         <mat-label>No of children</mat-label>
-                        <mat-select
-                          [(ngModel)]="selectedChildrenValues[roomId]"
-                          size="small"
-                        >
+                        <mat-select [(ngModel)]="selectedChildrenValues[roomId]" size="small">
                           <mat-option value="0">0</mat-option>
                           <mat-option value="1">1</mat-option>
                           <mat-option value="2">2</mat-option>
@@ -370,20 +257,16 @@
                       </mat-form-field>
                     </div>
 
-                    <mat-checkbox
-                      [checked]="findRoomById(roomId).extra_guest"
-                      class="example-margin mt-4 d-block"
-                      color="primary"
-                      (change)="extraGuestActions($event, roomId)"
-                    >
+                    <mat-checkbox [checked]="findRoomById(roomId).extra_guest" class="example-margin mt-4 d-block"
+                      color="primary" (change)="extraGuestActions($event, roomId)">
                       <label>Add an extra guest </label>
                     </mat-checkbox>
 
                     <div *ngIf="findRoomById(roomId).extra_guest" class="pt-3">
                       <strong>{{
                         resortData?.extraGuestCharges
-                          | currency: "INR " : "symbol" : "1.0-0"
-                      }}</strong>
+                        | currency: "INR " : "symbol" : "1.0-0"
+                        }}</strong>
                     </div>
                   </div>
                 </div>
@@ -394,103 +277,72 @@
               <div class="d-flex justify-content-between pt-1">
                 <span>
                   Room charges<br />
-                  <small class="fst-italic"
-                    >{{ roomIds.length }} room<span *ngIf="roomIds.length > 1"
-                      >s</span
-                    >, {{ calculateDurationOfStay() }} night(s)</small
-                  >
+                  <small class="fst-italic">{{ roomIds.length }} room<span *ngIf="roomIds.length > 1">s</span>, {{
+                    calculateDurationOfStay() }} night(s)</small>
                 </span>
 
                 <span>{{
                   getRoomCharges() * calculateDurationOfStay()
-                    | currency: "INR " : "symbol" : "1.2-2"
-                }}</span>
+                  | currency: "INR " : "symbol" : "1.2-2"
+                  }}</span>
               </div>
-              <div
-                class="d-flex justify-content-between pt-1"
-                *ngIf="
+              <div class="d-flex justify-content-between pt-1" *ngIf="
                   isAddedExtraGuest ||
                   isAnyRoomChecked() ||
                   calculateExtraGuestCharges()
-                "
-              >
+                ">
                 <span>
                   Extra guest<br />
                   <!-- show no. of rooms only for which user has chosen extra guests -->
-                  <small class="fst-italic"
-                    >{{ extraGuestNumber }} room<span *ngIf="roomIds.length > 1"
-                      >s</span
-                    >, {{ calculateDurationOfStay() }} night(s)</small
-                  >
+                  <small class="fst-italic">{{ extraGuestNumber }} room<span *ngIf="roomIds.length > 1">s</span>, {{
+                    calculateDurationOfStay() }} night(s)</small>
                   <!-- ({{ getRoomDescription() }}) -->
                 </span>
                 <span>{{
                   calculateExtraGuestCharges() * calculateDurationOfStay()
-                    | currency: "INR " : "symbol" : "1.2-2"
-                }}</span>
+                  | currency: "INR " : "symbol" : "1.2-2"
+                  }}</span>
               </div>
               <div
-                class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5"
-              >
+                class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5">
                 <span class="mb-0">Grand Total</span>
                 <span>{{
                   calculatePayablePrice()
-                    | currency: "INR " : "symbol" : "1.2-2"
-                }}</span>
+                  | currency: "INR " : "symbol" : "1.2-2"
+                  }}</span>
               </div>
             </ng-container>
-            <button
-              mat-raised-button
-              color="primary"
-              class="w-100 mt-3 btn-proceed"
-              (click)="signIn()"
-              *ngIf="showBookingSummary"
-              [disabled]="isGuestSelectEmpty()"
-            >
+            <button mat-raised-button color="primary" class="w-100 mt-3 btn-proceed" (click)="signIn()"
+              *ngIf="showBookingSummary" [disabled]="isGuestSelectEmpty()">
               Proceed
             </button>
           </ng-template>
           <!-- Desktop Layout -->
-          <div
-            *ngIf="!isMobile"
-            class="booking-summary-bar text-dark rounded-3"
-          >
+          <div *ngIf="!isMobile" class="booking-summary-bar text-dark rounded-3">
             <h4 class="mt-2 mb-0 pb-1 font-weight-bold">Booking Summary</h4>
-            <ng-container
-              *ngTemplateOutlet="bookingSummaryContent"
-            ></ng-container>
+            <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
           </div>
           <!-- Mobile Layout -->
           <mat-accordion *ngIf="isMobile">
             <div class="mt-2">
-              <mat-expansion-panel
-                (opened)="panelOpenState = true"
-                (closed)="panelOpenState = false"
-              >
+              <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <div class="booking-summary-bar text-dark rounded-3">
-                      <h5
-                        class="m-0 font-weight-bold"
-                        [class.booking-summary-bar--title]="isRoomAvailable()"
-                      >
+                      <h5 class="m-0 font-weight-bold" [class.booking-summary-bar--title]="isRoomAvailable()">
                         Booking Summary
                       </h5>
                     </div>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div [ngClass]="{ 'accordion-body': showBookingSummary }">
-                  <ng-container
-                    *ngTemplateOutlet="bookingSummaryContent"
-                  ></ng-container>
+                  <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
                 </div>
               </mat-expansion-panel>
             </div>
           </mat-accordion>
           <ng-template #noBookings>
-            <div
-              class="d-flex my-2 p-3 align-items-start justify-content-start"
-            >
+            <div class="d-flex my-2 align-items-start justify-content-start">
               <!-- <i class="fa fa-plus" aria-hidden="true"></i> -->
               <p class="m-0">Add your preferred rooms</p>
             </div>
@@ -500,31 +352,22 @@
           <ng-template #loading>
             <div class="text-center">
               <!-- Increase size using Bootstrap utility classes -->
-              <div
-                class="spinner-border text-primary"
-                role="status"
-                style="width: 4rem; height: 4rem"
-              >
+              <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem">
                 <span class="visually-hidden">Loading...</span>
               </div>
               <p>Loading rooms...</p>
             </div>
           </ng-template>
-          <div
-            class="card mb-3 text-center"
-            *ngIf="
+          <div class="card mb-3 text-center" *ngIf="
               (!filteredRoomData && !loadingRooms) ||
               filteredRoomData?.length === 0
-            "
-          >
+            ">
             Sorry, rooms are not available
           </div>
 
           <div *ngIf="!loadingRooms">
             <div *ngIf="!isRoomDataEmpty">
-              <div
-                class="row my-2 w-100 d-flex align-items-center justify-content-center"
-              >
+              <div class="row my-2 w-100 d-flex align-items-center justify-content-center">
                 <!-- <div>
                   <pre *ngIf="showMessage" class="text-center">
 *** Select dates and search rooms ****</pre>
@@ -535,70 +378,37 @@
                   <div class="col-md-5">
                     <div class="containerg">
                       <div class="card-containerg" #cardContainer>
-                        <div
-                          class="card py-0"
-                          *ngFor="
+                        <div class="card py-0" *ngFor="
                             let item of getRoomImages(room.Room_Name);
                             let i = index
-                          "
-                        >
-                          <img
-                            class="img-responsive"
-                            src="{{ item }}"
-                            alt=""
-                            (click)="openLightbox(i, room.Room_Name)"
-                          />
+                          ">
+                          <img class="img-responsive" src="{{ item }}" alt=""
+                            (click)="openLightbox(i, room.Room_Name)" />
                         </div>
                       </div>
-                      <div
-                        class="full-image-overlay"
-                        *ngIf="isFullImageVisible"
-                        (click)="closeFullImage()"
-                      >
+                      <div class="full-image-overlay" *ngIf="isFullImageVisible" (click)="closeFullImage()">
                         <div class="full-image-container">
-                          <div
-                            class="scroll-icon left"
-                            (click)="scrollLeft(cardContainer)"
-                            #scrollLeftIcon
-                          >
+                          <div class="scroll-icon left" (click)="scrollLeft(cardContainer)" #scrollLeftIcon>
                             &#10094;
                           </div>
                           <img class="full-image" [src]="fullImageSrc" alt="" />
-                          <div
-                            class="scroll-icon right"
-                            (click)="scrollRight(cardContainer)"
-                            #scrollRightIcon
-                          >
+                          <div class="scroll-icon right" (click)="scrollRight(cardContainer)" #scrollRightIcon>
                             &#10095;
                           </div>
 
                           <div class="overlay-controls">
-                            <button
-                              class="close-button"
-                              (click)="closeFullImage()"
-                            >
-                              <i
-                                class="fas fa-window-close"
-                                aria-hidden="true"
-                              ></i>
+                            <button class="close-button" (click)="closeFullImage()">
+                              <i class="fas fa-window-close" aria-hidden="true"></i>
                             </button>
                           </div>
                         </div>
                       </div>
 
-                      <div
-                        class="scroll-icon left"
-                        (click)="scrollLeft(cardContainer)"
-                        #scrollLeftIcon
-                      >
+                      <div class="scroll-icon left" (click)="scrollLeft(cardContainer)" #scrollLeftIcon>
                         <i class="fas fa-chevron-left"></i>
                         <!-- &#10094; -->
                       </div>
-                      <div
-                        class="scroll-icon right"
-                        (click)="scrollRight(cardContainer)"
-                        #scrollRightIcon
-                      >
+                      <div class="scroll-icon right" (click)="scrollRight(cardContainer)" #scrollRightIcon>
                         <i class="fas fa-chevron-right"></i>
                         <!-- &#10095; -->
                       </div>
@@ -607,25 +417,18 @@
                   <div class="col-md-7 row justify-content-between">
                     <div class="col-md-7">
                       <h5>
-                        <span class="text-primary-dark font-weight-bold"
-                          >Room name: </span
-                        >{{ room.Room_Name }}
+                        <span class="text-primary-dark font-weight-bold">Room name: </span>{{ room.Room_Name }}
                       </h5>
                       <h6>
-                        <span class="text-primary-dark font-weight-bold"
-                          >Cottage type: </span
-                        >{{ room.Cottage_Type }}
+                        <span class="text-primary-dark font-weight-bold">Cottage type: </span>{{ room.Cottage_Type }}
                       </h6>
                       <h6>
-                        <span class="text-primary-dark font-weight-bold"
-                          >Resort name:
+                        <span class="text-primary-dark font-weight-bold">Resort name:
                         </span>
                         {{ room.Select_Resort }}
                       </h6>
                     </div>
-                    <div
-                      class="col-md-5 d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0"
-                    >
+                    <div class="col-md-5 d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0">
                       <div>
                         <h6 class="p-0 m-0">
                           <!-- <strong>{{ isWeekend ? room.Week_End_Rate : room.Week_Days_Rate }}
@@ -641,8 +444,8 @@
                         <h6 class="p-0 m-0">
                           <strong>{{
                             resortData?.extraGuestCharges
-                              | currency: "INR " : "symbol" : "1.0-0"
-                          }}</strong>
+                            | currency: "INR " : "symbol" : "1.0-0"
+                            }}</strong>
                         </h6>
                         <p class="text-primary-dark text-end">
                           <i class="fa fa-user" aria-hidden="true"></i> One
@@ -650,10 +453,7 @@
                         </p>
                       </div>
                       <div class="col-12">
-                        <p
-                          class="text-primary-dark"
-                          *ngIf="resortData?.foodProviding === 'yes'"
-                        >
+                        <p class="text-primary-dark" *ngIf="resortData?.foodProviding === 'yes'">
                           <i class="fa-solid fa-utensils"></i> Room price
                           includes food
                         </p>
@@ -663,11 +463,8 @@
                 <small>(for 1 Extra Bed)</small> -->
                     </div>
                     <div class="col my-2 pe-0">
-                      <button
-                        class="btn btn-lg btn-primary mt-4 rounded-pill px-4 float-end float-md-start"
-                        [disabled]="isRoomAdded(room.Room_Id) || !room.canBook"
-                        (click)="addRoom(room)"
-                      >
+                      <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 float-end float-md-start"
+                        [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
                         Add room
                       </button>
                     </div>

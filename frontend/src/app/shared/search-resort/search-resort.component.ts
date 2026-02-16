@@ -34,10 +34,7 @@ export class SearchResortComponent implements OnInit {
     'Vanavihari Tents, Maredumilli',
     'Karthikavanam Tents, Valamuru',
   ];
-  trekLocations = [
-    'Soft Trek',
-    'Very Hard Trek',
-  ];
+  trekLocations = ['Soft Trek', 'Very Hard Trek'];
 
   selectedResort: string;
   checkinDate: string;
@@ -55,7 +52,7 @@ export class SearchResortComponent implements OnInit {
     private searchService: SearchService,
     private router: Router,
     private authService: AuthService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {
     this.searchForm = this.formBuilder.group({
       selectedResort: [],
@@ -101,23 +98,23 @@ export class SearchResortComponent implements OnInit {
   selectLocation(location: string) {
     this.selectedResort = location;
     this.setMinDate();
-    
+
     // Autofill check-in date logic
     const today = new Date();
     let autoDate = new Date();
-    
+
     if (location.includes('Vanavihari')) {
       autoDate = today;
     } else if (location.includes('Jungle Star')) {
       autoDate.setDate(today.getDate() + 1);
     }
-    
+
     // Format to YYYY-MM-DD for native date input
     const year = autoDate.getFullYear();
     const month = ('0' + (autoDate.getMonth() + 1)).slice(-2);
     const day = ('0' + autoDate.getDate()).slice(-2);
     this.checkinDate = `${year}-${month}-${day}`;
-    
+
     this.nextStep();
   }
 
@@ -152,7 +149,7 @@ export class SearchResortComponent implements OnInit {
   setMinDate() {
     this.selectionChanged = true;
     const currentDate = new Date();
-    
+
     // Logic for specific resorts having T+1 constraint
     if (
       this.selectedResort === 'Jungle Star, Valamuru' ||
@@ -183,13 +180,16 @@ export class SearchResortComponent implements OnInit {
     return null;
   }
 
+  showCheckoutError: boolean = false;
+
   submitSearch() {
     // If step 3 (Dates), proceed. For Treks, we might just proceed.
     // Validation
-    if (this.selectedType !== 'trek' && (!this.checkinDate || !this.checkoutDate)) {
-      // Maybe show error or disable button? Button should be disabled in template.
-      return; 
+    if (this.selectedType !== 'trek' && !this.checkoutDate) {
+      this.showCheckoutError = true;
+      return;
     }
+    this.showCheckoutError = false;
 
     let bookingRooms = JSON.stringify(localStorage.getItem('booking_rooms'));
     let array = JSON.parse(bookingRooms);
@@ -197,9 +197,9 @@ export class SearchResortComponent implements OnInit {
     // If existing booking present and changing params...
     // But for now, let's simplify and just run logic
     if (array != null && this.selectionChanged && array.length !== 2) {
-       this.triggerModal(); // This calls onConfirm which calls proceedWithSearch
+      this.triggerModal(); // This calls onConfirm which calls proceedWithSearch
     } else {
-       this.proceedWithSearch();
+      this.proceedWithSearch();
     }
   }
 
@@ -207,16 +207,16 @@ export class SearchResortComponent implements OnInit {
     const dateString = this.checkinDate;
     const date = new Date(dateString);
     const date2 = new Date(this.checkoutDate);
-    
+
     // Only process dates if they exist (Treks might not have them? Or we force them)
     let checkinDateString = '';
     let checkoutDateString = '';
-    
+
     if (this.checkinDate && this.checkoutDate) {
-        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-        date2.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-        checkinDateString = date.toISOString();
-        checkoutDateString = date2.toISOString();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      date2.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      checkinDateString = date.toISOString();
+      checkoutDateString = date2.toISOString();
     }
 
     // Common setup
@@ -233,40 +233,41 @@ export class SearchResortComponent implements OnInit {
 
     // Redirection Logic
     if (this.selectedType === 'resort') {
-        localStorage.setItem('booking_rooms', JSON.stringify([]));
-        this.router.navigate(['resorts/rooms'], {
-            queryParams: { bookingTypeResort: this.selectedResort },
-            queryParamsHandling: 'merge',
-        });
+      localStorage.setItem('booking_rooms', JSON.stringify([]));
+      this.router.navigate(['resorts/rooms'], {
+        queryParams: { bookingTypeResort: this.selectedResort },
+        queryParamsHandling: 'merge',
+        fragment: 'roomsListing',
+      });
     } else if (this.selectedType === 'tent') {
-        // Map locations to routes
-        // 'Vanavihari Tents, Maredumilli' -> /book-tent/vanavihari-maredumilli
-        // 'Karthikavanam Tents, Valamuru' -> /book-tent/karthikavanam-valamuru (Fixing typo from original code 'karthikavanm'?)
-        // Checking original: goToKarthikavanamTents -> /book-tent/karthikavanm (Wait, typo in original file?)
-        // Original: /book-tent/karthikavanm and /book-tent/vanavihari-marudemalli (Typo in original: marudemalli)
-        
-        // I should probably fix typos if I can, or match existing routes exactly.
-        // Let's check original routes in home.component.ts
-        // goToTents -> /book-tent/vanavihari-marudemalli
-        // goToKarthikavanamTents -> /book-tent/karthikavanm
-        
-        if (this.selectedResort === 'Vanavihari Tents, Maredumilli') {
-             this.router.navigate(['/book-tent/vanavihari-maredumilli']); // Use correct spelling if routed allows, or stick to old?
-             // Actually, the user asked to fix things in the past? 
-             // Let's assume the router config exists. I'll stick to safe values or check router...
-             // Safest is to check routes? But I can't easily.
-             // I'll use the values found in layout.component.html:
-             // routerLink="/book-tent/vanavihari-maredumilli" (This looks correct)
-             // Let's use that.
-             this.router.navigate(['/book-tent/vanavihari-maredumilli']);
-        } else if (this.selectedResort === 'Karthikavanam Tents, Valamuru') {
-             this.router.navigate(['/book-tent/karthikavanam-valamuru']); // Trying correct spelling
-        } else {
-             // Fallback
-             this.router.navigate(['/book-tent/vanavihari-maredumilli']);
-        }
+      // Map locations to routes
+      // 'Vanavihari Tents, Maredumilli' -> /book-tent/vanavihari-maredumilli
+      // 'Karthikavanam Tents, Valamuru' -> /book-tent/karthikavanam-valamuru (Fixing typo from original code 'karthikavanm'?)
+      // Checking original: goToKarthikavanamTents -> /book-tent/karthikavanm (Wait, typo in original file?)
+      // Original: /book-tent/karthikavanm and /book-tent/vanavihari-marudemalli (Typo in original: marudemalli)
+
+      // I should probably fix typos if I can, or match existing routes exactly.
+      // Let's check original routes in home.component.ts
+      // goToTents -> /book-tent/vanavihari-marudemalli
+      // goToKarthikavanamTents -> /book-tent/karthikavanm
+
+      if (this.selectedResort === 'Vanavihari Tents, Maredumilli') {
+        this.router.navigate(['/book-tent/vanavihari-maredumilli']); // Use correct spelling if routed allows, or stick to old?
+        // Actually, the user asked to fix things in the past?
+        // Let's assume the router config exists. I'll stick to safe values or check router...
+        // Safest is to check routes? But I can't easily.
+        // I'll use the values found in layout.component.html:
+        // routerLink="/book-tent/vanavihari-maredumilli" (This looks correct)
+        // Let's use that.
+        this.router.navigate(['/book-tent/vanavihari-maredumilli']);
+      } else if (this.selectedResort === 'Karthikavanam Tents, Valamuru') {
+        this.router.navigate(['/book-tent/karthikavanam-valamuru']); // Trying correct spelling
+      } else {
+        // Fallback
+        this.router.navigate(['/book-tent/vanavihari-maredumilli']);
+      }
     } else if (this.selectedType === 'trek') {
-        this.router.navigate(['/tourist-places']);
+      this.router.navigate(['/tourist-places']);
     }
   }
 }

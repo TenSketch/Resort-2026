@@ -181,7 +181,8 @@ export class SignInComponent implements OnInit {
   showSnackBarAlert(msg = '', redirect = true) {
     var snackBar = this.snackBar.open(msg, 'Close', {
       duration: 5000,
-      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
     if (redirect) {
       snackBar.afterDismissed().subscribe(() => {

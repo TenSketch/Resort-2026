@@ -6,9 +6,147 @@
 }
 
 // Desktop Fade Carousel
+// Desktop Fade Carousel
 #carouselExampleFade {
   @include hero-carousel-base;
+  position: relative; // For absolute positioning of counter
+
+  .carousel-item {
+      height: 70vh;
+      min-height: 500px;
+      
+      img {
+          height: 100%;
+          object-fit: cover;
+      }
+
+      .carousel-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+      }
+  }
+
+  // Slide Counter
+  .slide-counter {
+      position: absolute;
+      bottom: 30px;
+      right: 30px; // Bottom right corner instead of center
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  // Navigation Buttons
+  .custom-nav-btn {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.8;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      
+      &.carousel-control-prev {
+          left: 20px;
+      }
+      
+      &.carousel-control-next {
+          right: 20px;
+      }
+
+      &:hover {
+          background: rgba(255, 255, 255, 0.25);
+          opacity: 1;
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 0 15px rgba(255,255,255,0.3);
+      }
+
+      .nav-icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          color: #fff;
+      }
+
+      // Hide default icon
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+          display: none;
+      }
+  }
 }
+
+// Horizontal info cards (About / Guidelines / Amenities)
+.info-cards {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+  flex-wrap: nowrap;
+
+  @media (max-width: 767.98px) {
+    flex-wrap: wrap; /* stack on small screens */
+  }
+
+  .info-card {
+    flex: 1 1 0;
+    min-width: 220px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(11, 90, 43, 0.04);
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: inset 0 -4px 8px rgba(0,0,0,0.04);
+    }
+
+    .info-content {
+      h4 { margin: 0 0 0.25rem 0; font-size: 1.02rem; font-weight: 700; color: $clr-secondary; }
+      p, ul { margin: 0; color: #4b4b4b; font-size: .95rem; }
+      ul li { margin-bottom: .25rem; }
+    }
+  }
+}
+
 
 // .page-banner {
 //   color: white;

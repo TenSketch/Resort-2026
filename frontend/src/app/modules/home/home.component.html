@@ -3,18 +3,37 @@
     <app-loader *ngIf="showLoader"></app-loader>
 
     <!-- Mobile Hero Carousel -->
-    <section id="mobileHeroCarousel" class="carousel slide d-block d-md-none" data-bs-ride="carousel"
-      data-bs-interval="5000">
+    <section
+      id="mobileHeroCarousel"
+      class="carousel slide d-block d-md-none"
+      data-bs-ride="carousel"
+      data-bs-interval="5000"
+    >
       <div class="carousel-indicators">
-        <button *ngFor="let slide of heroSlides; let i = index" type="button" data-bs-target="#mobileHeroCarousel"
-          [attr.data-bs-slide-to]="i" [class.active]="i === 0" [attr.aria-current]="i === 0 ? 'true' : null"
-          [attr.aria-label]="'Slide ' + (i + 1)"></button>
+        <button
+          *ngFor="let slide of heroSlides; let i = index"
+          type="button"
+          data-bs-target="#mobileHeroCarousel"
+          [attr.data-bs-slide-to]="i"
+          [class.active]="i === 0"
+          [attr.aria-current]="i === 0 ? 'true' : null"
+          [attr.aria-label]="'Slide ' + (i + 1)"
+        ></button>
       </div>
 
       <div class="carousel-inner h-100">
-        <div *ngFor="let slide of heroSlides; let i = index" class="carousel-item h-100" [class.active]="i === 0"
-          (click)="handleSlideAction(slide.action)" style="cursor: pointer">
-          <img [src]="slide.image" class="d-block w-100 h-100 object-fit-cover" [alt]="slide.title" />
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item h-100"
+          [class.active]="i === 0"
+          (click)="handleSlideAction(slide.action)"
+          style="cursor: pointer"
+        >
+          <img
+            [src]="slide.image"
+            class="d-block w-100 h-100 object-fit-cover"
+            [alt]="slide.title"
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption mobile-caption text-start">
             <div class="container">
@@ -30,7 +49,10 @@
               <p class="fw-bold mb-2 small" *ngIf="slide.price">
                 {{ slide.price }}
               </p>
-              <div *ngIf="slide.startText" class="mb-2 small fw-bold text-white-50">
+              <div
+                *ngIf="slide.startText"
+                class="mb-2 small fw-bold text-white-50"
+              >
                 {{ slide.startText }}
               </div>
               <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
@@ -41,23 +63,60 @@
         </div>
       </div>
 
-      <button class="carousel-control-prev" type="button" data-bs-target="#mobileHeroCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon small-control" aria-hidden="true"></span>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#mobileHeroCarousel"
+        data-bs-slide="prev"
+      >
+        <span
+          class="carousel-control-prev-icon small-control"
+          aria-hidden="true"
+        ></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#mobileHeroCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon small-control" aria-hidden="true"></span>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#mobileHeroCarousel"
+        data-bs-slide="next"
+      >
+        <span
+          class="carousel-control-next-icon small-control"
+          aria-hidden="true"
+        ></span>
         <span class="visually-hidden">Next</span>
       </button>
     </section>
 
-    <section id="carouselExampleFade" class="carousel slide carousel-fade d-none d-md-block" data-bs-ride="carousel"
-      data-bs-interval="6000">
+    <section
+      id="carouselExampleFade"
+      class="carousel slide carousel-fade d-none d-md-block"
+    >
+      <!-- Indicators / Counter -->
+      <div class="carousel-indicators-counter text-white fw-bold">
+        <span>{{ (currentSlideIndex + 1).toString().padStart(2, "0") }}</span>
+        <span class="mx-1">/</span>
+        <span>{{ heroSlides.length.toString().padStart(2, "0") }}</span>
+      </div>
+
       <div class="carousel-inner">
-        <div *ngFor="let slide of heroSlides; let i = index" class="carousel-item" [class.active]="i === 0">
-          <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
+        <div
+          *ngFor="let slide of heroSlides; let i = index"
+          class="carousel-item"
+          [class.active]="i === currentSlideIndex"
+        >
+          <img
+            [src]="slide.image"
+            class="d-block w-100"
+            style="height: 100%; object-fit: cover"
+            [alt]="slide.title"
+          />
           <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0 text-start" style="bottom: 15%; left: 10%; right: 10%">
+          <div
+            class="carousel-caption p-0 text-start"
+            style="bottom: 15%; left: 10%; right: 10%"
+          >
             <div class="container">
               <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
               <p class="h4 text-light mt-3" *ngIf="slide.location">
@@ -70,18 +129,21 @@
                 {{ slide.price }}
               </p>
 
-              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" (click)="handleSlideAction(slide.action)">
+              <button
+                class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
+                (click)="handleSlideAction(slide.action)"
+              >
                 {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>
           </div>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+      <button class="carousel-control-prev" type="button" (click)="prevSlide()">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+      <button class="carousel-control-next" type="button" (click)="nextSlide()">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
@@ -101,14 +163,19 @@
           <!-- Text Content (Left) -->
           <div class="col-md-6">
             <div class="announcement-content mx-auto" style="max-width: 90%">
-              <span class="text-uppercase tracking-widest small mb-2 d-block text-primary fw-bold"
-                style="letter-spacing: 0.15em; font-size: 0.75rem">
+              <span
+                class="text-uppercase tracking-widest small mb-2 d-block text-primary fw-bold"
+                style="letter-spacing: 0.15em; font-size: 0.75rem"
+              >
                 New Experiences
               </span>
               <h2 class="display-6 font-heading mb-3 text-dark-green fw-bold">
                 Escape to the <span class="fst-italic text-primary">Wild.</span>
               </h2>
-              <p class="text-muted mb-4" style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 We've curated exclusive
                 <strong>Trekking Adventures</strong> for souls seeking
                 connection with nature. You can now book these experiences
@@ -122,7 +189,10 @@
                 >
                   Book a Tent <i class="fa-solid fa-arrow-right ms-2"></i>
                 </a> -->
-                <a routerLink="/tourist-places" class="btn-underline text-dark fw-bold small">
+                <a
+                  routerLink="/tourist-places"
+                  class="btn-underline text-dark fw-bold small"
+                >
                   Plan a Trek <i class="fa-solid fa-arrow-right ms-2"></i>
                 </a>
               </div>
@@ -133,15 +203,27 @@
           <div class="col-md-6 position-relative">
             <div class="editorial-media-wrapper py-2">
               <!-- Organic Shape Background (scaled down) -->
-              <svg class="organic-blob" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#e2f5d5"
+              <svg
+                class="organic-blob"
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill="#e2f5d5"
                   d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-4.9C93.5,9.3,82.1,22.9,71.1,34.8C60,46.6,49.3,56.7,37.1,64.1C25,71.5,11.4,76.1,-1.5,78.7C-14.4,81.4,-27.6,82,-39.7,75.9C-51.8,69.7,-62.8,56.9,-71.4,43.1C-80,29.3,-86.2,14.5,-85.6,0.3C-85,-13.8,-77.6,-27.3,-67.6,-38.7C-57.5,-50.1,-44.8,-59.4,-31.6,-67.2C-18.4,-75,-4.7,-81.3,7.4,-94.1L19.5,-106.9Z"
-                  transform="translate(100 100)" />
+                  transform="translate(100 100)"
+                />
               </svg>
 
-              <div class="media-container shadow-lg rounded-4 w-100 overflow-hidden">
-                <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Trekking Adventure"
-                  class="img-fluid w-100 object-fit-cover" style="height: 350px" />
+              <div
+                class="media-container shadow-lg rounded-4 w-100 overflow-hidden"
+              >
+                <img
+                  src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+                  alt="Trekking Adventure"
+                  class="img-fluid w-100 object-fit-cover"
+                  style="height: 350px"
+                />
               </div>
             </div>
           </div>
@@ -156,12 +238,16 @@
           <div class="col-md-6 order-2 order-md-1">
             <div class="content-wrapper pe-md-4 mx-auto" style="max-width: 90%">
               <span
-                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">Stay
-                in Luxury</span>
+                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
+                >Stay in Luxury</span
+              >
               <h2 class="display-6 fw-bold mb-3 text-dark-green font-heading">
                 Luxury Resorts
               </h2>
-              <p class="text-muted mb-4" style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 Immerse yourself in comfort while being surrounded by nature.
                 Our eco-friendly resorts offer the perfect blend of modern
                 amenities and wilderness serenity.
@@ -180,7 +266,10 @@
                   Local Cuisine
                 </li>
               </ul>
-              <button class="btn btn-primary rounded-pill px-4 py-2" (click)="goToResort()">
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                (click)="goToResort()"
+              >
                 Explore Resorts <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>
@@ -190,16 +279,24 @@
               <div class="blob-bg blob-right"></div>
               <div class="flip-card-inner" [class.auto-flip]="isResortFlipped">
                 <div class="flip-card-front">
-                  <img src="assets/img/Vanavihari-reception.jpg" alt="Luxury Resorts Front"
-                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100" />
+                  <img
+                    src="assets/img/Vanavihari-reception.jpg"
+                    alt="Luxury Resorts Front"
+                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100"
+                  />
                   <!-- Hint -->
-                  <div class="flip-hint position-absolute bottom-0 end-0 m-3 text-white small opacity-75">
+                  <div
+                    class="flip-hint position-absolute bottom-0 end-0 m-3 text-white small opacity-75"
+                  >
                     <i class="fa-solid fa-rotate me-1"></i> Flip
                   </div>
                 </div>
                 <div class="flip-card-back">
-                  <img src="assets/img/Vanavihari-back.jpg" alt="Luxury Resorts Back"
-                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100" />
+                  <img
+                    src="assets/img/Vanavihari-back.jpg"
+                    alt="Luxury Resorts Back"
+                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100"
+                  />
                   <div class="flip-overlay rounded-4"></div>
                 </div>
               </div>
@@ -280,12 +377,16 @@
           <div class="col-md-6 order-2 order-md-1">
             <div class="content-wrapper pe-md-4 mx-auto" style="max-width: 90%">
               <span
-                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">Explore
-                Nature</span>
+                class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10"
+                >Explore Nature</span
+              >
               <h2 class="display-6 fw-bold mb-3 text-dark-green font-heading">
                 Trekking Spots
               </h2>
-              <p class="text-muted mb-4" style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 Discover hidden trails and breathtaking scenic views. Whether
                 you are a beginner or a pro, we have trekking paths that will
                 challenge and inspire you.
@@ -304,7 +405,10 @@
                   Trails
                 </li>
               </ul>
-              <button class="btn btn-primary rounded-pill px-4 py-2" routerLink="/tourist-places">
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                routerLink="/tourist-places"
+              >
                 Plan a Trek <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>
@@ -312,18 +416,29 @@
           <div class="col-md-6 order-1 order-md-2 mb-4 mb-md-0">
             <div class="image-wrapper position-relative flip-card">
               <div class="blob-bg blob-right-alt"></div>
-              <div class="flip-card-inner" [class.auto-flip]="isTrekkingFlipped">
+              <div
+                class="flip-card-inner"
+                [class.auto-flip]="isTrekkingFlipped"
+              >
                 <div class="flip-card-front">
-                  <img src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Trekking Spots Front"
-                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100" />
+                  <img
+                    src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg"
+                    alt="Trekking Spots Front"
+                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100"
+                  />
                   <!-- Hint for user to interact -->
-                  <div class="flip-hint position-absolute bottom-0 end-0 m-3 text-white small opacity-75">
+                  <div
+                    class="flip-hint position-absolute bottom-0 end-0 m-3 text-white small opacity-75"
+                  >
                     <i class="fa-solid fa-rotate me-1"></i> Flip
                   </div>
                 </div>
                 <div class="flip-card-back">
-                  <img src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" alt="Trekking Spots Back"
-                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100" />
+                  <img
+                    src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
+                    alt="Trekking Spots Back"
+                    class="img-fluid rounded-4 shadow-lg object-fit-cover w-100 h-100"
+                  />
                   <!-- Overlay for readability if we want text on back, but for now just image -->
                   <div class="flip-overlay rounded-4"></div>
                 </div>
@@ -343,13 +458,19 @@
               <h2 class="display-6 fw-bold text-dark-green mb-3">
                 About Vanavihari
               </h2>
-              <p class="text-muted mb-4" style="line-height: 1.6; font-size: 1rem">
+              <p
+                class="text-muted mb-4"
+                style="line-height: 1.6; font-size: 1rem"
+              >
                 Owned by the AP Forest Department and managed by local tribes,
                 Vanavihari offers immersive eco-tourism experiences. Your stay
                 supports sustainable livelihoods for the native Konda Reddy and
                 Valmiki communities.
               </p>
-              <button class="btn btn-primary rounded-pill px-4 py-2" (click)="goToAboutUs()">
+              <button
+                class="btn btn-primary rounded-pill px-4 py-2"
+                (click)="goToAboutUs()"
+              >
                 Know More <i class="fa-solid fa-arrow-right ms-2"></i>
               </button>
             </div>
@@ -359,14 +480,25 @@
           <div class="col-md-6">
             <div class="bento-grid">
               <div class="bento-item item-main">
-                <img src="assets/img/Vanavihari-reception.jpg" alt="Vanavihari Reception" class="img-fluid" />
+                <img
+                  src="assets/img/Vanavihari-reception.jpg"
+                  alt="Vanavihari Reception"
+                  class="img-fluid"
+                />
               </div>
               <div class="bento-item item-side-top">
-                <img src="assets/img/Jungle_Star-reception.jpg" alt="Jungle Star" class="img-fluid" />
+                <img
+                  src="assets/img/Jungle_Star-reception.jpg"
+                  alt="Jungle Star"
+                  class="img-fluid"
+                />
               </div>
               <div class="bento-item item-side-bottom">
-                <img src="assets/img/TOURIST-PLACES/Jala-Tharangini-Waterfalls.webp" alt="Jalatharangini Waterfalls"
-                  class="img-fluid" />
+                <img
+                  src="assets/img/TOURIST-PLACES/Jala-Tharangini-Waterfalls.webp"
+                  alt="Jalatharangini Waterfalls"
+                  class="img-fluid"
+                />
               </div>
             </div>
           </div>
@@ -463,14 +595,32 @@
               <div class="col-md-6">
                 <div class="mini-gallery">
                   <div class="gallery-bento">
-                    <div class="bento-main" (click)="openLightbox(0, 'vanavihari')">
-                      <img src="assets/img/Vanavihari-reception.jpg" alt="Vanavihari Gallery 1" />
+                    <div
+                      class="bento-main"
+                      (click)="openLightbox(0, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/Vanavihari-reception.jpg"
+                        alt="Vanavihari Gallery 1"
+                      />
                     </div>
-                    <div class="bento-side-top" (click)="openLightbox(1, 'vanavihari')">
-                      <img src="assets/img/Vanavihari-back.jpg" alt="Vanavihari Gallery 2" />
+                    <div
+                      class="bento-side-top"
+                      (click)="openLightbox(1, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/Vanavihari-back.jpg"
+                        alt="Vanavihari Gallery 2"
+                      />
                     </div>
-                    <div class="bento-side-bottom gallery-more" (click)="openLightbox(0, 'vanavihari')">
-                      <img src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg" alt="More Photos" />
+                    <div
+                      class="bento-side-bottom gallery-more"
+                      (click)="openLightbox(0, 'vanavihari')"
+                    >
+                      <img
+                        src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg"
+                        alt="More Photos"
+                      />
                       <div class="gallery-overlay">
                         <span>+{{ imageFilenames.length - 2 }} Photos</span>
                       </div>
@@ -494,15 +644,23 @@
                     </div>
                     <div class="meta-item">
                       <i class="fa-solid fa-indian-rupee-sign text-success"></i>
-                      <span class="price">Starts from <strong>₹1750</strong> / night</span>
+                      <span class="price"
+                        >Starts from <strong>₹1750</strong> / night</span
+                      >
                     </div>
                   </div>
                   <div class="resort-actions">
-                    <button class="btn btn-outline-secondary btn-how-to-reach" data-bs-toggle="modal"
-                      data-bs-target="#vanavihariHowToReachModal">
+                    <button
+                      class="btn btn-outline-secondary btn-how-to-reach"
+                      data-bs-toggle="modal"
+                      data-bs-target="#vanavihariHowToReachModal"
+                    >
                       <i class="fa-solid fa-compass me-2"></i> How to Reach
                     </button>
-                    <button class="btn btn-primary btn-view-resort" (click)="goToVanavihari()">
+                    <button
+                      class="btn btn-primary btn-view-resort"
+                      (click)="goToVanavihari()"
+                    >
                       View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
                     </button>
                   </div>
@@ -523,14 +681,32 @@
               <div class="col-md-6">
                 <div class="mini-gallery">
                   <div class="gallery-bento">
-                    <div class="bento-main" (click)="openLightbox(0, 'jungle-star')">
-                      <img src="assets/img/Jungle_Star-reception.jpg" alt="Jungle Star Gallery 1" />
+                    <div
+                      class="bento-main"
+                      (click)="openLightbox(0, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/Jungle_Star-reception.jpg"
+                        alt="Jungle Star Gallery 1"
+                      />
                     </div>
-                    <div class="bento-side-top" (click)="openLightbox(1, 'jungle-star')">
-                      <img src="assets/img/Jungle_Star-reception-1.jpg" alt="Jungle Star Gallery 2" />
+                    <div
+                      class="bento-side-top"
+                      (click)="openLightbox(1, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/Jungle_Star-reception-1.jpg"
+                        alt="Jungle Star Gallery 2"
+                      />
                     </div>
-                    <div class="bento-side-bottom gallery-more" (click)="openLightbox(0, 'jungle-star')">
-                      <img src="assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg" alt="More Photos" />
+                    <div
+                      class="bento-side-bottom gallery-more"
+                      (click)="openLightbox(0, 'jungle-star')"
+                    >
+                      <img
+                        src="assets/img/home-gallery-junglestar/junglestar-home-gallery-3.jpg"
+                        alt="More Photos"
+                      />
                       <div class="gallery-overlay">
                         <span>+{{ imageFilenames1.length - 2 }} Photos</span>
                       </div>
@@ -554,15 +730,23 @@
                     </div>
                     <div class="meta-item">
                       <i class="fa-solid fa-indian-rupee-sign text-success"></i>
-                      <span class="price">Starts from <strong>₹5,000</strong> / night</span>
+                      <span class="price"
+                        >Starts from <strong>₹5,000</strong> / night</span
+                      >
                     </div>
                   </div>
                   <div class="resort-actions">
-                    <button class="btn btn-outline-secondary btn-how-to-reach" data-bs-toggle="modal"
-                      data-bs-target="#jungleStarHowToReachModal">
+                    <button
+                      class="btn btn-outline-secondary btn-how-to-reach"
+                      data-bs-toggle="modal"
+                      data-bs-target="#jungleStarHowToReachModal"
+                    >
                       <i class="fa-solid fa-compass me-2"></i> How to Reach
                     </button>
-                    <button class="btn btn-primary btn-view-resort" (click)="goToJungleStar()">
+                    <button
+                      class="btn btn-primary btn-view-resort"
+                      (click)="goToJungleStar()"
+                    >
                       View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
                     </button>
                   </div>
@@ -575,8 +759,13 @@
     </section>
 
     <!-- How to Reach Modal: Vanavihari -->
-    <div class="modal fade" id="vanavihariHowToReachModal" tabindex="-1" aria-labelledby="vanavihariHowToReachLabel"
-      aria-hidden="true">
+    <div
+      class="modal fade"
+      id="vanavihariHowToReachModal"
+      tabindex="-1"
+      aria-labelledby="vanavihariHowToReachLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header border-0">
@@ -584,7 +773,12 @@
               <i class="fa-solid fa-compass me-2 text-primary"></i> How to Reach
               Vanavihari
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row g-4">
@@ -592,8 +786,13 @@
                 <div class="map-embed">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-                    width="100%" height="280" style="border: 0; border-radius: 12px" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    width="100%"
+                    height="280"
+                    style="border: 0; border-radius: 12px"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                  ></iframe>
                 </div>
               </div>
               <div class="col-md-5">
@@ -614,8 +813,11 @@
                     </div>
                   </div>
                 </div>
-                <a href="https://www.google.com/maps/dir//Vanavihari+Maredumilli" target="_blank"
-                  class="btn btn-outline-primary w-100 mt-3">
+                <a
+                  href="https://www.google.com/maps/dir//Vanavihari+Maredumilli"
+                  target="_blank"
+                  class="btn btn-outline-primary w-100 mt-3"
+                >
                   <i class="fa-solid fa-map-location-dot me-2"></i> Open in
                   Google Maps
                 </a>
@@ -627,8 +829,13 @@
     </div>
 
     <!-- How to Reach Modal: Jungle Star -->
-    <div class="modal fade" id="jungleStarHowToReachModal" tabindex="-1" aria-labelledby="jungleStarHowToReachLabel"
-      aria-hidden="true">
+    <div
+      class="modal fade"
+      id="jungleStarHowToReachModal"
+      tabindex="-1"
+      aria-labelledby="jungleStarHowToReachLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header border-0">
@@ -636,7 +843,12 @@
               <i class="fa-solid fa-compass me-2 text-primary"></i> How to Reach
               Jungle Star
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="row g-4">
@@ -644,8 +856,13 @@
                 <div class="map-embed">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.321273036429!2d81.63047557463233!3d17.634936395627708!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3725b319b638ff%3A0x6497bd032f830606!2sJUNGLE%20STAR%20ECO%20CAMP!5e0!3m2!1sen!2sin!4v1708782328839!5m2!1sen!2sin"
-                    width="100%" height="280" style="border: 0; border-radius: 12px" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    width="100%"
+                    height="280"
+                    style="border: 0; border-radius: 12px"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                  ></iframe>
                 </div>
               </div>
               <div class="col-md-5">
@@ -666,8 +883,11 @@
                     </div>
                   </div>
                 </div>
-                <a href="https://www.google.com/maps/dir//JUNGLE+STAR+ECO+CAMP" target="_blank"
-                  class="btn btn-outline-primary w-100 mt-3">
+                <a
+                  href="https://www.google.com/maps/dir//JUNGLE+STAR+ECO+CAMP"
+                  target="_blank"
+                  class="btn btn-outline-primary w-100 mt-3"
+                >
                   <i class="fa-solid fa-map-location-dot me-2"></i> Open in
                   Google Maps
                 </a>

@@ -180,6 +180,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.isTrekkingFlipped = !this.isTrekkingFlipped;
       }, 400);
     }, 3000);
+
+    this.startAutoScroll();
   }
 
   // timer starts
@@ -274,7 +276,38 @@ export class HomeComponent implements OnInit, OnDestroy {
   isTrekkingFlipped = false;
   private flipInterval: any;
 
+  // Auto-Scroll Logic for Hero Carousel
+  currentSlideIndex = 0;
+  private autoScrollInterval: any;
+
+  startAutoScroll() {
+    this.stopAutoScroll(); // Ensure no duplicate intervals
+    this.autoScrollInterval = setInterval(() => {
+      this.nextSlide();
+    }, 3000); // 3 seconds
+  }
+
+  stopAutoScroll() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+    }
+  }
+
+  nextSlide() {
+    this.currentSlideIndex = (this.currentSlideIndex + 1) % this.heroSlides.length;
+  }
+
+  prevSlide() {
+    this.currentSlideIndex = (this.currentSlideIndex - 1 + this.heroSlides.length) % this.heroSlides.length;
+  }
+
+  goToSlide(index: number) {
+    this.currentSlideIndex = index;
+    this.startAutoScroll(); // Reset timer on manual interaction
+  }
+
   ngOnDestroy() {
+    this.stopAutoScroll();
     if (this.flipInterval) {
       clearInterval(this.flipInterval);
     }

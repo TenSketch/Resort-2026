@@ -40,25 +40,27 @@
   min-height: 10vh;
   height: auto;
   z-index: 10001;
-  transition: transform 0.3s ease-in-out, right 0.3s ease;
-  
+  transition:
+    transform 0.3s ease-in-out,
+    right 0.3s ease;
+
   // Large screens (992px - 1199px): Navbar accounts for sidebar
   @media (min-width: 992px) and (max-width: 1199px) {
     right: min(40%, 320px);
     width: auto;
     left: 0;
-    
+
     &.sidebar-collapsed {
       right: 70px;
     }
   }
-  
+
   // Desktop (≥1200px): Navbar accounts for sidebar
   @media (min-width: 1200px) {
     right: 260px;
     width: auto;
     left: 0;
-    
+
     &.sidebar-collapsed {
       right: 70px;
     }
@@ -81,7 +83,7 @@
     }
     position: relative; // Needed for absolute positioning context
   }
-  
+
   // Use .container for tablet/desktop
   & > .container {
     @media (min-width: 768px) {
@@ -241,7 +243,9 @@
   border-left: 1px solid rgba(0, 0, 0, 0.05);
   z-index: 12000; // Above bottom nav (11000) on mobile
   transform: translateX(100%);
-  transition: transform 0.3s ease, width 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
 
   // Large screens (992px - 1199px): Always visible, collapsible
   @media (min-width: 992px) and (max-width: 1199px) {
@@ -256,26 +260,27 @@
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.02);
     z-index: 10000;
     padding-top: 0;
-    
+
     &.collapsed {
       width: 70px;
       max-width: 70px;
-      
+
       .sidebar-link span,
       .menu-category,
       .menu-text,
       .accordion-button::after,
       .accordion-body,
-      .sidebar-link.fw-bold span { 
-        display: none !important; 
+      .sidebar-link.fw-bold span {
+        display: none !important;
       }
-      
-      .sidebar-link, .accordion-button {
+
+      .sidebar-link,
+      .accordion-button {
         justify-content: center;
         padding: 0.75rem 0.5rem !important;
         margin: 0 0.25rem;
       }
-      
+
       .sidebar-content {
         padding: 0.5rem 0.25rem;
       }
@@ -295,34 +300,35 @@
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.02);
     z-index: 10000;
     padding-top: 0;
-    
+
     &.collapsed {
       width: 70px;
       max-width: 70px;
-      
+
       .sidebar-link span,
       .menu-category,
       .menu-text,
       .accordion-button::after,
       .accordion-body,
-      .sidebar-link.fw-bold span { 
-        display: none !important; 
+      .sidebar-link.fw-bold span {
+        display: none !important;
       }
-      
-      .sidebar-link, .accordion-button {
+
+      .sidebar-link,
+      .accordion-button {
         justify-content: center;
         padding: 0.75rem 0.5rem !important;
         margin: 0 0.25rem;
-        
+
         i {
           margin: 0;
         }
       }
-      
+
       .sidebar-content {
         padding: 0.5rem 0.25rem;
       }
-      
+
       .sidebar-collapse-btn {
         i {
           transform: rotate(0deg);
@@ -466,15 +472,15 @@
         }
       }
 
-        // Static Item (Non-link header container)
-        .sidebar-item-static {
-          margin-top: 0.5rem;
-          .header-text {
-             color: #166534; // Match .sidebar-link color
-          }
+      // Static Item (Non-link header container)
+      .sidebar-item-static {
+        margin-top: 0.5rem;
+        .header-text {
+          color: #166534; // Match .sidebar-link color
         }
+      }
 
-        .accordion {
+      .accordion {
         --bs-accordion-bg: transparent;
         --bs-accordion-border-width: 0;
         margin-bottom: 0; // Removed bottom margin to prevent double gap
@@ -513,7 +519,7 @@
           text-align: center;
           color: #15803d;
         }
-        
+
         .menu-text {
           margin-left: 0.75rem;
         }
@@ -593,7 +599,7 @@
           &:hover {
             background-color: #f3f4f6;
             color: #111827 !important;
-            
+
             i {
               color: $clr-primary-dark;
             }
@@ -616,7 +622,7 @@
 // Main Content Area
 main {
   // Mobile/tablet (<992px): Full width, no sidebar margin
-  padding-top: 8px; 
+  padding-top: 8px;
 
   // Large screens (992px - 1199px): Account for sidebar
   @media (min-width: 992px) and (max-width: 1199px) {
@@ -624,7 +630,7 @@ main {
     margin-left: 0;
     transition: margin-right 0.3s ease;
     padding-top: 11px;
-    
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
@@ -635,8 +641,8 @@ main {
     margin-right: 260px;
     margin-left: 0;
     transition: margin-right 0.3s ease;
-    padding-top: 11px; 
-    
+    padding-top: 11px;
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
@@ -645,7 +651,7 @@ main {
 
 .footer {
   transition: margin-right 0.3s ease;
-  
+
   .container {
     border-top: 1px solid rgba(0, 0, 0, 0.233);
   }
@@ -655,7 +661,7 @@ main {
     margin-right: min(40%, 320px);
     margin-left: 0;
     width: auto;
-    
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
@@ -666,7 +672,7 @@ main {
     margin-right: 260px;
     margin-left: 0;
     width: auto;
-    
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
@@ -690,22 +696,20 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  
+
   &:hover {
     background: rgba(0, 0, 0, 0.1);
     color: $clr-primary-dark;
   }
-  
+
   &:active {
     transform: translateX(-50%) scale(0.95);
   }
-  
+
   i {
     transition: transform 0.3s ease;
   }
 }
-
-
 
 .dropdown-toggle {
   &::after {
@@ -730,20 +734,20 @@ main {
   @media (max-width: 991px) {
     padding-bottom: 80px !important;
   }
-  
+
   // Large screens (992px - 1199px): Account for sidebar
   @media (min-width: 992px) and (max-width: 1199px) {
     margin-right: min(40%, 320px);
-    
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
   }
-  
+
   // Desktop (≥1200px): Account for sidebar
   @media (min-width: 1200px) {
     margin-right: 260px;
-    
+
     &.sidebar-collapsed {
       margin-right: 70px;
     }
@@ -763,27 +767,27 @@ main {
   align-items: center;
   gap: 12px;
   transition: right 0.3s ease;
-  
+
   // Mobile/tablet (<992px): Account for bottom nav
   @media (max-width: 991px) {
     bottom: 80px; // Above bottom nav
   }
-  
+
   // Large screens (992px - 1199px): Account for sidebar
   @media (min-width: 992px) and (max-width: 1199px) {
     right: calc(min(40%, 320px) + 20px);
     bottom: 20px;
-    
+
     &.sidebar-collapsed {
       right: 90px;
     }
   }
-  
+
   // Desktop (≥1200px): Account for sidebar
   @media (min-width: 1200px) {
     right: 280px;
     bottom: 35px;
-    
+
     &.sidebar-collapsed {
       right: 90px;
     }
@@ -815,6 +819,109 @@ main {
 }
 
 // ... existing .whatsapp-options code ...
+
+.whatsapp-options {
+  position: absolute;
+  bottom: 70px; /* Appear above the button */
+  right: 0;
+  z-index: 1200;
+  animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: bottom right;
+
+  @media (min-width: 992px) {
+    bottom: 0;
+    right: 70px; /* Appear to the left of the button on desktop */
+    transform-origin: bottom right;
+  }
+}
+
+.wa-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  min-width: 240px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.wa-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+
+  &:hover {
+    background-color: #f0fdf4; // Green-50
+    transform: translateX(2px);
+  }
+}
+
+.wa-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background-color: #dcfce7; // Green-100
+  color: #16a34a; // Green-600
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  .wa-item:hover & {
+    background-color: #16a34a;
+    color: white;
+  }
+}
+
+.wa-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.3;
+}
+
+.wa-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827; // Gray-900
+}
+
+.wa-number {
+  font-size: 0.8rem;
+  color: #6b7280; // Gray-500
+  font-weight: 500;
+}
+
+.wa-divider {
+  height: 1px;
+  background-color: #f3f4f6; // Gray-100
+  margin: 4px 8px;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 @media (max-width: 480px) {
   .whatsapp-wrapper {

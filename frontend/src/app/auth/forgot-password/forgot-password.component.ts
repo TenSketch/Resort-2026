@@ -117,7 +117,8 @@ export class ForgotPasswordComponent {
   showSnackBarAlert(msg = '') {
     this.snackBar.open(msg, 'Close', {
       duration: 5000,
-      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
   }
 }

@@ -890,7 +890,9 @@ export class BookingSummaryComponent {
 
   showSnackBarAlert(msg = '') {
     var snackBar = this.snackBar.open(msg, 'Close', {
-      duration: 3000,
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
   }
 

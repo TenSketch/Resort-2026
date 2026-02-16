@@ -26,8 +26,34 @@ export class TouristPlacesComponent implements OnInit, AfterViewInit {
       price: null,
       cta: 'Explore Now',
       action: 'explore'
+    },
+    {
+      id: 2,
+      image: 'assets/img/TOURIST-PLACES/Jalatarangini-Waterfalls.jpg',
+      title: 'Jalatarangini Waterfall',
+      location: 'A picturesque cascade amidst lush forest and rocky terrain.',
+      subtitle: null,
+      tagline: 'Seasonal Wonder',
+      startText: null,
+      price: null,
+      cta: 'View Details',
+      action: 'jalatarangini'
+    },
+    {
+      id: 3,
+      image: 'assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg',
+      title: 'Karthikavanam',
+      location: 'A scenic wildlife viewing area developed by the Forest Department.',
+      subtitle: null,
+      tagline: 'Picnic Spot',
+      startText: null,
+      price: null,
+      cta: 'Plan Visit',
+      action: 'karthikavanam'
     }
   ];
+
+  currentSlideIndex: number = 0;
 
   // Store current main image for each section
   currentImages: { [key: string]: string } = {
@@ -57,6 +83,10 @@ export class TouristPlacesComponent implements OnInit, AfterViewInit {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    } else if (action === 'jalatarangini') {
+      this.scrollToSection('jalatarangini-waterfall');
+    } else if (action === 'karthikavanam') {
+      this.scrollToSection('karthikavanam-picnic-spot');
     }
   }
 
@@ -79,6 +109,14 @@ export class TouristPlacesComponent implements OnInit, AfterViewInit {
         }, 100);
       }
     });
+
+    // Listen to carousel slide event to update counter
+    const carouselElement = document.getElementById('carouselExampleFade');
+    if (carouselElement) {
+      carouselElement.addEventListener('slid.bs.carousel', (event: any) => {
+        this.currentSlideIndex = event.to;
+      });
+    }
   }
 
   private scrollToSection(sectionId: string): void {

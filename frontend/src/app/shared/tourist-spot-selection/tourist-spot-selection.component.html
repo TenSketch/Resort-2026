@@ -1,92 +1,138 @@
-<div class="container tourist-spot-section">
-  <div class="tourist-spot">
-    <!-- Entry fee badge shown on top-right if fee exists -->
-    <!-- Ticket-style pricing badge removed per request -->
-    <div class="row">
-      <!-- Left Column: Images -->
-      <div class="col-md-6">
-        <!-- Header moved here to be shown on the top-left above images -->
-        <header class="header header-left">
-          <h3 class="title">
-            {{ name }}<span class="sep">,</span>
-            <!-- <span class="loc">{{ location }}</span> -->
-          </h3>
-          <div class="sub" *ngIf="type">{{ type }}</div>
-        </header>
+<div class="tourist-spot-section">
+  <div class="tourist-card">
+    <!-- Left: Media Section -->
+    <div class="tourist-card__media">
+      <div
+        class="gallery-wrapper"
+        (click)="images.length ? openLightbox(currentImageIndex) : null"
+      >
+        <img
+          [src]="images[currentImageIndex]"
+          [alt]="name"
+          *ngIf="images.length; else placeholder"
+        />
+        <ng-template #placeholder>
+          <img src="assets/images/placeholder-trek.jpg" alt="No Image" />
+        </ng-template>
+      </div>
 
-        <div class="containerg" *ngIf="images?.length">
-          <div class="card-containerg" #cardContainer>
-            <div class="card py-0" *ngFor="let img of images; let i = index">
-              <img class="img-responsive" [src]="img" [alt]="name" (click)="openLightbox(i)" />
-            </div>
-          </div>
+      <!-- Difficulty Badge -->
+      <div
+        class="difficulty-badge"
+        [ngClass]="difficulty?.toLowerCase() || 'medium'"
+        *ngIf="difficulty"
+      >
+        {{ difficulty }} Trek
+      </div>
 
-          <div class="scroll-icon left" (click)="scrollLeft()">
-            <i class="fas fa-chevron-left"></i>
-          </div>
-          <div class="scroll-icon right" (click)="scrollRight()">
-            <i class="fas fa-chevron-right"></i>
-          </div>
+      <!-- Navigation -->
+      <div
+        class="nav-btn prev"
+        *ngIf="images.length > 1"
+        (click)="$event.stopPropagation(); scrollLeft()"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      <div
+        class="nav-btn next"
+        *ngIf="images.length > 1"
+        (click)="$event.stopPropagation(); scrollRight()"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+
+    <!-- Right: Content Section -->
+    <div class="tourist-card__content">
+      <!-- Header -->
+      <header class="header">
+        <h3 class="title">{{ name }}</h3>
+        <div class="location">
+          <i class="fas fa-map-marker-alt"></i> {{ location }}
+        </div>
+      </header>
+
+      <!-- Stats Grid -->
+      <div class="stats">
+        <div class="stat" *ngIf="distance">
+          <span class="label">Distance</span>
+          <span class="value"
+            ><i class="fas fa-route"></i> {{ distance }} km</span
+          >
+        </div>
+        <div class="stat" *ngIf="elevationGain">
+          <span class="label">Elevation</span>
+          <span class="value"
+            ><i class="fas fa-mountain"></i> {{ elevationGain }} m</span
+          >
+        </div>
+        <div class="stat" *ngIf="timings">
+          <span class="label">Duration</span>
+          <span class="value"><i class="fas fa-clock"></i> {{ timings }}</span>
         </div>
       </div>
 
-      <!-- Right Column: Details & Pricing (header relocated to left column) -->
-      <div class="col-md-6">
-        <!-- Info & Pricing Section -->
-        <div class="info-pricing-section">
-          <!-- Difficulty, Distance, Elevation -->
-          <!-- Only show fee badges (Entry, Parking, Camera) -->
-          <div class="spot-details d-flex flex-wrap gap-3 mb-3" *ngIf="
-              unitEntry !== undefined ||
-              unitCamera !== undefined
-            ">
-            <span class="badge fee-badge" *ngIf="unitEntry !== undefined">
-              <strong>Trek Fee:</strong> {{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}
-            </span>
-            <span class="badge fee-badge" *ngIf="unitEntry === undefined && entryFee">
-              <strong>Trek Fee:</strong> {{ entryFee }}
-            </span>
+      <!-- Features / Tags -->
+      <div class="features">
+        <span class="tag" *ngIf="type">{{ type }}</span>
+        <!-- Dynamic features if available in future -->
+      </div>
 
-            <span class="badge fee-badge" *ngIf="unitCamera !== undefined">
-              <strong>Camera:</strong> {{ unitCamera | currency: 'INR ':'symbol':'1.0-0' }}
-            </span>
-            <span class="badge fee-badge" *ngIf="unitCamera === undefined && cameraFee">
-              <strong>Camera:</strong> {{ cameraFee }}
-            </span>
+      <!-- Footer: Pricing & Actions -->
+      <div class="footer">
+        <div class="price-block">
+          <span class="label">Starting from</span>
+          <div class="price">
+            <span *ngIf="unitEntry !== undefined">{{
+              unitEntry | currency: "INR" : "symbol" : "1.0-0"
+            }}</span>
+            <span *ngIf="unitEntry === undefined && entryFee">{{
+              entryFee
+            }}</span>
+            <small>/ person</small>
           </div>
+        </div>
 
-          <!-- Map Section -->
-          <div class="map-section w-100 mb-3" style="clear: both;" *ngIf="safeMapUrl">
-            <div class="compact-map-card shadow-sm" style="min-height: 250px; ">
-              <iframe [src]="safeMapUrl" width="100%" height="250" style="border: 0;" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-          </div>
+        <div class="actions">
+          <ng-container *ngIf="openInNewTab; else inlineLink">
+            <a
+              [href]="detailsHref"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-icon"
+              title="View Details"
+            >
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </ng-container>
+          <ng-template #inlineLink>
+            <a
+              [routerLink]="detailsLink"
+              [fragment]="detailsFragment"
+              class="btn-icon"
+              title="View Details"
+            >
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </ng-template>
 
-          <!-- Actions (bottom-right) -->
-          <div class="actions actions-bottom-right mt-3 d-flex justify-content-end align-items-center">
-            <ng-container *ngIf="openInNewTab; else inlineLink">
-              <a class="btn btn-lg btn-outline-secondary  mt-4 rounded-pill px-4" [href]="detailsHref" target="_blank"
-                rel="noopener noreferrer">View
-                details</a>
-            </ng-container>
-            <ng-template #inlineLink>
-              <a class="btn btn-lg btn-outline-secondary  mt-4 rounded-pill px-4" [routerLink]="detailsLink"
-                [fragment]="detailsFragment">View
-                details</a>
-            </ng-template>
-
-            <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" [disabled]="isSoldOut || !isSearchPerformed"
-              [title]="
-            !isSearchPerformed
-              ? 'Select a visit date to enable booking'
-              : isSoldOut
-              ? 'Sold Out'
-              : 'Add this spot to your booking'
-          " (click)="onAddToBooking()">
-              {{ isSoldOut ? "Sold Out" : "Add spot" }}
-            </button>
-          </div>
+          <button
+            class="btn-add"
+            (click)="onAddToBooking()"
+            [disabled]="isSoldOut || !isSearchPerformed"
+            [title]="
+              !isSearchPerformed
+                ? 'Select a visit date first'
+                : isSoldOut
+                  ? 'Sold Out'
+                  : 'Add to Booking'
+            "
+          >
+            <i class="fas fa-plus"></i>
+            {{ isSoldOut ? "Sold Out" : "Add Spot" }}
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>

@@ -1,6 +1,38 @@
-.page-banner {
-    background-image: url('/assets/img/home-gallery/vanavihari-home-gallery-8.jpg');
+
+
+.nav-pills {
+  .nav-link {
+    color: #495057;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+    text-align: left;
+    margin-bottom: 0.25rem;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #e9ecef;
+      color: #212529;
+    }
+
+    &.active {
+      background-color: #198754; // Bootstrap success color, or use brand color
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  }
 }
-.fas{
-    margin-right: 5px;
+
+.text-forest {
+  color: #198754; // Matches the active state
+}
+
+.tab-content {
+  border: 1px solid rgba(0,0,0,0.05);
+  min-height: 400px; /* Ensure some height if content is short */
+}
+
+/* Enhancements for tables and lists */
+.table th {
+  font-weight: 600;
 }

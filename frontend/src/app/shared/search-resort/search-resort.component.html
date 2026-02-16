@@ -1,8 +1,10 @@
 <section class="search-rooms-container">
   <div class="search-widget card-glass">
     <!-- Widget Title -->
-   
-     <h3 class="step-title text-center mb-4 text-uppercase fw-bold">Choose your experience</h3>
+
+    <h3 class="step-title text-center mb-4 text-uppercase fw-bold">
+      Choose your experience
+    </h3>
 
     <!-- Progress Indicator -->
     <div class="progress-container">
@@ -34,7 +36,6 @@
     <div class="widget-content">
       <!-- Step 1: Experience -->
       <div class="step-view" *ngIf="currentStep === 1">
-       
         <div class="options-grid">
           <div class="option-card" (click)="selectType('resort')">
             <div class="icon-box resort-bg">
@@ -133,7 +134,7 @@
 
           <div class="date-input-group" (click)="picker1.open()">
             <label>Check-out</label>
-            <div class="input-display">
+            <div class="input-display" [class.error-border]="showCheckoutError">
               <i class="fa-regular fa-calendar"></i>
               <input
                 matInput
@@ -144,6 +145,9 @@
                 placeholder="Add Date"
               />
               <mat-datepicker #picker1></mat-datepicker>
+            </div>
+            <div *ngIf="showCheckoutError" class="error-text">
+              Please select a checkout date
             </div>
           </div>
         </div>

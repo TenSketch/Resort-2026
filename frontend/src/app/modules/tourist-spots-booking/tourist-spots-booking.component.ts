@@ -10,6 +10,7 @@ export interface BookedTouristSpot {
   id: string;
   name: string;
   location: string;
+  visitDate?: Date;
   type?: string;
   difficulty?: 'Soft' | 'Medium' | 'Hard';
   counts: {
@@ -125,10 +126,18 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     this.localSpots = TOURIST_SPOT_CATEGORIES.flatMap(c => c.spots);
 
     // Load persisted state if present
+    // Load persisted state if present
     const raw = localStorage.getItem(this.storageKey);
     if (raw) {
       try {
-        this.bookedSpots = JSON.parse(raw) || [];
+        const parsed = JSON.parse(raw);
+        // Handle stored structure (could be array or wrapper object)
+        const spots = Array.isArray(parsed) ? parsed : (parsed.spots || []);
+        
+        this.bookedSpots = spots.map((spot: any) => ({
+            ...spot,
+            visitDate: spot.visitDate ? new Date(spot.visitDate) : undefined
+        }));
       } catch {
         this.bookedSpots = [];
       }
@@ -185,9 +194,16 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     return undefined;
   }
 
+  currentSlideIndex: number = 0;
+
   ngAfterViewInit(): void {
     // ensure autoplay started after view init
-    // ensure autoplay started after view init
+    const carouselElement = document.getElementById('carouselExampleFade');
+    if (carouselElement) {
+      carouselElement.addEventListener('slid.bs.carousel', (event: any) => {
+        this.currentSlideIndex = event.to;
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -203,6 +219,30 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         location: 'Maredumilli, Andhra Pradesh',
         subtitle: null,
         tagline: 'Discover Nature',
+        startText: null,
+        price: null,
+        cta: 'Book Now',
+        action: 'explore'
+      },
+      {
+        id: 2,
+        image: 'assets/img/TOURIST-PLACES/Amruthadhara-Waterfalls.jpg',
+        title: 'Amruthadhara Waterfalls',
+        location: 'Maredumilli, Andhra Pradesh',
+        subtitle: null,
+        tagline: 'Experience Serenity',
+        startText: null,
+        price: null,
+        cta: 'Book Now',
+        action: 'explore'
+      },
+      {
+        id: 3,
+        image: 'assets/img/TOURIST-PLACES/karthikavanam-picnic-spot.jpg',
+        title: 'Karthikavanam',
+        location: 'Maredumilli, Andhra Pradesh',
+        subtitle: null,
+        tagline: 'Perfect Picnic Spot',
         startText: null,
         price: null,
         cta: 'Book Now',
@@ -610,19 +650,26 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    if (!this.visitDate) {
-      alert('Please select a visit date to proceed.');
-      return;
+    // Validate that all spots have a selected date
+    const missingDates = this.bookedSpots.filter(spot => !spot.visitDate);
+    if (missingDates.length > 0) {
+        alert('Please select a visit date for all booked spots.');
+        return;
     }
 
-    // Validate visit date is not past or today
+    // Validate visit date is not past or today for any spot
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const selectedDate = new Date(this.visitDate);
-    selectedDate.setHours(0, 0, 0, 0);
+    
+    const invalidDateSpots = this.bookedSpots.filter(spot => {
+        if (!spot.visitDate) return true;
+        const d = new Date(spot.visitDate);
+        d.setHours(0,0,0,0);
+        return d <= today;
+    });
 
-    if (selectedDate <= today) {
-      alert('Visit date must be tomorrow or later.');
+    if (invalidDateSpots.length > 0) {
+      alert('Visit date must be tomorrow or later for all spots.');
       return;
     }
 
@@ -637,6 +684,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         location: spot.location,
         type: spot.type,
         difficulty: spot.difficulty,
+        visitDate: spot.visitDate, // Pass per-spot date
         counts: {
           adults: spot.counts.adults,
           children: spot.counts.children || 0,
@@ -658,7 +706,6 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         addOns: spot.addOns || []
       })),
       total: grandTotal,
-      visitDate: this.visitDate.toISOString(), // Use local visitDate
       timestamp: new Date().toISOString()
     };
 

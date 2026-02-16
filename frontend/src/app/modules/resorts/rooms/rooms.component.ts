@@ -321,7 +321,14 @@ export class RoomsComponent implements OnInit {
     ];
   }
 
+  // Carousel properties
+  currentSlideIndex = 0;
+  private autoScrollInterval: any;
+
   ngOnInit(): void {
+    // Start auto-scroll
+    this.startAutoScroll();
+
     // this.router.events.pipe(
     //   filter(event => event instanceof NavigationEnd)
     // ).subscribe(() => {
@@ -355,6 +362,37 @@ export class RoomsComponent implements OnInit {
     } else {
       this.showBookingSummary = false;
     }
+  }
+
+  // Custom Carousel Logic
+  startAutoScroll() {
+    this.stopAutoScroll(); // Ensure no duplicate intervals
+    this.autoScrollInterval = setInterval(() => {
+      this.nextSlide();
+    }, 3000); // 3 seconds
+  }
+
+  stopAutoScroll() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+    }
+  }
+
+  nextSlide() {
+    if (this.selectedResortInfo && this.selectedResortInfo.carouselImages) {
+      this.currentSlideIndex = (this.currentSlideIndex + 1) % this.selectedResortInfo.carouselImages.length;
+    }
+  }
+
+  prevSlide() {
+    if (this.selectedResortInfo && this.selectedResortInfo.carouselImages) {
+      this.currentSlideIndex = (this.currentSlideIndex - 1 + this.selectedResortInfo.carouselImages.length) % this.selectedResortInfo.carouselImages.length;
+    }
+  }
+
+  goToSlide(index: number) {
+    this.currentSlideIndex = index;
+    this.startAutoScroll(); // Reset timer
   }
 
   ngAfterViewInit() {
@@ -547,6 +585,7 @@ export class RoomsComponent implements OnInit {
     this.showBookingSummary = !this.showBookingSummary;
   }
   ngOnDestroy(): void {
+    this.stopAutoScroll();
     this.subscription.unsubscribe();
   }
   getSelectedResortInfo(): void {
@@ -645,9 +684,12 @@ export class RoomsComponent implements OnInit {
   // New Properties for Room Availability Overview (REMOVED)
 
 
+  @ViewChild('roomsListing') roomsListing: ElementRef;
+
   fetchRoomList() {
     this.loadingRooms = true;
     this.showLoader = true;
+    this.isRoomDataEmpty = false;
 
     let resortSlug = '';
     if (this.selectedResort == 'Jungle Star, Valamuru') {
@@ -764,6 +806,12 @@ export class RoomsComponent implements OnInit {
                 this.isRoomDataEmpty = true;
               } else {
                 this.isRoomDataEmpty = false;
+                // Auto-scroll to rooms listing if dates are selected
+                if (this.datesSelected && this.roomsListing) {
+                  setTimeout(() => {
+                    this.roomsListing.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                }
               }
             },
             error: (err) => {
@@ -1126,7 +1174,8 @@ export class RoomsComponent implements OnInit {
   showSnackBarAlert(msg = '', redirect = true) {
     var snackBar = this.snackBar.open(msg, 'Close', {
       duration: 5000,
-      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
     if (redirect) {
       snackBar.afterDismissed().subscribe(() => {

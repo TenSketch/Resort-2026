@@ -93,7 +93,7 @@ export class TouristSpotSelectionComponent implements OnChanges {
   items: GalleryItem[] = [];
 
   // Carousel state
-  @ViewChild('cardContainer') cardContainer!: ElementRef;
+  currentImageIndex = 0;
 
   // ... (existing constructor)
   constructor(
@@ -110,8 +110,7 @@ export class TouristSpotSelectionComponent implements OnChanges {
     }
   }
 
-
-
+  // ... (existing methods)
 
   private toNumber(val: unknown): number | undefined {
     if (typeof val === 'number' && !isNaN(val)) return val;
@@ -223,18 +222,14 @@ export class TouristSpotSelectionComponent implements OnChanges {
   }
 
   scrollLeft() {
-    if (this.cardContainer && this.cardContainer.nativeElement) {
-      const container = this.cardContainer.nativeElement as HTMLElement;
-      const offset = Math.round(container.clientWidth * 0.7) || 200;
-      container.scrollTo({ left: container.scrollLeft - offset, behavior: 'smooth' });
+    if (this.images.length > 1) {
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.images.length) % this.images.length;
     }
   }
 
   scrollRight() {
-    if (this.cardContainer && this.cardContainer.nativeElement) {
-      const container = this.cardContainer.nativeElement as HTMLElement;
-      const offset = Math.round(container.clientWidth * 0.7) || 200;
-      container.scrollTo({ left: container.scrollLeft + offset, behavior: 'smooth' });
+    if (this.images.length > 1) {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
     }
   }
 }

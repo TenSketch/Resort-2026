@@ -429,6 +429,8 @@ export class TentCheckoutComponent implements OnInit, OnDestroy {
   showSnackBarAlert(message: string) {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
   }
 

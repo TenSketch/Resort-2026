@@ -95,8 +95,14 @@
               <i class="fa-solid fa-snowflake"></i> AC,
               <i class="fa-solid fa-hot-tub-person"></i> geyser,
               <i class="fa-solid fa-toilet"></i> western toilet.
+              <strong>Amenities: </strong>
+              <i class="fa-solid fa-snowflake"></i> AC,
+              <i class="fa-solid fa-hot-tub-person"></i> geyser,
+              <i class="fa-solid fa-toilet"></i> western toilet.
             </li>
             <li *ngIf="selectedResort == 'Jungle Star, Valamuru'">
+              <strong>Food: </strong><i class="fa-solid fa-utensils"></i> Room
+              rates include three meals per day.
               <strong>Food: </strong><i class="fa-solid fa-utensils"></i> Room
               rates include three meals per day.
             </li>
@@ -123,6 +129,7 @@
     <div class="container mt-3">
       <!-- rooms listing section -->
       <div class="row mt-3">
+        <aside class="col-lg-4 mt-3">
         <aside class="col-lg-4 mt-3">
           <!-- filter icon mobile -->
           <div
@@ -355,6 +362,7 @@
               >
                 <span>
                   Extra guest<br />
+                  Extra guest<br />
                   <!-- show no. of rooms only for which user has chosen extra guests -->
                   <small class="fst-italic"
                     >{{ extraGuestNumber }} room<span *ngIf="roomIds.length > 1"
@@ -576,7 +584,12 @@
                           <i class="fas fa-user-times" aria-hidden="true"></i> 2
                           guests
                         </p>
+                        <p class="text-primary-dark text-end">
+                          <i class="fas fa-user-times" aria-hidden="true"></i> 2
+                          guests
+                        </p>
                       </div>
+                      <div>
                       <div>
                         <h6 class="p-0 m-0">
                           <strong
@@ -588,6 +601,10 @@
                             >INR {{ 1500 }}
                           </strong>
                         </h6>
+                        <p class="text-primary-dark text-end">
+                          <i class="fa fa-user" aria-hidden="true"></i> One
+                          extra guest
+                        </p>
                         <p class="text-primary-dark text-end">
                           <i class="fa fa-user" aria-hidden="true"></i> One
                           extra guest

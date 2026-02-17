@@ -67,7 +67,8 @@ h6 {
   max-width: 100% !important; // Force full width as requested
   padding-inline: 1.5rem; // Default (Mobile/Tablet)
 
-  @media (min-width: 992px) { // Desktop
+  @media (min-width: 992px) {
+    // Desktop
     padding-inline: 2rem;
   }
 }
@@ -100,10 +101,8 @@ h6 {
 }
 
 .breadcrumb-item {
-
   // The separator between breadcrumbs (by default, a forward-slash: "/")
-  +.breadcrumb-item {
-
+  + .breadcrumb-item {
     //   padding-left: var(--#{$prefix}breadcrumb-item-padding-x);
     &::before {
       // float: left; // Suppress inline spacings and underlining of the separator
@@ -138,7 +137,7 @@ h6 {
   background-blend-mode: overlay;
   color: white;
   height: 55vh;
-  
+
   @media (max-width: 991px) {
     height: 40vh;
   }
@@ -155,19 +154,17 @@ h6 {
 .global-page-title {
   color: #fff !important; // Ensure visibility on dark banners
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Enhance readability
-  
+
   // Mobile First (Default)
   font-size: 2rem !important;
   font-weight: 500 !important;
-  
+
   // Desktop
   @media (min-width: 992px) {
     font-size: 3rem !important;
     font-weight: 600 !important;
   }
 }
-
-
 
 .breadcrumb {
   padding: 1rem 1.9rem;
@@ -190,7 +187,6 @@ h6 {
 }
 
 .custom-form-no-stretch {
-
   // background-color: transparent !important;
   @media (min-width: 600px) {
     width: unset !important;
@@ -264,7 +260,10 @@ select {
   background-color: #4d9900;
 }
 
-.custom-dropdown .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+.custom-dropdown
+  .mat-mdc-form-field
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined
+  .mat-mdc-form-field-infix {
   padding: 5px !important;
 }
 
@@ -321,7 +320,6 @@ select {
 
   img {
     border-radius: 5px;
-
   }
 }
 
@@ -334,23 +332,33 @@ mat-hint {
 }
 
 // Modal centering fix - center all modals vertically and horizontally
-.modal {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 1050 !important;
+// Modal centering fix - center all modals vertically and horizontally
+// .modal {
+//   display: flex !important;
+//   align-items: center !important;
+//   justify-content: center !important;
+//   position: fixed !important;
+//   top: 0 !important;
+//   left: 0 !important;
+//   width: 100% !important;
+//   height: 100% !important;
+//   z-index: 1050 !important;
+// }
+
+// High z-index override to ensure modals appear above the sidebar (z-index 12000)
+.modal-backdrop {
+  z-index: 15000 !important;
 }
 
-.modal-dialog {
-  z-index: 1000 !important;
-  margin: 0 auto !important;
-  position: relative !important;
+.modal {
+  z-index: 15050 !important;
 }
+
+// .modal-dialog {
+//   z-index: 1000 !important;
+//   margin: 0 auto !important;
+//   position: relative !important;
+// }
 
 .modal-overlay {
   position: fixed;
@@ -364,9 +372,8 @@ mat-hint {
 
 .btn:disabled {
   background-color: #aaaaaa;
-border: none;
+  border: none;
 }
-
 
 @media only screen and (max-width: 430px) {
   .g-btn-close {
@@ -407,7 +414,6 @@ border: none;
 }
 
 .dropdown-item {
-
   &.active,
   &:active {
     background-color: $clr-primary-lighter !important;
@@ -428,7 +434,6 @@ border: none;
     inset: 0;
     width: 100%;
     height: 100%;
-
   }
 }
 
@@ -455,11 +460,11 @@ border: none;
     width: calc(100% - 260px) !important;
     margin-right: 260px !important;
     left: 0 !important;
-    
+
     // Adjust top position to be below navbar (approx 10vh)
     top: 10vh !important;
     height: 90vh !important;
-    position: fixed !important; 
+    position: fixed !important;
   }
 
   // Large Sidebar (992px - 1199px) - Sidebar width min(40%, 320px)
@@ -469,7 +474,7 @@ border: none;
     width: calc(100% - 320px) !important;
     margin-right: 320px !important;
     left: 0 !important;
-    
+
     top: 10vh !important;
     height: 90vh !important;
     position: fixed !important;
@@ -489,7 +494,9 @@ body.sidebar-collapsed .cdk-global-overlay-wrapper {
   height: 350px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   iframe {
     width: 100%;
@@ -497,4 +504,3 @@ body.sidebar-collapsed .cdk-global-overlay-wrapper {
     object-fit: cover;
   }
 }
-

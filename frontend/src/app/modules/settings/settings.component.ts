@@ -1,17 +1,18 @@
-import { Component, Renderer2 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../auth.service';
 import { environment } from '@/environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   form: FormGroup;
 
   countries: string[] = [
@@ -266,10 +267,32 @@ export class SettingsComponent {
     'Zimbabwe',
   ];
 
+  idCardTypes: string[] = [
+    'Aadhar Card',
+    'PAN Card',
+    'Driving License',
+    'Passport',
+    'Voter ID'
+  ];
+
   showLoader = false;
-  api_url: any
-  isModalVisible = false
-  isDarkMode = false
+  api_url: any;
+  maxDate: Date;
+  isDarkMode = false;
+
+  // ID card format hints for display in UI
+  idCardFormats: { [key: string]: string } = {
+    'Aadhar Card': '12-digit number (e.g. 1234 5678 9012)',
+    'PAN Card': '10-character alphanumeric (e.g. ABCDE1234F)',
+    'Driving License': 'State code + 13 digits (e.g. MH0120210000001)',
+    'Passport': '1 letter + 7 digits (e.g. A1234567)',
+    'Voter ID': '3 letters + 7 digits (e.g. ABC1234567)'
+  };
+
+  get selectedIdCardHint(): string {
+    const type = this.form.get('id_card_type')?.value;
+    return type ? this.idCardFormats[type] || '' : 'Select an ID card type first';
+  }
 
 
 
@@ -279,30 +302,63 @@ export class SettingsComponent {
     private router: Router,
     private userService: UserService,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private snackBar: MatSnackBar
   ) {
-    this.api_url = environment.API_URL
+    this.api_url = environment.API_URL;
+
+    // Calculate max date for 18+ years validation
+    this.maxDate = new Date();
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
 
     this.form = this.formBuilder.group({
-      full_name: [''],
-      mobile_number: [''],
-      email: ['', Validators.email],
+      full_name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]{2,50}$')]],
+      mobile_number: ['', [Validators.required, Validators.pattern('^[6-9][0-9]{9}$')]],
+      email: ['', [Validators.required, Validators.email]],
       dob: ['', Validators.required],
-      nationality: [''],
-      address1: [''],
+      nationality: ['Indian', Validators.required],
+      address1: ['', Validators.required],
       address2: [''],
-      city: [''],
-      state: [''],
-      pincode: [''],
-      country: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern('^[1-9][0-9]{5}$')]],
+      country: ['India', Validators.required],
+      id_card_type: ['', Validators.required],
+      id_card_number: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.showLoader = true;
     this.renderer.setProperty(document.documentElement, 'scrollTop', 0);
-    
-    // Get user profile using the new API endpoint
+    this.fetchUserProfile();
+
+    // Dynamically update id_card_number validators when type changes
+    this.form.get('id_card_type')?.valueChanges.subscribe((type: string) => {
+      const idControl = this.form.get('id_card_number');
+      if (idControl) {
+        idControl.setValidators([Validators.required, this.getIdCardValidator(type)]);
+        idControl.updateValueAndValidity();
+      }
+    });
+  }
+
+  getIdCardValidator(type: string): ValidatorFn {
+    const patterns: { [key: string]: RegExp } = {
+      'Aadhar Card': /^[2-9]{1}[0-9]{11}$/,
+      'PAN Card': /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+      'Driving License': /^[A-Z]{2}[0-9]{13}$/,
+      'Passport': /^[A-Z]{1}[0-9]{7}$/,
+      'Voter ID': /^[A-Z]{3}[0-9]{7}$/
+    };
+    const pattern = patterns[type];
+    return (control) => {
+      if (!control.value || !pattern) return null;
+      return pattern.test(control.value.toUpperCase()) ? null : { invalidIdFormat: true };
+    };
+  }
+
+  fetchUserProfile() {
     const headers = {
       'token': this.authService.getAccessToken() ?? ''
     };
@@ -311,36 +367,40 @@ export class SettingsComponent {
       .get<any>(`${this.api_url}/api/user/profile`, { headers })
       .subscribe({
         next: (response) => {
+          this.showLoader = false;
           if (response.code == 3000 && response.result.status == 'success') {
-            this.showLoader = false;
             const result = response.result;
             
-            this.form = this.formBuilder.group({
-              full_name: [result.name],
-              mobile_number: [result.phone],
-              email: [result.email, Validators.email],
-              dob: [result.dob ? new Date(result.dob) : '', Validators.required],
-              nationality: [result.nationality || ''],
-              address1: [result.address1 || ''],
-              address2: [result.address2 || ''],
-              city: [result.city || ''],
-              state: [result.state || ''],
-              pincode: [result.pincode || ''],
-              country: [result.country || ''],
+            this.form.patchValue({
+              full_name: result.name,
+              mobile_number: result.phone,
+              email: result.email,
+              dob: result.dob ? new Date(result.dob) : '',
+              nationality: result.nationality || 'Indian',
+              address1: result.address1 || '',
+              address2: result.address2 || '',
+              city: result.city || '',
+              state: result.state || '',
+              pincode: result.pincode || '',
+              country: result.country || 'India',
+              id_card_type: result.id_card_type || '',
+              id_card_number: result.id_card_number || ''
             });
           } else {
-            this.showLoader = false;
-            this.userService.clearUser();
-            this.router.navigate(['/sign-in']);
+            this.handleAuthError();
           }
         },
         error: (err) => {
           this.showLoader = false;
           console.error('Profile fetch error:', err);
-          this.userService.clearUser();
-          this.router.navigate(['/sign-in']);
+          this.handleAuthError();
         },
       });
+  }
+
+  handleAuthError() {
+    this.userService.clearUser();
+    this.router.navigate(['/sign-in']);
   }
 
   get isNationalityDisabled(): boolean {
@@ -362,71 +422,139 @@ export class SettingsComponent {
   }
   
 
-  onSubmit() {
-    this.showLoader = true
+  fetchAddressByPincode() {
+    const pincode = this.form.get('pincode')?.value;
+    if (pincode && pincode.length === 6) {
+      this.showLoader = true;
+      this.http.get<any>(`https://api.postalpincode.in/pincode/${pincode}`).subscribe({
+        next: (response) => {
+          this.showLoader = false;
+          if (response && response[0] && response[0].Status === 'Success') {
+            const details = response[0].PostOffice[0];
+            this.form.patchValue({
+              city: details.District,
+              state: details.State,
+              country: 'India'
+            });
+            this.showSnackBar('Address details fetched successfully!', 'success-snackbar');
+          } else {
+            this.showSnackBar('Invalid Pincode or data not found.', 'error-snackbar');
+          }
+        },
+        error: (err) => {
+          this.showLoader = false;
+          console.error('Pincode fetch error:', err);
+          this.showSnackBar('Failed to fetch address details.', 'error-snackbar');
+        }
+      });
+    }
+  }
+
+onSubmit() {
     if (this.form.valid) {
+      this.showLoader = true;
       const headers = {
         'token': this.authService.getAccessToken() ?? '',
         'Content-Type': 'application/json'
       };
 
       const formData = this.form.value;
-      const updateData: any = {};
-
-      // Only include fields that have values
-      if (formData.full_name) updateData.full_name = formData.full_name;
-      if (formData.mobile_number) updateData.mobile_number = formData.mobile_number;
-      if (formData.dob) updateData.dob = formData.dob;
-      if (formData.nationality) updateData.nationality = formData.nationality;
-      if (formData.address1) updateData.address1 = formData.address1;
-      if (formData.address2 !== undefined) updateData.address2 = formData.address2; // Allow empty string
-      if (formData.city) updateData.city = formData.city;
-      if (formData.state) updateData.state = formData.state;
-      if (formData.pincode) updateData.pincode = formData.pincode;
-      if (formData.country) updateData.country = formData.country;
+      const updateData: any = { ...formData };
 
       this.http
         .put<any>(`${this.api_url}/api/user/profile`, updateData, { headers })
         .subscribe({
           next: (response) => {
-            this.showLoader = false
+            this.showLoader = false;
             if (response.code == 3000 && response.result.status == 'success') {
-              this.isModalVisible = true
+              this.showSnackBar('Profile updated successfully!', 'success-snackbar');
             } else {
-              this.showErrorAlert(response.result.msg || 'Update failed');
+              this.showSnackBar(response.result.msg || 'Update failed', 'error-snackbar');
             }
           },
           error: (err) => {
             this.showLoader = false;
             console.error('Profile update error:', err);
-            if (err.error && err.error.result && err.error.result.msg) {
-              this.showErrorAlert(err.error.result.msg);
-            } else {
-              this.showErrorAlert('Profile update failed. Please try again.');
-            }
+            const msg = err.error?.result?.msg || 'Profile update failed. Please try again.';
+            this.showSnackBar(msg, 'error-snackbar');
           },
         });
     } else {
-      this.showLoader = false;
-      this.showErrorAlert('Please fill all required fields correctly!');
+      this.form.markAllAsTouched();
+      this.showValidationErrors();
     }
   }
 
-  closeModal(){
-    this.isModalVisible = false
-    this.router.navigate(['/home']);
+  showValidationErrors() {
+    for (const key in this.form.controls) {
+      if (this.form.controls.hasOwnProperty(key)) {
+        const control = this.form.controls[key];
+        if (control.invalid) {
+          const fieldName = this.getFieldName(key);
+          if (control.errors?.['required']) {
+            this.showSnackBar(`${fieldName} is required`, 'error-snackbar');
+            return;
+          }
+          if (control.errors?.['pattern']) {
+            const patternMessages: { [k: string]: string } = {
+              full_name: 'Full Name should contain only letters and spaces (2-50 chars)',
+              mobile_number: 'Enter a valid 10-digit Indian Mobile Number (starts with 6-9)',
+              pincode: 'Enter a valid 6-digit Pincode (should not start with 0)'
+            };
+            this.showSnackBar(patternMessages[key] || `Invalid format for ${fieldName}`, 'error-snackbar');
+            return;
+          }
+          if (control.errors?.['email']) {
+            this.showSnackBar('Please enter a valid Email Address', 'error-snackbar');
+            return;
+          }
+          if (control.errors?.['matDatepickerParse'] || control.errors?.['matDatepickerFilter']) {
+            this.showSnackBar('Invalid Date of Birth', 'error-snackbar');
+            return;
+          }
+          if (control.errors?.['invalidIdFormat']) {
+            const cardType = this.form.get('id_card_type')?.value || 'ID';
+            const hint = this.idCardFormats[cardType] || '';
+            this.showSnackBar(`Invalid ${cardType} format. Expected: ${hint}`, 'error-snackbar');
+            return;
+          }
+        }
+      }
+    }
+    this.showSnackBar('Please fill all required fields correctly!', 'error-snackbar');
+  }
+
+  getFieldName(key: string): string {
+    const names: { [key: string]: string } = {
+      full_name: 'Full Name',
+      mobile_number: 'Mobile Number',
+      email: 'Email',
+      dob: 'Date of Birth',
+      nationality: 'Nationality',
+      address1: 'Address Line 1',
+      address2: 'Address Line 2',
+      city: 'City',
+      state: 'State',
+      pincode: 'Pincode',
+      country: 'Country',
+      id_card_type: 'ID Card Type',
+      id_card_number: 'ID Card Number'
+    };
+    return names[key] || key;
+  }
+
+  showSnackBar(message: string, panelClass: string = 'info-snackbar') {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      panelClass: [panelClass]
+    });
   }
 
   onCancel() {
-    this.isModalVisible = false
+    this.router.navigate(['/home']);
   }
-
-  showErrorAlert(message: string) {
-    // You can implement a snackbar or alert here
-    alert(message);
-  }
-
-
 
   goToSignin() {
     this.router.navigate(['/sign-in']);

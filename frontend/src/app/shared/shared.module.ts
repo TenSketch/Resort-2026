@@ -25,6 +25,8 @@ import {MatButtonModule} from '@angular/material/button';
 import { GalleryModule } from 'ng-gallery';
 import { LightboxModule } from 'ng-gallery/lightbox';
 
+import { SafePipe } from './pipes/safe.pipe';
+
 @NgModule({
   declarations: [
     ConfirmationModalComponent,
@@ -35,6 +37,7 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     SearchTentComponent,
     SearchTouristSpotComponent,
     TouristSpotSelectionComponent,
+    SafePipe
   ],
   imports: [
     CommonModule,
@@ -51,6 +54,6 @@ import { LightboxModule } from 'ng-gallery/lightbox';
     GalleryModule,
     LightboxModule
   ],
-  exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule],
+  exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule, SafePipe],
 })
 export class SharedModule {}

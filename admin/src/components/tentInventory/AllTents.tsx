@@ -42,6 +42,7 @@ interface Tent {
 
 export default function AllTentsTable() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions()
   const permsRef = useRef(perms)
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
@@ -120,9 +121,12 @@ export default function AllTentsTable() {
       "Status"
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: Tent[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : tents;
+
     const csvContent = [
       headers.join(","),
-      ...tents.map((tent) => {
+      ...dataToExport.map((tent) => {
         return [
           tent.sno,
           `"${tent.tentSpotName}"`,
@@ -520,6 +524,7 @@ export default function AllTentsTable() {
           <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
         )}
         <DataTable
+          ref={dtRef}
           data={tents}
           columns={columns}
           className="display nowrap w-full border border-gray-400"

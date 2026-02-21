@@ -59,6 +59,7 @@ interface TentBooking {
 
 export default function AllTentBookings() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions();
   const permsRef = useRef(perms);
   const [bookings, setBookings] = useState<TentBooking[]>([]);
@@ -357,9 +358,12 @@ export default function AllTentBookings() {
       "Transaction ID",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: TentBooking[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : bookingsRef.current;
+
     const csv = [
       headers.join(","),
-      ...bookingsRef.current.map((r, i) =>
+      ...dataToExport.map((r, i) =>
         [
           i + 1,
           `"${r.bookingId}"`,
@@ -547,6 +551,7 @@ export default function AllTentBookings() {
 
       <div ref={tableRef} className="tent-bookings-table-container w-full">
         <DataTable
+          ref={dtRef}
           data={bookings}
           columns={columns}
           className="display nowrap w-full border border-gray-400"

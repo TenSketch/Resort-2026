@@ -97,6 +97,7 @@ interface Reservation {
 
 export default function ReservationTable() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const apiUrl =
     (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
   const perms = usePermissions();
@@ -400,9 +401,12 @@ export default function ReservationTable() {
       "Date of refund",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: Reservation[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : reservationsRef.current;
+
     const csvContent = [
       headers.join(","),
-      ...reservationsRef.current.map((row, idx) => {
+      ...dataToExport.map((row, idx) => {
         const address = [
           row.address1,
           row.address2,
@@ -1178,6 +1182,7 @@ export default function ReservationTable() {
 
         <div ref={tableRef} className="w-full">
           <DataTable
+            ref={dtRef}
             data={reservations}
             columns={columns}
             className="display nowrap w-full border border-gray-400"

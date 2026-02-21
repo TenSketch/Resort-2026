@@ -45,15 +45,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 DataTable.use(DT);
-
-/**
- * DATE HANDLING NOTES:
- * - Backend stores dates as ISO timestamps (e.g., 2025-11-10T00:00:00.000Z)
- * - We display dates as MM/DD/YYYY in the table (matches frontend date picker)
- * - We export dates as DD-MMM-YY (e.g., 10-Nov-25) for Excel
- * - Always use UTC methods to avoid timezone issues
- * - Date inputs in edit mode use HTML5 date input (YYYY-MM-DD format internally)
- */
+(DT.ext.pager as any).numbers_length = 3;
 
 interface Reservation {
   id: string;
@@ -225,13 +217,13 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                1,
-                Math.round(
-                  (new Date(server.checkOut).getTime() -
-                    new Date(server.checkIn).getTime()) /
-                  (1000 * 60 * 60 * 24),
-                ),
-              )
+                  1,
+                  Math.round(
+                    (new Date(server.checkOut).getTime() -
+                      new Date(server.checkIn).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                )
               : updatedLocal.noOfDays,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -994,8 +986,9 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${perms.canEdit
-            ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1018,8 +1011,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-            : ""
-          }
+                : ""
+            }
           </div>
         `;
       },
@@ -1054,14 +1047,14 @@ export default function ReservationTable() {
           }
 
           .reservations-table-container .dt-layout-cell.dt-start {
-            flex: 0 0 auto !important;
+            flex: 0 1 auto !important;
             width: auto !important;
             justify-content: flex-start !important;
             order: 1 !important;
           }
 
           .reservations-table-container .dt-layout-cell.dt-end {
-            flex: 0 0 auto !important;
+            flex: 1 1 auto !important;
             width: auto !important;
             justify-content: flex-end !important;
             margin-left: auto !important;
@@ -1131,7 +1124,8 @@ export default function ReservationTable() {
             flex: 0 0 auto !important;
             margin: 0 !important;
             display: inline-flex !important;
-            justify-content: flex-end !important;
+            justify-content: center !important;
+            width: 100% !important;
             align-items: center !important;
             flex-wrap: nowrap !important;
           }
@@ -1153,121 +1147,122 @@ export default function ReservationTable() {
         }
       `}</style>
       <div className="w-full max-w-full overflow-hidden reservations-table-container">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
-        <button
-          onClick={() => (perms.canExport ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canExport}
-          title={
-            perms.canExport
-              ? "Export to Excel"
-              : "You do not have permission to export data"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
+          <button
+            onClick={() => (perms.canExport ? exportToExcel() : null)}
+            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+            disabled={!perms.canExport}
+            title={
+              perms.canExport
+                ? "Export to Excel"
+                : "You do not have permission to export data"
+            }
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
-      </div>
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Export to Excel
+          </button>
+        </div>
 
-      <div ref={tableRef} className="w-full">
-        <DataTable
-          data={reservations}
-          columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollCollapse: true,
-            scrollY: "400px",
-            layout: {
-              topStart: "buttons",
-              bottom1Start: "pageLength",
-            },
-            buttons: [
-              {
-                extend: "colvis",
-                text: "Column Visibility",
-                collectionLayout: "fixed two-column",
+        <div ref={tableRef} className="w-full">
+          <DataTable
+            data={reservations}
+            columns={columns}
+            className="display nowrap w-full border border-gray-400"
+            options={{
+              pageLength: 10,
+              lengthMenu: [5, 10, 25, 50, 100],
+              order: [[0, "asc"]],
+              searching: true,
+              paging: true,
+              info: true,
+              scrollX: true,
+              scrollCollapse: true,
+              scrollY: "400px",
+              layout: {
+                topStart: "buttons",
+                bottomStart: "pageLength",
+                bottomEnd: "paging",
               },
-            ],
-            columnControl: [
-              "order",
-              ["orderAsc", "orderDesc", "spacer", "search"],
-            ],
-          }}
-        />
-      </div>
+              buttons: [
+                {
+                  extend: "colvis",
+                  text: "Column Visibility",
+                  collectionLayout: "fixed two-column",
+                },
+              ],
+              columnControl: [
+                "order",
+                ["orderAsc", "orderDesc", "spacer", "search"],
+              ],
+            }}
+          />
+        </div>
 
-      {/* Removed edit & confirmation dialogs */}
+        {/* Removed edit & confirmation dialogs */}
 
-      {/* Confirm Disable Dialog */}
-      <Dialog
-        open={isConfirmDisableOpen}
-        onOpenChange={setIsConfirmDisableOpen}
-      >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Disable</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to disable this reservation record?
-            </DialogDescription>
-          </DialogHeader>
-          {disablingReservation && (
-            <div className="py-4 space-y-2 text-sm text-gray-700">
-              <p>
-                <strong>Reservation ID:</strong> {disablingReservation.id}
-              </p>
-              <p>
-                <strong>Booking ID:</strong> {disablingReservation.bookingId}
-              </p>
-              <p>
-                <strong>Name:</strong> {disablingReservation.fullName}
-              </p>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelDisable}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDisable}>
-              Yes, Disable
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* Confirm Disable Dialog */}
+        <Dialog
+          open={isConfirmDisableOpen}
+          onOpenChange={setIsConfirmDisableOpen}
+        >
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Confirm Disable</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to disable this reservation record?
+              </DialogDescription>
+            </DialogHeader>
+            {disablingReservation && (
+              <div className="py-4 space-y-2 text-sm text-gray-700">
+                <p>
+                  <strong>Reservation ID:</strong> {disablingReservation.id}
+                </p>
+                <p>
+                  <strong>Booking ID:</strong> {disablingReservation.bookingId}
+                </p>
+                <p>
+                  <strong>Name:</strong> {disablingReservation.fullName}
+                </p>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={cancelDisable}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDisable}>
+                Yes, Disable
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* Reservation Details Sheet */}
-      <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-[500px] sm:w-[800px] lg:w-[900px] xl:w-[1000px] flex flex-col p-0">
-          <SheetHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b">
-            <SheetTitle className="text-xl">Reservation Details</SheetTitle>
-            <SheetDescription>
-              Complete information about the selected reservation
-            </SheetDescription>
-          </SheetHeader>
+        {/* Reservation Details Sheet */}
+        <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
+          <SheetContent className="w-full max-w-none sm:max-w-full sm:w-[800px] lg:w-[900px] xl:w-[1000px] flex flex-col p-0">
+            <SheetHeader className="flex-shrink-0 px-6 pt-6 pb-4 border-b">
+              <SheetTitle className="text-xl">Reservation Details</SheetTitle>
+              <SheetDescription>
+                Complete information about the selected reservation
+              </SheetDescription>
+            </SheetHeader>
 
-          {selectedReservation && (
-            <>
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            {selectedReservation && (
+              <>
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                   {/* Guest Information */}
                   <div className="border-b pb-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -1468,9 +1463,15 @@ export default function ReservationTable() {
                               <SelectItem value="India">India</SelectItem>
                               <SelectItem value="USA">USA</SelectItem>
                               <SelectItem value="UK">UK</SelectItem>
-                              <SelectItem value="United States">United States</SelectItem>
-                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                              <SelectItem value="Australia">Australia</SelectItem>
+                              <SelectItem value="United States">
+                                United States
+                              </SelectItem>
+                              <SelectItem value="United Kingdom">
+                                United Kingdom
+                              </SelectItem>
+                              <SelectItem value="Australia">
+                                Australia
+                              </SelectItem>
                               <SelectItem value="Canada">Canada</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1512,7 +1513,10 @@ export default function ReservationTable() {
                             type="date"
                             value={editForm?.reservationDate || ""}
                             onChange={(e) =>
-                              handleEditChange("reservationDate", e.target.value)
+                              handleEditChange(
+                                "reservationDate",
+                                e.target.value,
+                              )
                             }
                           />
                         ) : (
@@ -1845,11 +1849,17 @@ export default function ReservationTable() {
                               <SelectValue placeholder="Select preference" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Vegetarian">Vegetarian</SelectItem>
-                              <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
+                              <SelectItem value="Vegetarian">
+                                Vegetarian
+                              </SelectItem>
+                              <SelectItem value="Non-Vegetarian">
+                                Non-Vegetarian
+                              </SelectItem>
                               <SelectItem value="Vegan">Vegan</SelectItem>
                               <SelectItem value="Jain">Jain</SelectItem>
-                              <SelectItem value="No Preference">No Preference</SelectItem>
+                              <SelectItem value="No Preference">
+                                No Preference
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
@@ -1898,8 +1908,12 @@ export default function ReservationTable() {
                             <SelectContent>
                               <SelectItem value="reserved">Reserved</SelectItem>
                               <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="not-reserved">Not Reserved</SelectItem>
-                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                              <SelectItem value="not-reserved">
+                                Not Reserved
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                Cancelled
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
@@ -1979,7 +1993,9 @@ export default function ReservationTable() {
                         </Label>
                         {sheetMode === "edit" ? (
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                              ₹
+                            </span>
                             <Input
                               className="w-full pl-8"
                               type="number"
@@ -1995,7 +2011,8 @@ export default function ReservationTable() {
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm font-semibold text-gray-900">
-                              ₹{selectedReservation.totalPayable.toLocaleString()}
+                              ₹
+                              {selectedReservation.totalPayable.toLocaleString()}
                             </span>
                           </div>
                         )}
@@ -2021,14 +2038,18 @@ export default function ReservationTable() {
                             className="w-full"
                             value={editForm?.paymentTransactionId || ""}
                             onChange={(e) =>
-                              handleEditChange("paymentTransactionId", e.target.value)
+                              handleEditChange(
+                                "paymentTransactionId",
+                                e.target.value,
+                              )
                             }
                             placeholder="Enter transaction ID"
                           />
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900 font-mono">
-                              {selectedReservation.paymentTransactionId || "N/A"}
+                              {selectedReservation.paymentTransactionId ||
+                                "N/A"}
                             </span>
                           </div>
                         )}
@@ -2044,13 +2065,18 @@ export default function ReservationTable() {
                             type="date"
                             value={
                               editForm?.paymentTransactionDateTime
-                                ? editForm.paymentTransactionDateTime.slice(0, 10)
+                                ? editForm.paymentTransactionDateTime.slice(
+                                    0,
+                                    10,
+                                  )
                                 : ""
                             }
                             onChange={(e) =>
                               handleEditChange(
                                 "paymentTransactionDateTime",
-                                e.target.value ? new Date(e.target.value).toISOString() : "",
+                                e.target.value
+                                  ? new Date(e.target.value).toISOString()
+                                  : "",
                               )
                             }
                           />
@@ -2059,11 +2085,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
                                 ? formatDateForDisplay(
-                                  selectedReservation.paymentTransactionDateTime.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                    selectedReservation.paymentTransactionDateTime.slice(
+                                      0,
+                                      10,
+                                    ),
+                                  )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2122,7 +2148,10 @@ export default function ReservationTable() {
                             className="w-full"
                             value={editForm?.cancelBookingReason || ""}
                             onChange={(e) =>
-                              handleEditChange("cancelBookingReason", e.target.value)
+                              handleEditChange(
+                                "cancelBookingReason",
+                                e.target.value,
+                              )
                             }
                           />
                         ) : (
@@ -2143,7 +2172,10 @@ export default function ReservationTable() {
                             className="w-full"
                             value={editForm?.cancellationMessage || ""}
                             onChange={(e) =>
-                              handleEditChange("cancellationMessage", e.target.value)
+                              handleEditChange(
+                                "cancellationMessage",
+                                e.target.value,
+                              )
                             }
                           />
                         ) : (
@@ -2171,7 +2203,9 @@ export default function ReservationTable() {
                             onChange={(e) =>
                               handleEditChange(
                                 "refundRequestedDateTime",
-                                e.target.value ? new Date(e.target.value).toISOString() : "",
+                                e.target.value
+                                  ? new Date(e.target.value).toISOString()
+                                  : "",
                               )
                             }
                           />
@@ -2180,11 +2214,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.refundRequestedDateTime
                                 ? formatDateForDisplay(
-                                  selectedReservation.refundRequestedDateTime.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                    selectedReservation.refundRequestedDateTime.slice(
+                                      0,
+                                      10,
+                                    ),
+                                  )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2207,7 +2241,9 @@ export default function ReservationTable() {
                             onChange={(e) =>
                               handleEditChange(
                                 "dateOfRefund",
-                                e.target.value ? new Date(e.target.value).toISOString() : "",
+                                e.target.value
+                                  ? new Date(e.target.value).toISOString()
+                                  : "",
                               )
                             }
                           />
@@ -2216,8 +2252,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.dateOfRefund
                                 ? formatDateForDisplay(
-                                  selectedReservation.dateOfRefund.slice(0, 10),
-                                )
+                                    selectedReservation.dateOfRefund.slice(
+                                      0,
+                                      10,
+                                    ),
+                                  )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2230,7 +2269,9 @@ export default function ReservationTable() {
                         </Label>
                         {sheetMode === "edit" ? (
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                              ₹
+                            </span>
                             <Input
                               className="w-full pl-8"
                               type="number"
@@ -2260,7 +2301,9 @@ export default function ReservationTable() {
                         </Label>
                         {sheetMode === "edit" ? (
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                              ₹
+                            </span>
                             <Input
                               className="w-full pl-8"
                               type="number"
@@ -2285,72 +2328,72 @@ export default function ReservationTable() {
                       </div>
                     </div>
                   </div>
-              </div>
+                </div>
 
-              {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === "view" ? (
-                  <>
-                    <Button
-                      onClick={() => setSheetMode("edit")}
-                      disabled={!perms.canEdit}
-                      title={
-                        !perms.canEdit
-                          ? "You do not have permission to edit"
-                          : undefined
-                      }
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSheetMode("view");
-                        if (selectedReservation) {
-                          setEditForm({ ...selectedReservation });
+                {/* Fixed Action Buttons */}
+                <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
+                  {sheetMode === "view" ? (
+                    <>
+                      <Button
+                        onClick={() => setSheetMode("edit")}
+                        disabled={!perms.canEdit}
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to edit"
+                            : undefined
                         }
-                      }}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={saveChanges}
-                      disabled={isSaving || !perms.canEdit}
-                      className="flex-1"
-                      title={
-                        !perms.canEdit
-                          ? "You do not have permission to update"
-                          : undefined
-                      }
-                    >
-                      {isSaving ? "Saving..." : "Save"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </div>
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSheetMode("view");
+                          if (selectedReservation) {
+                            setEditForm({ ...selectedReservation });
+                          }
+                        }}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={saveChanges}
+                        disabled={isSaving || !perms.canEdit}
+                        className="flex-1"
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to update"
+                            : undefined
+                        }
+                      >
+                        {isSaving ? "Saving..." : "Save"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </>
   );
 }

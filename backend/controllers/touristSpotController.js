@@ -52,12 +52,7 @@ const createTouristSpot = async (req, res) => {
       slug,
       category: v('category'),
       entryFees: v('entryFees') ? Number(v('entryFees')) : undefined,
-      parking2W: v('parking2W') ? Number(v('parking2W')) : undefined,
-      parking4W: v('parking4W') ? Number(v('parking4W')) : undefined,
       cameraFees: v('cameraFees') ? Number(v('cameraFees')) : undefined,
-      description: v('description'),
-      address: v('address'),
-      mapEmbed: v('mapEmbed'),
       images: [],
     })
 
@@ -152,12 +147,7 @@ const updateTouristSpot = async (req, res) => {
       name: v('name'),
       category: v('category'),
       entryFees: v('entryFees') ? Number(v('entryFees')) : undefined,
-      parking2W: v('parking2W') ? Number(v('parking2W')) : undefined,
-      parking4W: v('parking4W') ? Number(v('parking4W')) : undefined,
       cameraFees: v('cameraFees') ? Number(v('cameraFees')) : undefined,
-      description: v('description'),
-      address: v('address'),
-      mapEmbed: v('mapEmbed'),
     }
 
     const slugInput = v('slug')

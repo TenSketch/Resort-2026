@@ -46,24 +46,6 @@
                         spot.breakdown?.entry || 0
                       }}
                     </div>
-                    <div *ngIf="spot.counts?.vehicles > 0">
-                      <strong>Vehicles:</strong> {{ spot.counts.vehicles }} |
-                      ₹{{ spot.breakdown?.parking || 0 }}
-                    </div>
-                    <div *ngIf="spot.counts?.twoWheelers > 0">
-                      <strong>2 Wheelers:</strong>
-                      {{ spot.counts.twoWheelers }} | ₹{{
-                        (spot.unitPrices?.parkingTwoWheeler || 0) *
-                          spot.counts.twoWheelers
-                      }}
-                    </div>
-                    <div *ngIf="spot.counts?.fourWheelers > 0">
-                      <strong>4 Wheelers:</strong>
-                      {{ spot.counts.fourWheelers }} | ₹{{
-                        (spot.unitPrices?.parkingFourWheeler || 0) *
-                          spot.counts.fourWheelers
-                      }}
-                    </div>
                     <div *ngIf="spot.counts?.cameras > 0">
                       <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{
                         spot.breakdown?.camera || 0

@@ -372,7 +372,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
           timings: timings !== 'Morning - Evening' ? timings : undefined,
           inclusions,
           notes,
-          mapurl: s.mapurl || this.getLocalMapUrl(s.name || s.title || '') || undefined // Try backend first, then local fallback
+          mapurl: undefined // Data removed from backend
         };
 
         if (!groups[catKey]) groups[catKey] = [];
@@ -718,10 +718,10 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   private getSpotPrices(spotId: string): { entry: number; parking: number; camera: number } {
     const cfg = this.spotMap[spotId];
     if (!cfg) return { entry: 0, parking: 0, camera: 0 };
-    const { entryPerPerson, parkingPerVehicle, cameraPerCamera } = cfg.fees;
+    const { entryPerPerson, cameraPerCamera } = cfg.fees;
     return {
       entry: entryPerPerson,
-      parking: parkingPerVehicle || 0,
+      parking: 0, // Parking removed
       camera: cameraPerCamera,
     };
   }

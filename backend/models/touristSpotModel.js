@@ -5,12 +5,7 @@ const touristSpotSchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true },
   category: String,
   entryFees: { type: Number, default: 0 },
-  parking2W: { type: Number, default: 0 },
-  parking4W: { type: Number, default: 0 },
   cameraFees: { type: Number, default: 0 },
-  description: String,
-  address: String,
-  mapEmbed: String,
   images: [
     {
       url: String,

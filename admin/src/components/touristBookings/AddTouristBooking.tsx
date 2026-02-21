@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { useToast } from "@/components/ui/ToastProvider";
 
 interface TouristSpot {
   _id: string;
@@ -71,8 +72,8 @@ const AddTouristBooking = () => {
     guests: "1",
     cameras: "0",
     reservationDate: new Date().toISOString().slice(0, 10),
-    status: "reserved",
-    paymentStatus: "paid",
+    status: "pending",
+    paymentStatus: "unpaid",
     bookingId: "",
     existingUser: "",
     fullName: "",
@@ -89,6 +90,7 @@ const AddTouristBooking = () => {
   const [touristSpots, setTouristSpots] = useState<TouristSpot[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState({ spots: false, users: false });
+  const { showToast } = useToast();
   const [pricing, setPricing] = useState({
     entryFees: 0,
     cameraFees: 0,
@@ -154,12 +156,18 @@ const AddTouristBooking = () => {
   // Calculate pricing whenever relevant fields change
   useEffect(() => {
     if (formData.touristSpotIds.length === 0) {
-      setPricing({ entryFees: 0, cameraFees: 0, grandTotal: 0, perGuestRate: 0, perCameraRate: 0 });
+      setPricing({
+        entryFees: 0,
+        cameraFees: 0,
+        grandTotal: 0,
+        perGuestRate: 0,
+        perCameraRate: 0,
+      });
       return;
     }
 
     const selectedSpots = touristSpots.filter((spot) =>
-      formData.touristSpotIds.includes(spot._id)
+      formData.touristSpotIds.includes(spot._id),
     );
 
     const guests = parseInt(formData.guests) || 0;
@@ -173,8 +181,8 @@ const AddTouristBooking = () => {
     selectedSpots.forEach((spot) => {
       totalEntry += guests * (spot.entryFees || 0);
       totalCamera += cameras * (spot.cameraFees || 0);
-      avgGuestRate += (spot.entryFees || 0);
-      avgCameraRate += (spot.cameraFees || 0);
+      avgGuestRate += spot.entryFees || 0;
+      avgCameraRate += spot.cameraFees || 0;
     });
 
     // Calculate average rates across all selected spots
@@ -200,7 +208,7 @@ const AddTouristBooking = () => {
   ]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -242,8 +250,8 @@ const AddTouristBooking = () => {
       guests: "1",
       cameras: "0",
       reservationDate: new Date().toISOString().slice(0, 10),
-      status: "reserved",
-      paymentStatus: "paid",
+      status: "pending",
+      paymentStatus: "unpaid",
       bookingId: "",
       existingUser: "",
       fullName: "",
@@ -256,7 +264,13 @@ const AddTouristBooking = () => {
       postalCode: "",
       country: "",
     });
-    setPricing({ entryFees: 0, cameraFees: 0, grandTotal: 0, perGuestRate: 0, perCameraRate: 0 });
+    setPricing({
+      entryFees: 0,
+      cameraFees: 0,
+      grandTotal: 0,
+      perGuestRate: 0,
+      perCameraRate: 0,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -264,21 +278,21 @@ const AddTouristBooking = () => {
 
     // Validation
     if (formData.touristSpotIds.length === 0) {
-      alert("Please select at least one trek spot");
+      showToast("Please select at least one trek spot", "error");
       return;
     }
     if (!formData.visitDate) {
-      alert("Please select a visit date");
+      showToast("Please select a visit date", "error");
       return;
     }
     if (!formData.fullName || !formData.phone) {
-      alert("Please fill in user name and phone");
+      showToast("Please fill in user name and phone", "error");
       return;
     }
 
     try {
       const token = localStorage.getItem("admin_token");
-      
+
       // Prepare data with userId if an existing user was selected
       const submitData = {
         touristSpotIds: formData.touristSpotIds,
@@ -300,7 +314,7 @@ const AddTouristBooking = () => {
         country: formData.country,
         userId: formData.existingUser || null, // Map existingUser to userId
       };
-      
+
       const res = await fetch(`${apiUrl}/api/trek-reservations/admin-create`, {
         method: "POST",
         headers: {
@@ -316,11 +330,17 @@ const AddTouristBooking = () => {
         throw new Error(data.error || "Failed to create booking");
       }
 
-      alert(`Trek spot booking created successfully! Booking ID: ${data.bookingId}`);
+      showToast(
+        `Trek spot booking created successfully! Booking ID: ${data.bookingId}`,
+        "success",
+      );
       handleReset();
     } catch (err) {
       console.error("Error creating booking:", err);
-      alert("Error: " + (err instanceof Error ? err.message : String(err)));
+      showToast(
+        "Error: " + (err instanceof Error ? err.message : String(err)),
+        "error",
+      );
     }
   };
 
@@ -403,33 +423,35 @@ const AddTouristBooking = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  No. of Guests <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  type="number"
-                  name="guests"
-                  value={formData.guests}
-                  onChange={handleChange}
-                  min="1"
-                  required
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-4 lg:col-span-2 lg:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">
+                    No. of Guests <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="number"
+                    name="guests"
+                    value={formData.guests}
+                    onChange={handleChange}
+                    min="1"
+                    required
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  No. of Cameras
-                </Label>
-                <Input
-                  type="number"
-                  name="cameras"
-                  value={formData.cameras}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                />
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">
+                    No. of Cameras
+                  </Label>
+                  <Input
+                    type="number"
+                    name="cameras"
+                    value={formData.cameras}
+                    onChange={handleChange}
+                    min="0"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -664,60 +686,78 @@ const AddTouristBooking = () => {
             </h3>
             <div className="space-y-4">
               {/* Show per-spot breakdown */}
-              {formData.touristSpotIds.length > 0 && touristSpots
-                .filter((spot) => formData.touristSpotIds.includes(spot._id))
-                .map((spot, index) => {
-                  const guests = parseInt(formData.guests) || 0;
-                  const cameras = parseInt(formData.cameras) || 0;
-                  const spotEntry = guests * (spot.entryFees || 0);
-                  const spotCamera = cameras * (spot.cameraFees || 0);
-                  const spotTotal = spotEntry + spotCamera;
+              {formData.touristSpotIds.length > 0 &&
+                touristSpots
+                  .filter((spot) => formData.touristSpotIds.includes(spot._id))
+                  .map((spot, index) => {
+                    const guests = parseInt(formData.guests) || 0;
+                    const cameras = parseInt(formData.cameras) || 0;
+                    const spotEntry = guests * (spot.entryFees || 0);
+                    const spotCamera = cameras * (spot.cameraFees || 0);
+                    const spotTotal = spotEntry + spotCamera;
 
-                  return (
-                    <div key={spot._id} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                      <div className="font-medium text-slate-800 mb-3">
-                        {index + 1}. {spot.name}
-                      </div>
-                      
-                      {/* Entry fees for this spot */}
-                      {spotEntry > 0 && (
-                        <div className="flex justify-between items-center text-sm mb-2">
-                          <span className="text-slate-600">
-                            Entry: {guests} Guest{guests > 1 ? 's' : ''} × ₹{(spot.entryFees || 0).toFixed(2)}
-                          </span>
-                          <span className="font-medium text-slate-800">₹{spotEntry}</span>
+                    return (
+                      <div
+                        key={spot._id}
+                        className="bg-slate-50 p-4 rounded-lg border border-slate-200"
+                      >
+                        <div className="font-medium text-slate-800 mb-3">
+                          {index + 1}. {spot.name}
                         </div>
-                      )}
-                      
-                      {/* Camera fees for this spot */}
-                      {spotCamera > 0 && (
-                        <div className="flex justify-between items-center text-sm mb-2">
-                          <span className="text-slate-600">
-                            Camera: {cameras} Camera{cameras > 1 ? 's' : ''} × ₹{(spot.cameraFees || 0).toFixed(2)}
+
+                        {/* Entry fees for this spot */}
+                        {spotEntry > 0 && (
+                          <div className="flex justify-between items-center text-sm mb-2">
+                            <span className="text-slate-600">
+                              Entry: {guests} Guest{guests > 1 ? "s" : ""} × ₹
+                              {(spot.entryFees || 0).toFixed(2)}
+                            </span>
+                            <span className="font-medium text-slate-800">
+                              ₹{spotEntry}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Camera fees for this spot */}
+                        {spotCamera > 0 && (
+                          <div className="flex justify-between items-center text-sm mb-2">
+                            <span className="text-slate-600">
+                              Camera: {cameras} Camera{cameras > 1 ? "s" : ""} ×
+                              ₹{(spot.cameraFees || 0).toFixed(2)}
+                            </span>
+                            <span className="font-medium text-slate-800">
+                              ₹{spotCamera}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Spot subtotal */}
+                        <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-300">
+                          <span className="font-medium text-slate-700">
+                            Spot Subtotal
                           </span>
-                          <span className="font-medium text-slate-800">₹{spotCamera}</span>
+                          <span className="font-semibold text-slate-800">
+                            ₹{spotTotal}
+                          </span>
                         </div>
-                      )}
-                      
-                      {/* Spot subtotal */}
-                      <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-300">
-                        <span className="font-medium text-slate-700">Spot Subtotal</span>
-                        <span className="font-semibold text-slate-800">₹{spotTotal}</span>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
 
               {/* Grand Total */}
               {pricing.grandTotal > 0 && (
                 <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-base font-semibold text-white">Grand Total</span>
-                    <span className="text-xl font-bold text-white">₹{pricing.grandTotal}</span>
+                    <span className="text-base font-semibold text-white">
+                      Grand Total
+                    </span>
+                    <span className="text-xl font-bold text-white">
+                      ₹{pricing.grandTotal}
+                    </span>
                   </div>
                   <div className="text-xs text-slate-300">
                     {pricing.entryFees > 0 && `Entry: ₹${pricing.entryFees}`}
-                    {pricing.entryFees > 0 && pricing.cameraFees > 0 && ' + '}
+                    {pricing.entryFees > 0 && pricing.cameraFees > 0 && " + "}
                     {pricing.cameraFees > 0 && `Camera: ₹${pricing.cameraFees}`}
                   </div>
                 </div>

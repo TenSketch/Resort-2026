@@ -4,8 +4,8 @@ const adminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String },
-  // role: superadmin | admin | staff
-  role: { type: String, enum: ['superadmin', 'admin', 'staff'], default: 'admin' },
+  // role: superadmin | admin | dfo | staff
+  role: { type: String, enum: ['superadmin', 'admin', 'dfo', 'staff'], default: 'admin' },
   // permissions object gives fine-grained control per user
   permissions: {
     canEdit: { type: Boolean, default: false },

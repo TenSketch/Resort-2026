@@ -1,5 +1,5 @@
 import express from 'express'
-import { createReservation, getReservations, updateReservation, getNextSerial, createPublicBooking, getUserBookings } from '../controllers/reservationController.js'
+import { createReservation, getReservations, getReservationById, updateReservation, getNextSerial, createPublicBooking, getUserBookings } from '../controllers/reservationController.js'
 import requirePermission from '../middlewares/requirePermission.js'
 import auth from '../middlewares/auth.js'
 
@@ -16,6 +16,8 @@ router.get('/next-serial', getNextSerial)
 // creating reservations requires canAddReservations (admin only)
 router.post('/', requirePermission('canAddReservations'), createReservation)
 router.get('/', getReservations)
+// Get single reservation by ID
+router.get('/:id', getReservationById)
 // updates require editing rights (canEdit)
 router.patch('/:id', requirePermission('canEdit'), updateReservation)
 

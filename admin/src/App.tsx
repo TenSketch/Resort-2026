@@ -65,6 +65,8 @@ const AddTents = lazy(() => import("./pages/tentInventory/AddTents"));
 const AllTents = lazy(() => import("./pages/tentInventory/AllTents"));
 const UserManagementPage = lazy(() => import("./pages/users/UserManagementPage"));
 const MyAccountPage = lazy(() => import("./pages/account/MyAccountPage"));
+const ApprovalsPage = lazy(() => import("./pages/approvals/ApprovalsPage"));
+const ApprovalDetailPage = lazy(() => import("./pages/approvals/ApprovalDetailPage"));
 
 function App() {
   return (
@@ -116,6 +118,8 @@ function App() {
           <Route path="tentinventory/alltents" element={<RoleGuard pageId="tent-inventory-view"><AllTents /></RoleGuard>} />
           <Route path="users/manage" element={<RoleGuard pageId="user-management"><UserManagementPage /></RoleGuard>} />
           <Route path="my-account" element={<MyAccountPage />} />
+          <Route path="approvals" element={<ApprovalsPage />} />
+          <Route path="approvals/:id" element={<ApprovalDetailPage />} />
 
         </Route>
       </Routes>

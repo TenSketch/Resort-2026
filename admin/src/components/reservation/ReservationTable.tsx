@@ -16,7 +16,7 @@ import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 // Using backend data instead of local JSON
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from "@/lib/AdminProvider";
+import { usePermissions, useAdmin } from "@/lib/AdminProvider";
 // Removed small modals (edit & confirm disable)
 import {
   Sheet,
@@ -91,6 +91,10 @@ interface Reservation {
   refundableAmount: number;
   amountRefunded: number;
   dateOfRefund: string;
+  // DFO approval fields
+  approval_status?: string;
+  approval_remarks?: string;
+  discount?: number;
 }
 
 // (Export function moved into component so it can use fetched reservations)
@@ -101,6 +105,7 @@ export default function ReservationTable() {
   const apiUrl =
     (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
   const perms = usePermissions();
+  const { isDFO } = useAdmin();
   const permsRef = useRef(perms);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
   const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
@@ -167,6 +172,14 @@ export default function ReservationTable() {
       // normalize some fields
       if (payload.noOfDays) delete payload.noOfDays;
       if (payload.totalGuests) delete payload.totalGuests;
+
+      // DFO-specific fields should only be sent if the user is a DFO
+      if (!isDFO) {
+        delete payload.refundPercentage;
+        delete payload.refundableAmount;
+        delete payload.amountRefunded;
+        delete payload.dateOfRefund;
+      }
 
       // Ensure dates are in YYYY-MM-DD format (HTML5 date input already provides this)
       // Backend will convert to ISO timestamp
@@ -653,6 +666,9 @@ export default function ReservationTable() {
             refundableAmount: Number(r.refundableAmount) || 0,
             amountRefunded: Number(r.amountRefunded) || 0,
             dateOfRefund: r.dateOfRefund || "",
+            approval_status: r.approval_status || "",
+            approval_remarks: r.approval_remarks || "",
+            discount: Number(r.discount) || 0,
           };
         });
 
@@ -1471,9 +1487,6 @@ export default function ReservationTable() {
                               <SelectItem value="United States">
                                 United States
                               </SelectItem>
-                              <SelectItem value="United Kingdom">
-                                United Kingdom
-                              </SelectItem>
                               <SelectItem value="Australia">
                                 Australia
                               </SelectItem>
@@ -1759,47 +1772,69 @@ export default function ReservationTable() {
                     </div>
                   </div>
 
-                  {/* Pricing Information */}
-                  <div className="border-b pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Pricing Information
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Room Price
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
-                            ₹{selectedReservation.roomPrice.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
+                   {/* Pricing Information */}
+                   <div className="border-b pb-6">
+                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                       Pricing Information
+                     </h3>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div>
+                         <Label className="text-sm font-medium text-gray-700">
+                           Room Price
+                         </Label>
+                         <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                           <span className="text-sm font-semibold text-gray-900">
+                             ₹{selectedReservation.roomPrice.toLocaleString()}
+                           </span>
+                         </div>
+                       </div>
 
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Extra Bed Charges
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm font-semibold text-gray-900">
-                            ₹
-                            {selectedReservation.extraBedCharges.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
+                       <div>
+                         <Label className="text-sm font-medium text-gray-700">
+                           Extra Bed Charges
+                         </Label>
+                         <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                           <span className="text-sm font-semibold text-gray-900">
+                             ₹
+                             {selectedReservation.extraBedCharges.toLocaleString()}
+                           </span>
+                         </div>
+                       </div>
 
-                      <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700">
-                          Total Payable
-                        </Label>
-                        <div className="mt-1 p-3 bg-green-50 rounded-md border border-green-200">
-                          <span className="text-sm font-semibold text-green-900">
-                            ₹{selectedReservation.totalPayable.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                       <div className="md:col-span-2">
+                         <Label className="text-sm font-medium text-gray-700">
+                           Grand Total
+                           {isDFO && sheetMode === "edit" && (
+                             <span className="ml-2 text-xs font-normal text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
+                               Editable by DFO only
+                             </span>
+                           )}
+                         </Label>
+                         {isDFO && sheetMode === "edit" ? (
+                           <div className="mt-1 relative">
+                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                             <Input
+                               className="w-full pl-8 border-amber-300 focus:ring-amber-400"
+                               type="number"
+                               value={String(editForm?.totalPayable ?? 0)}
+                               onChange={(e) =>
+                                 handleEditChange(
+                                   "totalPayable",
+                                   parseFloat(e.target.value) || 0,
+                                 )
+                               }
+                             />
+                           </div>
+                         ) : (
+                           <div className="mt-1 p-3 bg-green-50 rounded-md border border-green-200">
+                             <span className="text-sm font-semibold text-green-900">
+                               ₹{selectedReservation.totalPayable.toLocaleString()}
+                             </span>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   </div>
 
                   {/* Food & Reservation Source */}
                   <div className="border-b pb-6">
@@ -1963,9 +1998,9 @@ export default function ReservationTable() {
                         <Label className="text-sm font-medium text-gray-700">
                           Refund Percentage
                         </Label>
-                        {sheetMode === "edit" ? (
+                        {sheetMode === "edit" && isDFO ? (
                           <Input
-                            className="mt-1"
+                            className="mt-1 border-amber-300 focus:ring-amber-400"
                             type="number"
                             value={String(editForm?.refundPercentage ?? 0)}
                             onChange={(e) =>
@@ -1986,41 +2021,42 @@ export default function ReservationTable() {
                     </div>
                   </div>
 
-                  {/* Payment Information */}
-                  <div className="border-b pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Payment Information
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Amount Payable
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                              ₹
-                            </span>
-                            <Input
-                              className="w-full pl-8"
-                              type="number"
-                              value={String(editForm?.totalPayable ?? 0)}
-                              onChange={(e) =>
-                                handleEditChange(
-                                  "totalPayable",
-                                  parseFloat(e.target.value) || 0,
-                                )
-                              }
-                            />
-                          </div>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm font-semibold text-gray-900">
-                              ₹
-                              {selectedReservation.totalPayable.toLocaleString()}
-                            </span>
-                          </div>
-                        )}
+                   {/* Payment Information */}
+                   <div className="border-b pb-6">
+                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                       Payment Information
+                     </h3>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div>
+                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                           Amount Payable
+                         </Label>
+                         {/* Only non-DFO admins can edit Amount Payable here; DFO edits via the DFO Decision section */}
+                         {sheetMode === "edit" && !isDFO ? (
+                           <div className="relative">
+                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                               ₹
+                             </span>
+                             <Input
+                               className="w-full pl-8"
+                               type="number"
+                               value={String(editForm?.totalPayable ?? 0)}
+                               onChange={(e) =>
+                                 handleEditChange(
+                                   "totalPayable",
+                                   parseFloat(e.target.value) || 0,
+                                 )
+                               }
+                             />
+                           </div>
+                         ) : (
+                           <div className="p-3 bg-gray-50 rounded-md border">
+                             <span className="text-sm font-semibold text-gray-900">
+                               ₹
+                               {selectedReservation.totalPayable.toLocaleString()}
+                             </span>
+                           </div>
+                         )}
                       </div>
 
                       <div>
@@ -2334,6 +2370,57 @@ export default function ReservationTable() {
                     </div>
                   </div>
                 </div>
+
+                   {/* DFO Decision Section — only visible when DFO edits */}
+                   {isDFO && sheetMode === "edit" && (
+                     <div className="border border-amber-200 rounded-lg p-5 bg-amber-50 mx-6 mt-4">
+                       <div className="flex items-center gap-2 mb-4">
+                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                           🔒 DFO Decision (Editable by DFO only)
+                         </span>
+                       </div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div>
+                           <Label className="text-sm font-medium text-gray-700 mb-1 block">
+                             Discount (₹) <span className="text-gray-400 font-normal text-xs">(optional)</span>
+                           </Label>
+                           <div className="relative">
+                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                             <Input
+                               className="w-full pl-8 border-amber-300 focus:ring-amber-400"
+                               type="number"
+                               min="0"
+                               value={String(editForm?.discount ?? "")}
+                               onChange={(e) =>
+                                 handleEditChange("discount", parseFloat(e.target.value) || 0)
+                               }
+                               placeholder="0"
+                             />
+                           </div>
+                         </div>
+                         <div className="flex items-end">
+                           <div className="text-xs text-amber-700 bg-amber-100 rounded p-2 w-full">
+                             Edit Grand Total in <strong>Pricing Information</strong> section above ↑
+                           </div>
+                         </div>
+                         <div className="md:col-span-2">
+                           <Label className="text-sm font-medium text-gray-700 mb-1 block">
+                             Remarks <span className="text-red-500">*</span>
+                             <span className="text-gray-400 font-normal text-xs ml-1">(mandatory if rejecting)</span>
+                           </Label>
+                           <textarea
+                             rows={3}
+                             value={editForm?.approval_remarks ?? ""}
+                             onChange={(e) =>
+                               handleEditChange("approval_remarks", e.target.value)
+                             }
+                             placeholder="Add DFO remarks here…"
+                             className="w-full px-3 py-2 border border-amber-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white resize-none"
+                           />
+                         </div>
+                       </div>
+                     </div>
+                   )}
 
                 {/* Fixed Action Buttons */}
                 <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">

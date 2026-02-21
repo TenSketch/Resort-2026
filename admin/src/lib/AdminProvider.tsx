@@ -15,7 +15,7 @@ type Admin = {
   id?: string
   username?: string
   name?: string
-  role?: 'superadmin' | 'admin' | 'staff' | string
+  role?: 'superadmin' | 'admin' | 'dfo' | 'staff' | string
   permissions?: Partial<Permissions>
 }
 
@@ -29,6 +29,7 @@ type AdminContextValue = {
   canAccessPage: (pageId: string) => boolean
   canPerformAction: (action: keyof Permissions) => boolean
   isSuperAdmin: boolean
+  isDFO: boolean
 }
 
 const defaultPermissions: Permissions = {
@@ -154,6 +155,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }
 
   const isSuperAdmin = admin?.role === 'superadmin'
+  const isDFO = admin?.role === 'dfo'
 
   const canAccessPage = (pageId: string): boolean => {
     if (!admin) return false
@@ -179,6 +181,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     canAccessPage,
     canPerformAction,
     isSuperAdmin,
+    isDFO,
   }
 
   return (

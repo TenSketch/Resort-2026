@@ -15,6 +15,7 @@ import {
   BookOpen,
   BedDouble,
   ClipboardMinus,
+  ClipboardCheck,
   Tent,
   Binoculars,
   Users,
@@ -38,7 +39,7 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
   const { viewType } = useViewType();
-  const { canAccessPage, isSuperAdmin } = useAdmin();
+  const { canAccessPage, isSuperAdmin, isDFO } = useAdmin();
   const [openSections, setOpenSections] = useState<string[]>([]);
 
   const toggleSection = (section: string) => {
@@ -99,6 +100,15 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { label: "All Reservations", path: "/reservation/all", icon: Calendar, pageId: "reservations-view" },
         { label: "Add Reservation", path: "/reservation/add", icon: Plus, pageId: "reservations-add" },
       ],
+    },
+    {
+      id: "approvals",
+      label: "Approvals",
+      icon: ClipboardCheck,
+      path: "/approvals",
+      viewTypes: ["resort"] as ViewType[],
+      pageId: "approvals",
+      dfoOnly: true,
     },
     {
       id: "res-reports",
@@ -246,6 +256,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
         // Check if item is superadmin-only
         if ((item as any).superAdminOnly && !isSuperAdmin) return null;
+
+        // Check if item is dfo-only
+        if ((item as any).dfoOnly && !isDFO && !isSuperAdmin) return null;
 
         // If item has children, filter them first
         if (item.children) {

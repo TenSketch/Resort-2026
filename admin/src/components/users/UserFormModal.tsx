@@ -38,7 +38,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
     const [loading, setLoading] = useState(false);
 
     const normalizeRole = (roleValue: any): string => {
-        const validRoles = ["superadmin", "admin", "staff"];
+    const validRoles = ["superadmin", "admin", "dfo", "staff"];
         const normalized = String(roleValue || "admin").toLowerCase().trim();
         return validRoles.includes(normalized) ? normalized : "admin";
     };
@@ -239,6 +239,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="admin">Admin</SelectItem>
+                                    <SelectItem value="dfo">DFO (District Forest Officer)</SelectItem>
                                     <SelectItem value="staff">Staff</SelectItem>
                                     <SelectItem value="superadmin">Superadmin</SelectItem>
                                 </SelectContent>

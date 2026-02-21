@@ -1,8 +1,18 @@
 import * as React from "react";
-import { X } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export interface Option {
@@ -46,7 +56,7 @@ export function MultiSelect({
   const filteredOptions = React.useMemo(() => {
     if (!searchQuery) return options;
     return options.filter((option) =>
-      option.label.toLowerCase().includes(searchQuery.toLowerCase())
+      option.label.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [options, searchQuery]);
 
@@ -60,7 +70,7 @@ export function MultiSelect({
           className={cn(
             "flex min-h-[48px] w-full items-center justify-between rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors cursor-pointer",
             disabled && "cursor-not-allowed opacity-50 pointer-events-none",
-            className
+            className,
           )}
         >
           <div className="flex flex-wrap gap-1">
@@ -105,8 +115,8 @@ export function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
-          <CommandInput 
-            placeholder="Search..." 
+          <CommandInput
+            placeholder="Search..."
             className="h-9"
             value={searchQuery}
             onValueChange={setSearchQuery}
@@ -123,13 +133,15 @@ export function MultiSelect({
                 >
                   <div
                     className={cn(
-                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                      "mr-2 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-slate-400",
                       selected.includes(option.value)
-                        ? "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible"
+                        ? "bg-slate-800 border-slate-800 text-white"
+                        : "opacity-50",
                     )}
                   >
-                    <span className="h-4 w-4">✓</span>
+                    {selected.includes(option.value) && (
+                      <Check className="h-3 w-3" />
+                    )}
                   </div>
                   <span>{option.label}</span>
                 </CommandItem>

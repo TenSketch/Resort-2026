@@ -263,6 +263,7 @@ export class SearchResortOnlyComponent implements OnInit {
     this.router.navigate(['resorts/rooms'], {
       queryParams: { bookingTypeResort: selectedResort },
       queryParamsHandling: 'merge',
+      fragment: 'roomsListing',
     });
   }
 }

@@ -91,10 +91,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
     if (storedData) {
       this.bookingData = JSON.parse(storedData);
       
-      // Parse visit date for display
-      if (this.bookingData.visitDate) {
-        this.formattedVisitDate = this.parseDate(new Date(this.bookingData.visitDate));
-      }
+      // Global visitDate removed in favor of per-spot dates
     } else {
       this.router.navigate(['/tourist-places']);
     }
@@ -242,7 +239,7 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
       spots: this.bookingData.spots.map((spot: any) => ({
         id: spot.id,
         name: spot.name,
-        visitDate: this.bookingData.visitDate,
+        visitDate: spot.visitDate,
         counts: spot.counts,
         breakdown: spot.breakdown,
         addOns: spot.addOns || []

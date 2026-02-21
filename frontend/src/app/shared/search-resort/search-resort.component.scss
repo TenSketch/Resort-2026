@@ -438,3 +438,24 @@ $clr-neutral--700: #374151;
     font-family: inherit !important; 
     margin-top: 0 !important; // Fix alignment
 }
+
+// Validation Errors
+.error-border {
+  border-color: #ef4444 !important; // Red-500
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+  
+  i { color: #ef4444 !important; }
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  animation: slideDown 0.2s ease forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

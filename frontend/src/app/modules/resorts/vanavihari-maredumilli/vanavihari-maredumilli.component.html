@@ -1,11 +1,18 @@
 <app-layout>
   <div class="main">
-    <section id="vanavihariCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
-      data-bs-interval="6000">
+    <section
+      id="vanavihariCarousel"
+      class="carousel slide carousel-fade"
+      data-bs-ride="carousel"
+      data-bs-interval="6000"
+    >
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="assets/img/home-gallery/vanavihari-home-gallery-1.jpg" class="d-block w-100"
-            alt="Vanavihari View 1" />
+          <img
+            src="assets/img/home-gallery/vanavihari-home-gallery-1.jpg"
+            class="d-block w-100"
+            alt="Vanavihari View 1"
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Vanavihari, Maredumilli</h1>
@@ -16,35 +23,51 @@
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/home-gallery/vanavihari-home-gallery-2.jpg" class="d-block w-100"
-            alt="Vanavihari View 2" />
+          <img
+            src="assets/img/home-gallery/vanavihari-home-gallery-2.jpg"
+            class="d-block w-100"
+            alt="Vanavihari View 2"
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Vanavihari, Maredumilli</h1>
             <p class="h4">
-              Snug cottages and rooms conveniently located close to
-              Amruthadhara Waterfalls.
+              Snug cottages and rooms conveniently located close to Amruthadhara
+              Waterfalls.
             </p>
           </div>
         </div>
         <div class="carousel-item">
-          <img src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg" class="d-block w-100"
-            alt="Vanavihari View 3" />
+          <img
+            src="assets/img/home-gallery/vanavihari-home-gallery-3.jpg"
+            class="d-block w-100"
+            alt="Vanavihari View 3"
+          />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption p-0">
             <h1 class="display-3">Vanavihari, Maredumilli</h1>
             <p class="h4">
-              A guesthouse committed to community well-being offering
-              a serene retreat amidst natural surroundings.
+              A guesthouse committed to community well-being offering a serene
+              retreat amidst natural surroundings.
             </p>
           </div>
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#vanavihariCarousel" data-bs-slide="prev">
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#vanavihariCarousel"
+        data-bs-slide="prev"
+      >
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#vanavihariCarousel" data-bs-slide="next">
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#vanavihariCarousel"
+        data-bs-slide="next"
+      >
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
@@ -65,8 +88,13 @@
           <div class="map-container">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15212.133581651236!2d81.712357!3d17.601149!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a373b5d52758873%3A0x718f2b2059db5e0a!2sVanavihari%20Maredumilli!5e0!3m2!1sen!2sin!4v1708738599849!5m2!1sen!2sin"
-              width="400" height="300" style="border: 0" allowfullscreen="" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+              width="400"
+              height="300"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
         <div class="col-md-8 mt-4 mt-lg-0">
@@ -118,17 +146,23 @@
       <app-search-resort-only></app-search-resort-only>
       <!-- rooms listing section -->
       <div class="row mt-5">
-        <aside class="col-sm-5 col-md-3 h-100" [ngClass]="
+        <aside
+          class="col-sm-5 col-md-3 h-100"
+          [ngClass]="
             isMobile == false ? 'position-sticky' : 'position-sticky-for-mobile'
-          ">
+          "
+        >
           <!-- <section class="position-sticky"> -->
           <div class="sort rounded-3 p-3 d-none">
             <h4>Cottage Type</h4>
             <mat-checkbox id="hilltop">Hilltop Guest House</mat-checkbox><br />
-            <mat-checkbox id="pre-fabricated">Pre-Fabricated Cottages</mat-checkbox><br />
+            <mat-checkbox id="pre-fabricated"
+              >Pre-Fabricated Cottages</mat-checkbox
+            ><br />
             <mat-checkbox id="wooden">Wooden Cottages</mat-checkbox><br />
             <mat-checkbox id="deluxe">Deluxe Rooms</mat-checkbox><br />
-            <mat-checkbox id="tented">Tented Cottages</mat-checkbox><br /><br /><br />
+            <mat-checkbox id="tented">Tented Cottages</mat-checkbox
+            ><br /><br /><br />
             <mat-form-field>
               <mat-label>Sort by Price</mat-label>
               <mat-select [(value)]="selectedSortOption" name="priceSort">
@@ -169,13 +203,23 @@
 
           <!-- Booking Summary section -->
 
-          <div *ngIf="!isMobile" class="booking-summary-bar bg-white text-dark rounded-3 p-3">
+          <div
+            *ngIf="!isMobile"
+            class="booking-summary-bar bg-white text-dark rounded-3 p-3"
+          >
             <h4 class="m-0 pb-1 font-weight-bold">Booking Summary</h4>
-            <div class="border-top py-2" *ngIf="showBookingSummary; else noBookings">
+            <div
+              class="border-top py-2"
+              *ngIf="showBookingSummary; else noBookings"
+            >
               <!-- <h5 class="text-primary-dark pb-1 m-0"><strong class="me-2">Hill Top Guest House</strong></h5> -->
               <div class="pt-2" *ngFor="let roomId of roomIds">
-                <a href="javascript:void(0)" class="float-end" (click)="removeRoom(roomId, roomId.id)"><i
-                    class="fa fa-trash"></i></a>
+                <a
+                  href="javascript:void(0)"
+                  class="float-end"
+                  (click)="removeRoom(roomId, roomId.id)"
+                  ><i class="fa fa-trash"></i
+                ></a>
                 <div>
                   <strong class="me-2">Room Name: {{ roomId.name }}</strong>
                 </div>
@@ -186,12 +230,12 @@
                   Room Tariff:
                   <span class="float-end pb-4 m-0">{{
                     roomId.week_day_rate
-                    | currency
-                    : "INR
+                      | currency
+                        : "INR
                     "
-                    : "symbol"
-                    : "1.2-2"
-                    }}</span>
+                        : "symbol"
+                        : "1.2-2"
+                  }}</span>
                 </small>
 
                 <div class="custom-dropdown">
@@ -212,14 +256,23 @@
 
 
                   </div> -->
-                  <label for="checkextraguest{{ roomId.id }}"><input type="checkbox" #checkextraguest
-                      id="checkextraguest{{ roomId.id }}" [id]="'checkextraguest' + roomId.id" (change)="
+                  <label for="checkextraguest{{ roomId.id }}"
+                    ><input
+                      type="checkbox"
+                      #checkextraguest
+                      id="checkextraguest{{ roomId.id }}"
+                      [id]="'checkextraguest' + roomId.id"
+                      (change)="
                         checkExtraGuest(roomId, roomId.id, checkextraguest)
-                      " [(ngModel)]="roomId.noof_guest" />
-                    Check any extra guest</label>
+                      "
+                      [(ngModel)]="roomId.noof_guest"
+                    />
+                    Check any extra guest</label
+                  >
                   &nbsp;
                   <div *ngIf="isAddedExtraGuest" class="pt-3">
-                    <strong>INR 500 </strong><small>+ GST @ 12% will be charged</small>
+                    <strong>INR 500 </strong
+                    ><small>+ GST @ 12% will be charged</small>
                   </div>
 
                   <!-- <input type="number" value="{{roomId.noof_guest}}" min="1" max="{{roomId.max_guest}}"
@@ -235,65 +288,91 @@
               <div class="d-flex justify-content-between pt-1">
                 <span>Room charges</span>
                 <span>{{
-                  getRoomCharges() | currency : "INR " : "symbol" : "1.2-2"
-                  }}</span>
+                  getRoomCharges() | currency: "INR " : "symbol" : "1.2-2"
+                }}</span>
               </div>
-              <div class="d-flex justify-content-between pt-1" *ngIf="isAddedExtraGuest || isAnyRoomChecked()">
+              <div
+                class="d-flex justify-content-between pt-1"
+                *ngIf="isAddedExtraGuest || isAnyRoomChecked()"
+              >
                 <span>Extra guest</span>
                 <span>{{
                   calculateExtraGuestCharges()
-                  | currency : "INR " : "symbol" : "1.2-2"
-                  }}</span>
+                    | currency: "INR " : "symbol" : "1.2-2"
+                }}</span>
               </div>
 
               <div class="d-flex justify-content-between font-weight-bold py-1">
                 <span class="mb-0">Total</span>
                 <span>{{
-                  calculateTotalPrice() | currency : "INR " : "symbol" : "1.2-2"
-                  }}</span>
+                  calculateTotalPrice() | currency: "INR " : "symbol" : "1.2-2"
+                }}</span>
               </div>
               <div class="d-flex justify-content-between font-weight-bold py-1">
                 <span class="mb-0">GST @ 12%</span>
                 <span>{{
-                  calculateTotalGst() | currency : "INR " : "symbol" : "1.2-2"
-                  }}</span>
+                  calculateTotalGst() | currency: "INR " : "symbol" : "1.2-2"
+                }}</span>
               </div>
               <div
-                class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5">
+                class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5"
+              >
                 <span class="mb-0">Grand Total</span>
                 <span>{{
                   calculatePayablePrice()
-                  | currency : "INR " : "symbol" : "1.2-2"
-                  }}</span>
+                    | currency: "INR " : "symbol" : "1.2-2"
+                }}</span>
               </div>
             </ng-container>
-            <button mat-raised-button color="primary" class="w-100 mt-3" (click)="goToBooking()"
-              *ngIf="showBookingSummary">
+            <button
+              mat-raised-button
+              color="primary"
+              class="w-100 mt-3"
+              (click)="goToBooking()"
+              *ngIf="showBookingSummary"
+            >
               Proceed
             </button>
           </div>
           <mat-accordion *ngIf="isMobile">
-            <div class=" " [ngClass]="
+            <div
+              class=" "
+              [ngClass]="
                 isMobile == false
                   ? 'position-sticky'
                   : 'position-sticky-for-mobile'
-              ">
-              <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+              "
+            >
+              <mat-expansion-panel
+                (opened)="panelOpenState = true"
+                (closed)="panelOpenState = false"
+              >
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <div class="booking-summary-bar bg-white text-dark rounded-3 p-3">
+                    <div
+                      class="booking-summary-bar bg-white text-dark rounded-3 p-3"
+                    >
                       <h4 class="m-0 pb-1 font-weight-bold">Booking Summary</h4>
                     </div>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div [ngClass]="{ 'accordion-body': showBookingSummary }">
-                  <div class="border-top py-2" *ngIf="showBookingSummary; else noBookings">
+                  <div
+                    class="border-top py-2"
+                    *ngIf="showBookingSummary; else noBookings"
+                  >
                     <!-- <h5 class="text-primary-dark pb-1 m-0"><strong class="me-2">Hill Top Guest House</strong></h5> -->
                     <div class="pt-2" *ngFor="let roomId of roomIds">
-                      <a href="javascript:void(0)" class="float-end" (click)="removeRoom(roomId, roomId.id)"><i
-                          class="fa fa-trash"></i></a>
+                      <a
+                        href="javascript:void(0)"
+                        class="float-end"
+                        (click)="removeRoom(roomId, roomId.id)"
+                        ><i class="fa fa-trash"></i
+                      ></a>
                       <div>
-                        <strong class="me-2">Room Name: {{ roomId.name }}</strong>
+                        <strong class="me-2"
+                          >Room Name: {{ roomId.name }}</strong
+                        >
                       </div>
 
                       <small>
@@ -302,23 +381,32 @@
                         Room Tariff:
                         <span class="float-end pb-4 m-0">{{
                           roomId.week_day_rate
-                          | currency
-                          : "INR
+                            | currency
+                              : "INR
                           "
-                          : "symbol"
-                          : "1.2-2"
-                          }}</span>
+                              : "symbol"
+                              : "1.2-2"
+                        }}</span>
                       </small>
 
                       <div class="custom-dropdown">
                         <span>
-                          <mat-form-field appearance="outline" class="mat-small">
+                          <mat-form-field
+                            appearance="outline"
+                            class="mat-small"
+                          >
                             <mat-label>No. of. Guests</mat-label>
-                            <mat-select required [(ngModel)]="roomId.id" size="small">
+                            <mat-select
+                              required
+                              [(ngModel)]="roomId.id"
+                              size="small"
+                            >
                               <mat-option value="one">1</mat-option>
                               <mat-option value="two">2</mat-option>
                             </mat-select>
-                            <mat-hint class="px-0">Adults/Child over 5 yrs</mat-hint>
+                            <mat-hint class="px-0"
+                              >Adults/Child over 5 yrs</mat-hint
+                            >
                           </mat-form-field>
                         </span>
                         <!-- <mat-checkbox [ngModel]="myModel" class="example-margin" color="primary"
@@ -328,18 +416,27 @@
       
       
                         </div> -->
-                        <label for="checkextraguest{{ roomId.id }}"><input type="checkbox" #checkextraguest
-                            id="checkextraguest{{ roomId.id }}" [id]="'checkextraguest' + roomId.id" (change)="
+                        <label for="checkextraguest{{ roomId.id }}"
+                          ><input
+                            type="checkbox"
+                            #checkextraguest
+                            id="checkextraguest{{ roomId.id }}"
+                            [id]="'checkextraguest' + roomId.id"
+                            (change)="
                               checkExtraGuest(
                                 roomId,
                                 roomId.id,
                                 checkextraguest
                               )
-                            " [(ngModel)]="roomId.noof_guest" />
-                          Check any extra guest</label>
+                            "
+                            [(ngModel)]="roomId.noof_guest"
+                          />
+                          Check any extra guest</label
+                        >
                         &nbsp;
                         <div *ngIf="isAddedExtraGuest" class="pt-3">
-                          <strong>INR 500 </strong><small>+ GST @ 12% will be charged</small>
+                          <strong>INR 500 </strong
+                          ><small>+ GST @ 12% will be charged</small>
                         </div>
 
                         <!-- <input type="number" value="{{roomId.noof_guest}}" min="1" max="{{roomId.max_guest}}"
@@ -355,53 +452,71 @@
                     <div class="d-flex justify-content-between pt-1">
                       <mat-form-field appearance="outline" class="mat-small">
                         <mat-label>No. of. Guests</mat-label>
-                        <mat-select required [(ngModel)]="roomId.id" size="small">
+                        <mat-select
+                          required
+                          [(ngModel)]="roomId.id"
+                          size="small"
+                        >
                           <mat-option value="one">1</mat-option>
                           <mat-option value="two">2</mat-option>
                         </mat-select>
-                        <mat-hint class="px-0">(Children upto 5 years)</mat-hint>
+                        <mat-hint class="px-0"
+                          >(Children upto 5 years)</mat-hint
+                        >
                       </mat-form-field>
                     </div>
                     <div class="d-flex justify-content-between pt-1">
                       <span>Room charges</span>
                       <span>{{
-                        getRoomCharges()
-                        | currency : "INR " : "symbol" : "1.2-2"
-                        }}</span>
+                        getRoomCharges() | currency: "INR " : "symbol" : "1.2-2"
+                      }}</span>
                     </div>
-                    <div class="d-flex justify-content-between pt-1" *ngIf="isAddedExtraGuest">
+                    <div
+                      class="d-flex justify-content-between pt-1"
+                      *ngIf="isAddedExtraGuest"
+                    >
                       <span>Extra guest</span>
                       <span>{{
                         calculateExtraGuestCharges()
-                        | currency : "INR " : "symbol" : "1.2-2"
-                        }}</span>
+                          | currency: "INR " : "symbol" : "1.2-2"
+                      }}</span>
                     </div>
 
-                    <div class="d-flex justify-content-between font-weight-bold py-1">
+                    <div
+                      class="d-flex justify-content-between font-weight-bold py-1"
+                    >
                       <span class="mb-0">Total</span>
                       <span>{{
                         calculateTotalPrice()
-                        | currency : "INR " : "symbol" : "1.2-2"
-                        }}</span>
+                          | currency: "INR " : "symbol" : "1.2-2"
+                      }}</span>
                     </div>
-                    <div class="d-flex justify-content-between font-weight-bold py-1">
+                    <div
+                      class="d-flex justify-content-between font-weight-bold py-1"
+                    >
                       <span class="mb-0">GST @ 12%</span>
                       <span>{{
                         calculateTotalGst()
-                        | currency : "INR " : "symbol" : "1.2-2"
-                        }}</span>
+                          | currency: "INR " : "symbol" : "1.2-2"
+                      }}</span>
                     </div>
                     <div
-                      class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5">
+                      class="d-flex justify-content-between border-top border-bottom border-primary py-2 font-weight-bold text-secondary h5"
+                    >
                       <span class="mb-0">Grand Total</span>
                       <span>{{
                         calculatePayablePrice()
-                        | currency : "INR " : "symbol" : "1.2-2"
-                        }}</span>
+                          | currency: "INR " : "symbol" : "1.2-2"
+                      }}</span>
                     </div>
                   </ng-container>
-                  <button mat-raised-button color="primary" class="w-100 mt-3" (click)="goToBooking()"
-                    *ngIf="showBookingSummary">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    class="w-100 mt-3"
+                    (click)="goToBooking()"
+                    *ngIf="showBookingSummary"
+                  >
                     Proceed
                   </button>
                 </div>
@@ -413,8 +528,9 @@
                 <p>No Bookings Available. Please Add Rooms.</p>
               </div> -->
             <!-- <h5 class="text-center"><u>Booking Summary</u></h5> -->
-            <div class="d-flex my-2 p-3 align-items-center justify-content-around">
-
+            <div
+              class="d-flex my-2 p-3 align-items-start justify-content-start"
+            >
               <p class="m-0">Add your preferred rooms</p>
             </div>
           </ng-template>
@@ -424,7 +540,11 @@
           <ng-template #loading>
             <div class="text-center">
               <!-- Increase size using Bootstrap utility classes -->
-              <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                style="width: 4rem; height: 4rem"
+              >
                 <span class="visually-hidden">Loading...</span>
               </div>
               <p>Loading rooms...</p>
@@ -502,16 +622,17 @@
                   </div>
                   <div class="col-md-4 text-end">
                     <h6 class="p-0 m-0">
-                      <strong>{{
-                        room.week_day_rate
-                        | currency : "INR " : true : "1.2-2"
+                      <strong
+                        >{{
+                          room.week_day_rate | currency: "INR " : true : "1.2-2"
                         }}
                       </strong>
                     </h6>
 
                     <small>(For 2 guests)</small><br />
                     <h6 class="p-0 m-0">
-                      <strong>{{ 500 | currency : "INR " : true : "1.2-2" }}
+                      <strong
+                        >{{ 500 | currency: "INR " : true : "1.2-2" }}
                       </strong>
                     </h6>
                     <small>(For extra guests)</small><br />
@@ -521,8 +642,11 @@
                     <small>(for 1 Extra Bed)</small> -->
                   </div>
                   <div class="col-md-12">
-                    <button class="btn btn-primary w-25 float-end" (click)="addRoom(room)"
-                      [disabled]="room.is_button_disabled">
+                    <button
+                      class="btn btn-primary w-25 float-end"
+                      (click)="addRoom(room)"
+                      [disabled]="room.is_button_disabled"
+                    >
                       Add room
                     </button>
                   </div>

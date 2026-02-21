@@ -23,47 +23,53 @@
             <!-- Trek Spot Card -->
             <div class="card">
               <h5><strong>Trek Spot Details</strong></h5>
-              <p *ngIf="bookingData?.visitDate"><strong>Visit Date:</strong> {{ formatVisitDate() }}</p>
+              <!-- Global date removed -->
               <p><strong>Rating:</strong> 4.5/5</p>
 
               <h5>Spot & Visitor Details</h5>
               <div class="pb-4">
                 <div class="pt-2" *ngFor="let spot of bookingData?.spots">
                   <h6 class="fst-italic">
-                    <strong>Spot:</strong><span> {{ spot.difficulty ? (spot.difficulty + ' Trek: ') : '' }}{{ spot.name
-                      }}</span>
+                    <strong>Spot:</strong
+                    ><span>
+                      {{ spot.difficulty ? spot.difficulty + " Trek: " : ""
+                      }}{{ spot.name }}</span
+                    >
                   </h6>
+                  <p class="mb-1 ms-2" *ngIf="spot.visitDate">
+                    <strong>Date:</strong>
+                    {{ spot.visitDate | date: "mediumDate" }}
+                  </p>
                   <div class="small text-muted ms-2">
                     <div *ngIf="spot.counts?.adults > 0">
-                      <strong>Guests:</strong> {{ spot.counts.adults }} | ₹{{ spot.breakdown?.entry || 0 }}
-                    </div>
-                    <div *ngIf="spot.counts?.vehicles > 0">
-                      <strong>Vehicles:</strong> {{ spot.counts.vehicles }} | ₹{{ spot.breakdown?.parking || 0 }}
-                    </div>
-                    <div *ngIf="spot.counts?.twoWheelers > 0">
-                      <strong>2 Wheelers:</strong> {{ spot.counts.twoWheelers }} | ₹{{
-                      (spot.unitPrices?.parkingTwoWheeler || 0) * spot.counts.twoWheelers }}
-                    </div>
-                    <div *ngIf="spot.counts?.fourWheelers > 0">
-                      <strong>4 Wheelers:</strong> {{ spot.counts.fourWheelers }} | ₹{{
-                      (spot.unitPrices?.parkingFourWheeler || 0) * spot.counts.fourWheelers }}
+                      <strong>Guests:</strong> {{ spot.counts.adults }} | ₹{{
+                        spot.breakdown?.entry || 0
+                      }}
                     </div>
                     <div *ngIf="spot.counts?.cameras > 0">
-                      <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{ spot.breakdown?.camera || 0 }}
+                      <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{
+                        spot.breakdown?.camera || 0
+                      }}
                     </div>
                   </div>
-                  <hr class="my-2">
+                  <hr class="my-2" />
                 </div>
 
                 <h6>
-                  <strong>Number of spot(s): </strong><span>{{ bookingData?.spots?.length || 0 }}</span>
+                  <strong>Number of spot(s): </strong
+                  ><span>{{ bookingData?.spots?.length || 0 }}</span>
                 </h6>
                 <p class="mb-1">
-                  <strong>Total Tourists: </strong><span>{{ getTotalGuests() }}</span>
+                  <strong>Total Tourists: </strong
+                  ><span>{{ getTotalGuests() }}</span>
                 </p>
-                <hr class="my-2">
-                <a class="font-weight-bold" title="go back to change selection" (click)="triggerModal()">Change your
-                  selection</a>
+                <hr class="my-2" />
+                <a
+                  class="font-weight-bold"
+                  title="go back to change selection"
+                  (click)="triggerModal()"
+                  >Change your selection</a
+                >
               </div>
             </div>
 
@@ -72,15 +78,14 @@
               <h5>Your visit details</h5>
               <div class="d-flex">
                 <div class="col">
-                  <p class="mb-0">Visit Date</p>
-                  <span class="day display-6">{{ formattedVisitDate?.day }}</span><br />
-                  <span class="month font-weight-bold">{{ formattedVisitDate?.month }}</span>
-                  <span class="year"> {{ formattedVisitDate?.year }}</span>
+                  <p class="mb-0">Visit Mode</p>
+                  <span class="h4">Day Visit</span>
+                  <p class="text-muted small mt-1">
+                    Check spot details for specific dates
+                  </p>
                 </div>
               </div>
-              <p class="mt-3">
-                <strong>Duration: </strong>Day Visit
-              </p>
+              <!-- Duration moved up -->
             </div>
 
             <!-- Payment Details Card -->
@@ -124,8 +129,13 @@
           </div>
 
           <div class="col-md-6 me-auto mt-5 mt-md-0">
-            <h5 class="mb-4" *ngIf="isLoggedIn(); else loginNotify" style="line-height: 1.5">
-              Check the details we have fetched from your user account {{ getFullUser }}!
+            <h5
+              class="mb-4"
+              *ngIf="isLoggedIn(); else loginNotify"
+              style="line-height: 1.5"
+            >
+              Check the details we have fetched from your user account
+              {{ getFullUser }}!
             </h5>
             <ng-template #loginNotify>
               <h5 class="mb-4" style="line-height: 1.5">
@@ -137,51 +147,110 @@
             <form [formGroup]="form">
               <mat-form-field appearance="outline">
                 <mat-label>Guest Name</mat-label>
-                <input type="text" matInput required formControlName="gname" placeholder="Enter Full Name" />
+                <input
+                  type="text"
+                  matInput
+                  required
+                  formControlName="gname"
+                  placeholder="Enter Full Name"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Mobile no.</mat-label>
-                <input type="text" matInput required placeholder="Enter Mobile Number" formControlName="gphone" />
-                <mat-error *ngIf="f['gphone'].hasError('required')">Mobile number is required</mat-error>
-                <mat-error *ngIf="f['gphone'].hasError('pattern')">Enter a valid 10-digit mobile number</mat-error>
+                <input
+                  type="text"
+                  matInput
+                  required
+                  placeholder="Enter Mobile Number"
+                  formControlName="gphone"
+                />
+                <mat-error *ngIf="f['gphone'].hasError('required')"
+                  >Mobile number is required</mat-error
+                >
+                <mat-error *ngIf="f['gphone'].hasError('pattern')"
+                  >Enter a valid 10-digit mobile number</mat-error
+                >
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Email</mat-label>
-                <input type="email" matInput required placeholder="Enter Email Address" formControlName="gemail" />
+                <input
+                  type="email"
+                  matInput
+                  required
+                  placeholder="Enter Email Address"
+                  formControlName="gemail"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Address</mat-label>
-                <input type="text" matInput required placeholder="Enter your address" formControlName="gaddress" />
+                <input
+                  type="text"
+                  matInput
+                  required
+                  placeholder="Enter your address"
+                  formControlName="gaddress"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>City</mat-label>
-                <input type="text" matInput required placeholder="Enter your city" formControlName="gcity" />
+                <input
+                  type="text"
+                  matInput
+                  required
+                  placeholder="Enter your city"
+                  formControlName="gcity"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>State</mat-label>
-                <input type="text" matInput required placeholder="Enter your state" formControlName="gstate" />
+                <input
+                  type="text"
+                  matInput
+                  required
+                  placeholder="Enter your state"
+                  formControlName="gstate"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Pincode</mat-label>
-                <input type="number" matInput required placeholder="Enter your pincode" formControlName="gpincode" />
+                <input
+                  type="number"
+                  matInput
+                  required
+                  placeholder="Enter your pincode"
+                  formControlName="gpincode"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Country</mat-label>
-                <input type="text" matInput required placeholder="Enter your country" formControlName="gcountry" />
+                <input
+                  type="text"
+                  matInput
+                  required
+                  placeholder="Enter your country"
+                  formControlName="gcountry"
+                />
               </mat-form-field>
 
-              <button mat-raised-button color="primary" class="w-100" (click)="triggerInfoModal()"
-                [disabled]="!form.valid">
+              <button
+                mat-raised-button
+                color="primary"
+                class="w-100"
+                (click)="triggerInfoModal()"
+                [disabled]="!form.valid"
+              >
                 Confirm and Pay
               </button>
-              <br><br>
+              <br /><br />
               <section class="booking-terms mt-4">
                 <p>
-                  🛑 Please avoid closing or returning to the previous page before completing payment.
+                  🛑 Please avoid closing or returning to the previous page
+                  before completing payment.
                 </p>
                 <p>
-                  💳 If payment isn't successful, you won't receive an invoice via email. However, you'll still get
-                  booking details. Contact support with your booking ID to confirm your reservation.
+                  💳 If payment isn't successful, you won't receive an invoice
+                  via email. However, you'll still get booking details. Contact
+                  support with your booking ID to confirm your reservation.
                 </p>
                 <h5 class="mb-3">Review the terms before booking.</h5>
                 <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -189,11 +258,17 @@
                     <div class="card h-100">
                       <div class="card-body">
                         <h6 class="card-title">
-                          <i class="fas fa-bookmark"></i> Booking and Reservation
+                          <i class="fas fa-bookmark"></i> Booking and
+                          Reservation
                         </h6>
                         <ul>
-                          <li>All bookings are contingent upon availability.</li>
-                          <li>Reservation confirmation necessitates a valid Government ID.</li>
+                          <li>
+                            All bookings are contingent upon availability.
+                          </li>
+                          <li>
+                            Reservation confirmation necessitates a valid
+                            Government ID.
+                          </li>
                           <li>Bookings are non-transferable.</li>
                         </ul>
                       </div>
@@ -203,11 +278,15 @@
                     <div class="card h-100">
                       <div class="card-body">
                         <h6 class="card-title">
-                          <i class="fas fa-money-bill-wave"></i> Payment and Pricing
+                          <i class="fas fa-money-bill-wave"></i> Payment and
+                          Pricing
                         </h6>
                         <ul>
-                          <li>Full payment is required upon reservation, with accepted modes including cash, credit &
-                            debit cards, net banking, UPI, etc.</li>
+                          <li>
+                            Full payment is required upon reservation, with
+                            accepted modes including cash, credit & debit cards,
+                            net banking, UPI, etc.
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -221,7 +300,9 @@
                         <ul>
                           <li>Entry Time: Morning 09:00 AM (IST)</li>
                           <li>Exit Time: Evening 06:00 PM (IST)</li>
-                          <li>Please arrive on time for your scheduled visit.</li>
+                          <li>
+                            Please arrive on time for your scheduled visit.
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -233,9 +314,18 @@
                           <i class="fas fa-users"></i> Visitor Conduct
                         </h6>
                         <ul>
-                          <li>Visitors are expected to conduct themselves with respect.</li>
-                          <li>Smoking and alcohol consumption are strictly prohibited.</li>
-                          <li>Any disruptive behavior may lead to eviction without refund.</li>
+                          <li>
+                            Visitors are expected to conduct themselves with
+                            respect.
+                          </li>
+                          <li>
+                            Smoking and alcohol consumption are strictly
+                            prohibited.
+                          </li>
+                          <li>
+                            Any disruptive behavior may lead to eviction without
+                            refund.
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -257,58 +347,114 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="onCancel()"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to modify booking?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary text-bg-secondary" (click)="onCancel()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="onConfirm()">Go Anyway</button>
+        <button
+          type="button"
+          class="btn btn-secondary text-bg-secondary"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onConfirm()">
+          Go Anyway
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Payment Info Modal -->
-<div class="modal" tabindex="-1" *ngIf="isInfoModalVisible" style="display: block">
+<div
+  class="modal"
+  tabindex="-1"
+  *ngIf="isInfoModalVisible"
+  style="display: block"
+>
   <div class="modal-overlay" [ngClass]="{ 'dark-overlay': isDarkMode }"></div>
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="onCancel()"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <ul>
-          <li>🛑 <strong>Payment Instructions:</strong>
+          <li>
+            🛑 <strong>Payment Instructions:</strong>
             <ul>
-              <li>Please avoid refreshing, closing, or returning to the previous page before completing payment.</li>
-              <li>Avoid swapping apps manually from the payment UPI app to the browser after completing payment. Wait
-                until you are automatically redirected to the browser (this usually takes up to 2 minutes).</li>
+              <li>
+                Please avoid refreshing, closing, or returning to the previous
+                page before completing payment.
+              </li>
+              <li>
+                Avoid swapping apps manually from the payment UPI app to the
+                browser after completing payment. Wait until you are
+                automatically redirected to the browser (this usually takes up
+                to 2 minutes).
+              </li>
             </ul>
           </li>
-          <li>💳 <strong>Booking Confirmation</strong>:
+          <li>
+            💳 <strong>Booking Confirmation</strong>:
             <ul>
-              <li>If you do not receive booking confirmation immediately after the payment is debited, you will receive
-                it within 10 to 15 minutes.</li>
-              <li>Do not attempt rebooking, as the spot will stay blocked for 10 to 15 minutes.</li>
-              <li>If not confirmed, it means your payment is either pending or failed.</li>
-              <li>For payments successful after 15 minutes from booking, the amount will be auto-refunded to your
-                account in 7 days.</li>
+              <li>
+                If you do not receive booking confirmation immediately after the
+                payment is debited, you will receive it within 10 to 15 minutes.
+              </li>
+              <li>
+                Do not attempt rebooking, as the spot will stay blocked for 10
+                to 15 minutes.
+              </li>
+              <li>
+                If not confirmed, it means your payment is either pending or
+                failed.
+              </li>
+              <li>
+                For payments successful after 15 minutes from booking, the
+                amount will be auto-refunded to your account in 7 days.
+              </li>
               <li>If the payment is not debited, then you can rebook.</li>
             </ul>
           </li>
-          <li>⚠️ <strong>Payment Issues:</strong>
+          <li>
+            ⚠️ <strong>Payment Issues:</strong>
             <ul>
-              <li>If the payment page doesn't open or fails, do not attempt rebooking.</li>
-              <li>Contact the support team with the booking ID (check the "My Bookings" page under your profile).</li>
+              <li>
+                If the payment page doesn't open or fails, do not attempt
+                rebooking.
+              </li>
+              <li>
+                Contact the support team with the booking ID (check the "My
+                Bookings" page under your profile).
+              </li>
             </ul>
           </li>
         </ul>
       </div>
       <div class="modal-footer justify-content-center">
-        <button mat-raised-button color="primary" class="font-weight-bold w-25" (click)="onOk()"> OK </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="font-weight-bold w-25"
+          (click)="onOk()"
+        >
+          OK
+        </button>
       </div>
     </div>
   </div>

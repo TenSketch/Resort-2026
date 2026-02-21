@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/ToastProvider";
 
 interface TouristSpot {
   _id: string;
   name: string;
   category?: string;
   entryFees?: number;
-  parking2W?: number;
-  parking4W?: number;
   cameraFees?: number;
   description?: string;
   address?: string;
@@ -26,15 +25,24 @@ interface TouristSpotDetailPanelProps {
   canEdit?: boolean;
 }
 
-const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEditing, canEdit = true }: TouristSpotDetailPanelProps) => {
+const TouristSpotDetailPanel = ({
+  spot,
+  isOpen,
+  onClose,
+  onSpotUpdated,
+  startEditing,
+  canEdit = true,
+}: TouristSpotDetailPanelProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState(() => buildForm(spot));
   const [newImages, setNewImages] = useState<File[]>([]);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
+  const { showToast } = useToast();
 
-  const apiBase = (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+  const apiBase =
+    (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     setFormData(buildForm(spot));
@@ -58,23 +66,26 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
       return;
     }
     if (!spot || !spot._id) {
-      alert('Cannot delete images from this spot.');
+      alert("Cannot delete images from this spot.");
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this image?')) {
+    if (!confirm("Are you sure you want to delete this image?")) {
       return;
     }
 
     setDeletingImage(publicId);
     try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${apiBase}/api/touristspots/${spot._id}/images/${encodeURIComponent(publicId)}`, {
-        method: 'DELETE',
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        }
-      });
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(
+        `${apiBase}/api/touristspots/${spot._id}/images/${encodeURIComponent(publicId)}`,
+        {
+          method: "DELETE",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
 
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error((data && data.error) || res.statusText);
@@ -87,10 +98,10 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
         }
       }
 
-      alert('Image deleted successfully!');
+      showToast("Image deleted successfully!", "success");
     } catch (e: any) {
       console.error(e);
-      alert('Failed to delete image: ' + e.message);
+      showToast("Failed to delete image: " + e.message, "error");
     } finally {
       setDeletingImage(null);
     }
@@ -113,12 +124,7 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
         name: formData.name,
         category: formData.category,
         entryFees: toNumber(formData.entryFees),
-        parking2W: toNumber(formData.parking2W),
-        parking4W: toNumber(formData.parking4W),
         cameraFees: toNumber(formData.cameraFees),
-        description: formData.description,
-        address: formData.address,
-        mapEmbed: formData.mapEmbed,
       };
 
       const token = localStorage.getItem("admin_token");
@@ -161,7 +167,7 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
       if (data?.touristSpot && onSpotUpdated) {
         onSpotUpdated(data.touristSpot);
       }
-      alert('Saved successfully!');
+      showToast("Trek spot saved successfully!", "success");
       setNewImages([]);
       setIsEditing(false);
     } catch (e: any) {
@@ -178,16 +184,20 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <div>
             <p className="text-xs text-slate-500">Trek Spot</p>
-            <h2 className="text-lg font-semibold text-slate-800">{spot.name}</h2>
+            <h2 className="text-lg font-semibold text-slate-800">
+              {spot.name}
+            </h2>
           </div>
           <div className="flex items-center gap-2">
             {!isEditing && (
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => canEdit ? setIsEditing(true) : null}
+                onClick={() => (canEdit ? setIsEditing(true) : null)}
                 disabled={!canEdit}
-                title={canEdit ? undefined : "You do not have permission to edit"}
+                title={
+                  canEdit ? undefined : "You do not have permission to edit"
+                }
               >
                 Edit
               </Button>
@@ -214,55 +224,50 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
           <Section title="Basic Info">
             {isEditing ? (
               <div className="space-y-3">
-                <Field label="Name" value={formData.name} onChange={(v) => setFormData({ ...formData, name: v })} />
-                <Field label="Category" value={formData.category} onChange={(v) => setFormData({ ...formData, category: v })} />
+                <Field
+                  label="Name"
+                  value={formData.name}
+                  onChange={(v) => setFormData({ ...formData, name: v })}
+                />
+                <Field
+                  label="Category"
+                  value={formData.category}
+                  onChange={(v) => setFormData({ ...formData, category: v })}
+                />
               </div>
             ) : (
-              <DefinitionList rows={[['Name', spot.name], ['Category', spot.category || '—']]} />
+              <DefinitionList
+                rows={[
+                  ["Name", spot.name],
+                  ["Category", spot.category || "—"],
+                ]}
+              />
             )}
           </Section>
 
           <Section title="Pricing">
             {isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Field label="Entry Fees (₹)" value={formData.entryFees} onChange={(v) => setFormData({ ...formData, entryFees: v })} inputMode="numeric" />
-                <Field label="2W Parking (₹)" value={formData.parking2W} onChange={(v) => setFormData({ ...formData, parking2W: v })} inputMode="numeric" />
-                <Field label="4W Parking (₹)" value={formData.parking4W} onChange={(v) => setFormData({ ...formData, parking4W: v })} inputMode="numeric" />
-                <Field label="Camera Fees (₹)" value={formData.cameraFees} onChange={(v) => setFormData({ ...formData, cameraFees: v })} inputMode="numeric" />
+                <Field
+                  label="Entry Fees (₹)"
+                  value={formData.entryFees}
+                  onChange={(v) => setFormData({ ...formData, entryFees: v })}
+                  inputMode="numeric"
+                />
+                <Field
+                  label="Camera Fees (₹)"
+                  value={formData.cameraFees}
+                  onChange={(v) => setFormData({ ...formData, cameraFees: v })}
+                  inputMode="numeric"
+                />
               </div>
             ) : (
               <DefinitionList
                 rows={[
-                  ['Entry Fees', formatCurrency(spot.entryFees)],
-                  ['Parking 2W', formatCurrency(spot.parking2W)],
-                  ['Parking 4W', formatCurrency(spot.parking4W)],
-                  ['Camera Fees', formatCurrency(spot.cameraFees)],
+                  ["Entry Fees", formatCurrency(spot.entryFees)],
+                  ["Camera Fees", formatCurrency(spot.cameraFees)],
                 ]}
               />
-            )}
-          </Section>
-
-          <Section title="Details">
-            {isEditing ? (
-              <textarea
-                className="w-full border rounded-md p-2 text-sm"
-                rows={4}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            ) : (
-              <p className="text-sm text-slate-700 whitespace-pre-line">{spot.description || '—'}</p>
-            )}
-          </Section>
-
-          <Section title="Address & Map">
-            {isEditing ? (
-              <div className="space-y-3">
-                <Field label="Address" value={formData.address} onChange={(v) => setFormData({ ...formData, address: v })} />
-                <Field label="Map Embed / Link" value={formData.mapEmbed} onChange={(v) => setFormData({ ...formData, mapEmbed: v })} />
-              </div>
-            ) : (
-              <DefinitionList rows={[["Address", spot.address || "—"], ["Map", spot.mapEmbed || "—"]]} />
             )}
           </Section>
 
@@ -287,13 +292,39 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
                           title="Delete image"
                         >
                           {deletingImage === img.public_id ? (
-                            <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <svg
+                              className="w-4 h-4 animate-spin"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
                             </svg>
                           ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           )}
                         </button>
@@ -327,7 +358,10 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
                       </p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {newImages.map((file, i) => (
-                          <div key={i} className="relative w-20 h-20 border rounded overflow-hidden">
+                          <div
+                            key={i}
+                            className="relative w-20 h-20 border rounded overflow-hidden"
+                          >
                             <img
                               src={URL.createObjectURL(file)}
                               alt="preview"
@@ -339,7 +373,8 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
                     </>
                   )}
                   <p className="text-xs text-gray-500 mt-1">
-                    Select new images to add (will be appended to existing images)
+                    Select new images to add (will be appended to existing
+                    images)
                   </p>
                 </div>
               )}
@@ -349,10 +384,23 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
 
         {isEditing && (
           <div className="px-4 py-3 border-t flex items-center justify-end gap-2 bg-white sticky bottom-0">
-            <Button variant="ghost" onClick={() => { setIsEditing(false); setFormData(buildForm(spot)); }} disabled={saving}>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsEditing(false);
+                setFormData(buildForm(spot));
+              }}
+              disabled={saving}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving || !canEdit} title={!canEdit ? "You do not have permission to edit" : undefined}>
+            <Button
+              onClick={handleSave}
+              disabled={saving || !canEdit}
+              title={
+                !canEdit ? "You do not have permission to edit" : undefined
+              }
+            >
               {saving ? "Saving..." : "Save"}
             </Button>
           </div>
@@ -362,7 +410,13 @@ const TouristSpotDetailPanel = ({ spot, isOpen, onClose, onSpotUpdated, startEdi
   );
 };
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="border rounded-md p-3">
       <h3 className="text-sm font-semibold text-slate-800 mb-2">{title}</h3>
@@ -371,20 +425,34 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function DefinitionList({ rows }: { rows: [string, string | number | undefined | null][] }) {
+function DefinitionList({
+  rows,
+}: {
+  rows: [string, string | number | undefined | null][];
+}) {
   return (
     <dl className="grid grid-cols-1 gap-2 text-sm text-slate-700">
       {rows.map(([label, value]) => (
         <div key={label} className="flex justify-between gap-3">
           <dt className="text-slate-500 min-w-[120px]">{label}</dt>
-          <dd className="text-right break-all flex-1">{value ?? '—'}</dd>
+          <dd className="text-right break-all flex-1">{value ?? "—"}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
-function Field({ label, value, onChange, inputMode }: { label: string; value: string; onChange: (v: string) => void; inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"] }) {
+function Field({
+  label,
+  value,
+  onChange,
+  inputMode,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+}) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-xs text-slate-500">{label}</label>
@@ -403,12 +471,7 @@ function buildForm(spot: TouristSpot | null | undefined) {
     name: spot?.name || "",
     category: spot?.category || "",
     entryFees: safeString(spot?.entryFees),
-    parking2W: safeString(spot?.parking2W),
-    parking4W: safeString(spot?.parking4W),
     cameraFees: safeString(spot?.cameraFees),
-    description: spot?.description || "",
-    address: spot?.address || "",
-    mapEmbed: spot?.mapEmbed || "",
   };
 }
 

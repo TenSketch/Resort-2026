@@ -9,3 +9,7 @@
     height: 56px;
   }
 }
+
+::ng-deep .mat-mdc-select-arrow-wrapper {
+  padding-right: 12px !important;
+}

@@ -433,3 +433,7 @@ $clr-neutral--700: #374151;
     font-family: inherit !important; 
     margin-top: 0 !important; // Fix alignment
 }
+
+::ng-deep .mat-mdc-select-arrow-wrapper {
+  padding-right: 12px !important;
+}

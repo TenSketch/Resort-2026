@@ -81,8 +81,9 @@ export class ChangePasswordComponent {
 
   showSnackBarAlert(msg = '', redirect = true) {
     var snackBar = this.snackBar.open(msg, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'right',
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
     if (redirect) {
       snackBar.afterDismissed().subscribe(() => {

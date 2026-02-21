@@ -235,7 +235,11 @@ export default function DailyOccupancyReport() {
           onClick={() => (perms.canExport ? exportToExcel() : null)}
           className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
           disabled={!perms.canExport}
-          title={perms.canExport ? "Export to Excel" : "You do not have permission to export data"}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -265,14 +269,21 @@ export default function DailyOccupancyReport() {
             className="display nowrap"
             options={{
               destroy: true,
-              pageLength: 10,
+              pageLength: 25,
               lengthMenu: [5, 10, 25, 50, 100],
               order: [[0, "asc"]],
-              searching: false,
-              paging: false,
-              info: false,
+              searching: true,
+              paging: true,
+              info: true,
               dom: "Bfrtip",
-              columnControl: [["orderAsc", "orderDesc", "spacer", "search"]],
+              buttons: [
+                {
+                  extend: "colvis",
+                  className:
+                    "px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm",
+                  text: "Column Visibility",
+                },
+              ],
             }}
           >
             <thead>

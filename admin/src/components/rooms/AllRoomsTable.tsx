@@ -54,6 +54,7 @@ interface Room {
 
 export default function RoomsTable() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions()
   const permsRef = useRef(perms)
   // Removed separate edit & confirm disable dialogs
@@ -92,9 +93,12 @@ export default function RoomsTable() {
       "Status",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: Room[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : roomsDataRef.current;
+
     const csvContent = [
       headers.join(","),
-      ...roomsDataRef.current.map((row, idx) => {
+      ...dataToExport.map((row, idx) => {
         return [
           idx + 1,
           `"${row.resort}"`,
@@ -770,6 +774,7 @@ export default function RoomsTable() {
       <div ref={tableRef} className="w-full">
         {loadingRooms && <div className="p-4 text-sm text-gray-500">Loading rooms...</div>}
         <DataTable
+          ref={dtRef}
           data={roomsData}
           columns={columns}
           className="display nowrap w-full border border-gray-400"

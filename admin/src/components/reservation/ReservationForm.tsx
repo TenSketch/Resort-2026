@@ -486,7 +486,10 @@ export default function AddReservationForm() {
         const res = await fetch(`${apiUrl}/api/reservations`, {
           method: "POST",
           headers,
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            approval_status: "PENDING_DFO_APPROVAL",
+          }),
         });
         const contentType = res.headers.get("content-type") || "";
         let data: { error?: string } | null = null;
@@ -501,8 +504,10 @@ export default function AddReservationForm() {
         }
         if (!res.ok)
           throw new Error(data?.error || "Failed to save reservation");
-        // simple feedback
-        alert("Reservation saved successfully");
+        // Booking submitted — awaiting DFO approval
+        alert(
+          "Booking submitted successfully!\n\nAwaiting DFO approval.\nRoom is temporarily blocked.\n\nYou will be notified once the booking is approved or rejected."
+        );
         // reset form
         setFormData({
           resort: "",

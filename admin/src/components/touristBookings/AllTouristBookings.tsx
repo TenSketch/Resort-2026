@@ -62,6 +62,7 @@ interface TouristBooking {
 
 export default function AllTouristBookings() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions();
   const permsRef = useRef(perms);
   const [bookings, setBookings] = useState<TouristBooking[]>([]);
@@ -389,9 +390,12 @@ export default function AllTouristBookings() {
       "Payment Status",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: TouristBooking[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : bookingsRef.current;
+
     const csv = [
       headers.join(","),
-      ...bookingsRef.current.map((r, i) => {
+      ...dataToExport.map((r, i) => {
         const guests = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.guests || 0), 0) || 0;
         const cameras = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.cameras || 0), 0) || 0;
         const spotNames = r.touristSpots?.map(s => s.name).join('; ') || 'N/A';
@@ -599,6 +603,7 @@ export default function AllTouristBookings() {
 
       <div ref={tableRef} className="tourist-bookings-table-container w-full">
         <DataTable
+          ref={dtRef}
           data={bookings}
           columns={columns}
           className="display nowrap w-full border border-gray-400"

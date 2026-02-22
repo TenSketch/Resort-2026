@@ -138,6 +138,7 @@ export default function GuestTable() {
   const apiBase =
     (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions();
   const permsRef = useRef(perms);
   // sheetMode toggles between viewing details and editing inside the sheet
@@ -916,9 +917,12 @@ export default function GuestTable() {
         <h2 className="text-xl font-semibold text-slate-800">User Records</h2>
         <div className="flex justify-end gap-2 w-full md:w-auto md:ml-auto">
           <button
-            onClick={() =>
-              perms.canViewDownload ? exportToExcel(guestsState) : null
-            }
+            onClick={() => {
+              if (!perms.canViewDownload) return;
+              const dtApi = (dtRef.current as any)?.dt?.();
+              const filtered: Guest[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : guestsState;
+              exportToExcel(filtered);
+            }}
             className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors duration-200 md:ml-auto ${perms.canViewDownload ? "bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
             disabled={loading || !perms.canViewDownload}
             title={
@@ -983,6 +987,7 @@ export default function GuestTable() {
           </div>
         ) : (
           <DataTable
+            ref={dtRef}
             data={guestsState}
             columns={columns}
             className="display nowrap w-full border border-gray-400"

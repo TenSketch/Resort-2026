@@ -33,6 +33,7 @@ export type PageId =
     | 'tourist-bookings-add'
     | 'log-reports'
     | 'user-management'
+    | 'approvals'
 
 export interface PageDefinition {
     id: PageId
@@ -82,6 +83,7 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
     // General
     { id: 'log-reports', label: 'Log Reports', paths: ['/log-reports/all', '/log-reports/table'], category: 'general' },
     { id: 'user-management', label: 'User Management', paths: ['/users/manage'], category: 'general' },
+    { id: 'approvals', label: 'DFO Approvals', paths: ['/approvals', '/approvals/*'], category: 'resort' },
 ]
 
 // Get all page IDs
@@ -99,8 +101,17 @@ export const DEFAULT_ROLE_PERMISSIONS = {
         canExport: true,
     },
     admin: {
-        visiblePages: ALL_PAGE_IDS.filter(id => id !== 'user-management'), // All except user management
+        visiblePages: ALL_PAGE_IDS.filter(id => id !== 'user-management' && id !== 'approvals'), // All except user-management and approvals
         canEdit: false,
+        canDisable: false,
+        canAddReservations: false,
+        canAddGuests: false,
+        canViewDownload: true,
+        canExport: true,
+    },
+    dfo: {
+        visiblePages: ['dashboard-resort', 'reservations-view', 'reports', 'approvals'] as PageId[],
+        canEdit: true,
         canDisable: false,
         canAddReservations: false,
         canAddGuests: false,

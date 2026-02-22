@@ -80,15 +80,17 @@ const SplitKPI = ({ title, vanaValue, jsValue, footer, Icon }: SplitKPIProps) =>
       <h3 className="text-sm font-medium text-gray-600">{title}</h3>
       {Icon && <Icon className="w-5 h-5 text-gray-400" />}
     </div>
-    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 md:space-y-2 md:grid-cols-1">
-      <div className="flex items-center justify-between">
+    {/* grid for two resorts; larger vertical gap between rows */}
+    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-4 md:space-y-2 md:grid-cols-1">
+      {/* each row now left‑aligned, resort name and number sit close together */}
+      <div className="flex items-center justify-start gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full" style={{ background: RESORT_COLORS.VANA }} />
           <span className="text-sm font-medium">Vanavihari</span>
         </div>
         <div className="text-sm font-semibold" style={{ color: RESORT_COLORS.VANA }}>{vanaValue}</div>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-start gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full" style={{ background: RESORT_COLORS.JS }} />
           <span className="text-sm font-medium">Jungle Star</span>

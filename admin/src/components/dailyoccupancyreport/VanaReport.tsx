@@ -29,6 +29,7 @@ interface Reservation {
 export default function DailyOccupancyReport() {
   const perms = usePermissions();
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const apiUrl =
     (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
   const [reservationData, setReservationData] = useState<Reservation[]>([]);
@@ -74,9 +75,12 @@ export default function DailyOccupancyReport() {
       "Remaining Days",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const allData: Reservation[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : reservationData;
+
     const csvRows = [
       headers.join(","),
-      ...reservationData
+      ...allData
         .filter((row) => !row.status)
         .map((row) =>
           [
@@ -264,6 +268,7 @@ export default function DailyOccupancyReport() {
           style={{ position: "relative", minWidth: "max-content" }}
         >
           <DataTable
+            ref={dtRef}
             data={reservationData}
             columns={columns}
             className="display nowrap"

@@ -28,9 +28,30 @@ const reservationSchema = new mongoose.Schema({
   country: String,
   roomPrice: Number,
   extraBedCharges: Number,
-  paymentTransactionId: String, // Reference to payment transaction
+  paymentTransactionId: String,
+  paymentTransactionDateTime: Date,
+  reservedFrom: String, // Website | Phone | Walk-in | Email | Agent | Other
+  foodPreference: String,
   expiresAt: Date, // For pre-reserved bookings (15 mins expiry)
   rawSource: { type: mongoose.Schema.Types.Mixed },
+  // Cancellation & Refund
+  cancelBookingReason: String,
+  cancellationMessage: String,
+  refundRequestedDateTime: Date,
+  refundableAmount: Number,
+  amountRefunded: Number,
+  dateOfRefund: Date,
+  // DFO Approval Workflow
+  approval_status: {
+    type: String,
+    enum: ['PENDING_DFO_APPROVAL', 'APPROVED', 'REJECTED'],
+    default: null,
+  },
+  approved_by: String,        // Username of the DFO who approved/rejected
+  approved_at: Date,          // Timestamp of approval/rejection
+  discount: Number,           // Discount applied by DFO (optional)
+  approval_remarks: String,   // DFO remarks (mandatory on reject)
+  createdBy: String,          // Username of admin who created the booking
 }, { timestamps: true })
 
 const Reservation = mongoose.models.Reservation || mongoose.model('Reservation', reservationSchema)

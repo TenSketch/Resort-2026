@@ -95,6 +95,18 @@ export const getReservations = async (req, res) => {
   }
 }
 
+export const getReservationById = async (req, res) => {
+  try {
+    const { id } = req.params
+    const reservation = await Reservation.findById(id).lean()
+    if (!reservation) return res.status(404).json({ success: false, error: 'Reservation not found' })
+    res.json({ success: true, reservation })
+  } catch (err) {
+    console.error('getReservationById error', err)
+    res.status(500).json({ success: false, error: err.message })
+  }
+}
+
 // Get bookings for authenticated user
 export const getUserBookings = async (req, res) => {
   try {

@@ -30,6 +30,7 @@ interface TouristSpot {
 
 export default function AllTouristSpots() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   const perms = usePermissions();
   const [spots, setSpots] = useState<TouristSpot[]>([]);
   const permsRef = useRef(perms);
@@ -58,9 +59,12 @@ export default function AllTouristSpots() {
       "Camera Fees (₹)",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: TouristSpot[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : spots;
+
     const csvContent = [
       headers.join(","),
-      ...spots.map((spot, idx) => {
+      ...dataToExport.map((spot, idx) => {
         return [
           idx + 1,
           `"${spot.name.replace(/"/g, '""')}"`,
@@ -338,6 +342,7 @@ export default function AllTouristSpots() {
           <div className="p-4 text-sm text-gray-500">Loading Trek Spots...</div>
         )}
         <DataTable
+          ref={dtRef}
           data={spots}
           columns={columns}
           className="display nowrap w-full border border-gray-400"

@@ -52,6 +52,7 @@ interface CottageType {
 
 export default function CottageDataTable() {
   const tableRef = useRef(null);
+  const dtRef = useRef<any>(null);
   // Removed modal state (edit & confirm) – only side sheet remains
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
   // Track selected cottage only (editing handled inside sheet or via direct disable)
@@ -80,9 +81,12 @@ export default function CottageDataTable() {
       "Status",
     ];
 
+    const dtApi = (dtRef.current as any)?.dt?.();
+    const dataToExport: CottageType[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : cottageRef.current;
+
     const csvContent = [
       headers.join(","),
-      ...cottageRef.current.map((row, idx) => {
+      ...dataToExport.map((row, idx) => {
         return [
           idx + 1,
           `"${row.name}"`,
@@ -600,6 +604,7 @@ export default function CottageDataTable() {
         {error && <div className="text-red-600 p-2">{error}</div>}
         {loading && <div className="p-2">Loading...</div>}
         <DataTable
+          ref={dtRef}
           key={version}
           data={cottageTypes}
           columns={columns}

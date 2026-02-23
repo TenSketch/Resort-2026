@@ -709,6 +709,7 @@ export default function GuestTable() {
     {
       data: "registerThrough",
       title: "Source",
+      visible: false,
       render: (data: string) =>
         `<span class="px-2 py-1 text-xs rounded-full ${data === "admin" ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}">${data || "frontend"}</span>`,
     },
@@ -913,525 +914,530 @@ export default function GuestTable() {
         }
       `}</style>
       <div className="flex flex-col h-full max-h-screen overflow-hidden py-2 md:py-6 guests-table-container">
-      <div className="flex flex-col md:flex-row gap-2 justify-between items-start md:items-center mb-2 md:mb-4 flex-shrink-0">
-        <h2 className="text-xl font-semibold text-slate-800">User Records</h2>
-        <div className="flex justify-end gap-2 w-full md:w-auto md:ml-auto">
-          <button
-            onClick={() => {
-              if (!perms.canViewDownload) return;
-              const dtApi = (dtRef.current as any)?.dt?.();
-              const filtered: Guest[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : guestsState;
-              exportToExcel(filtered);
-            }}
-            className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors duration-200 md:ml-auto ${perms.canViewDownload ? "bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
-            disabled={loading || !perms.canViewDownload}
-            title={
-              perms.canViewDownload
-                ? "Export to Excel"
-                : "You do not have permission to download/export"
-            }
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div className="flex flex-col md:flex-row gap-2 justify-between items-start md:items-center mb-2 md:mb-4 flex-shrink-0">
+          <h2 className="text-xl font-semibold text-slate-800">User Records</h2>
+          <div className="flex justify-end gap-2 w-full md:w-auto md:ml-auto">
+            <button
+              onClick={() => {
+                if (!perms.canViewDownload) return;
+                const dtApi = (dtRef.current as any)?.dt?.();
+                const filtered: Guest[] = dtApi
+                  ? dtApi.rows({ search: "applied" }).data().toArray()
+                  : guestsState;
+                exportToExcel(filtered);
+              }}
+              className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors duration-200 md:ml-auto ${perms.canViewDownload ? "bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
+              disabled={loading || !perms.canViewDownload}
+              title={
+                perms.canViewDownload
+                  ? "Export to Excel"
+                  : "You do not have permission to download/export"
+              }
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Export to Excel
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex-shrink-0">
-          <div className="flex">
-            <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-red-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">
-                Error loading guests
-              </h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
+              Export to Excel
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex-shrink-0">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Error loading guests
+                </h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      <div ref={tableRef} className="flex-1 overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="text-gray-600">Loading guests...</span>
-            </div>
-          </div>
-        ) : (
-          <DataTable
-            ref={dtRef}
-            data={guestsState}
-            columns={columns}
-            className="display nowrap w-full border border-gray-400"
-            options={{
-              pageLength: 10,
-              lengthMenu: [5, 10, 25, 50, 100],
-              order: [[0, "asc"]],
-              searching: true,
-              paging: true,
-              info: false,
-              scrollX: true,
-              scrollY: "calc(100vh - 350px)",
-              scrollCollapse: true,
-              layout: {
-                topStart: "buttons",
-                topEnd: "search",
-                bottomStart: "pageLength",
-                bottomEnd: "paging",
-              },
-              buttons: [
-                {
-                  extend: "colvis",
-                  text: "Column Visibility",
-                  collectionLayout: "fixed two-column",
-                },
-              ],
-              columnControl: [
-                "order",
-                ["orderAsc", "orderDesc", "spacer", "search"],
-              ],
-            }}
-          />
         )}
-      </div>
 
-      {/* Confirmation Dialog for Delete Action */}
-      <Dialog open={isConfirmDeleteOpen} onOpenChange={setIsConfirmDeleteOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this user? This action cannot be
-              undone and will permanently remove the user from the database.
-            </DialogDescription>
-          </DialogHeader>
-
-          {deletingGuest && (
-            <div className="py-4">
-              <p className="text-sm text-gray-600">
-                <strong>User ID:</strong> {deletingGuest.id}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Name:</strong> {deletingGuest.name}
-              </p>
-              <p className="text-sm text-gray-600">
-                <strong>Email:</strong> {deletingGuest.email}
-              </p>
+        <div ref={tableRef} className="flex-1 overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span className="text-gray-600">Loading guests...</span>
+              </div>
             </div>
+          ) : (
+            <DataTable
+              ref={dtRef}
+              data={guestsState}
+              columns={columns}
+              className="display nowrap w-full border border-gray-400"
+              options={{
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50, 100],
+                order: [[0, "asc"]],
+                searching: true,
+                paging: true,
+                info: false,
+                scrollX: true,
+                scrollY: "calc(100vh - 350px)",
+                scrollCollapse: true,
+                layout: {
+                  topStart: "buttons",
+                  topEnd: "search",
+                  bottomStart: "pageLength",
+                  bottomEnd: "paging",
+                },
+                buttons: [
+                  {
+                    extend: "colvis",
+                    text: "Column Visibility",
+                    collectionLayout: "fixed two-column",
+                  },
+                ],
+                columnControl: [
+                  "order",
+                  ["orderAsc", "orderDesc", "spacer", "search"],
+                ],
+              }}
+            />
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Yes, Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
 
-      {/* Guest Details Sheet */}
-      <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-[400px] sm:max-w-[600px] sm:w-[700px] lg:w-[800px] flex flex-col">
-          <SheetHeader className="flex-shrink-0">
-            <SheetTitle>User Details</SheetTitle>
-            <SheetDescription>
-              Complete information about the selected user
-            </SheetDescription>
-          </SheetHeader>
+        {/* Confirmation Dialog for Delete Action */}
+        <Dialog
+          open={isConfirmDeleteOpen}
+          onOpenChange={setIsConfirmDeleteOpen}
+        >
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Confirm Delete</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this user? This action cannot be
+                undone and will permanently remove the user from the database.
+              </DialogDescription>
+            </DialogHeader>
 
-          {selectedGuest && (
-            <>
-              {/* Scrollable Content: either view or edit mode */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                {sheetMode === "view" ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+            {deletingGuest && (
+              <div className="py-4">
+                <p className="text-sm text-gray-600">
+                  <strong>User ID:</strong> {deletingGuest.id}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Name:</strong> {deletingGuest.name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Email:</strong> {deletingGuest.email}
+                </p>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={cancelDelete}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={confirmDelete}>
+                Yes, Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Guest Details Sheet */}
+        <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
+          <SheetContent className="w-[400px] sm:max-w-[600px] sm:w-[700px] lg:w-[800px] flex flex-col">
+            <SheetHeader className="flex-shrink-0">
+              <SheetTitle>User Details</SheetTitle>
+              <SheetDescription>
+                Complete information about the selected user
+              </SheetDescription>
+            </SheetHeader>
+
+            {selectedGuest && (
+              <>
+                {/* Scrollable Content: either view or edit mode */}
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  {sheetMode === "view" ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            User ID
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedGuest.id}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Name
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedGuest.name}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Phone Number
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedGuest.phone}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Email Address
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedGuest.email}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Date of Birth
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {formatDateForDisplay(selectedGuest.dob) || "N/A"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Nationality
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {selectedGuest.nationality || "N/A"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
-                          User ID
+                          Address
                         </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedGuest.id}
-                          </span>
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]">
+                          <div className="text-sm text-gray-900">
+                            {selectedGuest.address1 && (
+                              <div>{selectedGuest.address1}</div>
+                            )}
+                            {selectedGuest.address2 && (
+                              <div>{selectedGuest.address2}</div>
+                            )}
+                            {(selectedGuest.city ||
+                              selectedGuest.state ||
+                              selectedGuest.pincode) && (
+                              <div>
+                                {[
+                                  selectedGuest.city,
+                                  selectedGuest.state,
+                                  selectedGuest.pincode,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </div>
+                            )}
+                            {selectedGuest.country && (
+                              <div>{selectedGuest.country}</div>
+                            )}
+                            {!selectedGuest.address1 && !selectedGuest.city && (
+                              <span className="text-gray-500">N/A</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Registration Date
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {formatDateForDisplay(
+                                selectedGuest.registrationDate,
+                              ) || "N/A"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Register Through
+                          </Label>
+                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                            <Badge
+                              variant={
+                                selectedGuest.registerThrough === "admin"
+                                  ? "secondary"
+                                  : "default"
+                              }
+                            >
+                              {selectedGuest.registerThrough || "frontend"}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
 
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
-                          Name
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedGuest.name}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Phone Number
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedGuest.phone}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Email Address
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedGuest.email}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Date of Birth
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {formatDateForDisplay(selectedGuest.dob) || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Nationality
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {selectedGuest.nationality || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">
-                        Address
-                      </Label>
-                      <div className="mt-1 p-3 bg-gray-50 rounded-md border min-h-[80px]">
-                        <div className="text-sm text-gray-900">
-                          {selectedGuest.address1 && (
-                            <div>{selectedGuest.address1}</div>
-                          )}
-                          {selectedGuest.address2 && (
-                            <div>{selectedGuest.address2}</div>
-                          )}
-                          {(selectedGuest.city ||
-                            selectedGuest.state ||
-                            selectedGuest.pincode) && (
-                            <div>
-                              {[
-                                selectedGuest.city,
-                                selectedGuest.state,
-                                selectedGuest.pincode,
-                              ]
-                                .filter(Boolean)
-                                .join(", ")}
-                            </div>
-                          )}
-                          {selectedGuest.country && (
-                            <div>{selectedGuest.country}</div>
-                          )}
-                          {!selectedGuest.address1 && !selectedGuest.city && (
-                            <span className="text-gray-500">N/A</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Registration Date
-                        </Label>
-                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                          <span className="text-sm text-gray-900">
-                            {formatDateForDisplay(
-                              selectedGuest.registrationDate,
-                            ) || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Register Through
+                          Profile Status
                         </Label>
                         <div className="mt-1 p-3 bg-gray-50 rounded-md border">
                           <Badge
                             variant={
-                              selectedGuest.registerThrough === "admin"
-                                ? "secondary"
-                                : "default"
+                              selectedGuest.profileCompleted
+                                ? "default"
+                                : "outline"
                             }
                           >
-                            {selectedGuest.registerThrough || "frontend"}
+                            {selectedGuest.profileCompleted
+                              ? "Complete"
+                              : "Incomplete"}
                           </Badge>
                         </div>
                       </div>
                     </div>
+                  ) : (
+                    // Edit form inside sheet
+                    formData && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="name">Name</Label>
+                          <Input
+                            id="name"
+                            value={formData.name || ""}
+                            onChange={(e) =>
+                              handleInputChange("name", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="phone">Phone</Label>
+                          <Input
+                            id="phone"
+                            value={formData.phone || ""}
+                            onChange={(e) =>
+                              handleInputChange("phone", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2 md:col-span-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email || ""}
+                            onChange={(e) =>
+                              handleInputChange("email", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="dob">Date of Birth</Label>
+                          <Input
+                            id="dob"
+                            type="date"
+                            value={formData.dob || ""}
+                            onChange={(e) =>
+                              handleInputChange("dob", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="nationality">Nationality</Label>
+                          <Input
+                            id="nationality"
+                            value={formData.nationality || ""}
+                            onChange={(e) =>
+                              handleInputChange("nationality", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2 md:col-span-2">
+                          <Label htmlFor="address1">Address Line 1</Label>
+                          <Input
+                            id="address1"
+                            value={formData.address1 || ""}
+                            onChange={(e) =>
+                              handleInputChange("address1", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2 md:col-span-2">
+                          <Label htmlFor="address2">Address Line 2</Label>
+                          <Input
+                            id="address2"
+                            value={formData.address2 || ""}
+                            onChange={(e) =>
+                              handleInputChange("address2", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="city">City</Label>
+                          <Input
+                            id="city"
+                            value={formData.city || ""}
+                            onChange={(e) =>
+                              handleInputChange("city", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="state">State</Label>
+                          <Input
+                            id="state"
+                            value={formData.state || ""}
+                            onChange={(e) =>
+                              handleInputChange("state", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="pincode">Pincode</Label>
+                          <Input
+                            id="pincode"
+                            value={formData.pincode || ""}
+                            onChange={(e) =>
+                              handleInputChange("pincode", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="country">Country</Label>
+                          <Input
+                            id="country"
+                            value={formData.country || ""}
+                            onChange={(e) =>
+                              handleInputChange("country", e.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
 
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">
-                        Profile Status
-                      </Label>
-                      <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                        <Badge
-                          variant={
-                            selectedGuest.profileCompleted
-                              ? "default"
-                              : "outline"
-                          }
-                        >
-                          {selectedGuest.profileCompleted
-                            ? "Complete"
-                            : "Incomplete"}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Edit form inside sheet
-                  formData && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                          id="name"
-                          value={formData.name || ""}
-                          onChange={(e) =>
-                            handleInputChange("name", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input
-                          id="phone"
-                          value={formData.phone || ""}
-                          onChange={(e) =>
-                            handleInputChange("phone", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2 md:col-span-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email || ""}
-                          onChange={(e) =>
-                            handleInputChange("email", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="dob">Date of Birth</Label>
-                        <Input
-                          id="dob"
-                          type="date"
-                          value={formData.dob || ""}
-                          onChange={(e) =>
-                            handleInputChange("dob", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="nationality">Nationality</Label>
-                        <Input
-                          id="nationality"
-                          value={formData.nationality || ""}
-                          onChange={(e) =>
-                            handleInputChange("nationality", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2 md:col-span-2">
-                        <Label htmlFor="address1">Address Line 1</Label>
-                        <Input
-                          id="address1"
-                          value={formData.address1 || ""}
-                          onChange={(e) =>
-                            handleInputChange("address1", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2 md:col-span-2">
-                        <Label htmlFor="address2">Address Line 2</Label>
-                        <Input
-                          id="address2"
-                          value={formData.address2 || ""}
-                          onChange={(e) =>
-                            handleInputChange("address2", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="city">City</Label>
-                        <Input
-                          id="city"
-                          value={formData.city || ""}
-                          onChange={(e) =>
-                            handleInputChange("city", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="state">State</Label>
-                        <Input
-                          id="state"
-                          value={formData.state || ""}
-                          onChange={(e) =>
-                            handleInputChange("state", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="pincode">Pincode</Label>
-                        <Input
-                          id="pincode"
-                          value={formData.pincode || ""}
-                          onChange={(e) =>
-                            handleInputChange("pincode", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="country">Country</Label>
-                        <Input
-                          id="country"
-                          value={formData.country || ""}
-                          onChange={(e) =>
-                            handleInputChange("country", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-
-              {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === "view" ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        if (!perms.canEdit) return;
-                        // switch to edit mode inside the same sheet
-                        setSheetMode("edit");
-                        setEditingGuest(selectedGuest);
-                        setFormData({ ...selectedGuest });
-                      }}
-                      disabled={!perms.canEdit}
-                      title={
-                        !perms.canEdit
-                          ? "You do not have permission to edit"
-                          : undefined
-                      }
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => {
-                        if (!perms.canDisable) return;
-                        setIsDetailSheetOpen(false);
-                        handleDelete(selectedGuest);
-                      }}
-                      disabled={!perms.canDisable}
-                      title={
-                        !perms.canDisable
-                          ? "You do not have permission to delete"
-                          : undefined
-                      }
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="outline" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        if (!perms.canEdit) return;
-                        handleUpdate();
-                      }}
-                      disabled={!perms.canEdit}
-                      title={
-                        !perms.canEdit
-                          ? "You do not have permission to update"
-                          : undefined
-                      }
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </div>
+                {/* Fixed Action Buttons */}
+                <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
+                  {sheetMode === "view" ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          if (!perms.canEdit) return;
+                          // switch to edit mode inside the same sheet
+                          setSheetMode("edit");
+                          setEditingGuest(selectedGuest);
+                          setFormData({ ...selectedGuest });
+                        }}
+                        disabled={!perms.canEdit}
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to edit"
+                            : undefined
+                        }
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          if (!perms.canDisable) return;
+                          setIsDetailSheetOpen(false);
+                          handleDelete(selectedGuest);
+                        }}
+                        disabled={!perms.canDisable}
+                        title={
+                          !perms.canDisable
+                            ? "You do not have permission to delete"
+                            : undefined
+                        }
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outline" onClick={handleCancel}>
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          if (!perms.canEdit) return;
+                          handleUpdate();
+                        }}
+                        disabled={!perms.canEdit}
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to update"
+                            : undefined
+                        }
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </>
   );
 }

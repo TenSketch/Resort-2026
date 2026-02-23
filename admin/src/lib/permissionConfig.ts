@@ -17,7 +17,6 @@ export type PageId =
     | 'reports'
     | 'frontdesk'
     | 'guests-view'
-    | 'guests-add'
     | 'tent-spots-view'
     | 'tent-spots-add'
     | 'tent-types-view'
@@ -59,7 +58,6 @@ export const PAGE_DEFINITIONS: PageDefinition[] = [
     { id: 'reports', label: 'Reports', paths: ['/reports/daily-occupancy-junglestar', '/reports/daily-occupancy-vanavihari', '/dailyoccupanyreport/vanavihari', '/dailyoccupanyreport/junglestar'], category: 'resort' },
     { id: 'frontdesk', label: 'Front Desk', paths: ['/frontdesk/checkin', '/frontdesk/checkout'], category: 'resort' },
     { id: 'guests-view', label: 'All Guests', paths: ['/guests/all'], category: 'resort' },
-    { id: 'guests-add', label: 'Add Guest', paths: ['/guests/add'], category: 'resort' },
 
     // Tent Management
     { id: 'dashboard-tent', label: 'Tent Dashboard', paths: ['/tent/dashboard'], category: 'tent' },
@@ -101,7 +99,7 @@ export const DEFAULT_ROLE_PERMISSIONS = {
         canExport: true,
     },
     admin: {
-        visiblePages: ALL_PAGE_IDS.filter(id => id !== 'user-management' && id !== 'approvals'), // All except user-management and approvals
+        visiblePages: ALL_PAGE_IDS.filter(id => id !== 'user-management' && id !== 'approvals' && id !== 'guests-view'), // All except user-management, approvals, and guests-view
         canEdit: false,
         canDisable: false,
         canAddReservations: false,

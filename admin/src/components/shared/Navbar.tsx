@@ -1,6 +1,18 @@
-
 import React, { useEffect, useRef, useState } from "react";
-import { Menu, User, LogOut, Building2, Tent, MapPin, Check, ChevronDown, Users, UserPlus, Trash2, Bell } from "lucide-react";
+import {
+  Menu,
+  User,
+  LogOut,
+  Building2,
+  Tent,
+  MapPin,
+  Check,
+  ChevronDown,
+  Users,
+  UserPlus,
+  Trash2,
+  Bell,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router";
 import Breadcrumb from "./Breadcrumb";
@@ -30,14 +42,13 @@ const breadcrumbMap: Record<string, string[]> = {
   "/frontdesk/checkout": ["Front Desk", "Check Out"],
   "/rooms/add": ["Rooms", "Add Room"],
   "/rooms/all": ["Rooms", "All Rooms"],
-  "/reports/consolidation-report-vanavihari" : ["Consolidation Report"],
-  "/users/manage" : ["User Management"],
+  "/reports/consolidation-report-vanavihari": ["Consolidation Report"],
+  "/users/manage": ["User Management"],
   "/approvals": ["Approvals"],
   "/approvals/:id": ["Approvals", "Review Booking"],
 
   "/reports/daily-occupancy-junglestar": ["Report", "JungleStar"],
   "/reports/daily-occupancy-vanavihari": ["Report", "Vanavihari"],
-
 
   "/guests/add": ["Guests", "Add Guest"],
   "/guests/all": ["Guests", "All Guests"],
@@ -60,10 +71,10 @@ const breadcrumbMap: Record<string, string[]> = {
   "/tent/dashboard": ["Tent", "Dashboard"],
   "/tent/bookings": ["Tent", "Bookings"],
 
-  "/tentinventory/alltents" : ["Tent Inventory","All Tents"],
-  "/tentinventory/addtents" : ["Tent Inventory","Add Tents"],
+  "/tentinventory/alltents": ["Tent Inventory", "All Tents"],
+  "/tentinventory/addtents": ["Tent Inventory", "Add Tents"],
 
-  "/tentspots/all" : ["Tent Spots","All Tent Spots"],
+  "/tentspots/all": ["Tent Spots", "All Tent Spots"],
   "/tent/inventory": ["Tent", "Inventory"],
   "/tentspots/details": ["Tent Spots", "Details"],
   "/tourist/dashboard": ["Trek Spots", "Dashboard"],
@@ -86,7 +97,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { viewType, setViewType } = useViewType();
   const currentPath = location.pathname;
 
-  const [avatar, setAvatar] = useState<string | null>(() => localStorage.getItem('admin_avatar'));
+  const [avatar, setAvatar] = useState<string | null>(() =>
+    localStorage.getItem("admin_avatar"),
+  );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -94,19 +107,22 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const breadcrumbs = (() => {
     if (breadcrumbMap[currentPath]) return breadcrumbMap[currentPath];
     // Pattern match dynamic routes
-    if (/^\/approvals\/[^/]+$/.test(currentPath)) return ["Approvals", "Review Booking"];
-    if (/^\/reservation\/[^/]+$/.test(currentPath)) return ["Reservations", "Detail"];
-    if (/^\/reports\/[^/]+$/.test(currentPath)) return ["Reports", "Report Detail"];
+    if (/^\/approvals\/[^/]+$/.test(currentPath))
+      return ["Approvals", "Review Booking"];
+    if (/^\/reservation\/[^/]+$/.test(currentPath))
+      return ["Reservations", "Detail"];
+    if (/^\/reports\/[^/]+$/.test(currentPath))
+      return ["Reports", "Report Detail"];
     return ["Dashboard", "Unknown Page"];
   })();
 
   // Fetch pending approval count for DFO
   useEffect(() => {
     if (!admin) return;
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    const token = localStorage.getItem('admin_token');
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const token = localStorage.getItem("admin_token");
     const headers: any = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const fetchCount = async () => {
       try {
@@ -116,16 +132,22 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
         const reservations: any[] = data.reservations || data || [];
         if (isDFO || isSuperAdmin) {
           // DFO sees total pending approvals count
-          const count = reservations.filter((r: any) => r.approval_status === 'PENDING_DFO_APPROVAL').length;
+          const count = reservations.filter(
+            (r: any) => r.approval_status === "PENDING_DFO_APPROVAL",
+          ).length;
           setPendingCount(count);
         } else {
           // Other admins see count of their own bookings that changed status
-          const changed = reservations.filter((r: any) =>
-            r.approval_status === 'APPROVED' || r.approval_status === 'REJECTED'
+          const changed = reservations.filter(
+            (r: any) =>
+              r.approval_status === "APPROVED" ||
+              r.approval_status === "REJECTED",
           ).length;
           setPendingCount(changed);
         }
-      } catch { /* silent */ }
+      } catch {
+        /* silent */
+      }
     };
 
     fetchCount();
@@ -135,7 +157,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
   const handleSignOut = () => {
     logout();
-    navigate('/auth/login');
+    navigate("/auth/login");
   };
 
   const handleViewTypeChange = (newViewType: ViewType) => {
@@ -144,25 +166,27 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   };
 
   useEffect(() => {
-    const onUpdated = () => setAvatar(localStorage.getItem('admin_avatar'));
-    window.addEventListener('admin-avatar-updated', onUpdated);
-    return () => window.removeEventListener('admin-avatar-updated', onUpdated);
+    const onUpdated = () => setAvatar(localStorage.getItem("admin_avatar"));
+    window.addEventListener("admin-avatar-updated", onUpdated);
+    return () => window.removeEventListener("admin-avatar-updated", onUpdated);
   }, []);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (
+    e,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       try {
         const dataUrl = reader.result as string;
-        localStorage.setItem('admin_avatar', dataUrl);
+        localStorage.setItem("admin_avatar", dataUrl);
         setAvatar(dataUrl);
-        window.dispatchEvent(new Event('admin-avatar-updated'));
+        window.dispatchEvent(new Event("admin-avatar-updated"));
       } catch (err) {
         // ignore
       }
@@ -170,13 +194,19 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     reader.readAsDataURL(file);
   };
 
-  const viewTypeOptions: { value: ViewType; label: string; icon: typeof Building2 }[] = [
+  const viewTypeOptions: {
+    value: ViewType;
+    label: string;
+    icon: typeof Building2;
+  }[] = [
     { value: "resort", label: "Resort", icon: Building2 },
     { value: "tent", label: "Tent", icon: Tent },
     { value: "tourist-spot", label: "Trek Spot", icon: MapPin },
   ];
 
-  const currentViewOption = viewTypeOptions.find(option => option.value === viewType);
+  const currentViewOption = viewTypeOptions.find(
+    (option) => option.value === viewType,
+  );
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3">
@@ -212,54 +242,71 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
         {/* Right side - reduced spacing for mobile */}
         <div className="flex items-center gap-1 sm:gap-2 md:gap-2 flex-shrink-0">
-
           {/* Bell Notification Icon */}
           <Button
             variant="ghost"
             size="sm"
             className="relative flex items-center min-h-[44px] h-11 sm:h-9 px-2"
-            onClick={() => navigate(isDFO || isSuperAdmin ? '/approvals' : '/reservation/all')}
-            title={isDFO || isSuperAdmin ? 'Pending Approvals' : 'Booking Status Updates'}
+            onClick={() =>
+              navigate(
+                isDFO || isSuperAdmin ? "/approvals" : "/reservation/all",
+              )
+            }
+            title={
+              isDFO || isSuperAdmin
+                ? "Pending Approvals"
+                : "Booking Status Updates"
+            }
           >
             <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             {pendingCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 sm:top-0.5 sm:right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none">
-                {pendingCount > 99 ? '99+' : pendingCount}
+                {pendingCount > 99 ? "99+" : pendingCount}
               </span>
             )}
           </Button>
 
-          {/* Guests Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center min-h-[44px] h-11 sm:h-9 px-2"
-              >
-                <span className="text-[13px] font-medium text-gray-500 mr-1 hidden sm:inline">Guests</span>
-                <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => navigate('/guests/all')} className="cursor-pointer">
-                <Users className="mr-2 h-4 w-4" />
-                All Guests
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/guests/add')} className="cursor-pointer">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add Guest
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Guests Dropdown - restricted to Superadmin */}
+          {isSuperAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center min-h-[44px] h-11 sm:h-9 px-2"
+                >
+                  <span className="text-[13px] font-medium text-gray-500 mr-1 hidden sm:inline">
+                    Guests
+                  </span>
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => navigate("/guests/all")}
+                  className="cursor-pointer"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  All Guests
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* View Type Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center justify-between min-h-[44px] h-11 sm:h-9 px-2 md:px-3 min-w-0">
+              <Button
+                variant="outline"
+                className="flex items-center justify-between min-h-[44px] h-11 sm:h-9 px-2 md:px-3 min-w-0"
+              >
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <span className="text-[13px] font-medium text-gray-500 mr-1 whitespace-nowrap hidden sm:inline">{currentViewOption?.label}</span>
-                  {currentViewOption && <currentViewOption.icon className="h-4 w-4 sm:h-4 sm:w-4" />}
+                  <span className="text-[13px] font-medium text-gray-500 mr-1 whitespace-nowrap hidden sm:inline">
+                    {currentViewOption?.label}
+                  </span>
+                  {currentViewOption && (
+                    <currentViewOption.icon className="h-4 w-4 sm:h-4 sm:w-4" />
+                  )}
                 </div>
                 <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 ml-0.5 sm:ml-1" />
               </Button>
@@ -283,7 +330,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
           {/* <NotificationDropdown/> */}
 
-
           {/* Global top-bar menu */}
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -305,15 +351,29 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </DropdownMenu> */}
 
           {/* Account dropdown */}
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center min-h-[44px] h-11 sm:h-9 px-1.5 sm:px-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center min-h-[44px] h-11 sm:h-9 px-1.5 sm:px-2"
+              >
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
                   {avatar ? (
                     // eslint-disable-next-line jsx-a11y/img-redundant-alt
-                    <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+                    <img
+                      src={avatar}
+                      alt="avatar"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <User className="h-4 w-4 sm:h-4 sm:w-4 text-white" />
                   )}
@@ -326,26 +386,39 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                   <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
                     {avatar ? (
                       // eslint-disable-next-line jsx-a11y/img-redundant-alt
-                      <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+                      <img
+                        src={avatar}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <User className="h-5 w-5 text-slate-600" />
                     )}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-slate-800 truncate">{admin?.name || 'Account'}</div>
-                    <div className="text-xs text-slate-500 capitalize">{(
-                      admin?.role === 'superadmin' ? 'Super Admin' :
-                      admin?.role || ''
-                    )}</div>
+                    <div className="text-sm font-semibold text-slate-800 truncate">
+                      {admin?.name || "Account"}
+                    </div>
+                    <div className="text-xs text-slate-500 capitalize">
+                      {admin?.role === "superadmin"
+                        ? "Super Admin"
+                        : admin?.role || ""}
+                    </div>
                   </div>
                 </div>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/my-account')} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => navigate("/my-account")}
+                className="cursor-pointer"
+              >
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleUploadClick} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={handleUploadClick}
+                className="cursor-pointer"
+              >
                 <UserPlus className="mr-2 h-4 w-4" />
                 Upload Photo
               </DropdownMenuItem>
@@ -353,12 +426,12 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <DropdownMenuItem
                   onClick={() => {
                     try {
-                      localStorage.removeItem('admin_avatar');
+                      localStorage.removeItem("admin_avatar");
                     } catch (e) {
                       // ignore
                     }
                     setAvatar(null);
-                    window.dispatchEvent(new Event('admin-avatar-updated'));
+                    window.dispatchEvent(new Event("admin-avatar-updated"));
                   }}
                   className="cursor-pointer"
                 >
@@ -367,7 +440,10 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleSignOut}>
+              <DropdownMenuItem
+                className="text-red-600 cursor-pointer"
+                onClick={handleSignOut}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </DropdownMenuItem>

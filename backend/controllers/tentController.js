@@ -486,7 +486,7 @@ export const getAvailableTents = async (req, res) => {
     // Find all tent reservations that overlap with the requested dates
     const overlappingReservations = await TentReservation.find({
       tentSpot: tentSpotId,
-      status: { $in: ['pending', 'confirmed'] },
+      status: { $in: ['Pending', 'confirmed'] },
       $or: [
         {
           // Reservation starts during the requested period

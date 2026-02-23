@@ -18,7 +18,7 @@ export const getDailyOccupancyReport = async (req, res) => {
     // Get all active reservations for today (checkIn <= today < checkOut)
     const reservations = await Reservation.find({
       resort: resortId,
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -102,7 +102,7 @@ export const getDailyOccupancyReportBySlug = async (req, res) => {
     // Get all active reservations for today
     const reservations = await Reservation.find({
       resort: resort._id.toString(),
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -188,7 +188,7 @@ export const getDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await Reservation.find({
       ...resortFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -200,7 +200,7 @@ export const getDashboardStats = async (req, res) => {
     // Expected checkouts today
     const expectedCheckouts = await Reservation.countDocuments({
       ...resortFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkOut: { $gte: today, $lt: tomorrow }
     })
 
@@ -266,7 +266,7 @@ export const getDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           resort: resortName,
           room: roomName,
-          status: booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -282,7 +282,7 @@ export const getDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await Reservation.countDocuments({
         ...resortFilter,
-        status: 'reserved',
+        status: 'Reserved',
         checkIn: { $lte: nextDate },
         checkOut: { $gt: date }
       })
@@ -303,7 +303,7 @@ export const getDashboardStats = async (req, res) => {
       const resortRooms = await Room.find({ resort: resort._id, status: 'available' }).lean()
       const resortActiveReservations = await Reservation.find({
         resort: resort._id.toString(),
-        status: 'reserved',
+        status: 'Reserved',
         checkIn: { $lte: tomorrow },
         checkOut: { $gt: today }
       }).lean()
@@ -372,7 +372,7 @@ export const getTentDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await TentReservation.find({
       ...tentSpotFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkinDate: { $lte: tomorrow },
       checkoutDate: { $gt: today }
     }).lean()
@@ -384,7 +384,7 @@ export const getTentDashboardStats = async (req, res) => {
     // Expected checkouts today
     const expectedCheckouts = await TentReservation.countDocuments({
       ...tentSpotFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkoutDate: { $gte: today, $lt: tomorrow }
     })
 
@@ -452,7 +452,7 @@ export const getTentDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           tentSpot: tentSpotName,
           tent: tentName,
-          status: booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -468,7 +468,7 @@ export const getTentDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await TentReservation.countDocuments({
         ...tentSpotFilter,
-        status: 'reserved',
+        status: 'Reserved',
         checkinDate: { $lte: nextDate },
         checkoutDate: { $gt: date }
       })
@@ -491,7 +491,7 @@ export const getTentDashboardStats = async (req, res) => {
       
       const spotActiveReservations = await TentReservation.find({
         tentSpot: tentSpot._id.toString(),
-        status: 'reserved',
+        status: 'Reserved',
         checkinDate: { $lte: tomorrow },
         checkoutDate: { $gt: today }
       }).lean()

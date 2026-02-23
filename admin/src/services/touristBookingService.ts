@@ -66,7 +66,7 @@ export const getAllTouristBookings = async (): Promise<TouristBooking[]> => {
             status: r.status,
             amountPayable: r.totalPayable,
             paymentStatus: r.paymentStatus,
-            amountPaid: r.paymentStatus === 'paid' ? r.totalPayable : 0,
+            amountPaid: r.paymentStatus === 'Paid' ? r.totalPayable : 0,
             paymentTransactionId: r.rawSource?.transactionId || r.paymentTransactionId,
             internalNotes: r.internalNotes
         }));

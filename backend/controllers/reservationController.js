@@ -16,14 +16,14 @@ export const expirePendingReservations = async () => {
     // Find all pending reservations that have expired
     const expiredReservations = await Reservation.updateMany(
       {
-        status: 'pending',
-        paymentStatus: 'unpaid',
+        status: 'Pending',
+        paymentStatus: 'Unpaid',
         expiresAt: { $lte: now }
       },
       {
         $set: { 
-          status: 'not-reserved',
-          paymentStatus: 'unpaid'
+          status: 'Not-reserved',
+          paymentStatus: 'Unpaid'
         }
       }
     )
@@ -290,8 +290,8 @@ export const createPublicBooking = async (req, res) => {
     }
 
     // Set pending status and expiry (15 minutes)
-    payload.status = 'pending'
-    payload.paymentStatus = 'unpaid'
+    payload.status = 'Pending'
+    payload.paymentStatus = 'Unpaid'
     const expiryTime = new Date()
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     payload.expiresAt = expiryTime

@@ -45,12 +45,12 @@ export default function AddReservationForm() {
     guests: "",
     extraGuests: "",
     children: "",
-    status: "reserved",
+    status: "Reserved",
     bookingId: "",
     reservationDate: format(new Date(), "yyyy-MM-dd"),
     numberOfRooms: "",
     totalPayable: 0,
-    paymentStatus: "paid",
+    paymentStatus: "Paid",
     refundPercentage: "",
     existingGuest: "",
     fullName: "",
@@ -442,12 +442,12 @@ export default function AddReservationForm() {
       guests: "",
       extraGuests: "",
       children: "",
-      status: "reserved",
+      status: "Reserved",
       bookingId: "",
       reservationDate: format(new Date(), "yyyy-MM-dd"),
       numberOfRooms: "",
       totalPayable: 0,
-      paymentStatus: "paid",
+      paymentStatus: "Paid",
       refundPercentage: "",
       existingGuest: "",
       fullName: "",
@@ -518,12 +518,12 @@ export default function AddReservationForm() {
           guests: "",
           extraGuests: "",
           children: "",
-          status: "reserved",
+          status: "Reserved",
           bookingId: "",
           reservationDate: format(new Date(), "yyyy-MM-dd"),
           numberOfRooms: "",
           totalPayable: 0,
-          paymentStatus: "paid",
+          paymentStatus: "Paid",
           refundPercentage: "",
           existingGuest: "",
           fullName: "",
@@ -665,10 +665,10 @@ export default function AddReservationForm() {
                     <SelectValue placeholder="Choose Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="reserved">Reserved</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="not-reserved">Not Reserved</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="Reserved">Reserved</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -679,9 +679,9 @@ export default function AddReservationForm() {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="unpaid">Unpaid</SelectItem>
-                    <SelectItem value="refunded">Refunded</SelectItem>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                    <SelectItem value="Unpaid">Unpaid</SelectItem>
+                    <SelectItem value="Refunded">Refunded</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

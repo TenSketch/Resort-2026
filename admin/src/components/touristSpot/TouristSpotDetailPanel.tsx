@@ -98,7 +98,7 @@ const TouristSpotDetailPanel = ({
         }
       }
 
-      showToast("Image deleted successfully!", "success");
+      showToast("Image deleted successfully!", "Success");
     } catch (e: any) {
       console.error(e);
       showToast("Failed to delete image: " + e.message, "error");
@@ -167,7 +167,7 @@ const TouristSpotDetailPanel = ({
       if (data?.touristSpot && onSpotUpdated) {
         onSpotUpdated(data.touristSpot);
       }
-      showToast("Trek spot saved successfully!", "success");
+      showToast("Trek spot saved successfully!", "Success");
       setNewImages([]);
       setIsEditing(false);
     } catch (e: any) {

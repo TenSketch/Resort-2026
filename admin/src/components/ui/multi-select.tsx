@@ -68,7 +68,7 @@ export function MultiSelect({
           tabIndex={0}
           aria-disabled={disabled}
           className={cn(
-            "flex min-h-[48px] w-full items-center justify-between rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors cursor-pointer",
+            "flex min-h-10 w-full items-center justify-between rounded-sm border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors cursor-pointer",
             disabled && "cursor-not-allowed opacity-50 pointer-events-none",
             className,
           )}

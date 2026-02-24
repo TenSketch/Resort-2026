@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { format } from "date-fns";
+import { useAdmin } from "@/lib/AdminProvider";
 
 interface Resort {
   _id: string;
@@ -36,6 +37,9 @@ interface Room {
 }
 
 export default function AddReservationForm() {
+  const { isDFO, isSuperAdmin } = useAdmin();
+  const isAdminOrDFO = isDFO || isSuperAdmin;
+
   const [formData, setFormData] = useState({
     resort: "",
     cottageTypes: [] as string[],
@@ -45,12 +49,12 @@ export default function AddReservationForm() {
     guests: "",
     extraGuests: "",
     children: "",
-    status: "Reserved",
+    status: isAdminOrDFO ? "Reserved" : "Pending",
     bookingId: "",
     reservationDate: format(new Date(), "yyyy-MM-dd"),
     numberOfRooms: "",
     totalPayable: 0,
-    paymentStatus: "Paid",
+    paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
     refundPercentage: "",
     existingGuest: "",
     fullName: "",
@@ -69,8 +73,11 @@ export default function AddReservationForm() {
 
   const [resorts, setResorts] = useState<Resort[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [cottageTypesList, setCottageTypesList] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
-  const [selectedResortData, setSelectedResortData] = useState<Resort | null>(null);
+  const [selectedResortData, setSelectedResortData] = useState<Resort | null>(
+    null,
+  );
   const [loading, setLoading] = useState({
     resorts: false,
     cottageTypes: false,
@@ -89,20 +96,14 @@ export default function AddReservationForm() {
     }
 
     const selectedRooms = rooms.filter((room) =>
-      formData.rooms.includes(room._id)
+      formData.rooms.includes(room._id),
     );
 
-    const maxGuests = selectedRooms.reduce(
-      (sum, room) => sum + (room.guests || 0),
-      0
-    );
-    const maxExtraGuests = selectedRooms.reduce(
-      (sum, room) => sum + (room.extraGuests || 0),
-      0
-    );
+    const maxGuests = selectedRooms.length * 2;
+    const maxExtraGuests = selectedRooms.length * 1;
     const maxChildren = selectedRooms.reduce(
       (sum, room) => sum + (room.children || 0),
-      0
+      0,
     );
 
     return { maxGuests, maxExtraGuests, maxChildren };
@@ -117,9 +118,12 @@ export default function AddReservationForm() {
     const checkOutDate = new Date(formData.checkOut);
     const diffTime = checkOutDate.getTime() - checkInDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // User requested 23-24 to be 2 days and 2 nights
+    const count = diffDays > 0 ? diffDays + 1 : 0;
     return {
-      days: diffDays > 0 ? diffDays : 0,
-      nights: diffDays > 0 ? diffDays : 0,
+      days: count,
+      nights: count,
     };
   }, [formData.checkIn, formData.checkOut]);
 
@@ -127,40 +131,40 @@ export default function AddReservationForm() {
   useEffect(() => {
     const generateBookingId = async () => {
       if (!formData.resort) {
-        setFormData(prev => ({ ...prev, bookingId: "" }));
+        setFormData((prev) => ({ ...prev, bookingId: "" }));
         return;
       }
 
       try {
         // Get resort details
-        const selectedResort = resorts.find(r => r._id === formData.resort);
+        const selectedResort = resorts.find((r) => r._id === formData.resort);
         if (!selectedResort) return;
 
         // Get resort initials (first letter of each word)
         const resortInitials = selectedResort.resortName
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase())
-          .join('');
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase())
+          .join("");
 
         // Get current date/time
         const now = new Date();
-        const day = String(now.getDate()).padStart(2, '0');
-        const hour = String(now.getHours()).padStart(2, '0');
-        const minute = String(now.getMinutes()).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, "0");
+        const hour = String(now.getHours()).padStart(2, "0");
+        const minute = String(now.getMinutes()).padStart(2, "0");
         const year = String(now.getFullYear()).slice(-2);
-        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, "0");
 
         // Fetch last booking serial from backend
         const res = await fetch(`${apiUrl}/api/reservations/next-serial`);
         const data = await res.json();
-        const serial = String(data.serial || 1).padStart(3, '0');
+        const serial = String(data.serial || 1).padStart(3, "0");
 
         // Generate booking ID: BB2109072510008
         const bookingId = `${resortInitials}${day}${hour}${minute}${year}${month}${serial}`;
 
-        setFormData(prev => ({ ...prev, bookingId }));
+        setFormData((prev) => ({ ...prev, bookingId }));
       } catch (err) {
-        console.error('Error generating booking ID:', err);
+        console.error("Error generating booking ID:", err);
       }
     };
 
@@ -169,9 +173,9 @@ export default function AddReservationForm() {
 
   // Auto-update number of rooms based on selected rooms
   useEffect(() => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      numberOfRooms: String(formData.rooms.length)
+      numberOfRooms: String(formData.rooms.length),
     }));
   }, [formData.rooms]);
 
@@ -207,8 +211,8 @@ export default function AddReservationForm() {
     // Format dates as YYYY-MM-DD for HTML date input
     const formatDate = (date: Date) => {
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     };
 
@@ -218,7 +222,10 @@ export default function AddReservationForm() {
     if (selectedResortData) {
       const resortName = selectedResortData.resortName.toLowerCase();
       // Jungle Star, Valamuru: next day onwards
-      if (resortName.includes('jungle star') || resortName.includes('valamuru')) {
+      if (
+        resortName.includes("jungle star") ||
+        resortName.includes("valamuru")
+      ) {
         minDate = formatDate(tomorrow);
       }
       // Vanavihari, Maredumilli: today onwards (default)
@@ -235,7 +242,7 @@ export default function AddReservationForm() {
   // Calculate pricing whenever relevant fields change
   useEffect(() => {
     if (formData.rooms.length === 0) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         roomPrice: 0,
         totalPayable: 0,
@@ -244,16 +251,17 @@ export default function AddReservationForm() {
     }
 
     const selectedRooms = rooms.filter((room) =>
-      formData.rooms.includes(room._id)
+      formData.rooms.includes(room._id),
     );
 
-    // Calculate number of days
+    // Calculate number of days (User requested 23-24 to be 2 days)
     let days = 1;
     if (formData.checkIn && formData.checkOut) {
       const checkInDate = new Date(formData.checkIn);
       const checkOutDate = new Date(formData.checkOut);
       const diffTime = checkOutDate.getTime() - checkInDate.getTime();
-      days = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      days = diffDays > 0 ? diffDays + 1 : 1;
     }
 
     // Calculate room price (sum of all selected rooms × number of days)
@@ -270,13 +278,20 @@ export default function AddReservationForm() {
     // Calculate grand total
     const grandTotal = roomPrice + extraBedCharges;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       roomPrice: roomPrice,
       extraBedCharges: extraBedCharges,
       totalPayable: grandTotal,
     }));
-  }, [formData.rooms, formData.extraGuests, formData.checkIn, formData.checkOut, rooms, selectedResortData]);
+  }, [
+    formData.rooms,
+    formData.extraGuests,
+    formData.checkIn,
+    formData.checkOut,
+    rooms,
+    selectedResortData,
+  ]);
 
   // Fetch all resorts on mount
   useEffect(() => {
@@ -316,7 +331,35 @@ export default function AddReservationForm() {
     fetchUsers();
   }, [apiUrl]);
 
+  // Fetch cottage types when resort changes
+  useEffect(() => {
+    if (!formData.resort) {
+      setCottageTypesList([]);
+      return;
+    }
 
+    const fetchCottageTypes = async () => {
+      setLoading((prev) => ({ ...prev, cottageTypes: true }));
+      try {
+        const res = await fetch(`${apiUrl}/api/cottage-types`);
+        const data = await res.json();
+        if (data.cottageTypes) {
+          // Filter by selected resort
+          const filtered = data.cottageTypes.filter((ct: any) => {
+            const resortId =
+              typeof ct.resort === "string" ? ct.resort : ct.resort?._id;
+            return resortId === formData.resort;
+          });
+          setCottageTypesList(filtered);
+        }
+      } catch (err) {
+        console.error("Error fetching cottage types:", err);
+      } finally {
+        setLoading((prev) => ({ ...prev, cottageTypes: false }));
+      }
+    };
+    fetchCottageTypes();
+  }, [apiUrl, formData.resort]);
 
   // Fetch rooms when resort changes
   useEffect(() => {
@@ -333,7 +376,8 @@ export default function AddReservationForm() {
         if (data.rooms) {
           // Filter rooms by selected resort
           const filtered = data.rooms.filter((room: Room) => {
-            const resortId = typeof room.resort === "string" ? room.resort : room.resort?._id;
+            const resortId =
+              typeof room.resort === "string" ? room.resort : room.resort?._id;
             return resortId === formData.resort;
           });
           console.log("Filtered rooms by resort:", filtered);
@@ -348,8 +392,20 @@ export default function AddReservationForm() {
     fetchRooms();
   }, [apiUrl, formData.resort]);
 
+  // Filter rooms based on selected cottage types
+  const filteredRoomsList = useMemo(() => {
+    if (formData.cottageTypes.length === 0) return rooms;
+    return rooms.filter((room) => {
+      const ctId =
+        typeof room.cottageType === "string"
+          ? room.cottageType
+          : room.cottageType?._id;
+      return formData.cottageTypes.includes(ctId || "");
+    });
+  }, [rooms, formData.cottageTypes]);
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -359,19 +415,19 @@ export default function AddReservationForm() {
 
       if (name === "guests" && numValue > guestLimits.maxGuests) {
         alert(
-          `Maximum ${guestLimits.maxGuests} guests allowed for selected rooms`
+          `Maximum ${guestLimits.maxGuests} guests allowed for selected rooms`,
         );
         return;
       }
       if (name === "extraGuests" && numValue > guestLimits.maxExtraGuests) {
         alert(
-          `Maximum ${guestLimits.maxExtraGuests} extra guests allowed for selected rooms`
+          `Maximum ${guestLimits.maxExtraGuests} extra guests allowed for selected rooms`,
         );
         return;
       }
       if (name === "children" && numValue > guestLimits.maxChildren) {
         alert(
-          `Maximum ${guestLimits.maxChildren} children allowed for selected rooms`
+          `Maximum ${guestLimits.maxChildren} children allowed for selected rooms`,
         );
         return;
       }
@@ -386,22 +442,22 @@ export default function AddReservationForm() {
       setFormData({ ...formData, resort: value, cottageTypes: [], rooms: [] });
     } else if (name === "existingGuest") {
       // When a user is selected, populate all their details
-      const selectedUser = users.find(u => u._id === value);
+      const selectedUser = users.find((u) => u._id === value);
       if (selectedUser) {
         // Use setTimeout to ensure country Select component updates properly
         setTimeout(() => {
           setFormData({
             ...formData,
             existingGuest: value,
-            fullName: selectedUser.name || '',
-            phone: selectedUser.phone || '',
-            email: selectedUser.email || '',
-            address1: selectedUser.address1 || '',
-            address2: selectedUser.address2 || '',
-            city: selectedUser.city || '',
-            state: selectedUser.state || '',
-            postalCode: selectedUser.pincode || '',
-            country: selectedUser.country || '',
+            fullName: selectedUser.name || "",
+            phone: selectedUser.phone || "",
+            email: selectedUser.email || "",
+            address1: selectedUser.address1 || "",
+            address2: selectedUser.address2 || "",
+            city: selectedUser.city || "",
+            state: selectedUser.state || "",
+            postalCode: selectedUser.pincode || "",
+            country: selectedUser.country || "",
           });
         }, 0);
       }
@@ -442,12 +498,12 @@ export default function AddReservationForm() {
       guests: "",
       extraGuests: "",
       children: "",
-      status: "Reserved",
+      status: isAdminOrDFO ? "Reserved" : "Pending",
       bookingId: "",
       reservationDate: format(new Date(), "yyyy-MM-dd"),
       numberOfRooms: "",
       totalPayable: 0,
-      paymentStatus: "Paid",
+      paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
       refundPercentage: "",
       existingGuest: "",
       fullName: "",
@@ -477,10 +533,10 @@ export default function AddReservationForm() {
           "http://localhost:5000";
 
         // Get admin token from localStorage
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem("admin_token");
         const headers: any = { "Content-Type": "application/json" };
         if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
+          headers["Authorization"] = `Bearer ${token}`;
         }
 
         const res = await fetch(`${apiUrl}/api/reservations`, {
@@ -488,7 +544,10 @@ export default function AddReservationForm() {
           headers,
           body: JSON.stringify({
             ...formData,
-            approval_status: "PENDING_DFO_APPROVAL",
+            // Only set approval_status to pending if not auto-approved
+            ...(isAdminOrDFO
+              ? {}
+              : { approval_status: "PENDING_DFO_APPROVAL" }),
           }),
         });
         const contentType = res.headers.get("content-type") || "";
@@ -499,15 +558,19 @@ export default function AddReservationForm() {
           // if server returns HTML (e.g. index.html) or plain text, capture it for debugging
           const text = await res.text();
           throw new Error(
-            `Unexpected response from server: ${text.slice(0, 200)}`
+            `Unexpected response from server: ${text.slice(0, 200)}`,
           );
         }
         if (!res.ok)
           throw new Error(data?.error || "Failed to save reservation");
         // Booking submitted — awaiting DFO approval
-        alert(
-          "Booking submitted successfully!\n\nAwaiting DFO approval.\nRoom is temporarily blocked.\n\nYou will be notified once the booking is approved or rejected."
-        );
+        if (isAdminOrDFO) {
+          alert("Booking submitted successfully!");
+        } else {
+          alert(
+            "Booking submitted successfully!\n\nAwaiting DFO approval.\nRoom is temporarily blocked.\n\nYou will be notified once the booking is approved or rejected.",
+          );
+        }
         // reset form
         setFormData({
           resort: "",
@@ -518,12 +581,12 @@ export default function AddReservationForm() {
           guests: "",
           extraGuests: "",
           children: "",
-          status: "Reserved",
+          status: isAdminOrDFO ? "Reserved" : "Pending",
           bookingId: "",
           reservationDate: format(new Date(), "yyyy-MM-dd"),
           numberOfRooms: "",
           totalPayable: 0,
-          paymentStatus: "Paid",
+          paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
           refundPercentage: "",
           existingGuest: "",
           fullName: "",
@@ -565,102 +628,277 @@ export default function AddReservationForm() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* ROOM DETAILS */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Room Details</h3>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              Room Details
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Select Resort</Label>
-                <Select value={formData.resort} onValueChange={(value) => handleSelect("resort", value)}>
+                <Label className="text-sm font-medium text-slate-700">
+                  Select Resort <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.resort}
+                  onValueChange={(value) => handleSelect("resort", value)}
+                >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-slate-50">
-                    <SelectValue placeholder={loading.resorts ? "Loading..." : "Choose Resort"} />
+                    <SelectValue
+                      placeholder={
+                        loading.resorts ? "Loading..." : "Choose Resort"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {resorts.map((resort) => (
-                      <SelectItem key={resort._id} value={resort._id}>{resort.resortName}</SelectItem>
+                      <SelectItem key={resort._id} value={resort._id}>
+                        {resort.resortName}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-2">
-                <Label className="text-sm font-medium text-slate-700">Choose Rooms</Label>
+              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-1">
+                <Label className="text-sm font-medium text-slate-700">
+                  Select Cottage <span className="text-red-500">*</span>
+                </Label>
                 <MultiSelect
-                  options={rooms.map((room) => ({ label: room.roomName || room.roomId || room.roomNumber, value: room._id }))}
+                  options={cottageTypesList.map((ct) => ({
+                    label: ct.name,
+                    value: ct._id,
+                  }))}
+                  selected={formData.cottageTypes}
+                  onChange={(values) =>
+                    handleMultiSelect("cottageTypes", values)
+                  }
+                  placeholder={
+                    !formData.resort
+                      ? "Select Resort First"
+                      : loading.cottageTypes
+                        ? "Loading..."
+                        : cottageTypesList.length === 0
+                          ? "No Cottages Found"
+                          : "Choose Cottages"
+                  }
+                  disabled={!formData.resort}
+                />
+              </div>
+              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">
+                  Choose Rooms <span className="text-red-500">*</span>
+                </Label>
+                <MultiSelect
+                  options={filteredRoomsList.map((room) => ({
+                    label: room.roomName || room.roomId || room.roomNumber,
+                    value: room._id,
+                  }))}
                   selected={formData.rooms}
                   onChange={(values) => handleMultiSelect("rooms", values)}
-                  placeholder={!formData.resort ? "Select Resort First" : loading.rooms ? "Loading..." : rooms.length === 0 ? "No Rooms Available" : "Choose Rooms"}
+                  placeholder={
+                    !formData.resort
+                      ? "Select Resort First"
+                      : loading.rooms
+                        ? "Loading..."
+                        : rooms.length === 0
+                          ? "No Rooms Available"
+                          : "Choose Rooms"
+                  }
                   disabled={!formData.resort}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">No. of Rooms</Label>
-                <Input name="numberOfRooms" value={formData.numberOfRooms} readOnly placeholder="Auto-counted"
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
+                <Label className="text-sm font-medium text-slate-700">
+                  No. of Rooms
+                </Label>
+                <Input
+                  name="numberOfRooms"
+                  value={formData.numberOfRooms}
+                  readOnly
+                  placeholder="Auto-counted"
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
               </div>
             </div>
           </div>
 
           {/* BOOKING DETAILS - DATES */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Booking Details</h3>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              Booking Details
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Check In</Label>
-                <Input type="date" name="checkIn" value={formData.checkIn} onChange={handleChange}
-                  min={dateLimits.minDate} max={dateLimits.maxDate} disabled={!formData.resort}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Check Out</Label>
-                <Input type="date" name="checkOut" value={formData.checkOut} onChange={handleChange}
-                  min={formData.checkIn ? (() => { const d = new Date(formData.checkIn); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; })() : dateLimits.minDate}
-                  max={dateLimits.maxDate} disabled={!formData.resort || !formData.checkIn}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Days</Label>
-                <Input value={bookingDuration.days} readOnly className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Nights</Label>
-                <Input value={bookingDuration.nights} readOnly className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
+              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+                <Label className="text-sm font-medium text-slate-700">
+                  Check In <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  name="checkIn"
+                  value={formData.checkIn}
+                  onChange={handleChange}
+                  min={dateLimits.minDate}
+                  max={dateLimits.maxDate}
+                  disabled={!formData.resort}
+                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
-                <Label className="text-sm font-medium text-slate-700">Reservation Date</Label>
-                <Input type="date" name="reservationDate" value={formData.reservationDate} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Check Out <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  name="checkOut"
+                  value={formData.checkOut}
+                  onChange={handleChange}
+                  min={
+                    formData.checkIn
+                      ? (() => {
+                          const d = new Date(formData.checkIn);
+                          d.setDate(d.getDate() + 1);
+                          return d.toISOString().split("T")[0];
+                        })()
+                      : dateLimits.minDate
+                  }
+                  max={dateLimits.maxDate}
+                  disabled={!formData.resort || !formData.checkIn}
+                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
+              </div>
+              <div className="space-y-2 col-span-1 md:col-span-1 xl:col-span-1">
+                <Label className="text-sm font-medium text-slate-700">
+                  Days
+                </Label>
+                <Input
+                  value={bookingDuration.days}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2 col-span-1 md:col-span-1 xl:col-span-1">
+                <Label className="text-sm font-medium text-slate-700">
+                  Nights
+                </Label>
+                <Input
+                  value={bookingDuration.nights}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-1">
+                <Label className="text-sm font-medium text-slate-700">
+                  Reservation Date <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  name="reservationDate"
+                  value={formData.reservationDate}
+                  onChange={handleChange}
+                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
-                <Label className="text-sm font-medium text-slate-700">Booking ID</Label>
-                <Input name="bookingId" value={formData.bookingId} readOnly placeholder="Auto-generated"
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Booking ID <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="bookingId"
+                  value={formData.bookingId}
+                  readOnly
+                  placeholder="Auto-generated"
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
               </div>
             </div>
           </div>
 
           {/* GUEST COUNTS & STATUS */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Guest Counts & Status</h3>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              Guest Counts & Status
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Guests {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxGuests})</span>}</Label>
-                <Input type="number" name="guests" value={formData.guests} onChange={handleChange} min="0" max={guestLimits.maxGuests || undefined}
-                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter guests"}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Guests{" "}
+                  {formData.rooms.length > 0 && (
+                    <span className="text-xs text-slate-500">
+                      (Max: {guestLimits.maxGuests})
+                    </span>
+                  )}{" "}
+                  <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="number"
+                  name="guests"
+                  value={formData.guests}
+                  onChange={handleChange}
+                  min="0"
+                  max={guestLimits.maxGuests || undefined}
+                  disabled={formData.rooms.length === 0}
+                  placeholder={
+                    formData.rooms.length === 0
+                      ? "Select rooms"
+                      : "Enter guests"
+                  }
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Extra Guests {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxExtraGuests})</span>}</Label>
-                <Input type="number" name="extraGuests" value={formData.extraGuests} onChange={handleChange} min="0" max={guestLimits.maxExtraGuests || undefined}
-                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter extra"}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Extra Guests{" "}
+                  {formData.rooms.length > 0 && (
+                    <span className="text-xs text-slate-500">
+                      (Max: {guestLimits.maxExtraGuests})
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  type="number"
+                  name="extraGuests"
+                  value={formData.extraGuests}
+                  onChange={handleChange}
+                  min="0"
+                  max={guestLimits.maxExtraGuests || undefined}
+                  disabled={formData.rooms.length === 0}
+                  placeholder={
+                    formData.rooms.length === 0 ? "Select rooms" : "Enter extra"
+                  }
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Children {formData.rooms.length > 0 && <span className="text-xs text-slate-500">(Max: {guestLimits.maxChildren})</span>}</Label>
-                <Input type="number" name="children" value={formData.children} onChange={handleChange} min="0" max={guestLimits.maxChildren || undefined}
-                  disabled={formData.rooms.length === 0} placeholder={formData.rooms.length === 0 ? "Select rooms" : "Enter children"}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Children{" "}
+                  {formData.rooms.length > 0 && (
+                    <span className="text-xs text-slate-500">
+                      (Max: {guestLimits.maxChildren})
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  type="number"
+                  name="children"
+                  value={formData.children}
+                  onChange={handleChange}
+                  min="0"
+                  max={guestLimits.maxChildren || undefined}
+                  disabled={formData.rooms.length === 0}
+                  placeholder={
+                    formData.rooms.length === 0
+                      ? "Select rooms"
+                      : "Enter children"
+                  }
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleSelect("status", value)}>
+                <Label className="text-sm font-medium text-slate-700">
+                  Status <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  disabled={!isAdminOrDFO}
+                  value={formData.status}
+                  onValueChange={(value) => handleSelect("status", value)}
+                >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Choose Status" />
                   </SelectTrigger>
@@ -673,8 +911,16 @@ export default function AddReservationForm() {
                 </Select>
               </div>
               <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
-                <Label className="text-sm font-medium text-slate-700">Payment Status</Label>
-                <Select value={formData.paymentStatus} onValueChange={(value) => handleSelect("paymentStatus", value)}>
+                <Label className="text-sm font-medium text-slate-700">
+                  Payment Status <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  disabled={!isAdminOrDFO}
+                  value={formData.paymentStatus}
+                  onValueChange={(value) =>
+                    handleSelect("paymentStatus", value)
+                  }
+                >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -690,76 +936,148 @@ export default function AddReservationForm() {
 
           {/* USER DETAILS */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">User Details</h3>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              User Details
+            </h3>
             {/* Row 1: Select User, Guest Name, Referred By, Phone */}
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Select User</Label>
-                <Select value={formData.existingGuest} onValueChange={(value) => handleSelect("existingGuest", value)}>
+                <Label className="text-sm font-medium text-slate-700">
+                  Select User
+                </Label>
+                <Select
+                  value={formData.existingGuest}
+                  onValueChange={(value) =>
+                    handleSelect("existingGuest", value)
+                  }
+                >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
-                    <SelectValue placeholder={loading.users ? "Loading..." : "Select User"} />
+                    <SelectValue
+                      placeholder={loading.users ? "Loading..." : "Select User"}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map((user) => (
-                      <SelectItem key={user._id} value={user._id}>{user.name} ({user.email})</SelectItem>
+                      <SelectItem key={user._id} value={user._id}>
+                        {user.name} ({user.email})
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Guest Name</Label>
-                <Input name="fullName" value={formData.fullName} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Guest Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Referred By</Label>
-                <Input name="referredBy" value={formData.referredBy} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Referred By
+                </Label>
+                <Input
+                  name="referredBy"
+                  value={formData.referredBy}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Phone</Label>
-                <Input name="phone" value={formData.phone} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Phone <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
             </div>
             {/* Row 2: Email, Address Line 1, Address Line 2 */}
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-8 gap-4">
               <div className="space-y-2 col-span-2 xl:col-span-2">
-                <Label className="text-sm font-medium text-slate-700">Email</Label>
-                <Input name="email" value={formData.email} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Email <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2 col-span-2 xl:col-span-3">
-                <Label className="text-sm font-medium text-slate-700">Address Line 1</Label>
-                <Input name="address1" value={formData.address1} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Address Line 1 <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="address1"
+                  value={formData.address1}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2 col-span-2 xl:col-span-3">
-                <Label className="text-sm font-medium text-slate-700">Address Line 2</Label>
-                <Input name="address2" value={formData.address2} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Address Line 2
+                </Label>
+                <Input
+                  name="address2"
+                  value={formData.address2}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
             </div>
             {/* Row 3: City, State, Postal Code, Country */}
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">City</Label>
-                <Input name="city" value={formData.city} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  City <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">State</Label>
-                <Input name="state" value={formData.state} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  State <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Postal Code</Label>
-                <Input name="postalCode" value={formData.postalCode} onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50" />
+                <Label className="text-sm font-medium text-slate-700">
+                  Postal Code <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  name="postalCode"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Country</Label>
-                <Select value={formData.country} onValueChange={(value) => handleSelect("country", value)}>
+                <Label className="text-sm font-medium text-slate-700">
+                  Country <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.country}
+                  onValueChange={(value) => handleSelect("country", value)}
+                >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select Country" />
                   </SelectTrigger>
@@ -768,7 +1086,9 @@ export default function AddReservationForm() {
                     <SelectItem value="USA">USA</SelectItem>
                     <SelectItem value="UK">UK</SelectItem>
                     <SelectItem value="United States">United States</SelectItem>
-                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                    <SelectItem value="United Kingdom">
+                      United Kingdom
+                    </SelectItem>
                     <SelectItem value="Australia">Australia</SelectItem>
                     <SelectItem value="Canada">Canada</SelectItem>
                   </SelectContent>
@@ -779,37 +1099,57 @@ export default function AddReservationForm() {
 
           {/* AMOUNT */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Amount</h3>
+            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              Amount
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Room Price</Label>
-                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800">
-                  ₹{formData.roomPrice}
-                </div>
+                <Label className="text-sm font-medium text-slate-700">
+                  Room Price
+                </Label>
+                <Input
+                  value={`₹${formData.roomPrice}`}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800 cursor-not-allowed"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Extra Guest Charges</Label>
-                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800">
-                  ₹{formData.extraBedCharges}
-                </div>
+                <Label className="text-sm font-medium text-slate-700">
+                  Extra Guest Charges
+                </Label>
+                <Input
+                  value={`₹${formData.extraBedCharges}`}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 text-sm text-slate-800 cursor-not-allowed"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Grand Total</Label>
-                <div className="w-full h-10 px-3 flex items-center border border-slate-300 rounded-sm bg-slate-100 text-sm font-semibold text-slate-800">
-                  ₹{formData.totalPayable}
-                </div>
+                <Label className="text-sm font-medium text-slate-700">
+                  Grand Total
+                </Label>
+                <Input
+                  value={`₹${formData.totalPayable}`}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 text-sm font-semibold text-slate-800 cursor-not-allowed"
+                />
               </div>
             </div>
           </div>
 
           {/* ACTION BUTTONS */}
           <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 pt-4 sticky bottom-0 bg-white pb-4 border-t border-slate-200">
-            <PermissionButton permission="canAddReservations" type="submit"
-              className="h-10 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-sm transition-colors">
+            <PermissionButton
+              permission="canAddReservations"
+              type="submit"
+              className="h-10 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-sm transition-colors"
+            >
               Submit
             </PermissionButton>
-            <Button type="button" onClick={handleReset}
-              className="h-10 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium rounded-sm transition-colors">
+            <Button
+              type="button"
+              onClick={handleReset}
+              className="h-10 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium rounded-sm transition-colors"
+            >
               Reset
             </Button>
           </div>

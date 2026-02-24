@@ -15,8 +15,8 @@ export const checkRoomAvailability = async (roomIds, checkIn, checkOut, excludeR
 
   const query = {
     rooms: { $in: roomIds },
-    status: { $in: ['pending', 'pre-reserved', 'reserved'] },
-    paymentStatus: { $in: ['paid', 'unpaid'] },
+    status: { $in: ['pending', 'pre-reserved', 'reserved', 'Pending', 'Reserved'] },
+    paymentStatus: { $in: ['paid', 'unpaid', 'Paid', 'Unpaid'] },
     $or: [
       // New booking starts during existing booking
       {
@@ -46,7 +46,7 @@ export const checkRoomAvailability = async (roomIds, checkIn, checkOut, excludeR
   if (overlappingReservations.length > 0) {
     const bookedRoomIds = [...new Set(overlappingReservations.flatMap(r => r.rooms))]
     const conflictingRooms = roomIds.filter(roomId => bookedRoomIds.includes(roomId))
-    
+
     return {
       available: false,
       conflictingRooms,
@@ -68,8 +68,8 @@ export const checkRoomAvailability = async (roomIds, checkIn, checkOut, excludeR
 export const getAvailableRooms = async (resortId, checkIn, checkOut, allRoomIds) => {
   const bookedReservations = await Reservation.find({
     resort: resortId,
-    status: { $in: ['pending', 'pre-reserved', 'reserved'] },
-    paymentStatus: { $in: ['paid', 'unpaid'] },
+    status: { $in: ['pending', 'pre-reserved', 'reserved', 'Pending', 'Reserved'] },
+    paymentStatus: { $in: ['paid', 'unpaid', 'Paid', 'Unpaid'] },
     $or: [
       {
         checkIn: { $lte: checkIn },

@@ -82,7 +82,7 @@ export class SignInComponent implements OnInit {
         .subscribe({
           next: (response) => {
             this.disableSign = false;
-            if (response.code == 3000 && response.result.status == 'success') {
+            if (response.code == 3000 && response.result.status == 'Success') {
               this.isLoading = false;
               this.showAlert = false;
               this.showSnackBarAlert('Login Success', false);

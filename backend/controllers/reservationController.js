@@ -58,15 +58,26 @@ export const createReservation = async (req, res) => {
     if (payload.extraBedCharges) payload.extraBedCharges = Number(String(payload.extraBedCharges).replace(/[₹,\s]/g, ''))
     if (payload.totalPayable) payload.totalPayable = Number(String(payload.totalPayable).replace(/[₹,\s]/g, ''))
 
-    // Enforce role-based defaults and 1-hour expiration
-    if (req.admin && req.admin.role !== 'dfo' && req.admin.role !== 'superadmin') {
-      payload.status = 'Pending'
-      payload.paymentStatus = 'Unpaid'
+    // Track who created it
+    if (req.admin) payload.createdBy = req.admin.username || req.admin.name || String(req.admin._id)
 
+    const role = req.admin?.role
+
+    if (role === 'superadmin') {
+      // Superadmin: immediately confirmed
+      payload.status = 'reserved'
+      payload.paymentStatus = 'paid'
+    } else if (role !== 'dfo') {
+      // Admin / staff: pending + 1-hour room block, needs DFO approval
+      payload.status = 'pending'
+      payload.paymentStatus = 'unpaid'
+      payload.approval_status = 'PENDING_DFO_APPROVAL'
       const expiryTime = new Date()
       expiryTime.setHours(expiryTime.getHours() + 1)
       payload.expiresAt = expiryTime
     }
+    // DFO: leave status/paymentStatus as sent from form (pending/unpaid)
+    // — we'll update to reserved/paid after save below
 
     // Check room availability (unless admin explicitly bypasses with forceBook flag)
     if (!payload.forceBook && payload.rooms && Array.isArray(payload.rooms) && payload.rooms.length > 0) {
@@ -90,7 +101,17 @@ export const createReservation = async (req, res) => {
     const reservation = new Reservation(payload)
     await reservation.save()
 
-    // 1. Trigger Notification if requires DFO approval
+    // DFO auto-confirm: save was pending/unpaid, now immediately set to reserved+paid
+    if (role === 'dfo') {
+      await Reservation.findByIdAndUpdate(reservation._id, {
+        status: 'reserved',
+        paymentStatus: 'paid',
+        approved_by: payload.createdBy,
+        approved_at: new Date(),
+      })
+    }
+
+    // Trigger Notification if requires DFO approval (admin-created bookings)
     if (reservation.approval_status === 'PENDING_DFO_APPROVAL') {
       try {
         await Notification.create({
@@ -105,7 +126,9 @@ export const createReservation = async (req, res) => {
       }
     }
 
-    res.status(201).json({ success: true, reservation })
+    // Return the final saved state
+    const finalReservation = await Reservation.findById(reservation._id).lean()
+    res.status(201).json({ success: true, reservation: finalReservation })
   } catch (err) {
     console.error('createReservation error', err)
     res.status(500).json({ success: false, error: err.message })

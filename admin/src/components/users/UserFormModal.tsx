@@ -191,7 +191,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
             <h3 className="text-lg font-semibold">Basic Information</h3>
 
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Username {!user && <span className="text-red-500">*</span>}</Label>
               <Input
                 id="username"
                 value={formData.username}
@@ -204,7 +204,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
             </div>
 
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Name <span className="text-red-500">*</span></Label>
               <Input
                 id="name"
                 value={formData.name}
@@ -216,7 +216,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
 
             <div>
               <Label htmlFor="password">
-                Password {user && "(leave blank to keep current)"}
+                Password {!user ? <span className="text-red-500">*</span> : "(leave blank to keep current)"}
               </Label>
               <Input
                 id="password"
@@ -230,7 +230,7 @@ const UserFormModal = ({ user, onClose }: UserFormModalProps) => {
             </div>
 
             <div>
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => {

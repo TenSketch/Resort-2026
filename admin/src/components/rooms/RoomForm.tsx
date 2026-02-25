@@ -325,7 +325,7 @@ const AddRoomForm = () => {
                 htmlFor="resortId"
                 className="text-sm font-medium text-slate-700"
               >
-                Select Resort *
+                Select Resort <span className="text-red-500">*</span>
               </Label>
               <select
                 id="resortId"
@@ -351,7 +351,7 @@ const AddRoomForm = () => {
                 htmlFor="cottageTypeId"
                 className="text-sm font-medium text-slate-700"
               >
-                Select Cottage Type *
+                Select Cottage Type <span className="text-red-500">*</span>
               </Label>
               <select
                 id="cottageTypeId"
@@ -379,7 +379,7 @@ const AddRoomForm = () => {
                 htmlFor="roomId"
                 className="text-sm font-medium text-slate-700"
               >
-                Room ID *
+                Room ID <span className="text-red-500">*</span>
                 {isLoadingRoomId && (
                   <span className="text-xs text-slate-500 ml-2">
                     (Generating...)
@@ -405,7 +405,7 @@ const AddRoomForm = () => {
                 htmlFor="roomName"
                 className="text-sm font-medium text-slate-700"
               >
-                Room Name *
+                Room Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="roomName"
@@ -422,7 +422,7 @@ const AddRoomForm = () => {
                 htmlFor="status"
                 className="text-sm font-medium text-slate-700"
               >
-                Status *
+                Status <span className="text-red-500">*</span>
               </Label>
               <select
                 id="status"
@@ -514,7 +514,7 @@ const AddRoomForm = () => {
                 htmlFor="orderNumber"
                 className="text-sm font-medium text-slate-700"
               >
-                Order Number *
+                Order Number <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="orderNumber"
@@ -537,7 +537,7 @@ const AddRoomForm = () => {
                 htmlFor="weekDaysRate"
                 className="text-sm font-medium text-slate-700"
               >
-                Weekdays Rate *
+                Weekdays Rate <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="weekDaysRate"
@@ -553,7 +553,7 @@ const AddRoomForm = () => {
                 htmlFor="weekEndRate"
                 className="text-sm font-medium text-slate-700"
               >
-                Weekend Rate *
+                Weekend Rate <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="weekEndRate"
@@ -569,7 +569,7 @@ const AddRoomForm = () => {
                 htmlFor="chargesPerBedWeekDays"
                 className="text-sm font-medium text-slate-700"
               >
-                Charges per Bed (Weekdays) *
+                Charges per Bed (Weekdays) <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="chargesPerBedWeekDays"
@@ -585,7 +585,7 @@ const AddRoomForm = () => {
                 htmlFor="chargesPerBedWeekEnd"
                 className="text-sm font-medium text-slate-700"
               >
-                Charges per Bed (Weekend) *
+                Charges per Bed (Weekend) <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="chargesPerBedWeekEnd"
@@ -608,7 +608,7 @@ const AddRoomForm = () => {
                 htmlFor="noOfGuests"
                 className="text-sm font-medium text-slate-700"
               >
-                No. of Guests *
+                No. of Guests <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="noOfGuests"
@@ -624,7 +624,7 @@ const AddRoomForm = () => {
                 htmlFor="extraGuests"
                 className="text-sm font-medium text-slate-700"
               >
-                Extra Guests *
+                Extra Guests <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="extraGuests"

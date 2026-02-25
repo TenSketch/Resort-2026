@@ -172,7 +172,7 @@ const AddGuestForm = () => {
           <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Account Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name *</Label>
+              <Label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name <span className="text-red-500">*</span></Label>
               <Input
                 id="name"
                 name="name"
@@ -184,7 +184,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email *</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email <span className="text-red-500">*</span></Label>
               <Input
                 id="email"
                 name="email"
@@ -197,7 +197,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone *</Label>
+              <Label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone <span className="text-red-500">*</span></Label>
               <Input
                 id="phone"
                 name="phone"
@@ -214,7 +214,7 @@ const AddGuestForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             <div className="space-y-2">
-              <Label htmlFor="emailVerificationStatus" className="text-sm font-medium text-slate-700">Email Verified *</Label>
+              <Label htmlFor="emailVerificationStatus" className="text-sm font-medium text-slate-700">Email Verified <span className="text-red-500">*</span></Label>
               <select
                 id="emailVerificationStatus"
                 name="emailVerificationStatus"
@@ -228,7 +228,7 @@ const AddGuestForm = () => {
               </select>
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password *</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password <span className="text-red-500">*</span></Label>
               <div className="flex gap-2">
                 <Input
                   id="password"
@@ -255,7 +255,7 @@ const AddGuestForm = () => {
           <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">Personal Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="dob" className="text-sm font-medium text-slate-700">Date of Birth *</Label>
+              <Label htmlFor="dob" className="text-sm font-medium text-slate-700">Date of Birth <span className="text-red-500">*</span></Label>
               <Input
                 id="dob"
                 name="dob"
@@ -267,7 +267,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nationality" className="text-sm font-medium text-slate-700">Nationality *</Label>
+              <Label htmlFor="nationality" className="text-sm font-medium text-slate-700">Nationality <span className="text-red-500">*</span></Label>
               <Input
                 id="nationality"
                 name="nationality"
@@ -295,7 +295,7 @@ const AddGuestForm = () => {
           <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">Address Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="address1" className="text-sm font-medium text-slate-700">Address Line 1 *</Label>
+              <Label htmlFor="address1" className="text-sm font-medium text-slate-700">Address Line 1 <span className="text-red-500">*</span></Label>
               <Input
                 id="address1"
                 name="address1"
@@ -318,7 +318,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city" className="text-sm font-medium text-slate-700">City / District *</Label>
+              <Label htmlFor="city" className="text-sm font-medium text-slate-700">City / District <span className="text-red-500">*</span></Label>
               <Input
                 id="city"
                 name="city"
@@ -330,7 +330,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="state" className="text-sm font-medium text-slate-700">State / Province *</Label>
+              <Label htmlFor="state" className="text-sm font-medium text-slate-700">State / Province <span className="text-red-500">*</span></Label>
               <Input
                 id="state"
                 name="state"
@@ -345,7 +345,7 @@ const AddGuestForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="pincode" className="text-sm font-medium text-slate-700">Postal Code *</Label>
+              <Label htmlFor="pincode" className="text-sm font-medium text-slate-700">Postal Code <span className="text-red-500">*</span></Label>
               <Input
                 id="pincode"
                 name="pincode"
@@ -357,7 +357,7 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="country" className="text-sm font-medium text-slate-700">Country *</Label>
+              <Label htmlFor="country" className="text-sm font-medium text-slate-700">Country <span className="text-red-500">*</span></Label>
               <select
                 id="country"
                 name="country"

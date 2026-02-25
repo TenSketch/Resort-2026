@@ -108,10 +108,10 @@ export const DEFAULT_ROLE_PERMISSIONS = {
         canExport: true,
     },
     dfo: {
-        visiblePages: ['dashboard-resort', 'reservations-view', 'reports', 'approvals'] as PageId[],
+        visiblePages: ['dashboard-resort', 'reservations-view', 'reservations-add', 'reports', 'approvals'] as PageId[],
         canEdit: true,
         canDisable: false,
-        canAddReservations: false,
+        canAddReservations: true,
         canAddGuests: false,
         canViewDownload: true,
         canExport: true,

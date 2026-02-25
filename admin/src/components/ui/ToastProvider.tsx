@@ -88,7 +88,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 /* ── Individual toast ── */
 
 const variantStyles: Record<ToastVariant, React.CSSProperties> = {
-  success: {
+  Success: {
     background: "#F0FDF4",
     borderLeft: "4px solid #16A34A",
     color: "#15803D",
@@ -106,7 +106,7 @@ const variantStyles: Record<ToastVariant, React.CSSProperties> = {
 };
 
 const variantIcons: Record<ToastVariant, string> = {
-  success: "✓",
+  Success: "✓",
   error: "✕",
   info: "ℹ",
 };

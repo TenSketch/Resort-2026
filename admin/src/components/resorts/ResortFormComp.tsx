@@ -233,7 +233,7 @@ const ResortFormComp = () => {
             {/* Resort Name */}
             <div className="space-y-2">
               <Label htmlFor="resortName" className="text-sm font-medium text-slate-700">
-                Resort Name *
+                Resort Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="resortName"
@@ -250,7 +250,7 @@ const ResortFormComp = () => {
             {/* Slug */}
             <div className="space-y-2">
               <Label htmlFor="slug" className="text-sm font-medium text-slate-700">
-                Slug *
+                Slug <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="slug"
@@ -267,7 +267,7 @@ const ResortFormComp = () => {
             {/* Contact Person Name */}
             <div className="space-y-2">
               <Label htmlFor="contactPersonName" className="text-sm font-medium text-slate-700">
-                Contact Person Name *
+                Contact Person Name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="contactPersonName"
@@ -284,7 +284,7 @@ const ResortFormComp = () => {
             {/* Contact Number */}
             <div className="space-y-2">
               <Label htmlFor="contactNumber" className="text-sm font-medium text-slate-700">
-                Contact Number *
+                Contact Number <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="contactNumber"
@@ -304,7 +304,7 @@ const ResortFormComp = () => {
             {/* Email */}
             <div className="space-y-2 lg:col-span-2">
               <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-                Email Address *
+                Email Address <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
@@ -343,7 +343,7 @@ const ResortFormComp = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               <div className="space-y-2 lg:col-span-2">
                 <Label htmlFor="addressLine1" className="text-sm font-medium text-slate-700">
-                  Address Line 1 *
+                  Address Line 1 <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="addressLine1"
@@ -377,7 +377,7 @@ const ResortFormComp = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="cityDistrict" className="text-sm font-medium text-slate-700">
-                  City/District *
+                  City/District <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="cityDistrict"
@@ -393,7 +393,7 @@ const ResortFormComp = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="stateProvince" className="text-sm font-medium text-slate-700">
-                  State/Province *
+                  State/Province <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="stateProvince"
@@ -409,7 +409,7 @@ const ResortFormComp = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="postalCode" className="text-sm font-medium text-slate-700">
-                  Postal Code *
+                  Postal Code <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="postalCode"
@@ -426,14 +426,14 @@ const ResortFormComp = () => {
               {/* Country */}
               <div className="space-y-2">
                 <Label htmlFor="country" className="text-sm font-medium text-slate-700">
-                  Country *
+                  Country <span className="text-red-500">*</span>
                 </Label>
                 <select
                   id="country"
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  className="w-full h-9 px-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
                   required
                 >
                   <option value="">Select a country</option>
@@ -493,7 +493,7 @@ const ResortFormComp = () => {
             {/* Food Providing Radio */}
             <div className="space-y-3">
               <Label className="text-sm font-medium text-slate-700">
-                Food Providing *
+                Food Providing <span className="text-red-500">*</span>
               </Label>
               <RadioGroup value={formData.foodProviding} onValueChange={handleRadioChange}>
                 <div className="flex items-center space-x-2">

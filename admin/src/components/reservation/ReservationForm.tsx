@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { DatePickerField } from "@/components/ui/date-picker";
 import { format } from "date-fns";
 import { useAdmin } from "@/lib/AdminProvider";
 
@@ -38,8 +39,6 @@ interface Room {
 
 export default function AddReservationForm() {
   const { isDFO, isSuperAdmin } = useAdmin();
-  const isAdminOrDFO = isDFO || isSuperAdmin;
-
   const [formData, setFormData] = useState({
     resort: "",
     cottageTypes: [] as string[],
@@ -49,12 +48,12 @@ export default function AddReservationForm() {
     guests: "",
     extraGuests: "",
     children: "",
-    status: isAdminOrDFO ? "Reserved" : "Pending",
+    status: "Pending",
+    paymentStatus: "Unpaid",
     bookingId: "",
     reservationDate: format(new Date(), "yyyy-MM-dd"),
     numberOfRooms: "",
     totalPayable: 0,
-    paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
     refundPercentage: "",
     existingGuest: "",
     fullName: "",
@@ -498,12 +497,12 @@ export default function AddReservationForm() {
       guests: "",
       extraGuests: "",
       children: "",
-      status: isAdminOrDFO ? "Reserved" : "Pending",
+      status: "Pending",
+      paymentStatus: "Unpaid",
       bookingId: "",
       reservationDate: format(new Date(), "yyyy-MM-dd"),
       numberOfRooms: "",
       totalPayable: 0,
-      paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
       refundPercentage: "",
       existingGuest: "",
       fullName: "",
@@ -542,13 +541,7 @@ export default function AddReservationForm() {
         const res = await fetch(`${apiUrl}/api/reservations`, {
           method: "POST",
           headers,
-          body: JSON.stringify({
-            ...formData,
-            // Only set approval_status to pending if not auto-approved
-            ...(isAdminOrDFO
-              ? {}
-              : { approval_status: "PENDING_DFO_APPROVAL" }),
-          }),
+          body: JSON.stringify(formData),
         });
         const contentType = res.headers.get("content-type") || "";
         let data: { error?: string } | null = null;
@@ -563,12 +556,12 @@ export default function AddReservationForm() {
         }
         if (!res.ok)
           throw new Error(data?.error || "Failed to save reservation");
-        // Booking submitted — awaiting DFO approval
-        if (isAdminOrDFO) {
-          alert("Booking submitted successfully!");
+        // Success message differs by role
+        if (isDFO || isSuperAdmin) {
+          alert("Booking created & confirmed! Status: Reserved, Payment: Paid.");
         } else {
           alert(
-            "Booking submitted successfully!\n\nAwaiting DFO approval.\nRoom is temporarily blocked.\n\nYou will be notified once the booking is approved or rejected.",
+            "Booking submitted!\n\u23F3 Awaiting DFO approval.\nRooms are blocked for 1 hour.\nIf not approved within the hour, the rooms will be released automatically.",
           );
         }
         // reset form
@@ -581,12 +574,12 @@ export default function AddReservationForm() {
           guests: "",
           extraGuests: "",
           children: "",
-          status: isAdminOrDFO ? "Reserved" : "Pending",
+          status: "Pending",
+          paymentStatus: "Unpaid",
           bookingId: "",
           reservationDate: format(new Date(), "yyyy-MM-dd"),
           numberOfRooms: "",
           totalPayable: 0,
-          paymentStatus: isAdminOrDFO ? "Paid" : "Unpaid",
           refundPercentage: "",
           existingGuest: "",
           fullName: "",
@@ -631,7 +624,9 @@ export default function AddReservationForm() {
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               Room Details
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+            {/* Row 1: Resort + Cottage */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Select Resort <span className="text-red-500">*</span>
@@ -656,7 +651,7 @@ export default function AddReservationForm() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-1">
+              <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Select Cottage <span className="text-red-500">*</span>
                 </Label>
@@ -681,7 +676,11 @@ export default function AddReservationForm() {
                   disabled={!formData.resort}
                 />
               </div>
-              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-2">
+            </div>
+
+            {/* Row 2: Rooms (wide) + No. of Rooms (narrow) */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="space-y-2 col-span-3">
                 <Label className="text-sm font-medium text-slate-700">
                   Choose Rooms <span className="text-red-500">*</span>
                 </Label>
@@ -704,7 +703,7 @@ export default function AddReservationForm() {
                   disabled={!formData.resort}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 col-span-1">
                 <Label className="text-sm font-medium text-slate-700">
                   No. of Rooms
                 </Label>
@@ -712,7 +711,7 @@ export default function AddReservationForm() {
                   name="numberOfRooms"
                   value={formData.numberOfRooms}
                   readOnly
-                  placeholder="Auto-counted"
+                  placeholder="Auto"
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
                 />
               </div>
@@ -724,32 +723,31 @@ export default function AddReservationForm() {
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               Booking Details
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
-              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+
+            {/* Row 1: Check In + Check Out + Booking ID */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Check In <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  type="date"
-                  name="checkIn"
+                <DatePickerField
                   value={formData.checkIn}
-                  onChange={handleChange}
-                  min={dateLimits.minDate}
-                  max={dateLimits.maxDate}
+                  onChange={(val) => setFormData((prev) => ({ ...prev, checkIn: val, checkOut: prev.checkOut && val && prev.checkOut <= val ? "" : prev.checkOut }))}
+                  placeholder="Select check-in date"
+                  minDate={dateLimits.minDate}
+                  maxDate={dateLimits.maxDate}
                   disabled={!formData.resort}
-                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+              <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Check Out <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  type="date"
-                  name="checkOut"
+                <DatePickerField
                   value={formData.checkOut}
-                  onChange={handleChange}
-                  min={
+                  onChange={(val) => setFormData((prev) => ({ ...prev, checkOut: val }))}
+                  placeholder="Select check-out date"
+                  minDate={
                     formData.checkIn
                       ? (() => {
                           const d = new Date(formData.checkIn);
@@ -758,44 +756,11 @@ export default function AddReservationForm() {
                         })()
                       : dateLimits.minDate
                   }
-                  max={dateLimits.maxDate}
+                  maxDate={dateLimits.maxDate}
                   disabled={!formData.resort || !formData.checkIn}
-                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2 col-span-1 md:col-span-1 xl:col-span-1">
-                <Label className="text-sm font-medium text-slate-700">
-                  Days
-                </Label>
-                <Input
-                  value={bookingDuration.days}
-                  readOnly
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2 col-span-1 md:col-span-1 xl:col-span-1">
-                <Label className="text-sm font-medium text-slate-700">
-                  Nights
-                </Label>
-                <Input
-                  value={bookingDuration.nights}
-                  readOnly
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2 col-span-2 md:col-span-1 xl:col-span-1">
-                <Label className="text-sm font-medium text-slate-700">
-                  Reservation Date <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  type="date"
-                  name="reservationDate"
-                  value={formData.reservationDate}
-                  onChange={handleChange}
-                  className="w-full h-10 pl-3 pr-10 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
-                />
-              </div>
-              <div className="space-y-2 col-span-2 md:col-span-2 xl:col-span-2">
+              <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Booking ID <span className="text-red-500">*</span>
                 </Label>
@@ -808,6 +773,37 @@ export default function AddReservationForm() {
                 />
               </div>
             </div>
+
+            {/* Row 2: Days + Nights + Reservation Date */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">Days</Label>
+                <Input
+                  value={bookingDuration.days}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-slate-700">Nights</Label>
+                <Input
+                  value={bookingDuration.nights}
+                  readOnly
+                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
+                />
+              </div>
+              <div className="space-y-2 col-span-2 md:col-span-1">
+                <Label className="text-sm font-medium text-slate-700">
+                  Reservation Date <span className="text-red-500">*</span>
+                </Label>
+                <DatePickerField
+                disabled
+                  value={formData.reservationDate}
+                  onChange={(val) => setFormData((prev) => ({ ...prev, reservationDate: val }))}
+                  placeholder="Select reservation date"
+                />
+              </div>
+            </div>
           </div>
 
           {/* GUEST COUNTS & STATUS */}
@@ -815,8 +811,8 @@ export default function AddReservationForm() {
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               Guest Counts & Status
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
+              <div className="space-y-2" style={{minWidth: "140px"}}>
                 <Label className="text-sm font-medium text-slate-700">
                   Guests{" "}
                   {formData.rooms.length > 0 && (
@@ -842,7 +838,7 @@ export default function AddReservationForm() {
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" style={{minWidth: "140px"}}>
                 <Label className="text-sm font-medium text-slate-700">
                   Extra Guests{" "}
                   {formData.rooms.length > 0 && (
@@ -865,7 +861,7 @@ export default function AddReservationForm() {
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" style={{minWidth: "140px"}}>
                 <Label className="text-sm font-medium text-slate-700">
                   Children{" "}
                   {formData.rooms.length > 0 && (
@@ -889,13 +885,14 @@ export default function AddReservationForm() {
                   }
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
+                <p className="text-xs text-slate-400">Up to 5 years</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Status <span className="text-red-500">*</span>
                 </Label>
                 <Select
-                  disabled={!isAdminOrDFO}
+                  disabled
                   value={formData.status}
                   onValueChange={(value) => handleSelect("status", value)}
                 >
@@ -915,11 +912,9 @@ export default function AddReservationForm() {
                   Payment Status <span className="text-red-500">*</span>
                 </Label>
                 <Select
-                  disabled={!isAdminOrDFO}
+                  disabled
                   value={formData.paymentStatus}
-                  onValueChange={(value) =>
-                    handleSelect("paymentStatus", value)
-                  }
+                  onValueChange={(value) => handleSelect("paymentStatus", value)}
                 >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select" />
@@ -935,11 +930,11 @@ export default function AddReservationForm() {
           </div>
 
           {/* USER DETAILS */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               User Details
             </h3>
-            {/* Row 1: Select User, Guest Name, Referred By, Phone */}
+          
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
@@ -999,7 +994,6 @@ export default function AddReservationForm() {
                 />
               </div>
             </div>
-            {/* Row 2: Email, Address Line 1, Address Line 2 */}
             <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-8 gap-4">
               <div className="space-y-2 col-span-2 xl:col-span-2">
                 <Label className="text-sm font-medium text-slate-700">
@@ -1035,7 +1029,6 @@ export default function AddReservationForm() {
                 />
               </div>
             </div>
-            {/* Row 3: City, State, Postal Code, Country */}
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
@@ -1095,7 +1088,7 @@ export default function AddReservationForm() {
                 </Select>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* AMOUNT */}
           <div className="space-y-4">

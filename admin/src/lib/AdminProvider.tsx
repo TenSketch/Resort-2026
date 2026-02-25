@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { DEFAULT_ROLE_PERMISSIONS } from './permissionConfig'
 
 type Permissions = {
   canEdit: boolean
@@ -132,15 +133,24 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (admin.role === 'superadmin') {
       return { canEdit: true, canDisable: true, canAddReservations: true, canAddGuests: true, canViewDownload: true, canExport: true, visiblePages: [] }
     }
+
+    // Merge: start from role defaults, then overlay whatever is stored in DB
+    const roleKey = (admin.role || 'admin') as keyof typeof DEFAULT_ROLE_PERMISSIONS
+    const roleDefaults = DEFAULT_ROLE_PERMISSIONS[roleKey] || {}
+
+    // Union of default visiblePages and stored visiblePages so new defaults propagate automatically
+    const defaultPages = (roleDefaults.visiblePages || []) as string[]
+    const storedPages = admin.permissions?.visiblePages || []
+    const mergedPages = Array.from(new Set([...defaultPages, ...storedPages]))
+
     return {
-      canEdit: !!admin.permissions?.canEdit,
-      canDisable: !!admin.permissions?.canDisable,
-      canAddReservations: !!admin.permissions?.canAddReservations,
-      canAddGuests: !!admin.permissions?.canAddGuests,
-      // default true matches backend model default
+      canEdit: admin.permissions?.canEdit ?? roleDefaults.canEdit ?? false,
+      canDisable: admin.permissions?.canDisable ?? roleDefaults.canDisable ?? false,
+      canAddReservations: admin.permissions?.canAddReservations ?? roleDefaults.canAddReservations ?? false,
+      canAddGuests: admin.permissions?.canAddGuests ?? roleDefaults.canAddGuests ?? false,
       canViewDownload: admin.permissions?.canViewDownload !== false,
       canExport: admin.permissions?.canExport !== false,
-      visiblePages: admin.permissions?.visiblePages || [],
+      visiblePages: mergedPages,
     }
   }, [admin])
 
@@ -160,10 +170,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const canAccessPage = (pageId: string): boolean => {
     if (!admin) return false
     if (isSuperAdmin) return true
-
-    // Check if page is in visiblePages array
-    const visiblePages = admin.permissions?.visiblePages || []
-    return visiblePages.includes(pageId)
+    // Use the merged visiblePages (role defaults ∪ DB-stored), not raw DB data
+    return (permissions.visiblePages || []).includes(pageId)
   }
 
   const canPerformAction = (action: keyof Permissions): boolean => {

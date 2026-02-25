@@ -53,7 +53,7 @@ export class BookingStatusComponent {
       )
       .subscribe({
         next: (response) => {
-          if (response.code == 3000 && response.result.status == 'success') {
+          if (response.code == 3000 && response.result.status == 'Success') {
             this.reservationDetails = {
               guestName: response.result.name,
               resortName: this.bookingTypeResort,

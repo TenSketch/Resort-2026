@@ -380,7 +380,7 @@ export class BookingSummaryComponent {
         next: (response) => {
           this.showLoader = false;
 
-          if (response.code == 3000 && response.result.status == 'success') {
+          if (response.code == 3000 && response.result.status == 'Success') {
             const result = response.result;
 
             this.form.patchValue({

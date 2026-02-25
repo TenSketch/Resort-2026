@@ -184,7 +184,7 @@ export class TentCheckoutComponent implements OnInit, OnDestroy {
     this.http.get<any>(`${this.api_url}/api/user/profile`, { headers }).subscribe({
       next: (response) => {
         this.showLoader = false;
-        if (response.code == 3000 && response.result.status == 'success') {
+        if (response.code == 3000 && response.result.status == 'Success') {
           const result = response.result;
           this.form.patchValue({
             gname: result.name || '',

@@ -163,7 +163,7 @@ export class SignUpComponent implements OnInit {
         .post<any>(`${this.api_url}/api/user/register`, userData)
         .subscribe({
           next: (response) => {
-            if (response.code == 3000 && response.result.status == 'success') {
+            if (response.code == 3000 && response.result.status == 'Success') {
               this.isLoading = false;
               this.showAlert = false;
               

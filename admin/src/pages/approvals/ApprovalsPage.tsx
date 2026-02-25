@@ -15,8 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
+import { DatePickerField } from "@/components/ui/date-picker";
 import { useAdmin } from "@/lib/AdminProvider";
 
 interface ApprovalReservation {
@@ -295,19 +296,17 @@ const ApprovalsPage = () => {
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-slate-500">Check-in From</Label>
-            <Input
-              type="date"
+            <DatePickerField
               value={filterDateFrom}
-              onChange={(e) => setFilterDateFrom(e.target.value)}
+              onChange={(val) => setFilterDateFrom(val)}
               className="h-9 text-sm"
             />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-slate-500">Check-out To</Label>
-            <Input
-              type="date"
+            <DatePickerField
               value={filterDateTo}
-              onChange={(e) => setFilterDateTo(e.target.value)}
+              onChange={(val) => setFilterDateTo(val)}
               className="h-9 text-sm"
             />
           </div>

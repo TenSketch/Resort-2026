@@ -10,7 +10,7 @@ import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from '@/lib/AdminProvider'
+import { usePermissions } from "@/lib/AdminProvider";
 import {
   Sheet,
   SheetContent,
@@ -21,7 +21,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
 
 DataTable.use(DT);
 
@@ -42,13 +41,13 @@ interface TentType {
 export default function AllTentTypesTable() {
   const tableRef = useRef(null);
   const dtRef = useRef<any>(null);
-  const perms = usePermissions()
-  const permsRef = useRef(perms)
+  const perms = usePermissions();
+  const permsRef = useRef(perms);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [selectedTent, setSelectedTent] = useState<TentType | null>(null);
   const [tentTypes, setTentTypes] = useState<TentType[]>([]);
-  const tentTypesRef = useRef<TentType[]>([])
+  const tentTypesRef = useRef<TentType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [editTentType, setEditTentType] = useState("");
@@ -60,11 +59,10 @@ export default function AllTentTypesTable() {
   const [editPrice, setEditPrice] = useState("");
   const [editAmenities, setEditAmenities] = useState("");
 
-
-
   // Fetch tent types from backend
   useEffect(() => {
-    const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+    const apiBase =
+      (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
     const fetchTentTypes = async () => {
       setIsLoading(true);
       setLoadError(null);
@@ -72,7 +70,9 @@ export default function AllTentTypesTable() {
         const res = await fetch(`${apiBase}/api/tent-types`);
         if (!res.ok) {
           const e = await res.json().catch(() => ({}));
-          throw new Error(e.error || `Failed to fetch tent types (status ${res.status})`);
+          throw new Error(
+            e.error || `Failed to fetch tent types (status ${res.status})`,
+          );
         }
         const data = await res.json();
         // Expected shape: { tentTypes: [ ... ] }
@@ -81,20 +81,22 @@ export default function AllTentTypesTable() {
         const mapped = list.map((t: any, idx: number) => ({
           id: t._id,
           sno: idx + 1,
-          tentType: t.tentType || '',
-          accommodationType: t.accommodationType || '',
-          tentBase: t.tentBase || '',
-          dimensions: t.dimensions || '',
-          brand: t.brand || '',
-          features: t.features || '',
+          tentType: t.tentType || "",
+          accommodationType: t.accommodationType || "",
+          tentBase: t.tentBase || "",
+          dimensions: t.dimensions || "",
+          brand: t.brand || "",
+          features: t.features || "",
           price: t.pricePerDay || t.price || 0,
-          amenities: Array.isArray(t.amenities) ? t.amenities.join(', ') : (t.amenities || ''),
+          amenities: Array.isArray(t.amenities)
+            ? t.amenities.join(", ")
+            : t.amenities || "",
           isActive: !t.isDisabled,
         }));
         setTentTypes(mapped);
       } catch (err: any) {
-        console.error('Failed to load tent types', err);
-        setLoadError(err.message || 'Failed to load tent types');
+        console.error("Failed to load tent types", err);
+        setLoadError(err.message || "Failed to load tent types");
       } finally {
         setIsLoading(false);
       }
@@ -104,8 +106,12 @@ export default function AllTentTypesTable() {
   }, []);
 
   // keep refs up to date for DOM handlers
-  useEffect(() => { tentTypesRef.current = tentTypes }, [tentTypes])
-  useEffect(() => { permsRef.current = perms }, [perms])
+  useEffect(() => {
+    tentTypesRef.current = tentTypes;
+  }, [tentTypes]);
+  useEffect(() => {
+    permsRef.current = perms;
+  }, [perms]);
 
   const exportToExcel = () => {
     const headers = [
@@ -118,11 +124,13 @@ export default function AllTentTypesTable() {
       "Features",
       "Price (₹)",
       "Amenities",
-      "Status"
+      "Status",
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TentType[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : tentTypes;
+    const dataToExport: TentType[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : tentTypes;
 
     const csvContent = [
       headers.join(","),
@@ -134,12 +142,12 @@ export default function AllTentTypesTable() {
           `"${tent.tentBase.replace(/"/g, '""')}"`,
           `"${tent.dimensions.replace(/"/g, '""')}"`,
           `"${tent.brand.replace(/"/g, '""')}"`,
-          `"${tent.features.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          `"${tent.features.replace(/"/g, '""').replace(/\n/g, " ")}"`,
           `₹${tent.price.toLocaleString()}`,
-          `"${tent.amenities.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-          `"${tent.isActive ? 'Active' : 'Inactive'}"`
+          `"${tent.amenities.replace(/"/g, '""').replace(/\n/g, " ")}"`,
+          `"${tent.isActive ? "Active" : "Inactive"}"`,
         ].join(",");
-      })
+      }),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -162,17 +170,15 @@ export default function AllTentTypesTable() {
     setEditFeatures(tent.features);
     setEditPrice(String(tent.price));
     setEditAmenities(tent.amenities);
-    setSheetMode('view')
+    setSheetMode("view");
     setIsDetailSheetOpen(true);
-  }
-
-  const handleEdit = (tent: TentType) => {
-    if (!permsRef.current.canEdit) return
-    openForView(tent)
-    setSheetMode('edit')
   };
 
-
+  const handleEdit = (tent: TentType) => {
+    if (!permsRef.current.canEdit) return;
+    openForView(tent);
+    setSheetMode("edit");
+  };
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -184,7 +190,8 @@ export default function AllTentTypesTable() {
     {
       data: "features",
       title: "Features",
-      render: (data: string) => `<div style="white-space:pre-wrap; max-width:300px">${data}</div>`,
+      render: (data: string) =>
+        `<div style="white-space:pre-wrap; max-width:300px">${data}</div>`,
     },
     {
       data: "price",
@@ -194,7 +201,8 @@ export default function AllTentTypesTable() {
     {
       data: "amenities",
       title: "Amenities",
-      render: (data: string) => `<div style="white-space:pre-wrap; max-width:300px">${data}</div>`,
+      render: (data: string) =>
+        `<div style="white-space:pre-wrap; max-width:300px">${data}</div>`,
     },
     {
       data: "isActive",
@@ -223,7 +231,9 @@ export default function AllTentTypesTable() {
             >
               View
             </button>
-            ${perms.canEdit ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}"
@@ -232,7 +242,9 @@ export default function AllTentTypesTable() {
               title="Edit Tent Type"
             >
               Edit
-            </button>` : ''}
+            </button>`
+                : ""
+            }
           </div>
         `;
       },
@@ -243,30 +255,32 @@ export default function AllTentTypesTable() {
   useEffect(() => {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('view-btn')) {
-        event.stopPropagation()
-        const tentId = button.getAttribute('data-id') || ''
-        const tent = tentTypesRef.current.find(t => t.id === tentId)
-        if (tent) openForView(tent)
-        return
+      const button = target.closest("button") as HTMLElement | null;
+      if (button?.classList.contains("view-btn")) {
+        event.stopPropagation();
+        const tentId = button.getAttribute("data-id") || "";
+        const tent = tentTypesRef.current.find((t) => t.id === tentId);
+        if (tent) openForView(tent);
+        return;
       }
-      if (button?.classList.contains('edit-btn')) {
-        event.stopPropagation()
-        const tentId = button.getAttribute('data-id') || ''
-        const tent = tentTypesRef.current.find(t => t.id === tentId)
-        if (!tent) return
-        if (!permsRef.current.canEdit) return
-        handleEdit(tent)
-        return
+      if (button?.classList.contains("edit-btn")) {
+        event.stopPropagation();
+        const tentId = button.getAttribute("data-id") || "";
+        const tent = tentTypesRef.current.find((t) => t.id === tentId);
+        if (!tent) return;
+        if (!permsRef.current.canEdit) return;
+        handleEdit(tent);
+        return;
       }
 
       // Row click opens view-only sheet
-      const row = target.closest('tr')
-      if (row && row.parentElement?.tagName === 'TBODY') {
-        const rowIndex = Array.from(row.parentElement.children).indexOf(row as any)
-        const tent = tentTypesRef.current[rowIndex]
-        if (tent) openForView(tent)
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
+        const rowIndex = Array.from(row.parentElement.children).indexOf(
+          row as any,
+        );
+        const tent = tentTypesRef.current[rowIndex];
+        if (tent) openForView(tent);
       }
     };
     document.addEventListener("click", handleClick);
@@ -355,17 +369,20 @@ export default function AllTentTypesTable() {
         }
       `}</style>
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h2 className="text-xl font-semibold text-slate-800">
-          Tent Types
-        </h2>
+        <h2 className="text-xl font-semibold text-slate-800">Tent Types</h2>
         <button
-          onClick={() => perms.canExport ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
-            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-            : 'bg-gray-300 cursor-not-allowed'
-            }`}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+            perms.canExport
+              ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+              : "bg-gray-300 cursor-not-allowed"
+          }`}
           disabled={!perms.canExport}
-          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -384,12 +401,19 @@ export default function AllTentTypesTable() {
         </button>
       </div>
 
-      <div ref={tableRef} className="tent-types-table-container flex-1 overflow-hidden">
+      <div
+        ref={tableRef}
+        className="tent-types-table-container flex-1 overflow-hidden"
+      >
         {isLoading && (
-          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">Loading tent types...</div>
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">
+            Loading tent types...
+          </div>
         )}
         {loadError && (
-          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
+          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">
+            {loadError}
+          </div>
         )}
         <DataTable
           ref={dtRef}
@@ -423,14 +447,70 @@ export default function AllTentTypesTable() {
                 },
               },
             ],
-            columnControl: [
-              "order",
-            ],
-            columnDefs: [
-              { targets: "_all", visible: true },
-            ],
-          }}
+            columnControl: ["order"],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
 
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
+            columnDefs: [{ targets: "_all", visible: true }],
+          }}
         />
       </div>
 
@@ -449,91 +529,140 @@ export default function AllTentTypesTable() {
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                 <div>
                   <Label>S.No</Label>
-                  <div className="p-3 bg-gray-50 rounded-md border">{selectedTent.sno}</div>
+                  <div className="p-3 bg-gray-50 rounded-md border">
+                    {selectedTent.sno}
+                  </div>
                 </div>
 
                 <div>
                   <Label>Tent Type</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editTentType} onChange={(e) => setEditTentType(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editTentType}
+                      onChange={(e) => setEditTentType(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.tentType}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.tentType}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Accommodation Type</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editAccommodationType} onChange={(e) => setEditAccommodationType(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editAccommodationType}
+                      onChange={(e) => setEditAccommodationType(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.accommodationType}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.accommodationType}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Tent Base</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editTentBase} onChange={(e) => setEditTentBase(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editTentBase}
+                      onChange={(e) => setEditTentBase(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.tentBase}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.tentBase}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Dimensions</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editDimensions} onChange={(e) => setEditDimensions(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editDimensions}
+                      onChange={(e) => setEditDimensions(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.dimensions}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.dimensions}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Brand name</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editBrand} onChange={(e) => setEditBrand(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editBrand}
+                      onChange={(e) => setEditBrand(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.brand}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.brand}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Features</Label>
-                  {sheetMode === 'edit' ? (
-                    <textarea rows={4} value={editFeatures} onChange={(e) => setEditFeatures(e.target.value)} className="w-full px-3 py-2 border rounded-md bg-slate-50" />
+                  {sheetMode === "edit" ? (
+                    <textarea
+                      rows={4}
+                      value={editFeatures}
+                      onChange={(e) => setEditFeatures(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-md bg-slate-50"
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">{selectedTent.features}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">
+                      {selectedTent.features}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Price</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input type="number" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">₹{selectedTent.price.toLocaleString()}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      ₹{selectedTent.price.toLocaleString()}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Amenities</Label>
-                  {sheetMode === 'edit' ? (
-                    <textarea rows={3} value={editAmenities} onChange={(e) => setEditAmenities(e.target.value)} className="w-full px-3 py-2 border rounded-md bg-slate-50" />
+                  {sheetMode === "edit" ? (
+                    <textarea
+                      rows={3}
+                      value={editAmenities}
+                      onChange={(e) => setEditAmenities(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-md bg-slate-50"
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">{selectedTent.amenities}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">
+                      {selectedTent.amenities}
+                    </div>
                   )}
                 </div>
-
-
               </div>
 
               <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === 'view' ? (
+                {sheetMode === "view" ? (
                   <>
                     <Button
-                      onClick={() => setSheetMode('edit')}
+                      onClick={() => setSheetMode("edit")}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to edit"
+                          : undefined
+                      }
                     >
                       Edit
                     </Button>
@@ -547,14 +676,21 @@ export default function AllTentTypesTable() {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSheetMode("view")}
+                    >
+                      Cancel
+                    </Button>
                     <Button
                       onClick={async () => {
-                        if (!perms.canEdit) return
+                        if (!perms.canEdit) return;
 
                         try {
-                          const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-                          const token = localStorage.getItem('admin_token');
+                          const apiBase =
+                            (import.meta as any).env?.VITE_API_URL ||
+                            "http://localhost:5000";
+                          const token = localStorage.getItem("admin_token");
 
                           const updateData = {
                             tentType: editTentType,
@@ -564,26 +700,34 @@ export default function AllTentTypesTable() {
                             brand: editBrand,
                             features: editFeatures,
                             pricePerDay: Number(editPrice),
-                            amenities: editAmenities.split(',').map(a => a.trim()).filter(Boolean),
+                            amenities: editAmenities
+                              .split(",")
+                              .map((a) => a.trim())
+                              .filter(Boolean),
                           };
 
                           const headers: Record<string, string> = {
-                            'Content-Type': 'application/json',
+                            "Content-Type": "application/json",
                           };
                           if (token) {
-                            headers['Authorization'] = `Bearer ${token}`;
+                            headers["Authorization"] = `Bearer ${token}`;
                           }
 
-                          const response = await fetch(`${apiBase}/api/tent-types/${selectedTent.id}`, {
-                            method: 'PUT',
-                            headers,
-                            body: JSON.stringify(updateData),
-                          });
+                          const response = await fetch(
+                            `${apiBase}/api/tent-types/${selectedTent.id}`,
+                            {
+                              method: "PUT",
+                              headers,
+                              body: JSON.stringify(updateData),
+                            },
+                          );
 
                           const data = await response.json();
 
                           if (!response.ok) {
-                            throw new Error(data.error || 'Failed to update tent type');
+                            throw new Error(
+                              data.error || "Failed to update tent type",
+                            );
                           }
 
                           // Update local state
@@ -591,29 +735,36 @@ export default function AllTentTypesTable() {
                             prev.map((t) =>
                               t.id === selectedTent.id
                                 ? {
-                                  ...t,
-                                  tentType: editTentType,
-                                  accommodationType: editAccommodationType,
-                                  tentBase: editTentBase,
-                                  dimensions: editDimensions,
-                                  brand: editBrand,
-                                  features: editFeatures,
-                                  price: Number(editPrice),
-                                  amenities: editAmenities,
-                                }
-                                : t
-                            )
+                                    ...t,
+                                    tentType: editTentType,
+                                    accommodationType: editAccommodationType,
+                                    tentBase: editTentBase,
+                                    dimensions: editDimensions,
+                                    brand: editBrand,
+                                    features: editFeatures,
+                                    price: Number(editPrice),
+                                    amenities: editAmenities,
+                                  }
+                                : t,
+                            ),
                           );
-                          setSheetMode('view')
+                          setSheetMode("view");
                           setIsDetailSheetOpen(false);
-                          alert('Tent type updated successfully!');
+                          alert("Tent type updated successfully!");
                         } catch (err: any) {
-                          console.error('Failed to update tent type:', err);
-                          alert('Failed to update tent type: ' + (err.message || String(err)));
+                          console.error("Failed to update tent type:", err);
+                          alert(
+                            "Failed to update tent type: " +
+                              (err.message || String(err)),
+                          );
                         }
                       }}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to save' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to save"
+                          : undefined
+                      }
                     >
                       Save
                     </Button>

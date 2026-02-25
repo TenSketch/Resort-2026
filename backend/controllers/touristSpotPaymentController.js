@@ -45,23 +45,23 @@ export const initiatePayment = async (req, res) => {
     const orderId = bookingId;
 
     // Get real client IP - check proxy headers first
-    let clientIp = req.headers['x-forwarded-for'] 
-      || req.headers['x-real-ip'] 
+    let clientIp = req.headers['x-forwarded-for']
+      || req.headers['x-real-ip']
       || req.headers['cf-connecting-ip']  // Cloudflare
-      || req.connection?.remoteAddress 
+      || req.connection?.remoteAddress
       || req.socket?.remoteAddress
       || req.ip;
-    
+
     // x-forwarded-for can contain multiple IPs, take the first one (original client)
     if (clientIp && clientIp.includes(',')) {
       clientIp = clientIp.split(',')[0].trim();
     }
-    
+
     // Remove IPv6 prefix if present
     if (clientIp && clientIp.startsWith('::ffff:')) {
       clientIp = clientIp.substring(7);
     }
-    
+
     // Validate IP format - must be valid IPv4
     const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
     if (!clientIp || !ipv4Regex.test(clientIp) || clientIp === '127.0.0.1' || clientIp === '::1') {
@@ -81,7 +81,7 @@ export const initiatePayment = async (req, res) => {
     const merchantId = (process.env.BILLDESK_MERCID || "").trim();
     const clientIdEnv = (process.env.BILLDESK_CLIENTID || "").trim();
     const settlementLob = (process.env.BILLDESK_SETTLEMENT_LOB || "BDUAT2K673001").trim();
-    
+
     const orderData = {
       mercid: merchantId,
       orderid: orderId,
@@ -178,11 +178,11 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
 
       // Extract authorization token from BillDesk response for future API calls
       const authToken = billdeskResponse.links?.[1]?.headers?.authorization || null;
-      
+
       // Update reservation with payment transaction reference and auth token
       await TouristSpotReservation.findOneAndUpdate(
         { bookingId },
-        { 
+        {
           paymentTransactionId: paymentTransaction._id.toString(),
           $set: { 'rawSource.authToken': authToken }
         }
@@ -193,19 +193,19 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
       const merchantId = billdeskResponse.mercid || billdeskResponse.links?.[1]?.parameters?.mercid || (process.env.BILLDESK_MERCID || "").trim();
       const bdorderid = billdeskResponse.bdorderid;
       const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
-      
+
       // Start polling for transaction status (every 5 mins for 15 mins)
       startTransactionPolling(bookingId, bdorderid, merchantId, authToken, 'trek');
       console.log(`🔄 Started transaction polling for trek booking: ${bookingId}`);
       const formAction = billdeskResponse.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';
-      
+
       console.log('\n=== Payment Data for Frontend ===');
       console.log('merchantid:', merchantId);
       console.log('bdorderid:', bdorderid);
       console.log('rdata:', rdata?.substring(0, 50) + '...');
       console.log('formAction:', formAction);
       console.log('================================\n');
-      
+
       // Validate all required fields are present
       if (!merchantId || !bdorderid || !rdata) {
         console.error('Missing required payment fields!');
@@ -217,7 +217,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
           error: 'Missing required payment fields from BillDesk response'
         });
       }
-      
+
       return res.status(200).json({
         success: true,
         paymentData: {
@@ -263,10 +263,10 @@ export const handlePaymentCallback = async (req, res) => {
     // BillDesk sends encrypted response in different field names
     // Try multiple sources
     const encryptedResponse = req.body?.encrypted_response
-      || req.body?.transaction_response 
-      || req.body?.msg 
-      || req.query?.msg 
-      || req.body?.response 
+      || req.body?.transaction_response
+      || req.body?.msg
+      || req.query?.msg
+      || req.body?.response
       || req.query?.response;
 
     if (!encryptedResponse) {
@@ -276,9 +276,9 @@ export const handlePaymentCallback = async (req, res) => {
       return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=no_response`);
     }
 
-    console.log("✅ Found encrypted response in:", 
-      req.body?.encrypted_response ? 'encrypted_response' : 
-      req.body?.transaction_response ? 'transaction_response' : 'msg');
+    console.log("✅ Found encrypted response in:",
+      req.body?.encrypted_response ? 'encrypted_response' :
+        req.body?.transaction_response ? 'transaction_response' : 'msg');
 
     const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
     const signKey = process.env.BILLDESK_SIGNING_KEY;
@@ -318,7 +318,7 @@ export const handlePaymentCallback = async (req, res) => {
       paymentTransaction.transactionId = transactionid;
       paymentTransaction.authStatus = auth_status;
       paymentTransaction.decryptedResponse = decryptedResponse;
-      
+
       // Determine status based on auth_status
       if (auth_status === '0300') {
         // Success
@@ -337,7 +337,7 @@ export const handlePaymentCallback = async (req, res) => {
         // Failed
         paymentTransaction.status = 'Failed';
         paymentTransaction.errorMessage = transaction_error_desc;
-        reservation.status = 'Not-reserved';
+        reservation.status = 'Not-Reserved';
         reservation.paymentStatus = 'Unpaid';
         // Store error info
         if (!reservation.rawSource) reservation.rawSource = {};
@@ -347,7 +347,7 @@ export const handlePaymentCallback = async (req, res) => {
         console.log('⏳ Payment pending, but checking if actually successful...');
         paymentTransaction.status = 'Pending';
         reservation.paymentStatus = 'Unpaid';
-        
+
         // If transaction_error_desc says "successful", immediately retrieve real status
         if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
           console.log('🔍 Transaction says "successful" but status is pending - will retrieve immediately');
@@ -358,10 +358,10 @@ export const handlePaymentCallback = async (req, res) => {
               console.log(`🔍 Immediate status check for ${bookingId}`);
               const authToken = reservation?.rawSource?.authToken || null;
               const result = await retrieveTransaction(bookingId, process.env.BILLDESK_MERCID, authToken);
-              
+
               if (result.success && result.data.auth_status === '0300') {
                 console.log('✅ Payment actually successful! Updating now...');
-                
+
                 await TouristSpotReservation.findOneAndUpdate(
                   { bookingId },
                   {
@@ -376,7 +376,7 @@ export const handlePaymentCallback = async (req, res) => {
                     }
                   }
                 );
-                
+
                 await PaymentTransaction.findOneAndUpdate(
                   { bookingId },
                   {
@@ -385,14 +385,14 @@ export const handlePaymentCallback = async (req, res) => {
                     decryptedResponse: result.data
                   }
                 );
-                
+
                 // Stop polling and send emails
                 const { stopTransactionPolling } = await import('../services/transactionPoller.js');
                 stopTransactionPolling(bookingId);
-                
+
                 const updatedReservation = await TouristSpotReservation.findOne({ bookingId }).lean();
                 const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
-                
+
                 const { sendTrekReservationEmails } = await import('../services/trekReservationEmailService.js');
                 sendTrekReservationEmails(updatedReservation, updatedPaymentTransaction)
                   .catch(err => console.error('Trek email error:', err.message));
@@ -407,7 +407,7 @@ export const handlePaymentCallback = async (req, res) => {
       } else if (auth_status === '0398') {
         // User cancelled
         paymentTransaction.status = 'Cancelled';
-        reservation.status = 'Not-reserved';
+        reservation.status = 'Not-Reserved';
         reservation.paymentStatus = 'Unpaid';
       } else {
         // Unknown status - keep as unpaid
@@ -432,7 +432,7 @@ export const handlePaymentCallback = async (req, res) => {
         sendTrekReservationEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Trek emails sent successfully'))
           .catch(err => console.error('❌ Trek email sending failed:', err.message));
-        
+
         // Send SMS asynchronously (don't wait for completion)
         sendRoomReservationSMS(reservation, paymentTransaction)
           .then(() => console.log('✅ Trek reservation SMS sent successfully'))

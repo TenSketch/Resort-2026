@@ -10,7 +10,7 @@ import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from '@/lib/AdminProvider'
+import { usePermissions } from "@/lib/AdminProvider";
 import {
   Sheet,
   SheetContent,
@@ -43,13 +43,13 @@ interface Tent {
 export default function AllTentsTable() {
   const tableRef = useRef(null);
   const dtRef = useRef<any>(null);
-  const perms = usePermissions()
-  const permsRef = useRef(perms)
+  const perms = usePermissions();
+  const permsRef = useRef(perms);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [selectedTent, setSelectedTent] = useState<Tent | null>(null);
   const [tents, setTents] = useState<Tent[]>([]);
-  const tentsRef = useRef<Tent[]>([])
+  const tentsRef = useRef<Tent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -63,7 +63,8 @@ export default function AllTentsTable() {
 
   // Fetch tents from backend
   useEffect(() => {
-    const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+    const apiBase =
+      (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
     const fetchTents = async () => {
       setIsLoading(true);
       setLoadError(null);
@@ -71,7 +72,9 @@ export default function AllTentsTable() {
         const res = await fetch(`${apiBase}/api/tents`);
         if (!res.ok) {
           const e = await res.json().catch(() => ({}));
-          throw new Error(e.error || `Failed to fetch tents (status ${res.status})`);
+          throw new Error(
+            e.error || `Failed to fetch tents (status ${res.status})`,
+          );
         }
         const data = await res.json();
         const list = Array.isArray(data.tents) ? data.tents : [];
@@ -79,13 +82,13 @@ export default function AllTentsTable() {
         const mapped = list.map((t: any, idx: number) => ({
           id: t._id,
           sno: idx + 1,
-          tentSpot: t.tentSpot?._id || '',
-          tentSpotName: t.tentSpot?.spotName || 'Unknown',
-          tentType: t.tentType?._id || '',
-          tentTypeName: t.tentType?.tentType || 'Unknown',
+          tentSpot: t.tentSpot?._id || "",
+          tentSpotName: t.tentSpot?.spotName || "Unknown",
+          tentType: t.tentType?._id || "",
+          tentTypeName: t.tentType?.tentType || "Unknown",
           noOfGuests: t.noOfGuests || 0,
           noOfChildren: t.noOfChildren || 0,
-          tentId: t.tentId || '',
+          tentId: t.tentId || "",
           rate: t.rate || 0,
           tentCount: t.tentCount || 1,
           images: t.images || [],
@@ -94,8 +97,8 @@ export default function AllTentsTable() {
 
         setTents(mapped);
       } catch (err: any) {
-        console.error('Failed to load tents', err);
-        setLoadError(err.message || 'Failed to load tents');
+        console.error("Failed to load tents", err);
+        setLoadError(err.message || "Failed to load tents");
       } finally {
         setIsLoading(false);
       }
@@ -104,8 +107,12 @@ export default function AllTentsTable() {
     fetchTents();
   }, []);
 
-  useEffect(() => { tentsRef.current = tents }, [tents])
-  useEffect(() => { permsRef.current = perms }, [perms])
+  useEffect(() => {
+    tentsRef.current = tents;
+  }, [tents]);
+  useEffect(() => {
+    permsRef.current = perms;
+  }, [perms]);
 
   const exportToExcel = () => {
     const headers = [
@@ -118,11 +125,13 @@ export default function AllTentsTable() {
       "Rate (₹)",
       "Tent Count",
       "Images",
-      "Status"
+      "Status",
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: Tent[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : tents;
+    const dataToExport: Tent[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : tents;
 
     const csvContent = [
       headers.join(","),
@@ -137,9 +146,9 @@ export default function AllTentsTable() {
           tent.rate,
           tent.tentCount,
           tent.images.length,
-          `"${tent.isActive ? 'Active' : 'Inactive'}"`
+          `"${tent.isActive ? "Active" : "Inactive"}"`,
         ].join(",");
-      })
+      }),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -159,16 +168,14 @@ export default function AllTentsTable() {
     setEditRate(tent.rate);
     setEditTentCount(tent.tentCount);
     setNewImages([]);
-    setSheetMode('view')
+    setSheetMode("view");
     setIsDetailSheetOpen(true);
   };
 
-
-
   const handleEdit = (tent: Tent) => {
-    if (!permsRef.current.canEdit) return
-    openForView(tent)
-    setSheetMode('edit')
+    if (!permsRef.current.canEdit) return;
+    openForView(tent);
+    setSheetMode("edit");
   };
 
   const columns = [
@@ -181,13 +188,14 @@ export default function AllTentsTable() {
     {
       data: "rate",
       title: "Rate (₹)",
-      render: (data: number) => `₹${data.toLocaleString()}`
+      render: (data: number) => `₹${data.toLocaleString()}`,
     },
     { data: "tentCount", title: "Tent Count" },
     {
       data: "images",
       title: "Images",
-      render: (data: any[]) => data && data.length > 0 ? `${data.length} image(s)` : "No images",
+      render: (data: any[]) =>
+        data && data.length > 0 ? `${data.length} image(s)` : "No images",
     },
     {
       data: "isActive",
@@ -216,7 +224,9 @@ export default function AllTentsTable() {
             >
               View
             </button>
-            ${perms.canEdit ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}"
@@ -225,7 +235,9 @@ export default function AllTentsTable() {
               title="Edit Tent"
             >
               Edit
-            </button>` : ''}
+            </button>`
+                : ""
+            }
           </div>
         `;
       },
@@ -236,30 +248,32 @@ export default function AllTentsTable() {
   useEffect(() => {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('view-btn')) {
-        event.stopPropagation()
-        const tentId = button.getAttribute('data-id') || ''
-        const tent = tentsRef.current.find(t => t.id === tentId)
-        if (tent) openForView(tent)
-        return
+      const button = target.closest("button") as HTMLElement | null;
+      if (button?.classList.contains("view-btn")) {
+        event.stopPropagation();
+        const tentId = button.getAttribute("data-id") || "";
+        const tent = tentsRef.current.find((t) => t.id === tentId);
+        if (tent) openForView(tent);
+        return;
       }
-      if (button?.classList.contains('edit-btn')) {
-        event.stopPropagation()
-        const tentId = button.getAttribute('data-id') || ''
-        const tent = tentsRef.current.find(t => t.id === tentId)
-        if (!tent) return
-        if (!permsRef.current.canEdit) return
-        handleEdit(tent)
-        return
+      if (button?.classList.contains("edit-btn")) {
+        event.stopPropagation();
+        const tentId = button.getAttribute("data-id") || "";
+        const tent = tentsRef.current.find((t) => t.id === tentId);
+        if (!tent) return;
+        if (!permsRef.current.canEdit) return;
+        handleEdit(tent);
+        return;
       }
 
       // Row click opens view-only detail
-      const row = target.closest('tr')
-      if (row && row.parentElement?.tagName === 'TBODY') {
-        const rowIndex = Array.from(row.parentElement.children).indexOf(row as any)
-        const tent = tentsRef.current[rowIndex]
-        if (tent) openForView(tent)
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
+        const rowIndex = Array.from(row.parentElement.children).indexOf(
+          row as any,
+        );
+        const tent = tentsRef.current[rowIndex];
+        if (tent) openForView(tent);
       }
     };
     document.addEventListener("click", handleClick);
@@ -269,29 +283,30 @@ export default function AllTentsTable() {
   const handleDeleteImage = async (publicId: string) => {
     if (!perms.canEdit) return;
     if (!selectedTent) {
-      alert('No tent selected.');
+      alert("No tent selected.");
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this image?')) {
+    if (!confirm("Are you sure you want to delete this image?")) {
       return;
     }
 
     setDeletingImage(publicId);
     try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
+      const apiBase =
+        (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+      const token = localStorage.getItem("admin_token");
       const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       };
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const res = await fetch(`${apiBase}/api/tents/${selectedTent.id}/image`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers,
-        body: JSON.stringify({ public_id: publicId })
+        body: JSON.stringify({ public_id: publicId }),
       });
 
       const data = await res.json().catch(() => null);
@@ -300,16 +315,20 @@ export default function AllTentsTable() {
       // Update local state
       if (data && data.tent) {
         const updatedImages = data.tent.images || [];
-        setSelectedTent(prev => prev ? { ...prev, images: updatedImages } : prev);
-        setTents(prev => prev.map(t =>
-          t.id === selectedTent.id ? { ...t, images: updatedImages } : t
-        ));
+        setSelectedTent((prev) =>
+          prev ? { ...prev, images: updatedImages } : prev,
+        );
+        setTents((prev) =>
+          prev.map((t) =>
+            t.id === selectedTent.id ? { ...t, images: updatedImages } : t,
+          ),
+        );
       }
 
-      alert('Image deleted successfully!');
+      alert("Image deleted successfully!");
     } catch (e: any) {
       console.error(e);
-      alert('Failed to delete image: ' + e.message);
+      alert("Failed to delete image: " + e.message);
     } finally {
       setDeletingImage(null);
     }
@@ -319,48 +338,72 @@ export default function AllTentsTable() {
     if (!perms.canEdit || !selectedTent) return;
 
     try {
-      const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
+      const apiBase =
+        (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+      const token = localStorage.getItem("admin_token");
 
       const headers: Record<string, string> = {};
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       // Use FormData if there are new images
       if (newImages.length > 0) {
         const formData = new FormData();
         newImages.forEach((file) => {
-          formData.append('images', file);
+          formData.append("images", file);
         });
 
         // Append other fields
-        formData.append('noOfGuests', String(editNoOfGuests));
-        formData.append('noOfChildren', String(editNoOfChildren));
-        formData.append('rate', String(editRate));
-        formData.append('tentCount', String(editTentCount));
+        formData.append("noOfGuests", String(editNoOfGuests));
+        formData.append("noOfChildren", String(editNoOfChildren));
+        formData.append("rate", String(editRate));
+        formData.append("tentCount", String(editTentCount));
 
-        const response = await fetch(`${apiBase}/api/tents/${selectedTent.id}`, {
-          method: 'PUT',
-          headers,
-          body: formData,
-        });
+        const response = await fetch(
+          `${apiBase}/api/tents/${selectedTent.id}`,
+          {
+            method: "PUT",
+            headers,
+            body: formData,
+          },
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to update tent');
+          throw new Error(data.error || "Failed to update tent");
         }
 
         // Update local state with new images
         if (data && data.tent) {
           const updatedImages = data.tent.images || [];
-          setSelectedTent(prev => prev ? { ...prev, images: updatedImages, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount } : prev);
-          setTents(prev => prev.map(t =>
-            t.id === selectedTent.id
-              ? { ...t, images: updatedImages, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount }
-              : t
-          ));
+          setSelectedTent((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  images: updatedImages,
+                  noOfGuests: editNoOfGuests,
+                  noOfChildren: editNoOfChildren,
+                  rate: editRate,
+                  tentCount: editTentCount,
+                }
+              : prev,
+          );
+          setTents((prev) =>
+            prev.map((t) =>
+              t.id === selectedTent.id
+                ? {
+                    ...t,
+                    images: updatedImages,
+                    noOfGuests: editNoOfGuests,
+                    noOfChildren: editNoOfChildren,
+                    rate: editRate,
+                    tentCount: editTentCount,
+                  }
+                : t,
+            ),
+          );
         }
       } else {
         // No new images, use JSON
@@ -371,37 +414,46 @@ export default function AllTentsTable() {
           tentCount: editTentCount,
         };
 
-        const response = await fetch(`${apiBase}/api/tents/${selectedTent.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            ...headers,
+        const response = await fetch(
+          `${apiBase}/api/tents/${selectedTent.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              ...headers,
+            },
+            body: JSON.stringify(updateData),
           },
-          body: JSON.stringify(updateData),
-        });
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to update tent');
+          throw new Error(data.error || "Failed to update tent");
         }
 
         // Update local state
         setTents((prev) =>
           prev.map((t) =>
             t.id === selectedTent.id
-              ? { ...t, noOfGuests: editNoOfGuests, noOfChildren: editNoOfChildren, rate: editRate, tentCount: editTentCount }
-              : t
-          )
+              ? {
+                  ...t,
+                  noOfGuests: editNoOfGuests,
+                  noOfChildren: editNoOfChildren,
+                  rate: editRate,
+                  tentCount: editTentCount,
+                }
+              : t,
+          ),
         );
       }
 
-      setSheetMode('view');
+      setSheetMode("view");
       setNewImages([]);
-      alert('Tent updated successfully!');
+      alert("Tent updated successfully!");
     } catch (err: any) {
-      console.error('Failed to update tent:', err);
-      alert('Failed to update tent: ' + (err.message || String(err)));
+      console.error("Failed to update tent:", err);
+      alert("Failed to update tent: " + (err.message || String(err)));
     }
   };
 
@@ -487,17 +539,20 @@ export default function AllTentsTable() {
         }
       `}</style>
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h2 className="text-xl font-semibold text-slate-800">
-          All Tents
-        </h2>
+        <h2 className="text-xl font-semibold text-slate-800">All Tents</h2>
         <button
-          onClick={() => perms.canExport ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
-            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-            : 'bg-gray-300 cursor-not-allowed'
-            }`}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+            perms.canExport
+              ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+              : "bg-gray-300 cursor-not-allowed"
+          }`}
           disabled={!perms.canExport}
-          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -516,12 +571,19 @@ export default function AllTentsTable() {
         </button>
       </div>
 
-      <div ref={tableRef} className="tent-inventory-table-container flex-1 overflow-hidden">
+      <div
+        ref={tableRef}
+        className="tent-inventory-table-container flex-1 overflow-hidden"
+      >
         {isLoading && (
-          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">Loading tents...</div>
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">
+            Loading tents...
+          </div>
         )}
         {loadError && (
-          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
+          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">
+            {loadError}
+          </div>
         )}
         <DataTable
           ref={dtRef}
@@ -555,19 +617,85 @@ export default function AllTentsTable() {
               },
             ],
             columnControl: ["order"],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
+
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
             columnDefs: [
-              { targets: 0, width: '50px', className: 'dt-center' }, // S.No
-              { targets: 1, width: '150px' }, // Tent Spot
-              { targets: 2, width: '150px' }, // Tent Type
-              { targets: 3, width: '80px' }, // No. of Guests
-              { targets: 4, width: '80px' }, // No. of Children
-              { targets: 5, width: '100px' }, // Tent ID
-              { targets: 6, width: '100px' }, // Rate
-              { targets: 7, width: '80px' }, // Tent Count
-              { targets: 8, width: '100px' }, // Images
-              { targets: 9, width: '80px' }, // Status
-              { targets: 10, width: '180px', orderable: false, searchable: false }, // Actions
-              { targets: '_all', visible: true },
+              { targets: 0, width: "50px", className: "dt-center" }, // S.No
+              { targets: 1, width: "150px" }, // Tent Spot
+              { targets: 2, width: "150px" }, // Tent Type
+              { targets: 3, width: "80px" }, // No. of Guests
+              { targets: 4, width: "80px" }, // No. of Children
+              { targets: 5, width: "100px" }, // Tent ID
+              { targets: 6, width: "100px" }, // Rate
+              { targets: 7, width: "80px" }, // Tent Count
+              { targets: 8, width: "100px" }, // Images
+              { targets: 9, width: "80px" }, // Status
+              {
+                targets: 10,
+                width: "180px",
+                orderable: false,
+                searchable: false,
+              }, // Actions
+              { targets: "_all", visible: true },
             ],
           }}
         />
@@ -601,62 +729,78 @@ export default function AllTentsTable() {
 
                 <div>
                   <Label>Tent Spot</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.tentSpotName}</div>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                    {selectedTent.tentSpotName}
+                  </div>
                 </div>
 
                 <div>
                   <Label>Tent Type</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.tentTypeName}</div>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                    {selectedTent.tentTypeName}
+                  </div>
                 </div>
 
                 <div>
                   <Label>No. of Guests</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       type="number"
                       value={editNoOfGuests}
-                      onChange={(e) => setEditNoOfGuests(Number(e.target.value))}
+                      onChange={(e) =>
+                        setEditNoOfGuests(Number(e.target.value))
+                      }
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.noOfGuests}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.noOfGuests}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>No. of Children</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       type="number"
                       min={0}
                       value={editNoOfChildren}
-                      onChange={(e) => setEditNoOfChildren(Number(e.target.value))}
+                      onChange={(e) =>
+                        setEditNoOfChildren(Number(e.target.value))
+                      }
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.noOfChildren}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.noOfChildren}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Tent ID</Label>
-                  <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">{selectedTent.tentId}</div>
+                  <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">
+                    {selectedTent.tentId}
+                  </div>
                 </div>
 
                 <div>
                   <Label>Rate (₹)</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       type="number"
                       value={editRate}
                       onChange={(e) => setEditRate(Number(e.target.value))}
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">₹{selectedTent.rate.toLocaleString()}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      ₹{selectedTent.rate.toLocaleString()}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Tent Count</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       type="number"
                       min={1}
@@ -664,9 +808,13 @@ export default function AllTentsTable() {
                       onChange={(e) => setEditTentCount(Number(e.target.value))}
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedTent.tentCount}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedTent.tentCount}
+                    </div>
                   )}
-                  <p className="text-xs text-slate-500 mt-1">Number of times this tent can be booked for the same dates</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Number of times this tent can be booked for the same dates
+                  </p>
                 </div>
 
                 <div>
@@ -675,7 +823,9 @@ export default function AllTentsTable() {
                     {/* Display existing images */}
                     {selectedTent.images && selectedTent.images.length > 0 ? (
                       <div className="space-y-2">
-                        <span className="text-green-600 text-sm">✓ {selectedTent.images.length} image(s) uploaded</span>
+                        <span className="text-green-600 text-sm">
+                          ✓ {selectedTent.images.length} image(s) uploaded
+                        </span>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           {selectedTent.images.map((img, idx) => (
                             <div key={idx} className="relative group">
@@ -684,22 +834,50 @@ export default function AllTentsTable() {
                                 alt={`Tent ${idx + 1}`}
                                 className="w-full h-32 object-cover rounded-md border"
                               />
-                              {sheetMode === 'edit' && (
+                              {sheetMode === "edit" && (
                                 <button
                                   type="button"
-                                  onClick={() => handleDeleteImage(img.public_id)}
+                                  onClick={() =>
+                                    handleDeleteImage(img.public_id)
+                                  }
                                   disabled={deletingImage === img.public_id}
                                   className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                                   title="Delete image"
                                 >
                                   {deletingImage === img.public_id ? (
-                                    <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <svg
+                                      className="w-4 h-4 animate-spin"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
                                     </svg>
                                   ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                      />
                                     </svg>
                                   )}
                                 </button>
@@ -709,11 +887,13 @@ export default function AllTentsTable() {
                         </div>
                       </div>
                     ) : (
-                      <span className="text-red-600 text-sm">✗ No images uploaded</span>
+                      <span className="text-red-600 text-sm">
+                        ✗ No images uploaded
+                      </span>
                     )}
 
                     {/* Upload new images in edit mode */}
-                    {sheetMode === 'edit' && (
+                    {sheetMode === "edit" && (
                       <div className="mt-2">
                         <input
                           type="file"
@@ -733,23 +913,26 @@ export default function AllTentsTable() {
                           </p>
                         )}
                         <p className="text-xs text-gray-500 mt-1">
-                          Select new images to add (will be appended to existing images)
+                          Select new images to add (will be appended to existing
+                          images)
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
-
-
               </div>
 
               <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === 'view' ? (
+                {sheetMode === "view" ? (
                   <>
                     <Button
-                      onClick={() => setSheetMode('edit')}
+                      onClick={() => setSheetMode("edit")}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to edit"
+                          : undefined
+                      }
                     >
                       Edit
                     </Button>
@@ -763,11 +946,20 @@ export default function AllTentsTable() {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSheetMode("view")}
+                    >
+                      Cancel
+                    </Button>
                     <Button
                       onClick={handleSaveEdit}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to save' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to save"
+                          : undefined
+                      }
                     >
                       Save
                     </Button>

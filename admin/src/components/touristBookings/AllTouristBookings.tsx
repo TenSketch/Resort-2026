@@ -108,14 +108,20 @@ export default function AllTouristBookings() {
 
   const formatVisitors = (b?: TouristBooking) => {
     if (!b || !b.touristSpots || b.touristSpots.length === 0) return "N/A";
-    const totalGuests = b.touristSpots.reduce((sum, spot) => sum + (spot.counts?.guests || 0), 0);
-    const totalCameras = b.touristSpots.reduce((sum, spot) => sum + (spot.counts?.cameras || 0), 0);
+    const totalGuests = b.touristSpots.reduce(
+      (sum, spot) => sum + (spot.counts?.guests || 0),
+      0,
+    );
+    const totalCameras = b.touristSpots.reduce(
+      (sum, spot) => sum + (spot.counts?.cameras || 0),
+      0,
+    );
     return `${totalGuests}G / ${totalCameras}C`;
   };
 
   const getTouristSpotNames = (b?: TouristBooking) => {
     if (!b || !b.touristSpots || b.touristSpots.length === 0) return "N/A";
-    return b.touristSpots.map(s => s.name).join(", ");
+    return b.touristSpots.map((s) => s.name).join(", ");
   };
 
   const getVisitDate = (b?: TouristBooking) => {
@@ -125,16 +131,19 @@ export default function AllTouristBookings() {
 
   const fetchBookings = async () => {
     try {
-      const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
+      const apiUrl =
+        (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+      const token = localStorage.getItem("admin_token");
       const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch(`${apiUrl}/api/trek-reservations/all-bookings`, { headers });
+      const res = await fetch(`${apiUrl}/api/trek-reservations/all-bookings`, {
+        headers,
+      });
       const data = await res.json();
-      
-      console.log('API Response:', data); // Debug log
-      
+
+      console.log("API Response:", data); // Debug log
+
       // Handle different response formats
       let reservations = [];
       if (data.success && Array.isArray(data.bookings)) {
@@ -146,33 +155,33 @@ export default function AllTouristBookings() {
       } else if (Array.isArray(data)) {
         reservations = data;
       } else {
-        console.warn('Unexpected response format:', data);
+        console.warn("Unexpected response format:", data);
         setBookings([]);
         return;
       }
-      
-      console.log('Found reservations:', reservations.length); // Debug log
-      
+
+      console.log("Found reservations:", reservations.length); // Debug log
+
       const mapped = reservations.map((r: any) => ({
         id: r._id,
         _id: r._id,
         bookingId: r.bookingId,
-        fullName: r.user?.name || 'N/A',
-        phone: r.user?.phone || 'N/A',
-        email: r.user?.email || 'N/A',
+        fullName: r.user?.name || "N/A",
+        phone: r.user?.phone || "N/A",
+        email: r.user?.email || "N/A",
         touristSpots: r.touristSpots || [],
         totalPayable: r.totalPayable || 0,
-        status: r.status || 'Pending',
-        paymentStatus: r.paymentStatus || 'Unpaid',
+        status: r.status || "Pending",
+        paymentStatus: r.paymentStatus || "Unpaid",
         reservationDate: r.reservationDate || r.createdAt,
-        reservedFrom: r.reservedFrom || 'Online',
+        reservedFrom: r.reservedFrom || "Online",
         user: r.user || {},
       }));
-      
-      console.log('Mapped bookings:', mapped); // Debug log
+
+      console.log("Mapped bookings:", mapped); // Debug log
       setBookings(mapped);
     } catch (err) {
-      console.error('Failed to fetch trek bookings:', err);
+      console.error("Failed to fetch trek bookings:", err);
       setBookings([]);
     }
   };
@@ -188,7 +197,7 @@ export default function AllTouristBookings() {
       const id = btn.getAttribute("data-id");
       const booking = bookingsRef.current.find((b) => b.id === id);
       if (!booking) return;
-      
+
       if (btn.classList.contains("view-btn")) {
         setSelected(booking);
         setSheetMode("view");
@@ -241,12 +250,14 @@ export default function AllTouristBookings() {
     {
       data: null,
       title: "<strong>Trek Spots</strong>",
-      render: (_d: any, _t: any, row: TouristBooking) => getTouristSpotNames(row),
+      render: (_d: any, _t: any, row: TouristBooking) =>
+        getTouristSpotNames(row),
     },
     {
       data: null,
       title: "<strong>Visit Date</strong>",
-      render: (_d: any, _t: any, row: TouristBooking) => formatDateForDisplay(getVisitDate(row)),
+      render: (_d: any, _t: any, row: TouristBooking) =>
+        formatDateForDisplay(getVisitDate(row)),
     },
     {
       data: null,
@@ -259,38 +270,38 @@ export default function AllTouristBookings() {
       title: "<strong>Reservation Date</strong>",
       render: (d: string) => formatDateForDisplay(d),
     },
-    { 
-      data: "status", 
+    {
+      data: "status",
       title: "<strong>Status</strong>",
       render: (d: string) => {
         const colors: Record<string, string> = {
-          reserved: 'bg-green-100 text-green-800',
-          pending: 'bg-yellow-100 text-yellow-800',
-          cancelled: 'bg-red-100 text-red-800',
-          'Not-reserved': 'bg-gray-100 text-gray-800',
+          Reserved: "bg-green-100 text-green-800",
+          Pending: "bg-yellow-100 text-yellow-800",
+          Cancelled: "bg-red-100 text-red-800",
+          "Not-Reserved": "bg-gray-100 text-gray-800",
         };
-        const color = colors[d] || 'bg-gray-100 text-gray-800';
+        const color = colors[d] || "bg-gray-100 text-gray-800";
         return `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${d}</span>`;
-      }
+      },
     },
     {
       data: "totalPayable",
       title: "<strong>Amount</strong>",
       render: (d: number) => (d != null ? `₹${d.toLocaleString()}` : "N/A"),
     },
-    { 
-      data: "paymentStatus", 
+    {
+      data: "paymentStatus",
       title: "<strong>Payment</strong>",
       render: (d: string) => {
         const colors: Record<string, string> = {
-          paid: 'bg-green-100 text-green-800',
-          unpaid: 'bg-red-100 text-red-800',
-          pending: 'bg-yellow-100 text-yellow-800',
-          cancelled: 'bg-gray-100 text-gray-800',
+          Paid: "bg-green-100 text-green-800",
+          Unpaid: "bg-red-100 text-red-800",
+          Pending: "bg-yellow-100 text-yellow-800",
+          Cancelled: "bg-gray-100 text-gray-800",
         };
-        const color = colors[d] || 'bg-gray-100 text-gray-800';
+        const color = colors[d] || "bg-gray-100 text-gray-800";
         return `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${d}</span>`;
-      }
+      },
     },
     {
       data: null,
@@ -320,7 +331,9 @@ export default function AllTouristBookings() {
         >
           View
         </button>
-        ${perms.canEdit ? `
+        ${
+          perms.canEdit
+            ? `
         <button 
           class="edit-btn" 
           data-id="${row.id}" 
@@ -342,7 +355,9 @@ export default function AllTouristBookings() {
         >
           Edit
         </button>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
     `,
     },
@@ -391,16 +406,27 @@ export default function AllTouristBookings() {
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TouristBooking[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : bookingsRef.current;
+    const dataToExport: TouristBooking[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : bookingsRef.current;
 
     const csv = [
       headers.join(","),
       ...dataToExport.map((r, i) => {
-        const guests = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.guests || 0), 0) || 0;
-        const cameras = r.touristSpots?.reduce((sum, s) => sum + (s.counts?.cameras || 0), 0) || 0;
-        const spotNames = r.touristSpots?.map(s => s.name).join('; ') || 'N/A';
-        const visitDate = r.touristSpots?.[0]?.visitDate || '';
-        
+        const guests =
+          r.touristSpots?.reduce(
+            (sum, s) => sum + (s.counts?.guests || 0),
+            0,
+          ) || 0;
+        const cameras =
+          r.touristSpots?.reduce(
+            (sum, s) => sum + (s.counts?.cameras || 0),
+            0,
+          ) || 0;
+        const spotNames =
+          r.touristSpots?.map((s) => s.name).join("; ") || "N/A";
+        const visitDate = r.touristSpots?.[0]?.visitDate || "";
+
         return [
           i + 1,
           `"${r.bookingId}"`,
@@ -434,10 +460,13 @@ export default function AllTouristBookings() {
     if (!editForm || !selected) return;
     setIsSaving(true);
     try {
-      const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('admin_token');
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const apiUrl =
+        (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+      const token = localStorage.getItem("admin_token");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       // Update only the fields that can be edited
       const updateData = {
@@ -448,22 +477,25 @@ export default function AllTouristBookings() {
           name: editForm.fullName,
           phone: editForm.phone,
           email: editForm.email,
-        }
+        },
       };
 
-      const res = await fetch(`${apiUrl}/api/trek-reservations/${selected._id}`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(updateData),
-      });
+      const res = await fetch(
+        `${apiUrl}/api/trek-reservations/${selected._id}`,
+        {
+          method: "PUT",
+          headers,
+          body: JSON.stringify(updateData),
+        },
+      );
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to update booking');
+        throw new Error(data.error || "Failed to update booking");
       }
 
       await res.json();
-      
+
       // Update local state
       const updated: TouristBooking = {
         ...selected,
@@ -474,7 +506,7 @@ export default function AllTouristBookings() {
         paymentStatus: editForm.paymentStatus || selected.paymentStatus,
         totalPayable: editForm.totalPayable ?? selected.totalPayable,
       };
-      
+
       setBookings((prev) =>
         prev.map((b) => (b.id === updated.id ? updated : b)),
       );
@@ -637,6 +669,67 @@ export default function AllTouristBookings() {
               "order",
               ["orderAsc", "orderDesc", "spacer", "search"],
             ],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
+
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
           }}
         />
       </div>
@@ -683,8 +776,10 @@ export default function AllTouristBookings() {
                             <div className="mt-1 p-3 bg-gray-50 rounded border">
                               <span>{selected.user.address}</span>
                               {selected.user.city && `, ${selected.user.city}`}
-                              {selected.user.state && `, ${selected.user.state}`}
-                              {selected.user.country && ` - ${selected.user.country}`}
+                              {selected.user.state &&
+                                `, ${selected.user.state}`}
+                              {selected.user.country &&
+                                ` - ${selected.user.country}`}
                             </div>
                           </div>
                         )}
@@ -719,44 +814,64 @@ export default function AllTouristBookings() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Trek Spots Details */}
                     <div className="border-b pb-4">
                       <h3 className="text-lg font-semibold mb-3">Trek Spots</h3>
-                      {selected.touristSpots && selected.touristSpots.length > 0 ? (
+                      {selected.touristSpots &&
+                      selected.touristSpots.length > 0 ? (
                         selected.touristSpots.map((spot, idx) => (
-                          <div key={idx} className="mb-4 p-4 bg-slate-50 rounded-lg border">
-                            <h4 className="font-medium text-slate-800 mb-2">{idx + 1}. {spot.name}</h4>
+                          <div
+                            key={idx}
+                            className="mb-4 p-4 bg-slate-50 rounded-lg border"
+                          >
+                            <h4 className="font-medium text-slate-800 mb-2">
+                              {idx + 1}. {spot.name}
+                            </h4>
                             <div className="grid grid-cols-2 gap-3 text-sm">
                               <div>
                                 <Label className="text-xs">Visit Date</Label>
-                                <div className="mt-1">{formatDateForDisplay(spot.visitDate)}</div>
+                                <div className="mt-1">
+                                  {formatDateForDisplay(spot.visitDate)}
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs">Guests</Label>
-                                <div className="mt-1">{spot.counts?.guests || 0}</div>
+                                <div className="mt-1">
+                                  {spot.counts?.guests || 0}
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs">Cameras</Label>
-                                <div className="mt-1">{spot.counts?.cameras || 0}</div>
+                                <div className="mt-1">
+                                  {spot.counts?.cameras || 0}
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs">Entry Fees</Label>
-                                <div className="mt-1">₹{spot.amounts?.entry || 0}</div>
+                                <div className="mt-1">
+                                  ₹{spot.amounts?.entry || 0}
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs">Camera Fees</Label>
-                                <div className="mt-1">₹{spot.amounts?.camera || 0}</div>
+                                <div className="mt-1">
+                                  ₹{spot.amounts?.camera || 0}
+                                </div>
                               </div>
                               <div>
                                 <Label className="text-xs">Spot Total</Label>
-                                <div className="mt-1 font-semibold">₹{spot.amounts?.total || 0}</div>
+                                <div className="mt-1 font-semibold">
+                                  ₹{spot.amounts?.total || 0}
+                                </div>
                               </div>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="text-slate-500">No trek spots information</div>
+                        <div className="text-slate-500">
+                          No trek spots information
+                        </div>
                       )}
                     </div>
 
@@ -768,13 +883,17 @@ export default function AllTouristBookings() {
                         <div>
                           <Label>Status</Label>
                           <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span className="capitalize">{selected.status}</span>
+                            <span className="capitalize">
+                              {selected.status}
+                            </span>
                           </div>
                         </div>
                         <div>
                           <Label>Payment Status</Label>
                           <div className="mt-1 p-3 bg-gray-50 rounded border">
-                            <span className="capitalize">{selected.paymentStatus}</span>
+                            <span className="capitalize">
+                              {selected.paymentStatus}
+                            </span>
                           </div>
                         </div>
                         <div>
@@ -847,7 +966,7 @@ export default function AllTouristBookings() {
                           >
                             <option value="Reserved">Reserved</option>
                             <option value="Pending">Pending</option>
-                            <option value="Not-reserved">Not Reserved</option>
+                            <option value="Not-Reserved">Not Reserved</option>
                             <option value="Cancelled">Cancelled</option>
                           </select>
                         </div>

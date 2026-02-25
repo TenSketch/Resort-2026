@@ -43,6 +43,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 DataTable.use(DT);
 (DT.ext.pager as any).numbers_length = 3;
@@ -66,6 +67,7 @@ interface Reservation {
   numberOfRooms: number;
   totalGuests: number;
   noOfDays: number;
+  noOfNights: number;
   resort: string;
   resortName: string;
   cottageTypes: string[];
@@ -202,7 +204,51 @@ export default function ReservationTable() {
   };
 
   const handleEditChange = (field: keyof Reservation, value: any) => {
-    setEditForm((prev) => ({ ...(prev || {}), [field]: value }));
+    const numRooms = parseInt(
+      String(
+        editForm?.numberOfRooms ?? selectedReservation?.numberOfRooms ?? 0,
+      ),
+    );
+
+    if (field === "children" && value > numRooms * 2) {
+      alert(`Maximum ${numRooms * 2} children allowed for ${numRooms} rooms`);
+      return;
+    }
+    if (field === "guests" && value > numRooms * 2) {
+      alert(`Maximum ${numRooms * 2} guests allowed for ${numRooms} rooms`);
+      return;
+    }
+    if (field === "extraGuests" && value > numRooms * 1) {
+      alert(
+        `Maximum ${numRooms * 1} extra guests allowed for ${numRooms} rooms`,
+      );
+      return;
+    }
+
+    setEditForm((prev) => {
+      const updated = { ...(prev || {}), [field]: value };
+
+      // Recalculate duration if dates change
+      if (field === "checkIn" || field === "checkOut") {
+        const checkIn = updated.checkIn || selectedReservation?.checkIn;
+        const checkOut = updated.checkOut || selectedReservation?.checkOut;
+
+        if (checkIn && checkOut) {
+          const d1 = new Date(checkIn);
+          const d2 = new Date(checkOut);
+          d1.setUTCHours(0, 0, 0, 0);
+          d2.setUTCHours(0, 0, 0, 0);
+
+          const diff = Math.round(
+            (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24),
+          );
+          updated.noOfNights = Math.max(0, diff);
+          updated.noOfDays = updated.noOfNights + 1;
+        }
+      }
+
+      return updated;
+    });
   };
 
   const saveChanges = async () => {
@@ -292,14 +338,25 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                  1,
+                  0,
+                  Math.round(
+                    (new Date(server.checkOut).getTime() -
+                      new Date(server.checkIn).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                ) + 1
+              : updatedLocal.noOfDays,
+          noOfNights:
+            server.checkIn && server.checkOut
+              ? Math.max(
+                  0,
                   Math.round(
                     (new Date(server.checkOut).getTime() -
                       new Date(server.checkIn).getTime()) /
                       (1000 * 60 * 60 * 24),
                   ),
                 )
-              : updatedLocal.noOfDays,
+              : updatedLocal.noOfNights || 0,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
           cottageTypes: server.cottageTypes || updatedLocal.cottageTypes,
@@ -424,6 +481,7 @@ export default function ReservationTable() {
       "Occupied Dates",
       "Check Out",
       "No. of days",
+      "No. of Nights",
       "Guests",
       "Extra Guests",
       "Children",
@@ -464,8 +522,12 @@ export default function ReservationTable() {
         ]
           .filter(Boolean)
           .join(", ");
-        const foodsBilled =
-          (Number(row.guests) || 0) + (Number(row.extraGuests) || 0);
+        const isVana =
+          row.resort?.toLowerCase().includes("vana") ||
+          row.resortName?.toLowerCase().includes("vana");
+        const foodsBilled = isVana
+          ? "NA"
+          : (Number(row.guests) || 0) + (Number(row.extraGuests) || 0);
 
         return [
           // Serial number as first column (starting at 1)
@@ -487,11 +549,12 @@ export default function ReservationTable() {
           `"${row.occupiedDates || "NA"}"`,
           `"'${formatDateForExcel(row.checkOut)}"`,
           row.noOfDays,
+          row.noOfNights,
           row.guests,
           row.extraGuests,
           row.children,
           row.totalGuests,
-          foodsBilled,
+          typeof foodsBilled === "string" ? `"${foodsBilled}"` : foodsBilled,
           `"${row.foodPreference || "NA"}"`,
           `"${row.status}"`,
           row.totalPayable,
@@ -629,20 +692,24 @@ export default function ReservationTable() {
 
           // Calculate days using normalized dates (start of day UTC)
           let noOfDays = 0;
+          let noOfNights = 0;
+          let diffDaysForLoop = 0;
           if (r.checkIn && r.checkOut) {
             const d1 = new Date(r.checkIn);
             const d2 = new Date(r.checkOut);
             d1.setUTCHours(0, 0, 0, 0);
             d2.setUTCHours(0, 0, 0, 0);
-            noOfDays = Math.max(
-              1,
-              Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)),
+            const diff = Math.round(
+              (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24),
             );
+            noOfNights = Math.max(0, diff);
+            noOfDays = noOfNights + 1;
+            diffDaysForLoop = Math.max(1, diff);
           }
 
           // Calculate occupied dates
           let occupiedDatesStr = "—";
-          if (r.checkIn && r.checkOut && noOfDays > 0) {
+          if (r.checkIn && r.checkOut && diffDaysForLoop > 0) {
             const d1 = new Date(r.checkIn);
             d1.setUTCHours(0, 0, 0, 0);
 
@@ -650,7 +717,7 @@ export default function ReservationTable() {
             let currentDate = new Date(d1);
 
             // Collect dates from checkIn up to (but not including) checkOut
-            for (let i = 0; i < noOfDays; i++) {
+            for (let i = 0; i < diffDaysForLoop; i++) {
               datesList.push(String(currentDate.getUTCDate()));
               currentDate.setUTCDate(currentDate.getUTCDate() + 1);
             }
@@ -688,6 +755,7 @@ export default function ReservationTable() {
             numberOfRooms: Number(r.numberOfRooms) || 0,
             totalGuests,
             noOfDays,
+            noOfNights,
             resort: r.resort || "",
             resortName: resortMap.get(r.resort) || r.resort || "",
             cottageTypes: Array.isArray(r.cottageTypes) ? r.cottageTypes : [],
@@ -931,16 +999,19 @@ export default function ReservationTable() {
     {
       data: "reservationDate",
       title: "Reservation Date",
+      width: "140px",
       render: (data: string) => formatDateForDisplay(data),
     },
     {
       data: "reservedFrom",
       title: "Reserved From",
+      width: "120px",
       render: (data: string) => data || "NA",
     },
     {
       data: "checkIn",
       title: "Check In",
+      width: "120px",
       render: (data: string) => formatDateForDisplay(data),
     },
     {
@@ -951,9 +1022,11 @@ export default function ReservationTable() {
     {
       data: "checkOut",
       title: "Check Out",
+      width: "120px",
       render: (data: string) => formatDateForDisplay(data),
     },
     { data: "noOfDays", title: "No. of days" },
+    { data: "noOfNights", title: "No. of Nights" },
     { data: "guests", title: "Guests" },
     { data: "extraGuests", title: "Extra Guests" },
     { data: "children", title: "Children" },
@@ -962,6 +1035,10 @@ export default function ReservationTable() {
       data: null,
       title: "Foods billed",
       render: (_data: any, _type: any, row: Reservation) => {
+        const isVana =
+          row.resort?.toLowerCase().includes("vana") ||
+          row.resortName?.toLowerCase().includes("vana");
+        if (isVana) return "NA FOR VANA RESORT";
         return (Number(row.guests) || 0) + (Number(row.extraGuests) || 0);
       },
     },
@@ -1285,6 +1362,73 @@ export default function ReservationTable() {
                 "order",
                 ["orderAsc", "orderDesc", "spacer", "search"],
               ],
+              initComplete: function () {
+                const wrapper = (this as any).api().table().container();
+                const topRow = wrapper.querySelector(
+                  ".dt-layout-row:first-child",
+                );
+                if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                  const btn = document.createElement("button");
+                  btn.className = "reset-filters-btn";
+                  btn.textContent = "Reset Filters";
+                  btn.style.cssText =
+                    "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                  btn.onmouseenter = () => {
+                    btn.style.background = "#e2e8f0";
+                  };
+                  btn.onmouseleave = () => {
+                    btn.style.background = "#f8fafc";
+                  };
+                  btn.onclick = () => {
+                    const api = (this as any).api();
+                    const container = api.table().container();
+
+                    // 1. Clear global search and column searches
+                    api.search("").columns().search("");
+
+                    // 2. Clear Column Control plugin filters (API method)
+                    if (api.columns().ccSearchClear) {
+                      (api.columns() as any).ccSearchClear();
+                    }
+
+                    // 3. Clear all inputs and trigger events to sync UI
+                    container
+                      .querySelectorAll("input")
+                      .forEach((input: any) => {
+                        input.value = "";
+                        input.dispatchEvent(
+                          new Event("input", { bubbles: true }),
+                        );
+                        input.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      });
+
+                    // 4. Clear all selects and trigger events
+                    container
+                      .querySelectorAll("select")
+                      .forEach((select: any) => {
+                        if (select.options.length > 0) {
+                          select.selectedIndex = 0;
+                          select.dispatchEvent(
+                            new Event("change", { bubbles: true }),
+                          );
+                        }
+                      });
+
+                    // 5. Force remove active state from column header buttons
+                    container
+                      .querySelectorAll(".dtcc-button_active")
+                      .forEach((btn: any) => {
+                        btn.classList.remove("dtcc-button_active");
+                      });
+
+                    // 6. Draw once to sync everything
+                    api.draw();
+                  };
+                  topRow.appendChild(btn);
+                }
+              },
             }}
           />
         </div>
@@ -1566,52 +1710,16 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Booking Information
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="col-span-1">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Booking ID
-                        </Label>
-                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600 font-mono">
-                            {selectedReservation.bookingId}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-span-1">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Reservation Date
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="w-full bg-gray-100 cursor-not-allowed"
-                            type="date"
-                            value={editForm?.reservationDate || ""}
-                            disabled
-                          />
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(
-                                selectedReservation.reservationDate,
-                              )}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check In
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
+                          <DatePickerField
                             className="w-full"
-                            type="date"
                             value={editForm?.checkIn || ""}
-                            onChange={(e) =>
-                              handleEditChange("checkIn", e.target.value)
-                            }
+                            onChange={(val) => handleEditChange("checkIn", val)}
                           />
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border">
@@ -1629,12 +1737,11 @@ export default function ReservationTable() {
                           Check Out
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
+                          <DatePickerField
                             className="w-full"
-                            type="date"
                             value={editForm?.checkOut || ""}
-                            onChange={(e) =>
-                              handleEditChange("checkOut", e.target.value)
+                            onChange={(val) =>
+                              handleEditChange("checkOut", val)
                             }
                           />
                         ) : (
@@ -1653,8 +1760,55 @@ export default function ReservationTable() {
                           No. of Days
                         </Label>
                         <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600">
-                            {selectedReservation.noOfDays}
+                          <span className="text-sm text-gray-600 text-center block">
+                            {editForm?.noOfDays ?? selectedReservation.noOfDays}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-1">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                          No. of Nights
+                        </Label>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600 text-center block">
+                            {editForm?.noOfNights ??
+                              selectedReservation.noOfNights}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-1">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                          Reservation Date
+                        </Label>
+                        {sheetMode === "edit" ? (
+                          <DatePickerField
+                            className="w-full bg-gray-100 cursor-not-allowed"
+                            value={editForm?.reservationDate || ""}
+                            onChange={() => {}}
+                            disabled
+                          />
+                        ) : (
+                          <div className="p-3 bg-gray-50 rounded-md border">
+                            <span className="text-sm text-gray-900">
+                              {formatDateForDisplay(
+                                selectedReservation.reservationDate,
+                              )}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                      <div className="col-span-1">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                          Booking ID
+                        </Label>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                          <span className="text-sm text-gray-600 font-mono">
+                            {selectedReservation.bookingId}
                           </span>
                         </div>
                       </div>
@@ -1729,6 +1883,19 @@ export default function ReservationTable() {
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
                           Children
+                          {sheetMode === "edit" && (
+                            <span className="text-[10px] text-gray-400 ml-1">
+                              (Max:{" "}
+                              {parseInt(
+                                String(
+                                  editForm?.numberOfRooms ??
+                                    selectedReservation?.numberOfRooms ??
+                                    0,
+                                ),
+                              ) * 2}
+                              )
+                            </span>
+                          )}
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
@@ -2011,7 +2178,7 @@ export default function ReservationTable() {
                             <SelectContent>
                               <SelectItem value="Reserved">Reserved</SelectItem>
                               <SelectItem value="Pending">Pending</SelectItem>
-                              <SelectItem value="Not-reserved">
+                              <SelectItem value="Not-Reserved">
                                 Not Reserved
                               </SelectItem>
                               <SelectItem value="Cancelled">
@@ -2057,8 +2224,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      {selectedReservation.status?.toLowerCase() ===
-                        "cancelled" && (
+                      {selectedReservation.status === "Cancelled" && (
                         <div>
                           <Label className="text-sm font-medium text-gray-700">
                             Refund Percentage
@@ -2169,9 +2335,8 @@ export default function ReservationTable() {
                           Payment Transaction Date & Time
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
+                          <DatePickerField
                             className="w-full"
-                            type="date"
                             value={
                               editForm?.paymentTransactionDateTime
                                 ? editForm.paymentTransactionDateTime.slice(
@@ -2180,12 +2345,10 @@ export default function ReservationTable() {
                                   )
                                 : ""
                             }
-                            onChange={(e) =>
+                            onChange={(val) =>
                               handleEditChange(
                                 "paymentTransactionDateTime",
-                                e.target.value
-                                  ? new Date(e.target.value).toISOString()
-                                  : "",
+                                val ? new Date(val).toISOString() : "",
                               )
                             }
                           />
@@ -2274,20 +2437,17 @@ export default function ReservationTable() {
                           Refund Requested Date & Time
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
+                          <DatePickerField
                             className="w-full"
-                            type="date"
                             value={
                               editForm?.refundRequestedDateTime
                                 ? editForm.refundRequestedDateTime.slice(0, 10)
                                 : ""
                             }
-                            onChange={(e) =>
+                            onChange={(val) =>
                               handleEditChange(
                                 "refundRequestedDateTime",
-                                e.target.value
-                                  ? new Date(e.target.value).toISOString()
-                                  : "",
+                                val ? new Date(val).toISOString() : "",
                               )
                             }
                           />
@@ -2312,20 +2472,17 @@ export default function ReservationTable() {
                           Date of Refund
                         </Label>
                         {sheetMode === "edit" ? (
-                          <Input
+                          <DatePickerField
                             className="w-full"
-                            type="date"
                             value={
                               editForm?.dateOfRefund
                                 ? editForm.dateOfRefund.slice(0, 10)
                                 : ""
                             }
-                            onChange={(e) =>
+                            onChange={(val) =>
                               handleEditChange(
                                 "dateOfRefund",
-                                e.target.value
-                                  ? new Date(e.target.value).toISOString()
-                                  : "",
+                                val ? new Date(val).toISOString() : "",
                               )
                             }
                           />

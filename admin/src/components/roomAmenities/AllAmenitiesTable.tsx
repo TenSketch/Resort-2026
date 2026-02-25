@@ -7,12 +7,12 @@ import "datatables.net-buttons/js/buttons.colVis.js";
 import "datatables.net-columncontrol-dt";
 import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
-import "datatables.net-fixedcolumns"; 
+import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 // Remote data fetched from backend API
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from '@/lib/AdminProvider'
+import { usePermissions } from "@/lib/AdminProvider";
 // Dialog imports removed (small modals no longer used)
 import {
   Sheet,
@@ -38,11 +38,11 @@ interface Amenity {
 export default function AllRoomAmenitiesTable() {
   const tableRef = useRef(null);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view'|'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [selectedAmenity, setSelectedAmenity] = useState<Amenity | null>(null);
   const [amenities, setAmenities] = useState<Amenity[]>([]);
-  const perms = usePermissions()
-  const permsRef = useRef(perms)
+  const perms = usePermissions();
+  const permsRef = useRef(perms);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -51,36 +51,49 @@ export default function AllRoomAmenitiesTable() {
   const [editDescription, setEditDescription] = useState("");
   // keep a live ref to amenities to avoid stale closure in global event handlers
   const amenitiesRef = useRef<Amenity[]>([]);
-  useEffect(() => { amenitiesRef.current = amenities; }, [amenities]);
-  useEffect(() => { permsRef.current = perms }, [perms])
+  useEffect(() => {
+    amenitiesRef.current = amenities;
+  }, [amenities]);
+  useEffect(() => {
+    permsRef.current = perms;
+  }, [perms]);
 
   const handleEdit = (amenity: Amenity) => {
-    if (!permsRef.current.canEdit) return
+    if (!permsRef.current.canEdit) return;
     // Open details sheet instead of a modal
     setSelectedAmenity(amenity);
     setEditName(amenity.name || "");
     setEditDescription(amenity.description || "");
-    setSheetMode('edit')
+    setSheetMode("edit");
     setIsDetailSheetOpen(true);
   };
 
   const toggleActiveStatus = async (amenity: Amenity) => {
-    if (!permsRef.current.canDisable) return
+    if (!permsRef.current.canDisable) return;
     try {
       setUpdatingId(amenity._id);
-      const token = localStorage.getItem('admin_token')
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/amenities/${amenity._id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ isActive: !amenity.isActive })
-      });
-      if (!res.ok) throw new Error('Failed to update amenity status');
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL || ""}/api/amenities/${amenity._id}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ isActive: !amenity.isActive }),
+        },
+      );
+      if (!res.ok) throw new Error("Failed to update amenity status");
       const data = await res.json();
-      setAmenities(prev => prev.map(a => a._id === data.amenity._id ? data.amenity : a));
-      if (selectedAmenity && selectedAmenity._id === amenity._id) setSelectedAmenity(data.amenity);
-    } catch (e:any) {
+      setAmenities((prev) =>
+        prev.map((a) => (a._id === data.amenity._id ? data.amenity : a)),
+      );
+      if (selectedAmenity && selectedAmenity._id === amenity._id)
+        setSelectedAmenity(data.amenity);
+    } catch (e: any) {
       console.error(e);
-      setError(e.message || 'Update failed');
+      setError(e.message || "Update failed");
     } finally {
       setUpdatingId(null);
     }
@@ -90,7 +103,7 @@ export default function AllRoomAmenitiesTable() {
     setSelectedAmenity(amenity);
     setEditName(amenity.name || "");
     setEditDescription(amenity.description || "");
-    setSheetMode('view')
+    setSheetMode("view");
     setIsDetailSheetOpen(true);
   };
 
@@ -100,12 +113,14 @@ export default function AllRoomAmenitiesTable() {
     const load = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/amenities`);
-        if (!res.ok) throw new Error('Failed to fetch amenities');
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL || ""}/api/amenities`,
+        );
+        if (!res.ok) throw new Error("Failed to fetch amenities");
         const data = await res.json();
         setAmenities(data.amenities || []);
-      } catch (e:any) {
-        setError(e.message || 'Error fetching amenities');
+      } catch (e: any) {
+        setError(e.message || "Error fetching amenities");
       } finally {
         setLoading(false);
       }
@@ -211,48 +226,56 @@ export default function AllRoomAmenitiesTable() {
 
     const handleButtonClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const amenityId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
-      const amenity = amenitiesRef.current.find(a => a._id === amenityId);
-      
+      const amenityId =
+        target.getAttribute("data-id") ||
+        target.closest("button")?.getAttribute("data-id");
+      const amenity = amenitiesRef.current.find((a) => a._id === amenityId);
+
       if (amenity) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
-        
-        if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
-          if (!permsRef.current.canEdit) return
+
+        if (
+          target.classList.contains("edit-btn") ||
+          target.closest(".edit-btn")
+        ) {
+          if (!permsRef.current.canEdit) return;
           handleEdit(amenity);
-        } else if (target.classList.contains('disable-btn') || target.closest('.disable-btn')) {
-          if (!permsRef.current.canDisable) return
+        } else if (
+          target.classList.contains("disable-btn") ||
+          target.closest(".disable-btn")
+        ) {
+          if (!permsRef.current.canDisable) return;
           toggleActiveStatus(amenity);
         }
       }
     };
 
-  const handleTableRowClick = (event: Event) => {
+    const handleTableRowClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      
+
       // Don't trigger row click if a button was clicked
-      if (target.closest('.edit-btn, .disable-btn')) {
+      if (target.closest(".edit-btn, .disable-btn")) {
         return;
       }
-      
-      const row = target.closest('tr');
-      if (row && row.parentElement?.tagName === 'TBODY') {
-        const rowId = row.getAttribute('data-id');
+
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
+        const rowId = row.getAttribute("data-id");
         if (rowId) {
-          const amenity = amenitiesRef.current.find(a => a._id === rowId);
+          const amenity = amenitiesRef.current.find((a) => a._id === rowId);
           if (amenity) handleRowClick(amenity);
         }
       }
     };
 
     // Add event listener for edit and disable buttons
-    document.addEventListener('click', handleButtonClick);
-    document.addEventListener('click', handleTableRowClick);
+    document.addEventListener("click", handleButtonClick);
+    document.addEventListener("click", handleTableRowClick);
 
     return () => {
-      document.removeEventListener('click', handleButtonClick);
-      document.removeEventListener('click', handleTableRowClick);
+      document.removeEventListener("click", handleButtonClick);
+      document.removeEventListener("click", handleTableRowClick);
     };
   }, []);
 
@@ -282,10 +305,12 @@ export default function AllRoomAmenitiesTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, row: Amenity) => {
-    const isDisabled = !row.isActive;
+        const isDisabled = !row.isActive;
         return `
           <div style="display: flex; gap: 8px; align-items: center;">
-            ${perms.canEdit ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row._id}" 
@@ -301,36 +326,42 @@ export default function AllRoomAmenitiesTable() {
                 cursor: pointer;
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                ${isDisabled ? 'opacity: 0.5;' : ''}
+                ${isDisabled ? "opacity: 0.5;" : ""}
               "
               onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
               onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
             >
               Edit
-            </button>` : ''}
-            ${perms.canDisable ? `
+            </button>`
+                : ""
+            }
+            ${
+              perms.canDisable
+                ? `
             <button 
               class="disable-btn" 
               data-id="${row._id}" 
               title="Toggle Active Status"
               style="
-                background: ${isDisabled ? '#6b7280' : '#dc2626'};
+                background: ${isDisabled ? "#6b7280" : "#dc2626"};
                 color: white;
                 border: none;
                 padding: 6px 12px;
                 border-radius: 6px;
                 font-size: 12px;
                 font-weight: 500;
-                cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
+                cursor: ${isDisabled ? "not-allowed" : "pointer"};
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
               "
-              ${isDisabled ? 'disabled' : ''}
-              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ''}"
-              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ''}"
+              ${isDisabled ? "disabled" : ""}
+              onmouseover="${!isDisabled ? `this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'` : ""}"
+              onmouseout="${!isDisabled ? `this.style.background='#dc2626'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'` : ""}"
             >
-              ${isDisabled ? 'Inactive' : 'Deactivate'}
-            </button>` : ''}
+              ${isDisabled ? "Inactive" : "Deactivate"}
+            </button>`
+                : ""
+            }
           </div>
         `;
       },
@@ -339,9 +370,13 @@ export default function AllRoomAmenitiesTable() {
 
   return (
     <div className="flex flex-col h-full max-h-screen overflow-hidden py-6">
-      <h2 className="text-xl font-semibold text-slate-800 mb-4 flex-shrink-0">Room Amenities</h2>
-  {loading && <div className="text-sm text-slate-500 mb-2">Loading amenities...</div>}
-  {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
+      <h2 className="text-xl font-semibold text-slate-800 mb-4 flex-shrink-0">
+        Room Amenities
+      </h2>
+      {loading && (
+        <div className="text-sm text-slate-500 mb-2">Loading amenities...</div>
+      )}
+      {error && <div className="text-sm text-red-600 mb-2">{error}</div>}
       <div ref={tableRef} className="flex-1 overflow-hidden">
         <DataTable
           data={amenities}
@@ -370,16 +405,80 @@ export default function AllRoomAmenitiesTable() {
                 collectionLayout: "fixed two-column",
               },
             ],
-            columnControl: ["order", ["orderAsc", "orderDesc", "spacer", "search"]],
+            columnControl: [
+              "order",
+              ["orderAsc", "orderDesc", "spacer", "search"],
+            ],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
+
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
             rowCallback: (row: any, data: any) => {
               // attach id for reliable lookup regardless of sorting/filtering
               if (data && data._id) {
-                row.setAttribute('data-id', data._id);
+                row.setAttribute("data-id", data._id);
               }
               if (!data.isActive) {
-                row.classList.add('disabled-row');
+                row.classList.add("disabled-row");
               } else {
-                row.classList.remove('disabled-row');
+                row.classList.remove("disabled-row");
               }
               return row;
             },
@@ -387,7 +486,7 @@ export default function AllRoomAmenitiesTable() {
         />
       </div>
 
-  {/* Small modals removed; actions now handled directly and via detail sheet */}
+      {/* Small modals removed; actions now handled directly and via detail sheet */}
 
       {/* Amenity Details Sheet */}
       <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
@@ -398,57 +497,75 @@ export default function AllRoomAmenitiesTable() {
               Complete information about the selected room amenity
             </SheetDescription>
           </SheetHeader>
-          
+
           {selectedAmenity && (
             <>
               {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Amenity ID</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Amenity ID
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                      <span className="text-sm text-gray-900">{selectedAmenity._id}</span>
+                      <span className="text-sm text-gray-900">
+                        {selectedAmenity._id}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Amenity Name</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Amenity Name
+                    </Label>
                     <Input
                       className="mt-1"
                       value={editName}
-                      onChange={e => setEditName(e.target.value)}
+                      onChange={(e) => setEditName(e.target.value)}
                       placeholder="Enter name"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Description</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Description
+                    </Label>
                     <textarea
                       className="mt-1 w-full min-h-[90px] rounded-md border border-gray-300 bg-white p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={editDescription}
-                      onChange={e => setEditDescription(e.target.value)}
+                      onChange={(e) => setEditDescription(e.target.value)}
                       placeholder="Enter description"
                     />
-                    {!editDescription && <p className="mt-1 text-xs text-slate-400">Optional</p>}
+                    {!editDescription && (
+                      <p className="mt-1 text-xs text-slate-400">Optional</p>
+                    )}
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Status</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Status
+                    </Label>
                     <div className="mt-1">
-                      <Badge 
-                        variant={selectedAmenity.isActive ? "default" : "destructive"}
+                      <Badge
+                        variant={
+                          selectedAmenity.isActive ? "default" : "destructive"
+                        }
                         className="px-2 py-1"
                       >
                         {selectedAmenity.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">Record Status</Label>
+                    <Label className="text-sm font-medium text-gray-700">
+                      Record Status
+                    </Label>
                     <div className="mt-1">
-                      <Badge 
-                        variant={selectedAmenity.isActive ? "default" : "destructive"}
+                      <Badge
+                        variant={
+                          selectedAmenity.isActive ? "default" : "destructive"
+                        }
                         className="px-2 py-1"
                       >
                         {selectedAmenity.isActive ? "Active" : "Inactive"}
@@ -457,25 +574,47 @@ export default function AllRoomAmenitiesTable() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Fixed Action Buttons */}
               <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === 'view' ? (
+                {sheetMode === "view" ? (
                   <>
                     <Button
-                      onClick={() => { if (!perms.canEdit) return; setSheetMode('edit') }}
+                      onClick={() => {
+                        if (!perms.canEdit) return;
+                        setSheetMode("edit");
+                      }}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to edit"
+                          : undefined
+                      }
                     >
                       Edit
                     </Button>
                     <Button
-                      onClick={() => { if (!perms.canDisable) return; toggleActiveStatus(selectedAmenity) }}
-                      variant={selectedAmenity.isActive ? 'destructive' : 'default'}
-                      disabled={updatingId === selectedAmenity._id || !perms.canDisable}
-                      title={!perms.canDisable ? 'You do not have permission to change status' : undefined}
+                      onClick={() => {
+                        if (!perms.canDisable) return;
+                        toggleActiveStatus(selectedAmenity);
+                      }}
+                      variant={
+                        selectedAmenity.isActive ? "destructive" : "default"
+                      }
+                      disabled={
+                        updatingId === selectedAmenity._id || !perms.canDisable
+                      }
+                      title={
+                        !perms.canDisable
+                          ? "You do not have permission to change status"
+                          : undefined
+                      }
                     >
-                      {updatingId === selectedAmenity._id ? 'Updating...' : (selectedAmenity.isActive ? 'Deactivate' : 'Activate')}
+                      {updatingId === selectedAmenity._id
+                        ? "Updating..."
+                        : selectedAmenity.isActive
+                          ? "Deactivate"
+                          : "Activate"}
                     </Button>
                     <Button
                       variant="outline"
@@ -487,37 +626,64 @@ export default function AllRoomAmenitiesTable() {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSheetMode("view")}
+                    >
+                      Cancel
+                    </Button>
                     <Button
                       onClick={async () => {
-                        if (!perms.canEdit) return
-                        if (!editName.trim()) { setError('Name is required'); return; }
+                        if (!perms.canEdit) return;
+                        if (!editName.trim()) {
+                          setError("Name is required");
+                          return;
+                        }
                         try {
                           setSaving(true);
-                          const token = localStorage.getItem('admin_token')
-                          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/amenities/${selectedAmenity._id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-                            body: JSON.stringify({ name: editName, description: editDescription })
-                          });
-                          if (!res.ok) throw new Error('Save failed');
+                          const token = localStorage.getItem("admin_token");
+                          const res = await fetch(
+                            `${import.meta.env.VITE_BACKEND_URL || ""}/api/amenities/${selectedAmenity._id}`,
+                            {
+                              method: "PUT",
+                              headers: {
+                                "Content-Type": "application/json",
+                                ...(token
+                                  ? { Authorization: `Bearer ${token}` }
+                                  : {}),
+                              },
+                              body: JSON.stringify({
+                                name: editName,
+                                description: editDescription,
+                              }),
+                            },
+                          );
+                          if (!res.ok) throw new Error("Save failed");
                           const data = await res.json();
-                          setAmenities(prev => prev.map(a => a._id === data.amenity._id ? data.amenity : a));
+                          setAmenities((prev) =>
+                            prev.map((a) =>
+                              a._id === data.amenity._id ? data.amenity : a,
+                            ),
+                          );
                           setSelectedAmenity(data.amenity);
-                          setEditName(data.amenity.name || '');
-                          setEditDescription(data.amenity.description || '');
+                          setEditName(data.amenity.name || "");
+                          setEditDescription(data.amenity.description || "");
                           setError(null);
-                          setSheetMode('view')
-                        } catch (e:any) {
-                          setError(e.message || 'Save error');
+                          setSheetMode("view");
+                        } catch (e: any) {
+                          setError(e.message || "Save error");
                         } finally {
                           setSaving(false);
                         }
                       }}
                       disabled={saving || !perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to save' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to save"
+                          : undefined
+                      }
                     >
-                      {saving ? 'Saving...' : 'Save'}
+                      {saving ? "Saving..." : "Save"}
                     </Button>
                     <Button
                       variant="outline"

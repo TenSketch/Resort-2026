@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 // Interface for form data
 interface LogFormData {
@@ -23,7 +24,9 @@ const AddLogForm = () => {
 
   // handle text, select, date change
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -32,40 +35,41 @@ const AddLogForm = () => {
   // submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     // prepare payload
-    const payload = { ...formData }
+    const payload = { ...formData };
 
     fetch(`${apiBase}/api/logs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
       .then(async (res) => {
-        let parsed = null
+        let parsed = null;
         try {
-          const text = await res.text()
-          parsed = text ? JSON.parse(text) : null
+          const text = await res.text();
+          parsed = text ? JSON.parse(text) : null;
         } catch (e) {
-          parsed = null
+          parsed = null;
         }
 
         if (!res.ok) {
-          const errMsg = (parsed && parsed.error) || res.statusText || 'Failed to save log'
-          throw new Error(errMsg)
+          const errMsg =
+            (parsed && parsed.error) || res.statusText || "Failed to save log";
+          throw new Error(errMsg);
         }
 
-        return parsed
+        return parsed;
       })
       .then(() => {
-        alert('Log saved')
-        handleReset()
+        alert("Log saved");
+        handleReset();
       })
       .catch((err) => {
-        console.error('Save log error', err)
-        alert('Error: ' + err.message)
-      })
+        console.error("Save log error", err);
+        alert("Error: " + err.message);
+      });
   };
 
   // reset handler
@@ -84,8 +88,12 @@ const AddLogForm = () => {
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-slate-800 mb-2">Add Log Entry</h1>
-          <p className="text-slate-600">Fill in the details to add a log record</p>
+          <h1 className="text-2xl font-semibold text-slate-800 mb-2">
+            Add Log Entry
+          </h1>
+          <p className="text-slate-600">
+            Fill in the details to add a log record
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -151,13 +159,12 @@ const AddLogForm = () => {
 
           <div className="space-y-2">
             <Label htmlFor="logEntryDate">Log Entry Date *</Label>
-            <Input
-              id="logEntryDate"
-              name="logEntryDate"
-              type="date"
+            <DatePickerField
               value={formData.logEntryDate}
-              onChange={handleChange}
-              required
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, logEntryDate: val }))
+              }
+              className="bg-slate-50"
             />
           </div>
 

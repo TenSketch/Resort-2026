@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 interface GuestFormData {
   name: string;
@@ -20,7 +21,13 @@ interface GuestFormData {
   registrationDate: string;
 }
 
-const countries = ["India", "United States", "United Kingdom", "Australia", "Canada"];
+const countries = [
+  "India",
+  "United States",
+  "United Kingdom",
+  "Australia",
+  "Canada",
+];
 
 const AddGuestForm = () => {
   const [formData, setFormData] = useState<GuestFormData>({
@@ -37,18 +44,18 @@ const AddGuestForm = () => {
     state: "",
     pincode: "",
     country: "",
-    registrationDate: new Date().toISOString().split('T')[0],
+    registrationDate: new Date().toISOString().split("T")[0],
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const generatePassword = () => {
-    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-    const numbers = '0123456789';
-    const special = '@$!%*?&';
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const special = "@$!%*?&";
     const allChars = uppercase + lowercase + numbers + special;
 
-    let password = '';
+    let password = "";
     // Ensure at least one of each required character type
     password += uppercase[Math.floor(Math.random() * uppercase.length)];
     password += lowercase[Math.floor(Math.random() * lowercase.length)];
@@ -61,13 +68,18 @@ const AddGuestForm = () => {
     }
 
     // Shuffle the password
-    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
 
     setFormData((prev) => ({ ...prev, password }));
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -75,21 +87,34 @@ const AddGuestForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required profile fields for complete profile
-    const requiredProfileFields = ['dob', 'nationality', 'address1', 'city', 'state', 'pincode', 'country'];
-    const missingFields = requiredProfileFields.filter(field => !formData[field as keyof GuestFormData]);
-    
+    const requiredProfileFields = [
+      "dob",
+      "nationality",
+      "address1",
+      "city",
+      "state",
+      "pincode",
+      "country",
+    ];
+    const missingFields = requiredProfileFields.filter(
+      (field) => !formData[field as keyof GuestFormData],
+    );
+
     if (missingFields.length > 0) {
-      alert(`Please fill in all required profile fields: ${missingFields.join(', ')}`);
+      alert(
+        `Please fill in all required profile fields: ${missingFields.join(", ")}`,
+      );
       return;
     }
-    
+
     setIsLoading(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_ADMIN_API || '';
-      const url = apiUrl ? `${apiUrl}/api/user/register` : '/api/user/register';
+      const apiUrl =
+        import.meta.env.VITE_API_URL || import.meta.env.VITE_ADMIN_API || "";
+      const url = apiUrl ? `${apiUrl}/api/user/register` : "/api/user/register";
 
       // Prepare payload with all user data including profile fields
       const payload = {
@@ -111,27 +136,31 @@ const AddGuestForm = () => {
       };
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.code === 3000 && data.result.status === 'Success') {
-        const successMessage = data.result.credentialsSent 
+      if (
+        response.ok &&
+        data.code === 3000 &&
+        data.result.status === "Success"
+      ) {
+        const successMessage = data.result.credentialsSent
           ? `${data.result.msg}\n\nThe user can now login using:\nEmail: ${formData.email}\nPassword: (sent to their email)`
           : data.result.msg;
         alert(successMessage);
         handleReset();
       } else {
-        throw new Error(data.result?.msg || data.error || 'Failed to add user');
+        throw new Error(data.result?.msg || data.error || "Failed to add user");
       }
     } catch (err: any) {
-      console.error('Error adding user:', err);
-      alert('Error adding user: ' + (err.message || err));
+      console.error("Error adding user:", err);
+      alert("Error adding user: " + (err.message || err));
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +181,7 @@ const AddGuestForm = () => {
       state: "",
       pincode: "",
       country: "",
-      registrationDate: new Date().toISOString().split('T')[0],
+      registrationDate: new Date().toISOString().split("T")[0],
     });
   };
 
@@ -164,15 +193,25 @@ const AddGuestForm = () => {
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">
             Add New User
           </h1>
-          <p className="text-slate-600">Create a new user account with complete profile. All fields marked with * are required.</p>
+          <p className="text-slate-600">
+            Create a new user account with complete profile. All fields marked
+            with * are required.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">Account Information</h3>
+          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6">
+            Account Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="name"
+                className="text-sm font-medium text-slate-700"
+              >
+                Full Name <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="name"
                 name="name"
@@ -184,7 +223,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-slate-700"
+              >
+                Email <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -197,7 +241,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="phone"
+                className="text-sm font-medium text-slate-700"
+              >
+                Phone <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="phone"
                 name="phone"
@@ -214,7 +263,12 @@ const AddGuestForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             <div className="space-y-2">
-              <Label htmlFor="emailVerificationStatus" className="text-sm font-medium text-slate-700">Email Verified <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="emailVerificationStatus"
+                className="text-sm font-medium text-slate-700"
+              >
+                Email Verified <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="emailVerificationStatus"
                 name="emailVerificationStatus"
@@ -228,7 +282,12 @@ const AddGuestForm = () => {
               </select>
             </div>
             <div className="space-y-2 lg:col-span-3">
-              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-slate-700"
+              >
+                Password <span className="text-red-500">*</span>
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="password"
@@ -252,22 +311,32 @@ const AddGuestForm = () => {
           </div>
 
           {/* Personal Information */}
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">Personal Information</h3>
+          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">
+            Personal Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="dob" className="text-sm font-medium text-slate-700">Date of Birth <span className="text-red-500">*</span></Label>
-              <Input
-                id="dob"
-                name="dob"
-                type="date"
+              <Label
+                htmlFor="dob"
+                className="text-sm font-medium text-slate-700"
+              >
+                Date of Birth <span className="text-red-500">*</span>
+              </Label>
+              <DatePickerField
                 value={formData.dob}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
-                required
+                onChange={(val) =>
+                  setFormData((prev) => ({ ...prev, dob: val }))
+                }
+                className="bg-slate-50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nationality" className="text-sm font-medium text-slate-700">Nationality <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="nationality"
+                className="text-sm font-medium text-slate-700"
+              >
+                Nationality <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="nationality"
                 name="nationality"
@@ -279,23 +348,34 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="registrationDate" className="text-sm font-medium text-slate-700">Registration Date</Label>
-              <Input
-                id="registrationDate"
-                name="registrationDate"
-                type="date"
+              <Label
+                htmlFor="registrationDate"
+                className="text-sm font-medium text-slate-700"
+              >
+                Registration Date
+              </Label>
+              <DatePickerField
                 value={formData.registrationDate}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                onChange={(val) =>
+                  setFormData((prev) => ({ ...prev, registrationDate: val }))
+                }
+                className="bg-slate-50"
               />
             </div>
           </div>
 
           {/* Address Information */}
-          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">Address Information</h3>
+          <h3 className="text-xl font-semibold text-slate-800 border-b border-slate-200 pb-3 mb-6 mt-6">
+            Address Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="address1" className="text-sm font-medium text-slate-700">Address Line 1 <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="address1"
+                className="text-sm font-medium text-slate-700"
+              >
+                Address Line 1 <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="address1"
                 name="address1"
@@ -307,7 +387,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address2" className="text-sm font-medium text-slate-700">Address Line 2</Label>
+              <Label
+                htmlFor="address2"
+                className="text-sm font-medium text-slate-700"
+              >
+                Address Line 2
+              </Label>
               <Input
                 id="address2"
                 name="address2"
@@ -318,7 +403,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city" className="text-sm font-medium text-slate-700">City / District <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="city"
+                className="text-sm font-medium text-slate-700"
+              >
+                City / District <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="city"
                 name="city"
@@ -330,7 +420,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="state" className="text-sm font-medium text-slate-700">State / Province <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="state"
+                className="text-sm font-medium text-slate-700"
+              >
+                State / Province <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="state"
                 name="state"
@@ -345,7 +440,12 @@ const AddGuestForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="pincode" className="text-sm font-medium text-slate-700">Postal Code <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="pincode"
+                className="text-sm font-medium text-slate-700"
+              >
+                Postal Code <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="pincode"
                 name="pincode"
@@ -357,7 +457,12 @@ const AddGuestForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="country" className="text-sm font-medium text-slate-700">Country <span className="text-red-500">*</span></Label>
+              <Label
+                htmlFor="country"
+                className="text-sm font-medium text-slate-700"
+              >
+                Country <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="country"
                 name="country"
@@ -383,7 +488,7 @@ const AddGuestForm = () => {
               disabled={isLoading}
               className="px-8 py-3 bg-slate-800 text-white hover:bg-slate-700 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Adding User...' : 'Add User'}
+              {isLoading ? "Adding User..." : "Add User"}
             </Button>
             <Button
               type="button"

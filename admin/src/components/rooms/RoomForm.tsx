@@ -45,7 +45,7 @@ const AddRoomForm = () => {
     Array<{ _id: string; resortName: string }>
   >([]);
   const [cottageTypes, setCottageTypes] = useState<
-    Array<{ _id: string; name: string }>
+    Array<{ _id: string; name: string; resortId?: string }>
   >([]);
   const [resortsLoading, setResortsLoading] = useState(false);
   const [cottageTypesLoading, setCottageTypesLoading] = useState(false);
@@ -98,7 +98,11 @@ const AddRoomForm = () => {
         const data = await res.json();
         const list = (data && data.cottageTypes) || [];
         setCottageTypes(
-          list.map((ct: any) => ({ _id: ct._id, name: ct.name })),
+          list.map((ct: any) => ({
+            _id: ct._id,
+            name: ct.name,
+            resortId: ct.resort?._id || ct.resort,
+          })),
         );
       } catch (e) {
         console.warn("Could not load cottage types", e);
@@ -162,7 +166,11 @@ const AddRoomForm = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "resortId") {
+      setFormData((prev) => ({ ...prev, [name]: value, cottageTypeId: "" }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,11 +375,17 @@ const AddRoomForm = () => {
                     ? "Loading..."
                     : "-- Select Cottage Type --"}
                 </option>
-                {cottageTypes.map((cottage) => (
-                  <option key={cottage._id} value={cottage._id}>
-                    {cottage.name}
-                  </option>
-                ))}
+                {cottageTypes
+                  .filter(
+                    (cottage) =>
+                      !formData.resortId ||
+                      cottage.resortId === formData.resortId,
+                  )
+                  .map((cottage) => (
+                    <option key={cottage._id} value={cottage._id}>
+                      {cottage.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="space-y-2">
@@ -569,7 +583,8 @@ const AddRoomForm = () => {
                 htmlFor="chargesPerBedWeekDays"
                 className="text-sm font-medium text-slate-700"
               >
-                Charges per Bed (Weekdays) <span className="text-red-500">*</span>
+                Charges per Bed (Weekdays){" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="chargesPerBedWeekDays"
@@ -585,7 +600,8 @@ const AddRoomForm = () => {
                 htmlFor="chargesPerBedWeekEnd"
                 className="text-sm font-medium text-slate-700"
               >
-                Charges per Bed (Weekend) <span className="text-red-500">*</span>
+                Charges per Bed (Weekend){" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="chargesPerBedWeekEnd"

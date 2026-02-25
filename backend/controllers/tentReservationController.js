@@ -96,12 +96,12 @@ export const createTentReservation = async (req, res) => {
     }
 
     // Check if tents are available for the requested dates based on tentCount
-    if (status !== 'reserved') {
+    if (status !== 'Reserved') {
       // For each tent, count existing bookings and compare with tentCount
       for (const tent of tents) {
         const overlappingCount = await TentReservation.countDocuments({
           tentSpot: tentSpotIdFinal,
-          status: { $in: ['pending', 'reserved'] },
+          status: { $in: ['Pending', 'Reserved'] },
           tents: tent._id,
           $or: [
             { checkinDate: { $gte: new Date(checkinDate), $lt: new Date(checkoutDate) } },
@@ -131,7 +131,7 @@ export const createTentReservation = async (req, res) => {
 
     // Set expiry time (15 minutes from now) only for pending bookings
     let expiresAt = null;
-    if (!status || status === 'pending') {
+    if (!status || status === 'Pending') {
       expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 15);
     }
@@ -163,8 +163,8 @@ export const createTentReservation = async (req, res) => {
       country,
       existingGuest: userId,
       expiresAt,
-      status: status || 'pending',
-      paymentStatus: paymentStatus || 'unpaid',
+      status: status || 'Pending',
+      paymentStatus: paymentStatus || 'Unpaid',
       refundPercentage,
       reservationDate: reservationDate ? new Date(reservationDate) : new Date(),
     });
@@ -321,8 +321,8 @@ export const updatePaymentStatus = async (req, res) => {
     if (rawSource) updateData.rawSource = rawSource;
 
     // If payment is successful, confirm the reservation
-    if (paymentStatus === 'paid') {
-      updateData.status = 'reserved';
+    if (paymentStatus === 'Paid') {
+      updateData.status = 'Reserved';
       updateData.expiresAt = null; // Remove expiry
     }
 
@@ -368,7 +368,7 @@ export const cancelTentReservation = async (req, res) => {
       });
     }
 
-    reservation.status = 'cancelled';
+    reservation.status = 'Cancelled';
     if (refundPercentage !== undefined) {
       reservation.refundPercentage = refundPercentage;
     }
@@ -423,14 +423,14 @@ export const expirePendingTentReservations = async () => {
     
     const result = await TentReservation.updateMany(
       {
-        status: 'pending',
-        paymentStatus: { $ne: 'paid' },
+        status: 'Pending',
+        paymentStatus: { $ne: 'Paid' },
         expiresAt: { $lte: now }
       },
       {
         $set: { 
-          status: 'not-reserved',
-          paymentStatus: 'unpaid'
+          status: 'Not-reserved',
+          paymentStatus: 'Unpaid'
         }
       }
     );

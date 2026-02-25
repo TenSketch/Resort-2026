@@ -14,18 +14,18 @@ export const getDailyOccupancyReport = async (req, res) => {
 
     // Get all rooms for this resort
     const rooms = await Room.find({ resort: resortId }).lean()
-    
+
     // Get all active reservations for today (checkIn <= today < checkOut)
     const reservations = await Reservation.find({
       resort: resortId,
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
 
     // Create a map of room occupancy
     const roomOccupancyMap = new Map()
-    
+
     reservations.forEach(reservation => {
       if (reservation.rooms && Array.isArray(reservation.rooms)) {
         reservation.rooms.forEach(roomId => {
@@ -33,12 +33,12 @@ export const getDailyOccupancyReport = async (req, res) => {
           const checkOutDate = new Date(reservation.checkOut)
           const diffTime = checkOutDate.getTime() - today.getTime()
           const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-          
+
           // Calculate number of days
           const checkInDate = new Date(reservation.checkIn)
           const totalDiffTime = checkOutDate.getTime() - checkInDate.getTime()
           const noOfDays = Math.ceil(totalDiffTime / (1000 * 60 * 60 * 24))
-          
+
           roomOccupancyMap.set(roomId, {
             bookingId: reservation.bookingId,
             guestName: reservation.fullName,
@@ -59,7 +59,7 @@ export const getDailyOccupancyReport = async (req, res) => {
     const reportData = rooms.map(room => {
       const roomId = room._id.toString()
       const occupancy = roomOccupancyMap.get(roomId)
-      
+
       if (occupancy) {
         return {
           roomName: room.roomName || room.roomId || room.roomNumber || 'Unknown',
@@ -84,7 +84,7 @@ export const getDailyOccupancyReport = async (req, res) => {
 export const getDailyOccupancyReportBySlug = async (req, res) => {
   try {
     const { slug } = req.params
-    
+
     // Find resort by slug
     const resort = await Resort.findOne({ slug }).lean()
     if (!resort) {
@@ -98,29 +98,29 @@ export const getDailyOccupancyReportBySlug = async (req, res) => {
 
     // Get all rooms for this resort
     const rooms = await Room.find({ resort: resort._id }).lean()
-    
+
     // Get all active reservations for today
     const reservations = await Reservation.find({
       resort: resort._id.toString(),
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
 
     // Create a map of room occupancy
     const roomOccupancyMap = new Map()
-    
+
     reservations.forEach(reservation => {
       if (reservation.rooms && Array.isArray(reservation.rooms)) {
         reservation.rooms.forEach(roomId => {
           const checkOutDate = new Date(reservation.checkOut)
           const diffTime = checkOutDate.getTime() - today.getTime()
           const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-          
+
           const checkInDate = new Date(reservation.checkIn)
           const totalDiffTime = checkOutDate.getTime() - checkInDate.getTime()
           const noOfDays = Math.ceil(totalDiffTime / (1000 * 60 * 60 * 24))
-          
+
           roomOccupancyMap.set(roomId, {
             bookingId: reservation.bookingId,
             guestName: reservation.fullName,
@@ -141,7 +141,7 @@ export const getDailyOccupancyReportBySlug = async (req, res) => {
     const reportData = rooms.map(room => {
       const roomId = room._id.toString()
       const occupancy = roomOccupancyMap.get(roomId)
-      
+
       if (occupancy) {
         return {
           roomName: room.roomName || room.roomId || room.roomNumber || 'Unknown',
@@ -167,7 +167,7 @@ export const getDailyOccupancyReportBySlug = async (req, res) => {
 export const getDashboardStats = async (req, res) => {
   try {
     const { resortId } = req.query
-    
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
@@ -178,7 +178,7 @@ export const getDashboardStats = async (req, res) => {
 
     // Get all resorts
     const resorts = await Resort.find().lean()
-    
+
     // Total bookings today (reservations created today)
     const totalBookingsToday = await Reservation.countDocuments({
       ...resortFilter,
@@ -188,19 +188,19 @@ export const getDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await Reservation.find({
       ...resortFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
 
-    const totalGuestsToday = activeReservations.reduce((sum, r) => 
+    const totalGuestsToday = activeReservations.reduce((sum, r) =>
       sum + (r.guests || 0) + (r.extraGuests || 0) + (r.children || 0), 0
     )
 
     // Expected checkouts today
     const expectedCheckouts = await Reservation.countDocuments({
       ...resortFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkOut: { $gte: today, $lt: tomorrow }
     })
 
@@ -217,7 +217,7 @@ export const getDashboardStats = async (req, res) => {
     // Payment breakdown (last 30 days)
     const thirtyDaysAgo = new Date(today)
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    
+
     const recentReservations = await Reservation.find({
       ...resortFilter,
       createdAt: { $gte: thirtyDaysAgo }
@@ -266,7 +266,7 @@ export const getDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           resort: resortName,
           room: roomName,
-          status: booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -282,12 +282,12 @@ export const getDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await Reservation.countDocuments({
         ...resortFilter,
-        status: 'reserved',
+        status: 'Reserved',
         checkIn: { $lte: nextDate },
         checkOut: { $gt: date }
       })
 
-      const occupancyRate = allRooms.length > 0 
+      const occupancyRate = allRooms.length > 0
         ? Math.round((reservationsOnDate / allRooms.length) * 100)
         : 0
 
@@ -303,7 +303,7 @@ export const getDashboardStats = async (req, res) => {
       const resortRooms = await Room.find({ resort: resort._id, status: 'available' }).lean()
       const resortActiveReservations = await Reservation.find({
         resort: resort._id.toString(),
-        status: 'reserved',
+        status: 'Reserved',
         checkIn: { $lte: tomorrow },
         checkOut: { $gt: today }
       }).lean()
@@ -351,7 +351,7 @@ import Tent from '../models/tentModel.js'
 export const getTentDashboardStats = async (req, res) => {
   try {
     const { tentSpotId } = req.query
-    
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
@@ -362,7 +362,7 @@ export const getTentDashboardStats = async (req, res) => {
 
     // Get all tent spots
     const tentSpots = await TentSpot.find().lean()
-    
+
     // Total bookings today (reservations created today)
     const totalBookingsToday = await TentReservation.countDocuments({
       ...tentSpotFilter,
@@ -372,26 +372,26 @@ export const getTentDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await TentReservation.find({
       ...tentSpotFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkinDate: { $lte: tomorrow },
       checkoutDate: { $gt: today }
     }).lean()
 
-    const totalGuestsToday = activeReservations.reduce((sum, r) => 
+    const totalGuestsToday = activeReservations.reduce((sum, r) =>
       sum + (r.guests || 0) + (r.children || 0), 0
     )
 
     // Expected checkouts today
     const expectedCheckouts = await TentReservation.countDocuments({
       ...tentSpotFilter,
-      status: 'reserved',
+      status: 'Reserved',
       checkoutDate: { $gte: today, $lt: tomorrow }
     })
 
     // Vacant tents calculation
     const allTents = await Tent.find({ ...tentSpotFilter, isDisabled: false }).lean()
     const totalTentCapacity = allTents.reduce((sum, tent) => sum + (tent.tentCount || 1), 0)
-    
+
     const occupiedTentIds = new Set()
     activeReservations.forEach(r => {
       if (r.tents && Array.isArray(r.tents)) {
@@ -403,7 +403,7 @@ export const getTentDashboardStats = async (req, res) => {
     // Payment breakdown (last 30 days)
     const thirtyDaysAgo = new Date(today)
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    
+
     const recentReservations = await TentReservation.find({
       ...tentSpotFilter,
       createdAt: { $gte: thirtyDaysAgo }
@@ -452,7 +452,7 @@ export const getTentDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           tentSpot: tentSpotName,
           tent: tentName,
-          status: booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -468,12 +468,12 @@ export const getTentDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await TentReservation.countDocuments({
         ...tentSpotFilter,
-        status: 'reserved',
+        status: 'Reserved',
         checkinDate: { $lte: nextDate },
         checkoutDate: { $gt: date }
       })
 
-      const occupancyRate = totalTentCapacity > 0 
+      const occupancyRate = totalTentCapacity > 0
         ? Math.round((reservationsOnDate / totalTentCapacity) * 100)
         : 0
 
@@ -488,10 +488,10 @@ export const getTentDashboardStats = async (req, res) => {
     for (const tentSpot of tentSpots) {
       const spotTents = await Tent.find({ tentSpot: tentSpot._id, isDisabled: false }).lean()
       const spotTotalCapacity = spotTents.reduce((sum, tent) => sum + (tent.tentCount || 1), 0)
-      
+
       const spotActiveReservations = await TentReservation.find({
         tentSpot: tentSpot._id.toString(),
-        status: 'reserved',
+        status: 'Reserved',
         checkinDate: { $lte: tomorrow },
         checkoutDate: { $gt: today }
       }).lean()

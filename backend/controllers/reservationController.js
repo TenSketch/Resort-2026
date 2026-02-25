@@ -2,6 +2,7 @@ import Reservation from '../models/reservationModel.js'
 import Resort from '../models/resortModel.js'
 import CottageType from '../models/cottageTypeModel.js'
 import Room from '../models/roomModel.js'
+import Notification from '../models/notificationModel.js'
 import mongoose from 'mongoose'
 import transporter from '../config/nodemailer.js'
 import { checkRoomAvailability } from '../utils/roomAvailability.js'
@@ -12,26 +13,26 @@ import { checkRoomAvailability } from '../utils/roomAvailability.js'
 export const expirePendingReservations = async () => {
   try {
     const now = new Date()
-    
+
     // Find all pending reservations that have expired
     const expiredReservations = await Reservation.updateMany(
       {
-        status: 'pending',
-        paymentStatus: 'unpaid',
+        status: 'Pending',
+        paymentStatus: 'Unpaid',
         expiresAt: { $lte: now }
       },
       {
-        $set: { 
-          status: 'not-reserved',
-          paymentStatus: 'unpaid'
+        $set: {
+          status: 'Not-reserved',
+          paymentStatus: 'Unpaid'
         }
       }
     )
-    
+
     if (expiredReservations.modifiedCount > 0) {
       console.log(`Expired ${expiredReservations.modifiedCount} pending reservations`)
     }
-    
+
     return expiredReservations
   } catch (err) {
     console.error('Error expiring pending reservations:', err)
@@ -57,10 +58,20 @@ export const createReservation = async (req, res) => {
     if (payload.extraBedCharges) payload.extraBedCharges = Number(String(payload.extraBedCharges).replace(/[₹,\s]/g, ''))
     if (payload.totalPayable) payload.totalPayable = Number(String(payload.totalPayable).replace(/[₹,\s]/g, ''))
 
+    // Enforce role-based defaults and 1-hour expiration
+    if (req.admin && req.admin.role !== 'dfo' && req.admin.role !== 'superadmin') {
+      payload.status = 'Pending'
+      payload.paymentStatus = 'Unpaid'
+
+      const expiryTime = new Date()
+      expiryTime.setHours(expiryTime.getHours() + 1)
+      payload.expiresAt = expiryTime
+    }
+
     // Check room availability (unless admin explicitly bypasses with forceBook flag)
     if (!payload.forceBook && payload.rooms && Array.isArray(payload.rooms) && payload.rooms.length > 0) {
       await expirePendingReservations()
-      
+
       const availabilityCheck = await checkRoomAvailability(
         payload.rooms,
         payload.checkIn,
@@ -68,8 +79,8 @@ export const createReservation = async (req, res) => {
       )
 
       if (!availabilityCheck.available) {
-        return res.status(409).json({ 
-          success: false, 
+        return res.status(409).json({
+          success: false,
           error: 'One or more selected rooms are not available for the chosen dates.',
           conflictingRooms: availabilityCheck.conflictingRooms
         })
@@ -78,6 +89,22 @@ export const createReservation = async (req, res) => {
 
     const reservation = new Reservation(payload)
     await reservation.save()
+
+    // 1. Trigger Notification if requires DFO approval
+    if (reservation.approval_status === 'PENDING_DFO_APPROVAL') {
+      try {
+        await Notification.create({
+          title: 'New Reservation Pending Approval',
+          message: `Booking ${reservation.bookingId || '(Pending)'} requires DFO approval.`,
+          type: 'NEW_RESERVATION',
+          targetRoles: ['superadmin', 'dfo'],
+          link: `/approvals/${reservation._id}`
+        });
+      } catch (notifErr) {
+        console.error('Failed to create notification for new reservation', notifErr);
+      }
+    }
+
     res.status(201).json({ success: true, reservation })
   } catch (err) {
     console.error('createReservation error', err)
@@ -112,14 +139,14 @@ export const getUserBookings = async (req, res) => {
   try {
     // req.user is set by auth middleware
     const userId = req.user._id.toString()
-    
+
     // Find all reservations for this user
-    const reservations = await Reservation.find({ 
-      existingGuest: userId 
+    const reservations = await Reservation.find({
+      existingGuest: userId
     })
-    .sort({ createdAt: -1 })
-    .lean()
-    
+      .sort({ createdAt: -1 })
+      .lean()
+
     // Manually populate related data since fields are stored as strings
     const populatedReservations = await Promise.all(
       reservations.map(async (reservation) => {
@@ -128,27 +155,27 @@ export const getUserBookings = async (req, res) => {
         if (reservation.resort && mongoose.Types.ObjectId.isValid(reservation.resort)) {
           resortData = await Resort.findById(reservation.resort).select('resortName slug').lean()
         }
-        
+
         // Fetch cottage type details
         let cottageTypesData = []
         if (reservation.cottageTypes && Array.isArray(reservation.cottageTypes)) {
           const validCottageIds = reservation.cottageTypes.filter(id => mongoose.Types.ObjectId.isValid(id))
           if (validCottageIds.length > 0) {
-            cottageTypesData = await CottageType.find({ 
-              _id: { $in: validCottageIds } 
+            cottageTypesData = await CottageType.find({
+              _id: { $in: validCottageIds }
             }).select('name').lean()
           }
         }
-        
+
         // Fetch room details with cottage type populated
         let roomsData = []
         if (reservation.rooms && Array.isArray(reservation.rooms)) {
           const validRoomIds = reservation.rooms.filter(id => mongoose.Types.ObjectId.isValid(id))
           if (validRoomIds.length > 0) {
-            const rooms = await Room.find({ 
-              _id: { $in: validRoomIds } 
+            const rooms = await Room.find({
+              _id: { $in: validRoomIds }
             }).select('roomNumber roomId roomName cottageType').lean()
-            
+
             // Populate cottageType for each room
             roomsData = await Promise.all(
               rooms.map(async (room) => {
@@ -164,7 +191,7 @@ export const getUserBookings = async (req, res) => {
             )
           }
         }
-        
+
         return {
           ...reservation,
           resort: resortData,
@@ -173,11 +200,11 @@ export const getUserBookings = async (req, res) => {
         }
       })
     )
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       bookings: populatedReservations,
-      count: populatedReservations.length 
+      count: populatedReservations.length
     })
   } catch (err) {
     console.error('getUserBookings error', err)
@@ -201,8 +228,50 @@ export const updateReservation = async (req, res) => {
     // allow toggling disabled flag
     if (typeof payload.disabled !== 'undefined') payload.disabled = Boolean(payload.disabled)
 
+    // Check pre-update status
+    const previousReservation = await Reservation.findById(id).lean()
+
     const updated = await Reservation.findByIdAndUpdate(id, payload, { new: true }).lean()
     if (!updated) return res.status(404).json({ success: false, error: 'Reservation not found' })
+
+    // 2. Trigger Notifications for status changes (Approval, Rejection, Cancellation)
+    if (previousReservation && updated.createdBy) {
+      try {
+        // Approval
+        if (previousReservation.approval_status !== 'APPROVED' && updated.approval_status === 'APPROVED') {
+          await Notification.create({
+            title: 'Reservation Approved',
+            message: `Booking ${updated.bookingId || ''} was approved by DFO.`,
+            type: 'RESERVATION_APPROVED',
+            targetUser: updated.createdBy,
+            link: `/reservation/all`
+          });
+        }
+        // Rejection
+        else if (previousReservation.approval_status !== 'REJECTED' && updated.approval_status === 'REJECTED') {
+          await Notification.create({
+            title: 'Reservation Rejected',
+            message: `Booking ${updated.bookingId || ''} was rejected by DFO.`,
+            type: 'RESERVATION_REJECTED',
+            targetUser: updated.createdBy,
+            link: `/reservation/all`
+          });
+        }
+        // Cancellation
+        else if (previousReservation.status !== 'Cancelled' && updated.status === 'Cancelled') {
+          await Notification.create({
+            title: 'Reservation Cancelled',
+            message: `Booking ${updated.bookingId || ''} was cancelled.`,
+            type: 'RESERVATION_CANCELLED',
+            targetRoles: ['superadmin', 'dfo'],
+            link: `/reservation/all`
+          });
+        }
+      } catch (notifErr) {
+        console.error('Failed to create notification for reservation update', notifErr);
+      }
+    }
+
     res.json({ success: true, reservation: updated })
   } catch (err) {
     console.error('updateReservation error', err)
@@ -237,7 +306,7 @@ export const getNextSerial = async (req, res) => {
 export const createPublicBooking = async (req, res) => {
   try {
     const payload = { ...req.body }
-    
+
     // Add authenticated user info
     if (req.user) {
       payload.existingGuest = req.user._id.toString()
@@ -246,7 +315,7 @@ export const createPublicBooking = async (req, res) => {
       payload.rawSource.userId = req.user._id.toString()
       payload.rawSource.userEmail = req.user.email
     }
-    
+
     // Convert numeric and date-like fields
     if (payload.checkIn) payload.checkIn = new Date(payload.checkIn)
     if (payload.checkOut) payload.checkOut = new Date(payload.checkOut)
@@ -263,7 +332,7 @@ export const createPublicBooking = async (req, res) => {
     // CRITICAL: Check room availability before creating reservation
     // First, expire any pending reservations that have timed out
     await expirePendingReservations()
-    
+
     // Check if any of the requested rooms are already booked for overlapping dates
     if (payload.rooms && Array.isArray(payload.rooms) && payload.rooms.length > 0) {
       const availabilityCheck = await checkRoomAvailability(
@@ -279,9 +348,9 @@ export const createPublicBooking = async (req, res) => {
           checkIn: payload.checkIn,
           checkOut: payload.checkOut
         })
-        
-        return res.status(409).json({ 
-          success: false, 
+
+        return res.status(409).json({
+          success: false,
           error: 'One or more selected rooms are not available for the chosen dates. Please select different rooms or dates.',
           conflictingRooms: availabilityCheck.conflictingRooms,
           message: 'Room availability conflict detected'
@@ -290,8 +359,8 @@ export const createPublicBooking = async (req, res) => {
     }
 
     // Set pending status and expiry (15 minutes)
-    payload.status = 'pending'
-    payload.paymentStatus = 'unpaid'
+    payload.status = 'Pending'
+    payload.paymentStatus = 'Unpaid'
     const expiryTime = new Date()
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     payload.expiresAt = expiryTime
@@ -332,7 +401,7 @@ export const createPublicBooking = async (req, res) => {
 
     const reservation = new Reservation(payload)
     await reservation.save()
-    
+
     // Return reservation without populated fields (just IDs)
     const savedReservation = await Reservation.findById(reservation._id).lean()
     res.status(201).json({ success: true, reservation: savedReservation })

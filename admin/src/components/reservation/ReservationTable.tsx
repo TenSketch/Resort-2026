@@ -86,7 +86,6 @@ interface Reservation {
   paymentTransactionId: string;
   paymentTransactionDateTime: string;
   cancelBookingReason: string;
-  cancellationMessage: string;
   refundRequestedDateTime: string;
   refundableAmount: number;
   amountRefunded: number;
@@ -140,6 +139,67 @@ export default function ReservationTable() {
   useEffect(() => {
     permsRef.current = perms;
   }, [perms]);
+
+  // Helper function to format date for display (DD/MMM/YYYY)
+  const formatDateForDisplay = (value: string) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+
+    // Use UTC methods to avoid timezone shifts
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = months[d.getUTCMonth()];
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    const year = d.getUTCFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateTimeForDisplay = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const hoursStr = hours.toString().padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hoursStr}:${minutes} ${ampm}`;
+  };
 
   const handleEditChange = (field: keyof Reservation, value: any) => {
     setEditForm((prev) => ({ ...(prev || {}), [field]: value }));
@@ -288,8 +348,6 @@ export default function ReservationTable() {
             updatedLocal.paymentTransactionDateTime,
           cancelBookingReason:
             server.cancelBookingReason || updatedLocal.cancelBookingReason,
-          cancellationMessage:
-            server.cancellationMessage || updatedLocal.cancellationMessage,
           refundRequestedDateTime:
             server.refundRequestedDateTime ||
             updatedLocal.refundRequestedDateTime,
@@ -315,33 +373,6 @@ export default function ReservationTable() {
       window.location.reload();
       setIsSaving(false);
     }
-  };
-
-  // Helper function to format date for display (DD/MMM/YYYY)
-  const formatDateForDisplay = (value: string) => {
-    if (!value) return "";
-    const d = new Date(value);
-    if (isNaN(d.getTime())) return value;
-
-    // Use UTC methods to avoid timezone shifts
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = months[d.getUTCMonth()];
-    const day = String(d.getUTCDate()).padStart(2, "0");
-    const year = d.getUTCFullYear();
-    return `${day}/${month}/${year}`;
   };
 
   // Export to CSV (uses current reservations)
@@ -409,7 +440,6 @@ export default function ReservationTable() {
       "Verification Proof Type",
       "Verification Proof Id",
       "Cancel Booking Reason",
-      "Cancellation message",
       "Refund Requested Date & Time",
       "Refundable Amount",
       "Amount Refunded",
@@ -444,17 +474,17 @@ export default function ReservationTable() {
           `"${row.fullName}"`,
           `"${row.phone}"`,
           `"${row.email}"`,
-          `"${address || "—"}"`,
+          `"${address || "NA"}"`,
           `"${row.resortName}"`,
-          `"${row.cottageTypeNames.join(", ") || "—"}"`,
-          `"${row.roomNames.join(", ") || "—"}"`,
+          `"${(row.cottageTypeNames || []).join(", ") || "NA"}"`,
+          `"${(row.roomNames || []).join(", ") || "NA"}"`,
           row.numberOfRooms,
           `"'${formatDateForExcel(row.reservationDate)}"`,
-          `"${row.reservedFrom || "—"}"`,
+          `"${row.reservedFrom || "NA"}"`,
           // Prefix formatted dates with an apostrophe so Excel treats them as text
           // and doesn't auto-format/overflow them to '#######' when column is narrow
           `"'${formatDateForExcel(row.checkIn)}"`,
-          `"${row.occupiedDates || "—"}"`,
+          `"${row.occupiedDates || "NA"}"`,
           `"'${formatDateForExcel(row.checkOut)}"`,
           row.noOfDays,
           row.guests,
@@ -462,22 +492,21 @@ export default function ReservationTable() {
           row.children,
           row.totalGuests,
           foodsBilled,
-          `"${row.foodPreference || "—"}"`,
+          `"${row.foodPreference || "NA"}"`,
           `"${row.status}"`,
           row.totalPayable,
           `"${row.paymentStatus}"`,
           row.totalPayable,
-          `"${row.paymentTransactionId || "—"}"`,
-          `"'${row.paymentTransactionDateTime ? formatDateForExcel(row.paymentTransactionDateTime.slice(0, 10)) : "—"}"`,
-          `"—"`,
-          `"—"`,
-          `"—"`,
-          `"${row.cancelBookingReason || "—"}"`,
-          `"${row.cancellationMessage || "—"}"`,
-          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "—"}"`,
+          `"${row.paymentTransactionId || "NA"}"`,
+          `"'${row.paymentTransactionDateTime ? formatDateTimeForDisplay(row.paymentTransactionDateTime) : "NA"}"`,
+          `"NA"`,
+          `"NA"`,
+          `"NA"`,
+          `"${row.cancelBookingReason || "NA"}"`,
+          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "NA"}"`,
           row.refundableAmount || 0,
           row.amountRefunded || 0,
-          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "—"}"`,
+          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "NA"}"`,
         ].join(",");
       }),
     ].join("\n");
@@ -690,7 +719,6 @@ export default function ReservationTable() {
                 ? new Date(r.createdAt).toISOString()
                 : "",
             cancelBookingReason: r.cancelBookingReason || "",
-            cancellationMessage: r.cancellationMessage || "",
             refundRequestedDateTime: r.refundRequestedDateTime || "",
             refundableAmount: Number(r.refundableAmount) || 0,
             amountRefunded: Number(r.amountRefunded) || 0,
@@ -885,19 +913,19 @@ export default function ReservationTable() {
           row.postalCode,
           row.country,
         ].filter(Boolean);
-        return parts.length > 0 ? parts.join(", ") : "—";
+        return parts.length > 0 ? parts.join(", ") : "NA";
       },
     },
     { data: "resortName", title: "Resort" },
     {
       data: "cottageTypeNames",
       title: "Cottage Type",
-      render: (data: string[]) => data.join(", ") || "—",
+      render: (data: string[]) => (data || []).join(", ") || "NA",
     },
     {
       data: "roomNames",
       title: "Room name(s)",
-      render: (data: string[]) => data.join(", ") || "—",
+      render: (data: string[]) => (data || []).join(", ") || "NA",
     },
     { data: "numberOfRooms", title: "No. of rooms" },
     {
@@ -908,7 +936,7 @@ export default function ReservationTable() {
     {
       data: "reservedFrom",
       title: "Reserved From",
-      render: (data: string) => data || "—",
+      render: (data: string) => data || "NA",
     },
     {
       data: "checkIn",
@@ -918,7 +946,7 @@ export default function ReservationTable() {
     {
       data: "occupiedDates",
       title: "Occupied Dates",
-      render: (data: string) => data || "—",
+      render: (data: string) => data || "NA",
     },
     {
       data: "checkOut",
@@ -940,7 +968,7 @@ export default function ReservationTable() {
     {
       data: "foodPreference",
       title: "Food Preference",
-      render: (data: string) => data || "—",
+      render: (data: string) => data || "NA",
     },
     { data: "status", title: "Status" },
     {
@@ -957,60 +985,54 @@ export default function ReservationTable() {
     {
       data: "paymentTransactionId",
       title: "Payment Transaction Id",
-      render: (data: string) => data || "—",
+      render: (data: string) => data || "NA",
     },
     {
       data: "paymentTransactionDateTime",
       title: "Payment Transaction Date & Time",
-      render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
+      render: (data: string) => (data ? formatDateTimeForDisplay(data) : "NA"),
     },
     {
       data: null,
       title: "Payment Transaction SubBillerId",
-      render: () => "—",
+      render: () => "NA",
     },
     {
       data: null,
       title: "Verification Proof Type",
-      render: () => "—",
+      render: () => "NA",
     },
     {
       data: null,
       title: "Verification Proof Id",
-      render: () => "—",
+      render: () => "NA",
     },
     {
       data: "cancelBookingReason",
       title: "Cancel Booking Reason",
-      render: (data: string) => data || "—",
-    },
-    {
-      data: "cancellationMessage",
-      title: "Cancellation message",
-      render: (data: string) => data || "—",
+      render: (data: string) => data || "NA",
     },
     {
       data: "refundRequestedDateTime",
       title: "Refund Requested Date & Time",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "NA",
     },
     {
       data: "refundableAmount",
       title: "Refundable Amount",
-      render: (data: number) => (data ? `₹${data}` : "—"),
+      render: (data: number) => (data ? `₹${data}` : "NA"),
     },
     {
       data: "amountRefunded",
       title: "Amount Refunded",
-      render: (data: number) => (data ? `₹${data}` : "—"),
+      render: (data: number) => (data ? `₹${data}` : "NA"),
     },
     {
       data: "dateOfRefund",
       title: "Date of refund",
       render: (data: string) =>
-        data ? formatDateForDisplay(data.slice(0, 10)) : "—",
+        data ? formatDateForDisplay(data.slice(0, 10)) : "NA",
     },
     {
       data: null,
@@ -1324,8 +1346,8 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Guest Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Full Name
                         </Label>
@@ -1346,7 +1368,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Phone
                         </Label>
@@ -1367,7 +1389,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-3">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Email
                         </Label>
@@ -1395,8 +1417,8 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Address Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Address Line 1
                         </Label>
@@ -1417,7 +1439,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Address Line 2
                         </Label>
@@ -1438,7 +1460,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           City
                         </Label>
@@ -1459,7 +1481,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           State
                         </Label>
@@ -1480,7 +1502,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Postal Code
                         </Label>
@@ -1501,7 +1523,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Country
                         </Label>
@@ -1544,8 +1566,8 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Booking Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Booking ID
                         </Label>
@@ -1556,21 +1578,16 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Reservation Date
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="w-full"
+                            className="w-full bg-gray-100 cursor-not-allowed"
                             type="date"
                             value={editForm?.reservationDate || ""}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "reservationDate",
-                                e.target.value,
-                              )
-                            }
+                            disabled
                           />
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border">
@@ -1583,7 +1600,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check In
                         </Label>
@@ -1607,7 +1624,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check Out
                         </Label>
@@ -1631,7 +1648,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           No. of Days
                         </Label>
@@ -1642,7 +1659,7 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div>
+                      <div className="col-span-1">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Resort
                         </Label>
@@ -1653,7 +1670,7 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cottage Types
                         </Label>
@@ -1665,7 +1682,7 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Rooms
                         </Label>
@@ -1683,7 +1700,7 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Guest Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
                           Guests
@@ -1812,7 +1829,7 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Pricing Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
                           Room Price
@@ -1836,7 +1853,7 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-1">
                         <Label className="text-sm font-medium text-gray-700">
                           Grand Total
                           {isDFO && sheetMode === "edit" && (
@@ -1879,7 +1896,7 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Food & Reservation Details
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Reserved From
@@ -1912,54 +1929,62 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Food Preference
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Select
-                            value={editForm?.foodPreference || ""}
-                            onValueChange={(value) =>
-                              handleEditChange("foodPreference", value)
-                            }
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select preference" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Vegetarian">
-                                Vegetarian
-                              </SelectItem>
-                              <SelectItem value="Non-Vegetarian">
-                                Non-Vegetarian
-                              </SelectItem>
-                              <SelectItem value="Vegan">Vegan</SelectItem>
-                              <SelectItem value="Jain">Jain</SelectItem>
-                              <SelectItem value="No Preference">
-                                No Preference
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.foodPreference || "N/A"}
+                      {!(selectedReservation.resortName || "")
+                        .toLowerCase()
+                        .includes("vanavihari") && (
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                            Food Preference
+                          </Label>
+                          {sheetMode === "edit" ? (
+                            <Select
+                              value={editForm?.foodPreference || ""}
+                              onValueChange={(value) =>
+                                handleEditChange("foodPreference", value)
+                              }
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select preference" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Vegetarian">
+                                  Vegetarian
+                                </SelectItem>
+                                <SelectItem value="Non-Vegetarian">
+                                  Non-Vegetarian
+                                </SelectItem>
+                                <SelectItem value="Vegan">Vegan</SelectItem>
+                                <SelectItem value="Jain">Jain</SelectItem>
+                                <SelectItem value="No Preference">
+                                  No Preference
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="p-3 bg-gray-50 rounded-md border">
+                              <span className="text-sm text-gray-900">
+                                {selectedReservation.foodPreference || "N/A"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {!(selectedReservation.resortName || "")
+                        .toLowerCase()
+                        .includes("vanavihari") && (
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                            Foods Billed
+                          </Label>
+                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                            <span className="text-sm text-gray-600">
+                              {(Number(selectedReservation.guests) || 0) +
+                                (Number(selectedReservation.extraGuests) || 0)}
                             </span>
                           </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Foods Billed
-                        </Label>
-                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600">
-                            {(Number(selectedReservation.guests) || 0) +
-                              (Number(selectedReservation.extraGuests) || 0)}
-                          </span>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
 
@@ -1968,7 +1993,7 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Status Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <Label className="text-sm font-medium text-gray-700">
                           Reservation Status
@@ -1984,19 +2009,19 @@ export default function ReservationTable() {
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="reserved">Reserved</SelectItem>
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="not-reserved">
+                              <SelectItem value="Reserved">Reserved</SelectItem>
+                              <SelectItem value="Pending">Pending</SelectItem>
+                              <SelectItem value="Not-reserved">
                                 Not Reserved
                               </SelectItem>
-                              <SelectItem value="cancelled">
+                              <SelectItem value="Cancelled">
                                 Cancelled
                               </SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
                           <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
+                            <span className="text-sm text-gray-900 capitalize">
                               {selectedReservation.status}
                             </span>
                           </div>
@@ -2018,44 +2043,49 @@ export default function ReservationTable() {
                               <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="paid">Paid</SelectItem>
-                              <SelectItem value="unpaid">Unpaid</SelectItem>
-                              <SelectItem value="refunded">Refunded</SelectItem>
+                              <SelectItem value="Paid">Paid</SelectItem>
+                              <SelectItem value="Unpaid">Unpaid</SelectItem>
+                              <SelectItem value="Refunded">Refunded</SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
                           <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
+                            <span className="text-sm text-gray-900 capitalize">
                               {selectedReservation.paymentStatus}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Refund Percentage
-                        </Label>
-                        {sheetMode === "edit" && isDFO ? (
-                          <Input
-                            className="mt-1 border-amber-300 focus:ring-amber-400"
-                            type="number"
-                            value={String(editForm?.refundPercentage ?? 0)}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "refundPercentage",
-                                parseFloat(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.refundPercentage}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      {selectedReservation.status?.toLowerCase() ===
+                        "cancelled" && (
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Refund Percentage
+                          </Label>
+                          {sheetMode === "edit" && isDFO ? (
+                            <Input
+                              className="mt-1 border-amber-300 focus:ring-amber-400"
+                              type="number"
+                              value={String(editForm?.refundPercentage ?? 0)}
+                              onChange={(e) =>
+                                handleEditChange(
+                                  "refundPercentage",
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          ) : (
+                            <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                              <span className="text-sm text-gray-900">
+                                {selectedReservation.refundPercentage != null
+                                  ? `${selectedReservation.refundPercentage}%`
+                                  : "--"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2064,8 +2094,8 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Payment Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Payable
                         </Label>
@@ -2097,7 +2127,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Paid
                         </Label>
@@ -2108,7 +2138,7 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction Id
                         </Label>
@@ -2134,7 +2164,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction Date & Time
                         </Label>
@@ -2163,11 +2193,8 @@ export default function ReservationTable() {
                           <div className="p-3 bg-gray-50 rounded-md border">
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
-                                ? formatDateForDisplay(
-                                    selectedReservation.paymentTransactionDateTime.slice(
-                                      0,
-                                      10,
-                                    ),
+                                ? formatDateTimeForDisplay(
+                                    selectedReservation.paymentTransactionDateTime,
                                   )
                                 : "N/A"}
                             </span>
@@ -2175,7 +2202,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Payment Transaction SubBillerId
                         </Label>
@@ -2217,8 +2244,8 @@ export default function ReservationTable() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Cancellation & Refund Information
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cancel Booking Reason
                         </Label>
@@ -2242,31 +2269,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div className="md:col-span-2">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Cancellation Message
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="w-full"
-                            value={editForm?.cancellationMessage || ""}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "cancellationMessage",
-                                e.target.value,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.cancellationMessage || "N/A"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Refund Requested Date & Time
                         </Label>
@@ -2304,7 +2307,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Date of Refund
                         </Label>
@@ -2342,7 +2345,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Refundable Amount
                         </Label>
@@ -2374,7 +2377,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div>
+                      <div className="flex flex-col justify-between h-full">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Amount Refunded
                         </Label>

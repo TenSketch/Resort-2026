@@ -120,7 +120,7 @@ const AddGuestForm = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.code === 3000 && data.result.status === 'success') {
+      if (response.ok && data.code === 3000 && data.result.status === 'Success') {
         const successMessage = data.result.credentialsSent 
           ? `${data.result.msg}\n\nThe user can now login using:\nEmail: ${formData.email}\nPassword: (sent to their email)`
           : data.result.msg;

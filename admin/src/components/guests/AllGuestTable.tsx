@@ -49,7 +49,6 @@ interface Guest {
   pincode: string;
   country: string;
   registrationDate: string;
-  registerThrough: string;
   profileCompleted: boolean;
 }
 
@@ -82,7 +81,6 @@ const formatDateForDisplay = (dateString: string) => {
 const exportToExcel = (guestsParam: Guest[]) => {
   const headers = [
     "S.No",
-    "User ID",
     "Name",
     "Phone",
     "Email",
@@ -94,7 +92,6 @@ const exportToExcel = (guestsParam: Guest[]) => {
     "Pincode",
     "Country",
     "Reg. Date",
-    "Register Through",
     "Profile Status",
   ];
 
@@ -106,7 +103,6 @@ const exportToExcel = (guestsParam: Guest[]) => {
         .join(", ");
       return [
         idx + 1,
-        `"${row.id}"`,
         `"${row.name}"`,
         `"${row.phone}"`,
         `"${row.email}"`,
@@ -118,7 +114,6 @@ const exportToExcel = (guestsParam: Guest[]) => {
         `"${row.pincode}"`,
         `"${row.country}"`,
         `"${formatDateForDisplay(row.registrationDate)}"`,
-        `"${row.registerThrough}"`,
         `"${row.profileCompleted ? "Complete" : "Incomplete"}"`,
       ].join(",");
     }),
@@ -357,7 +352,6 @@ export default function GuestTable() {
             registrationDate: g.registrationDate
               ? new Date(g.registrationDate).toISOString().slice(0, 10)
               : "",
-            registerThrough: g.registerThrough || "frontend",
             profileCompleted: g.profileCompleted || false,
           }));
 
@@ -379,7 +373,6 @@ export default function GuestTable() {
             registrationDate: g.registrationDate
               ? new Date(g.registrationDate).toISOString().slice(0, 10)
               : "",
-            registerThrough: g.registerThrough || "frontend",
             profileCompleted: g.profileCompleted || false,
           }));
 
@@ -705,13 +698,6 @@ export default function GuestTable() {
       data: "registrationDate",
       title: "Reg. Date",
       render: (data: string) => formatDateForDisplay(data) || "N/A",
-    },
-    {
-      data: "registerThrough",
-      title: "Source",
-      visible: false,
-      render: (data: string) =>
-        `<span class="px-2 py-1 text-xs rounded-full ${data === "admin" ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}">${data || "frontend"}</span>`,
     },
     {
       data: "profileCompleted",
@@ -1043,9 +1029,6 @@ export default function GuestTable() {
             {deletingGuest && (
               <div className="py-4">
                 <p className="text-sm text-gray-600">
-                  <strong>User ID:</strong> {deletingGuest.id}
-                </p>
-                <p className="text-sm text-gray-600">
                   <strong>Name:</strong> {deletingGuest.name}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -1081,18 +1064,7 @@ export default function GuestTable() {
                   {sheetMode === "view" ? (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700">
-                            User ID
-                          </Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedGuest.id}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div>
+                        <div className="col-span-2">
                           <Label className="text-sm font-medium text-gray-700">
                             Name
                           </Label>
@@ -1188,7 +1160,7 @@ export default function GuestTable() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
+                        <div className="col-span-2">
                           <Label className="text-sm font-medium text-gray-700">
                             Registration Date
                           </Label>
@@ -1198,23 +1170,6 @@ export default function GuestTable() {
                                 selectedGuest.registrationDate,
                               ) || "N/A"}
                             </span>
-                          </div>
-                        </div>
-
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700">
-                            Register Through
-                          </Label>
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <Badge
-                              variant={
-                                selectedGuest.registerThrough === "admin"
-                                  ? "secondary"
-                                  : "default"
-                              }
-                            >
-                              {selectedGuest.registerThrough || "frontend"}
-                            </Badge>
                           </div>
                         </div>
                       </div>

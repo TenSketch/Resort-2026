@@ -87,7 +87,7 @@ const loginUser = async (req, res) => {
     res.status(200).json({ 
       code: 3000,
       result: { 
-        status: 'success', 
+        status: 'Success', 
         msg: 'Login successful!',
         user: {
           id: user._id,
@@ -247,7 +247,7 @@ const registerUser = async (req, res) => {
       return res.status(201).json({ 
         code: 3000,
         result: { 
-          status: 'success', 
+          status: 'Success', 
           msg: 'Account created successfully! Please check your email to verify your account.',
           user: {
             id: savedUser._id,
@@ -291,7 +291,7 @@ const registerUser = async (req, res) => {
     res.status(201).json({ 
       code: 3000,
       result: { 
-        status: 'success', 
+        status: 'Success', 
         msg: successMsg,
         user: {
           id: savedUser._id,
@@ -356,7 +356,7 @@ const getUserProfile = async (req, res) => {
     res.status(200).json({
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'Profile retrieved successfully',
         name: user.name,
         email: user.email,
@@ -472,7 +472,7 @@ const updateUserProfile = async (req, res) => {
     res.status(200).json({
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'Profile updated successfully',
         user: {
           id: updatedUser._id,
@@ -669,7 +669,7 @@ const updateUserById = async (req, res) => {
       success: true,
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'User updated successfully',
         user: {
           id: updatedUser._id,
@@ -723,7 +723,7 @@ const deleteUserById = async (req, res) => {
       success: true,
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'User deleted successfully'
       }
     })
@@ -795,7 +795,7 @@ const verifyEmail = async (req, res) => {
     res.status(200).json({
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'Email verified successfully! Please complete your profile.',
         user: {
           id: user._id,
@@ -891,7 +891,7 @@ const resendVerificationEmail = async (req, res) => {
       res.status(200).json({
         code: 3000,
         result: {
-          status: 'success',
+          status: 'Success',
           msg: 'Verification email sent successfully! Please check your inbox.'
         }
       })
@@ -951,7 +951,7 @@ const forgotPassword = async (req, res) => {
       return res.status(200).json({
         code: 3000,
         result: {
-          status: 'success',
+          status: 'Success',
           msg: 'If an account exists with this email, you will receive a password reset link shortly.'
         }
       })
@@ -989,7 +989,7 @@ const forgotPassword = async (req, res) => {
       res.status(200).json({
         code: 3000,
         result: {
-          status: 'success',
+          status: 'Success',
           msg: 'Password reset link has been sent to your email. Please check your inbox.'
         }
       })
@@ -1083,7 +1083,7 @@ const resetPassword = async (req, res) => {
     res.status(200).json({
       code: 3000,
       result: {
-        status: 'success',
+        status: 'Success',
         msg: 'Password has been reset successfully! You can now login with your new password.'
       }
     })

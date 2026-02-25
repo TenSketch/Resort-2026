@@ -28,7 +28,7 @@ export const initiateTentPayment = async (req, res) => {
     }
 
     // Check if reservation is pending and not expired
-    if (reservation.status !== 'pending') {
+    if (reservation.status !== 'Pending') {
       return res.status(400).json({ success: false, error: 'Reservation is not in pending state' });
     }
 
@@ -145,7 +145,7 @@ export const initiateTentPayment = async (req, res) => {
         reservationId: reservation._id.toString(),
         bdOrderId: billdeskResponse.bdorderid || orderId,
         amount: reservation.totalPayable,
-        status: 'initiated',
+        status: 'Initiated',
         traceId: traceId,
         timestamp: timestamp,
         encryptedRequest: signed,
@@ -296,9 +296,9 @@ export const handleTentPaymentCallback = async (req, res) => {
       if (auth_status === '0300') {
         // Success
         console.log('✅ Payment successful, updating records...');
-        paymentTransaction.status = 'success';
-        reservation.status = 'reserved';
-        reservation.paymentStatus = 'paid';
+        paymentTransaction.status = 'Success';
+        reservation.status = 'Reserved';
+        reservation.paymentStatus = 'Paid';
         reservation.expiresAt = null;
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.transactionId = transactionid;
@@ -308,10 +308,10 @@ export const handleTentPaymentCallback = async (req, res) => {
       } else if (auth_status === '0399') {
         // Failed - set to not-reserved (not cancelled)
         console.log('❌ Payment failed');
-        paymentTransaction.status = 'failed';
+        paymentTransaction.status = 'Failed';
         paymentTransaction.errorMessage = transaction_error_desc;
-        reservation.status = 'not-reserved';
-        reservation.paymentStatus = 'unpaid';
+        reservation.status = 'Not-reserved';
+        reservation.paymentStatus = 'Unpaid';
         // Store error info
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.paymentError = transaction_error_desc;
@@ -319,8 +319,8 @@ export const handleTentPaymentCallback = async (req, res) => {
       } else if (auth_status === '0002') {
         // Pending - but check if it's actually successful (BillDesk UAT quirk)
         console.log('⏳ Payment pending, but checking if actually successful...');
-        paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'unpaid';
+        paymentTransaction.status = 'Pending';
+        reservation.paymentStatus = 'Unpaid';
         
         // If transaction_error_desc says "successful", immediately retrieve real status
         if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
@@ -338,8 +338,8 @@ export const handleTentPaymentCallback = async (req, res) => {
                 await TentReservation.findOneAndUpdate(
                   { bookingId },
                   {
-                    status: 'reserved',
-                    paymentStatus: 'paid',
+                    status: 'Reserved',
+                    paymentStatus: 'Paid',
                     expiresAt: null,
                     $set: {
                       'rawSource.transactionId': result.data.transactionid,
@@ -353,7 +353,7 @@ export const handleTentPaymentCallback = async (req, res) => {
                 await PaymentTransaction.findOneAndUpdate(
                   { bookingId },
                   {
-                    status: 'success',
+                    status: 'Success',
                     authStatus: '0300',
                     decryptedResponse: result.data
                   }
@@ -378,13 +378,13 @@ export const handleTentPaymentCallback = async (req, res) => {
       } else if (auth_status === '0398') {
         // User cancelled
         console.log('🚫 Payment cancelled by user');
-        paymentTransaction.status = 'cancelled';
-        reservation.status = 'not-reserved';
-        reservation.paymentStatus = 'unpaid';
+        paymentTransaction.status = 'Cancelled';
+        reservation.status = 'Not-reserved';
+        reservation.paymentStatus = 'Unpaid';
       } else {
         console.log('⚠️ Unknown payment status:', auth_status);
-        paymentTransaction.status = 'pending';
-        reservation.paymentStatus = 'unpaid';
+        paymentTransaction.status = 'Pending';
+        reservation.paymentStatus = 'Unpaid';
       }
 
       console.log('💾 Saving payment transaction...');
@@ -396,7 +396,7 @@ export const handleTentPaymentCallback = async (req, res) => {
       console.log("Tent Reservation Status:", reservation.status);
 
       // Send email notifications for successful payments
-      if (paymentTransaction.status === 'success') {
+      if (paymentTransaction.status === 'Success') {
         console.log('📧 Stopping polling and sending emails...');
         stopTransactionPolling(bookingId);
         sendTentReservationEmails(reservation, paymentTransaction)
@@ -411,9 +411,9 @@ export const handleTentPaymentCallback = async (req, res) => {
 
       // Redirect based on status
       console.log('🔄 Redirecting user...');
-      if (paymentTransaction.status === 'success') {
+      if (paymentTransaction.status === 'Success') {
         return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&type=tent`);
-      } else if (paymentTransaction.status === 'pending') {
+      } else if (paymentTransaction.status === 'Pending') {
         return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending&type=tent`);
       } else {
         const errorMsg = encodeURIComponent(transaction_error_desc || 'payment_failed');

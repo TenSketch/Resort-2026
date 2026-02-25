@@ -89,7 +89,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
     }
     
     // If status is already resolved (not pending), stop polling
-    if (reservation.status !== 'pending') {
+    if (reservation.status !== 'Pending') {
       console.log(`✅ Reservation already resolved with status: ${reservation.status}`);
       console.log(`   No need to poll further. Stopping poller.`);
       stopTransactionPolling(bookingId);
@@ -123,8 +123,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'reserved',
-          paymentStatus: 'paid',
+          status: 'Reserved',
+          paymentStatus: 'Paid',
           expiresAt: null,
           $set: {
             'rawSource.transactionId': transactionId,
@@ -139,7 +139,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
-          status: 'success',
+          status: 'Success',
           transactionId: transactionId,
           authStatus: authStatus,
           decryptedResponse: result.data
@@ -191,8 +191,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'not-reserved',
-          paymentStatus: 'unpaid',
+          status: 'Not-reserved',
+          paymentStatus: 'Unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
             'rawSource.authStatus': authStatus,
@@ -204,7 +204,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
-          status: 'failed',
+          status: 'Failed',
           transactionId: transactionId,
           authStatus: authStatus,
           errorMessage: result.data.transaction_error_desc,
@@ -224,8 +224,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'not-reserved',
-          paymentStatus: 'unpaid',
+          status: 'Not-reserved',
+          paymentStatus: 'Unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
             'rawSource.authStatus': authStatus
@@ -236,7 +236,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
-          status: 'cancelled',
+          status: 'Cancelled',
           transactionId: transactionId,
           authStatus: authStatus,
           decryptedResponse: result.data

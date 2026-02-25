@@ -1,31 +1,31 @@
 import mongoose from 'mongoose';
 
 const tentReservationSchema = new mongoose.Schema({
-  tentSpot: { 
-    type: mongoose.Schema.Types.ObjectId, 
+  tentSpot: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'TentSpot',
-    required: true 
+    required: true
   },
-  tentTypes: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
+  tentTypes: [{
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'TentType'
   }],
-  tents: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
+  tents: [{
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Tent',
-    required: true 
+    required: true
   }],
-  checkinDate: { 
-    type: Date, 
-    required: true 
+  checkinDate: {
+    type: Date,
+    required: true
   },
-  checkoutDate: { 
-    type: Date, 
-    required: true 
+  checkoutDate: {
+    type: Date,
+    required: true
   },
-  guests: { 
-    type: Number, 
-    required: true 
+  guests: {
+    type: Number,
+    required: true
   },
   children: {
     type: Number,
@@ -35,43 +35,43 @@ const tentReservationSchema = new mongoose.Schema({
     type: Number,
     default: 1
   },
-  status: { type: String, default: 'pending', enum: ['pending', 'reserved', 'cancelled', 'not-reserved'] },
-  bookingId: { 
-    type: String, 
+  status: { type: String, default: 'Pending', enum: ['Pending', 'Reserved', 'Cancelled', 'Not-Reserved'] },
+  bookingId: {
+    type: String,
     unique: true,
-    required: true 
+    required: true
   },
-  reservationDate: { 
-    type: Date, 
-    default: Date.now 
+  reservationDate: {
+    type: Date,
+    default: Date.now
   },
-  totalPayable: { 
-    type: Number, 
-    required: true 
+  totalPayable: {
+    type: Number,
+    required: true
   },
   tentPrice: {
     type: Number,
     default: 0
   },
-  paymentStatus: { 
-    type: String, 
-    default: 'unpaid', 
-    enum: ['unpaid', 'paid', 'refunded'] 
+  paymentStatus: {
+    type: String,
+    default: 'Unpaid',
+    enum: ['Unpaid', 'Paid', 'Refunded']
   },
   refundPercentage: Number,
-  
+
   // Guest Information
-  fullName: { 
-    type: String, 
-    required: true 
+  fullName: {
+    type: String,
+    required: true
   },
-  phone: { 
-    type: String, 
-    required: true 
+  phone: {
+    type: String,
+    required: true
   },
-  email: { 
-    type: String, 
-    required: true 
+  email: {
+    type: String,
+    required: true
   },
   address1: String,
   address2: String,
@@ -80,13 +80,13 @@ const tentReservationSchema = new mongoose.Schema({
   postalCode: String,
   country: String,
   existingGuest: String,
-  
+
   // Payment Information
   paymentTransactionId: String,
-  
+
   // Expiry for pending bookings (15 mins)
   expiresAt: Date,
-  
+
   // Raw payment response
   rawSource: { type: mongoose.Schema.Types.Mixed },
 }, { timestamps: true });

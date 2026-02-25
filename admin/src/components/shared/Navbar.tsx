@@ -11,12 +11,11 @@ import {
   Users,
   UserPlus,
   Trash2,
-  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router";
 import Breadcrumb from "./Breadcrumb";
-// import NotificationDropdown from "./NotificationDropDown";
+import NotificationDropdown from "./NotificationDropDown";
 import { useAdmin } from "@/lib/AdminProvider";
 import { useViewType } from "@/lib/ViewTypeContext";
 import type { ViewType } from "@/lib/ViewTypeContext";
@@ -93,7 +92,7 @@ const breadcrumbMap: Record<string, string[]> = {
 const Navbar = ({ onMenuClick }: NavbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, admin, isDFO, isSuperAdmin } = useAdmin();
+  const { logout, admin, isSuperAdmin } = useAdmin();
   const { viewType, setViewType } = useViewType();
   const currentPath = location.pathname;
 
@@ -101,7 +100,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     localStorage.getItem("admin_avatar"),
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [pendingCount, setPendingCount] = useState(0);
 
   // Resolve breadcrumbs — supports both exact paths and dynamic segments (e.g. /approvals/:id)
   const breadcrumbs = (() => {
@@ -115,45 +113,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
       return ["Reports", "Report Detail"];
     return ["Dashboard", "Unknown Page"];
   })();
-
-  // Fetch pending approval count for DFO
-  useEffect(() => {
-    if (!admin) return;
-    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const token = localStorage.getItem("admin_token");
-    const headers: any = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-
-    const fetchCount = async () => {
-      try {
-        const res = await fetch(`${apiBase}/api/reservations`, { headers });
-        if (!res.ok) return;
-        const data = await res.json();
-        const reservations: any[] = data.reservations || data || [];
-        if (isDFO || isSuperAdmin) {
-          // DFO sees total pending approvals count
-          const count = reservations.filter(
-            (r: any) => r.approval_status === "PENDING_DFO_APPROVAL",
-          ).length;
-          setPendingCount(count);
-        } else {
-          // Other admins see count of their own bookings that changed status
-          const changed = reservations.filter(
-            (r: any) =>
-              r.approval_status === "APPROVED" ||
-              r.approval_status === "REJECTED",
-          ).length;
-          setPendingCount(changed);
-        }
-      } catch {
-        /* silent */
-      }
-    };
-
-    fetchCount();
-    const interval = setInterval(fetchCount, 60000); // Refresh every minute
-    return () => clearInterval(interval);
-  }, [admin, isDFO, isSuperAdmin]);
 
   const handleSignOut = () => {
     logout();
@@ -242,29 +201,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
         {/* Right side - reduced spacing for mobile */}
         <div className="flex items-center gap-1 sm:gap-2 md:gap-2 flex-shrink-0">
-          {/* Bell Notification Icon */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="relative flex items-center min-h-[44px] h-11 sm:h-9 px-2"
-            onClick={() =>
-              navigate(
-                isDFO || isSuperAdmin ? "/approvals" : "/reservation/all",
-              )
-            }
-            title={
-              isDFO || isSuperAdmin
-                ? "Pending Approvals"
-                : "Booking Status Updates"
-            }
-          >
-            <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-            {pendingCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 sm:top-0.5 sm:right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none">
-                {pendingCount > 99 ? "99+" : pendingCount}
-              </span>
-            )}
-          </Button>
+          <NotificationDropdown />
 
           {/* Guests Dropdown - restricted to Superadmin */}
           {isSuperAdmin && (
@@ -327,8 +264,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* <NotificationDropdown/> */}
 
           {/* Global top-bar menu */}
           {/* <DropdownMenu>

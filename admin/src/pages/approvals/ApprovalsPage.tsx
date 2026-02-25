@@ -1,6 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { ClipboardCheck, Clock, CheckCircle2, XCircle, Filter } from "lucide-react";
+import {
+  ClipboardCheck,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Filter,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,7 +33,10 @@ interface ApprovalReservation {
   createdAt: string;
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+const STATUS_LABELS: Record<
+  string,
+  { label: string; color: string; icon: React.ReactNode }
+> = {
   PENDING_DFO_APPROVAL: {
     label: "Pending Approval",
     color: "bg-amber-100 text-amber-800 border border-amber-200",
@@ -50,23 +59,42 @@ const ApprovalsPage = () => {
   const { isDFO, isSuperAdmin } = useAdmin();
   const [reservations, setReservations] = useState<ApprovalReservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [resorts, setResorts] = useState<{ _id: string; resortName: string }[]>([]);
+  const [resorts, setResorts] = useState<{ _id: string; resortName: string }[]>(
+    [],
+  );
 
   // Filters
   const [filterResort, setFilterResort] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
-  const [filterCreatedBy, setFilterCreatedBy] = useState("");
+  const [filterCreatedBy, setFilterCreatedBy] = useState("all");
+  const [adminUsers, setAdminUsers] = useState<
+    { username: string; name: string }[]
+  >([]);
 
-  const apiUrl = (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
+  const apiUrl =
+    (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
 
   const formatDate = (val: string) => {
     if (!val) return "—";
     const d = new Date(val);
     if (isNaN(d.getTime())) return val;
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${String(d.getUTCDate()).padStart(2,"0")} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${String(d.getUTCDate()).padStart(2, "0")} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   };
 
   useEffect(() => {
@@ -77,23 +105,35 @@ const ApprovalsPage = () => {
         const headers: any = {};
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        const [resRes, resortsRes] = await Promise.all([
+        const [resRes, resortsRes, adminsRes] = await Promise.all([
           fetch(`${apiUrl}/api/reservations`, { headers }),
           fetch(`${apiUrl}/api/resorts`, { headers }),
+          fetch(`${apiUrl}/api/admin/users`, { headers }),
         ]);
 
         const resData = await resRes.json();
         const resortsData = await resortsRes.json();
+        const adminsData = await adminsRes.json();
 
         const resortMap = new Map(
-          ((resortsData.resorts || []) as any[]).map((r: any) => [r._id, r.resortName])
+          ((resortsData.resorts || []) as any[]).map((r: any) => [
+            r._id,
+            r.resortName,
+          ]),
         );
         setResorts(resortsData.resorts || []);
+        if (adminsData.success) {
+          setAdminUsers(adminsData.admins || []);
+        }
 
         const raw: any[] = resData.reservations || resData || [];
         // Only show reservations that have an approval status (created by admin/superadmin)
         const filtered = raw.filter(
-          (r) => r.approval_status && ["PENDING_DFO_APPROVAL", "APPROVED", "REJECTED"].includes(r.approval_status)
+          (r) =>
+            r.approval_status &&
+            ["PENDING_DFO_APPROVAL", "APPROVED", "REJECTED"].includes(
+              r.approval_status,
+            ),
         );
 
         const mapped: ApprovalReservation[] = filtered.map((r) => ({
@@ -102,8 +142,12 @@ const ApprovalsPage = () => {
           fullName: r.fullName || "—",
           resortName: resortMap.get(r.resort) || r.resort || "—",
           resort: r.resort || "",
-          checkIn: r.checkIn ? new Date(r.checkIn).toISOString().slice(0, 10) : "",
-          checkOut: r.checkOut ? new Date(r.checkOut).toISOString().slice(0, 10) : "",
+          checkIn: r.checkIn
+            ? new Date(r.checkIn).toISOString().slice(0, 10)
+            : "",
+          checkOut: r.checkOut
+            ? new Date(r.checkOut).toISOString().slice(0, 10)
+            : "",
           totalPayable: Number(r.totalPayable) || 0,
           createdBy: r.createdBy || r.createdByName || "—",
           approval_status: r.approval_status || "PENDING_DFO_APPROVAL",
@@ -136,31 +180,52 @@ const ApprovalsPage = () => {
     if (filterDateTo) {
       data = data.filter((r) => r.checkOut <= filterDateTo);
     }
-    if (filterCreatedBy.trim()) {
-      data = data.filter((r) =>
-        r.createdBy.toLowerCase().includes(filterCreatedBy.toLowerCase())
+    if (filterCreatedBy && filterCreatedBy !== "all") {
+      data = data.filter(
+        (r) => r.createdBy.toLowerCase() === filterCreatedBy.toLowerCase(),
       );
     }
 
     // Sort: PENDING first, then by createdAt desc
     data.sort((a, b) => {
-      if (a.approval_status === "PENDING_DFO_APPROVAL" && b.approval_status !== "PENDING_DFO_APPROVAL") return -1;
-      if (a.approval_status !== "PENDING_DFO_APPROVAL" && b.approval_status === "PENDING_DFO_APPROVAL") return 1;
+      if (
+        a.approval_status === "PENDING_DFO_APPROVAL" &&
+        b.approval_status !== "PENDING_DFO_APPROVAL"
+      )
+        return -1;
+      if (
+        a.approval_status !== "PENDING_DFO_APPROVAL" &&
+        b.approval_status === "PENDING_DFO_APPROVAL"
+      )
+        return 1;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
     return data;
-  }, [reservations, filterResort, filterStatus, filterDateFrom, filterDateTo, filterCreatedBy]);
+  }, [
+    reservations,
+    filterResort,
+    filterStatus,
+    filterDateFrom,
+    filterDateTo,
+    filterCreatedBy,
+  ]);
 
-  const pendingCount = reservations.filter((r) => r.approval_status === "PENDING_DFO_APPROVAL").length;
+  const pendingCount = reservations.filter(
+    (r) => r.approval_status === "PENDING_DFO_APPROVAL",
+  ).length;
 
   if (!isDFO && !isSuperAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <XCircle className="h-12 w-12 text-red-400 mx-auto mb-3" />
-          <h2 className="text-xl font-semibold text-slate-800">Access Denied</h2>
-          <p className="text-slate-500 mt-1">Only DFO can access the approvals page.</p>
+          <h2 className="text-xl font-semibold text-slate-800">
+            Access Denied
+          </h2>
+          <p className="text-slate-500 mt-1">
+            Only DFO can access the approvals page.
+          </p>
         </div>
       </div>
     );
@@ -173,7 +238,9 @@ const ApprovalsPage = () => {
         <div>
           <div className="flex items-center gap-3">
             <ClipboardCheck className="h-6 w-6 text-slate-700" />
-            <h1 className="text-2xl font-semibold text-slate-800">Booking Approvals</h1>
+            <h1 className="text-2xl font-semibold text-slate-800">
+              Booking Approvals
+            </h1>
             {pendingCount > 0 && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
                 <Clock className="h-3 w-3" />
@@ -203,7 +270,9 @@ const ApprovalsPage = () => {
               <SelectContent>
                 <SelectItem value="all">All Resorts</SelectItem>
                 {resorts.map((r) => (
-                  <SelectItem key={r._id} value={r._id}>{r.resortName}</SelectItem>
+                  <SelectItem key={r._id} value={r._id}>
+                    {r.resortName}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -216,7 +285,9 @@ const ApprovalsPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="PENDING_DFO_APPROVAL">Pending Approval</SelectItem>
+                <SelectItem value="PENDING_DFO_APPROVAL">
+                  Pending Approval
+                </SelectItem>
                 <SelectItem value="APPROVED">Approved</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
               </SelectContent>
@@ -224,18 +295,44 @@ const ApprovalsPage = () => {
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-slate-500">Check-in From</Label>
-            <Input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="h-9 text-sm" />
+            <Input
+              type="date"
+              value={filterDateFrom}
+              onChange={(e) => setFilterDateFrom(e.target.value)}
+              className="h-9 text-sm"
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-slate-500">Check-out To</Label>
-            <Input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="h-9 text-sm" />
+            <Input
+              type="date"
+              value={filterDateTo}
+              onChange={(e) => setFilterDateTo(e.target.value)}
+              className="h-9 text-sm"
+            />
           </div>
           <div className="space-y-1">
             <Label className="text-xs text-slate-500">Created By</Label>
-            <Input placeholder="Search creator…" value={filterCreatedBy} onChange={e => setFilterCreatedBy(e.target.value)} className="h-9 text-sm" />
+            <Select value={filterCreatedBy} onValueChange={setFilterCreatedBy}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder="All admin users" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All admin users</SelectItem>
+                {adminUsers.map((admin) => (
+                  <SelectItem key={admin.username} value={admin.username}>
+                    {admin.name || admin.username}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
-        {(filterResort !== "all" || filterStatus !== "all" || filterDateFrom || filterDateTo || filterCreatedBy) && (
+        {(filterResort !== "all" ||
+          filterStatus !== "all" ||
+          filterDateFrom ||
+          filterDateTo ||
+          filterCreatedBy) && (
           <Button
             variant="ghost"
             size="sm"
@@ -245,7 +342,7 @@ const ApprovalsPage = () => {
               setFilterStatus("all");
               setFilterDateFrom("");
               setFilterDateTo("");
-              setFilterCreatedBy("");
+              setFilterCreatedBy("all");
             }}
           >
             Clear Filters
@@ -269,35 +366,71 @@ const ApprovalsPage = () => {
             <table className="w-full text-sm">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Booking ID</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Guest</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Resort</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Check-in</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Check-out</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Amount</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Created By</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">Action</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Booking ID
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Guest
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Resort
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Check-in
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Check-out
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Amount
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Created By
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Status
+                  </th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredReservations.map((r) => {
-                  const statusMeta = STATUS_LABELS[r.approval_status] || STATUS_LABELS["PENDING_DFO_APPROVAL"];
+                  const statusMeta =
+                    STATUS_LABELS[r.approval_status] ||
+                    STATUS_LABELS["PENDING_DFO_APPROVAL"];
                   return (
                     <tr
                       key={r.id}
                       className="hover:bg-slate-50 transition-colors cursor-pointer"
                       onClick={() => navigate(`/approvals/${r.id}`)}
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">{r.bookingId}</td>
-                      <td className="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">{r.fullName}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{r.resortName}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{formatDate(r.checkIn)}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{formatDate(r.checkOut)}</td>
-                      <td className="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">₹{r.totalPayable.toLocaleString()}</td>
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{r.createdBy}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">
+                        {r.bookingId}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">
+                        {r.fullName}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                        {r.resortName}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                        {formatDate(r.checkIn)}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                        {formatDate(r.checkOut)}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">
+                        ₹{r.totalPayable.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                        {r.createdBy}
+                      </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusMeta.color}`}>
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusMeta.color}`}
+                        >
                           {statusMeta.icon}
                           {statusMeta.label}
                         </span>

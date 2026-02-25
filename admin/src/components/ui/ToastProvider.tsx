@@ -7,7 +7,7 @@ import {
   useEffect,
 } from "react";
 
-type ToastVariant = "success" | "error" | "info";
+type ToastVariant = "Success" | "error" | "info";
 
 interface Toast {
   id: number;
@@ -43,7 +43,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const showToast = useCallback(
-    (message: string, variant: ToastVariant = "success") => {
+    (message: string, variant: ToastVariant = "Success") => {
       const id = ++toastIdCounter;
       setToasts((prev) => [...prev, { id, message, variant }]);
       const timer = setTimeout(() => removeToast(id), 4500);
@@ -88,7 +88,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 /* ── Individual toast ── */
 
 const variantStyles: Record<ToastVariant, React.CSSProperties> = {
-  success: {
+  Success: {
     background: "#F0FDF4",
     borderLeft: "4px solid #16A34A",
     color: "#15803D",
@@ -106,7 +106,7 @@ const variantStyles: Record<ToastVariant, React.CSSProperties> = {
 };
 
 const variantIcons: Record<ToastVariant, string> = {
-  success: "✓",
+  Success: "✓",
   error: "✕",
   info: "ℹ",
 };
@@ -159,7 +159,7 @@ function ToastItem({
           fontWeight: 700,
           flexShrink: 0,
           background:
-            toast.variant === "success"
+            toast.variant === "Success"
               ? "#16A34A"
               : toast.variant === "error"
                 ? "#DC2626"

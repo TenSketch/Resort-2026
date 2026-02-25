@@ -203,7 +203,7 @@ const listAvailableRooms = async (req, res) => {
         { resort: resort.resortName }, // Match by resort name (legacy)
         { resort: resort._id } // Match by resort ObjectId (without toString)
       ],
-      status: { $in: ['pending', 'reserved', 'confirmed'] }, // Only these statuses block rooms
+      status: { $in: ['Pending', 'Reserved', 'confirmed'] }, // Only these statuses block rooms
       // Date overlap logic: checkIn < our checkOut AND checkOut > our checkIn
       checkIn: { $lt: checkOutDate },
       checkOut: { $gt: checkInDate }

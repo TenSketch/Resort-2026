@@ -120,7 +120,7 @@ const AddTouristSpot = () => {
             );
           }
           await res.json().catch(() => null);
-          showToast("Trek spot updated successfully!", "success");
+          showToast("Trek spot updated successfully!", "Success");
           navigate("/touristspots/all");
           return;
         } else {
@@ -157,7 +157,7 @@ const AddTouristSpot = () => {
             );
           }
           await res.json().catch(() => null);
-          showToast("Trek spot updated successfully!", "success");
+          showToast("Trek spot updated successfully!", "Success");
           navigate("/touristspots/all");
           return;
         }
@@ -233,7 +233,7 @@ const AddTouristSpot = () => {
         setAdded((prev) => [saved, ...prev]);
       }
 
-      showToast("Trek spot added successfully!", "success");
+      showToast("Trek spot added successfully!", "Success");
       setForm({
         name: "",
         category: "TREK",

@@ -76,7 +76,9 @@ export default function DailyOccupancyReport() {
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const allData: Reservation[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : reservationData;
+    const allData: Reservation[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : reservationData;
 
     const csvRows = [
       headers.join(","),

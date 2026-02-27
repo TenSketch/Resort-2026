@@ -4,11 +4,7 @@
 
     <app-loader *ngIf="showLoader"></app-loader>
     <section class="mt-3 pt-5">
-      <div
-        class="container text-center d-grid place-items-center"
-        style="min-height: 20vh"
-        *ngIf="noBookings"
-      >
+      <div class="container text-center d-grid place-items-center" style="min-height: 20vh" *ngIf="noBookings">
         <h2 class="text-secondary">{{ message }}</h2>
 
         <!-- <button class="btn mt-2 btn-outline-danger" (click)="InitiateCancel()" >Cancel Booking</button> -->
@@ -25,240 +21,218 @@
         </div> -->
       </div>
       <div class="container" *ngIf="!noBookings">
-        <h1 class="text-center mb-3 mt-4">My Bookings</h1>
-        <!-- <div class="booking-card"> -->
-        <div
-          class="row py-3 py-md-4 px-1 px-md-4 booking-card mb-4 mx-2 mx-md-0"
-          *ngFor="let item of bookingData"
-        >
-          <!--  details of resort, cottage, roomm image, guest -->
-          <div class="col-md-4 bordered-col">
-            <img
-              src="{{ getRoomImages(item.rooms.name, item)[0] }}"
-              class=""
-              alt="Room Image"
-            />
-            <!-- Trek booking display -->
-            <div *ngIf="item.booking_type === 'trek'">
-              <h5 class="my-2">
-                <strong>Trek Spot</strong>
-              </h5>
-              <p class="mb-0">
-                <strong>Spots:</strong> {{ item.rooms.name }}
-              </p>
-              <p class="mb-0">
-                <strong>Visit Date:</strong> {{ formatDate(item.checkin).day }} {{ formatDate(item.checkin).month }} {{ formatDate(item.checkin).year }}
-              </p>
-              <p class="mb-0">
-                <strong>Guest info:</strong>
-                {{ item.noof_guest }} guests<span *ngIf="item.noof_cameras > 0">, {{ item.noof_cameras }} camera<span *ngIf="item.noof_cameras > 1">s</span></span>
-              </p>
-              <p class="mb-0">
-                <strong>Total amount:</strong> ₹{{ item.total_payable_amt }}
-              </p>
-            </div>
-            
-            <!-- Tent booking display -->
-            <div *ngIf="item.booking_type === 'tent'">
-              <h5 class="my-2">
-                <strong>Tent Spot:</strong> {{ item.rooms.restort }}
-              </h5>
-              <p class="mb-0">
-                <strong>Tent ID:</strong> {{ item.rooms.name }}
-              </p>
-              <p class="mb-0">
-                <strong>Booking type:</strong> {{ item.rooms.cottage }}
-              </p>
-              <p class="mb-0">
-                <strong>Guest info:</strong>
-                {{ item.noof_guest }} guests, {{ item.noof_children }} child,
-                {{ item.noof_extra_guest }} extra guest
-              </p>
-              <p class="mb-0">
-                <strong>Total amount:</strong> ₹{{ item.total_payable_amt }}
-              </p>
-            </div>
-            
-            <!-- Room booking display -->
-            <div *ngIf="item.booking_type !== 'tent' && item.booking_type !== 'trek'">
-              <h5 class="my-2">
-                <strong>Resort name:</strong> {{ item.rooms.restort }}
-              </h5>
-              <p class="mb-0">
-                <strong>Room name:</strong> {{ item.rooms.name }}
-              </p>
-              <p class="mb-0">
-                <strong>Cottage type:</strong> {{ item.rooms.cottage }}
-              </p>
-              <p class="mb-0">
-                <strong>Guest info:</strong>
-                {{ item.noof_guest }} guests, {{ item.noof_children }} child,
-                {{ item.noof_extra_guest }} extra guest
-              </p>
-              <p class="mb-0">
-                <strong>Total amount:</strong> ₹{{ item.total_payable_amt }}
-              </p>
-              <p class="mb-0" *ngIf="item.food_preference">
-                <strong>Food preference:</strong> {{ item.food_preference }}
-              </p>
-            </div>
-            
-            <div
-              class="w-100 d-flex flex-column align-items-start justify-content-start p-0 m-0"
-              *ngIf="item.rooms.restort == 'Jungle Star, Valamuru'"
-            >
-              <a
-                class="mt-1 text-decoration-none"
-                href="/#/food-menu"
-                target="_blank"
-                ><i class="fa-solid fa-utensils me-2"></i>View Food Menu</a
-              >
-            </div>
-          </div>
-          <hr class="d-md-none mt-3" />
-          <!-- Booking dates -->
-          <div class="col-md-4 bordered-col mt-3 mt-md-0">
-            <!-- Trek booking - single visit date -->
-            <div *ngIf="item.booking_type === 'trek'">
-              <div class="show-date">
-                <h5 class="mb-0">Visit Date</h5>
-                <h1 class="display-3 mb-0">
-                  {{ formatDate(item.checkin).day }}
-                </h1>
-                <p class="mb-0">
-                  {{ formatDate(item.checkin).month }}
-                  {{ formatDate(item.checkin).year }}
-                </p>
-              </div>
-              <br />
-              <div class="show-date">
-                <h5 class="mb-0">Entry Time</h5>
-                <p class="mb-0">As per spot timings</p>
-              </div>
-            </div>
-            
-            <!-- Room/Tent booking - check-in and check-out -->
-            <div *ngIf="item.booking_type !== 'trek'">
-              <div class="d-flex gap-3">
-                <div class="show-date">
-                  <h5 class="mb-0">Check-in date</h5>
-                  <h1 class="display-3 mb-0">
-                    {{ formatDate(item.checkin).day }}
-                  </h1>
-                  <p class="mb-0">
-                    {{ formatDate(item.checkin).month }}
-                    {{ formatDate(item.checkin).year }}
-                  </p>
-                </div>
-                <div class="show-date">
-                  <h5 class="mb-0">Check-out date</h5>
-                  <h1 class="display-3 mb-0">
-                    {{ formatDate(item.checkout).day }}
-                  </h1>
-                  <p class="mb-0">
-                    {{ formatDate(item.checkout).month }}
-                    {{ formatDate(item.checkout).year }}
-                  </p>
-                </div>
-              </div>
-              <br />
-              <div class="d-flex gap-3">
-                <div class="show-date">
-                  <h5 class="mb-0">Check-in Time</h5>
-                  <h1 class="display-custom mb-0">10 AM</h1>
-                </div>
-                <div class="show-date">
-                  <h5 class="mb-0">Check-out Time</h5>
-                  <h1 class="display-custom mb-0">9 AM</h1>
-                </div>
-              </div>
-            </div>
-            
-            <h5 class="mt-3">Date of reservation:</h5>
-            <p class="mb-0">{{ item.reservation_date }}</p>
-            <h5 class="mt-3">Booking Id:</h5>
-            <p class="mb-0">{{ item.booking_id }}</p>
-          </div>
+        <h1 class="text-center mb-4 mt-4 fw-bold">My Bookings</h1>
 
-          <hr class="d-md-none mt-3" />
-          <!-- booking-status -->
-          <div class="col-md-4 d-flex flex-column booking-status">
-            <h5 class="font-weight-bold mb-0">Booking Status:</h5>
-            <p class="mb-0">{{ item.status }}</p>
-            <h5 class="font-weight-bold mb-0">Payment Status:</h5>
-            <p class="mb-0">{{ item.pay_status }}</p>
-            <p *ngIf="item.pay_status == 'Not Paid'" class="my-2">
-              We haven't received your payment yet. If the amount has been
-              debited, it will be refunded to your account within 5 to 7 working
-              days. To confirm your booking, please reach out to support with
-              your <br />
-              booking ID : {{ item.booking_id }}
-            </p>
-            <div class="dropdown mt-2">
-              <button
-                class="btn btn-secondary dropdown-toggle text-bg-dark"
-                type="button"
-                id="dropdownMenuButton"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Support
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li>
-                  <button
-                    class="dropdown-item"
-                    (click)="callSupport('Vanavihari, Maredumilli')"
-                    *ngIf="item.rooms.restort === 'Vanavihari, Maredumilli'"
-                  >
-                    <i class="fa fa-phone" aria-hidden="true"></i> 9494151617
-                  </button>
-                </li>
-                <li>
-                  <button
-                    class="dropdown-item"
-                    (click)="callSupport('Jungle Star, Valamuru')"
-                    *ngIf="item.rooms.restort === 'Jungle Star, Valamuru'"
-                  >
-                    <i class="fa fa-phone" aria-hidden="true"></i> 7382151617
-                  </button>
-                </li>
-                <li>
-                  <button class="dropdown-item" (click)="sendEmail(item)">
-                    <i class="fa fa-envelope" aria-hidden="true"></i> Email
-                  </button>
-                </li>
-                <li>
-                  <button class="dropdown-item" (click)="sendWhatsApp(item)">
-                    <i class='fab fa-whatsapp-square'></i>
-                    WhatsApp
-                  </button>
-                </li>
-                <li>
-                  <button
-                    class="dropdown-item btn-outline-danger"
-                    *ngIf="
-                      item.pay_status == 'Paid' && item.status != 'Canceled'"
-                    (click)="InitiateCancel(item)"
-                  >
-                    <i class="fa fa-times" aria-hidden="true"></i> Cancel
-                    Booking
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              class="btn mt-2 d-none"
-              [disabled]="item.status !== 'completed'"
-            >
-              Add Review
+        <!-- Filter Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-5 gap-2">
+          <li class="nav-item">
+            <button class="nav-link rounded-pill px-4" [class.active]="currentFilter === 'all'"
+              (click)="setFilter('all')">
+              All Bookings
             </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link rounded-pill px-4" [class.active]="currentFilter === 'resort'"
+              (click)="setFilter('resort')">
+              <i class="fas fa-bed me-2"></i> Stays
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link rounded-pill px-4" [class.active]="currentFilter === 'trek'"
+              (click)="setFilter('trek')">
+              <i class="fas fa-hiking me-2"></i> Treks
+            </button>
+          </li>
+        </ul>
 
-            <!-- Booking status and completion button -->
+        <!-- Empty State for Filters -->
+        <div class="text-center py-5 my-5 text-muted" *ngIf="filteredBookings.length === 0">
+          <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
+          <h4 class="fw-light">No bookings found for the selected filter.</h4>
+        </div>
+
+        <div class="row g-4 mb-5">
+          <div class="col-12" *ngFor="let item of filteredBookings">
+
+            <div class="card booking-card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+              <div class="row g-0 h-100">
+                <!-- Image Section -->
+                <div class="col-md-3 d-flex align-items-stretch">
+                  <div class="position-relative w-100 h-100 min-vh-25">
+                    <img src="{{ getRoomImages(item.rooms.name, item)[0] }}"
+                      class="img-fluid w-100 h-100 object-fit-cover" alt="Image" />
+                    <!-- Format Badges -->
+                    <span
+                      class="position-absolute top-0 start-0 m-3 badge bg-primary border px-3 py-2 rounded-pill shadow-sm"
+                      *ngIf="item.booking_type === 'room'">
+                      Resort Stay
+                    </span>
+                    <span
+                      class="position-absolute top-0 start-0 m-3 badge bg-info border px-3 py-2 rounded-pill shadow-sm text-dark"
+                      *ngIf="item.booking_type === 'tent'">
+                      Tent Camping
+                    </span>
+                    <span
+                      class="position-absolute top-0 start-0 m-3 badge bg-success border px-3 py-2 rounded-pill shadow-sm"
+                      *ngIf="item.booking_type === 'trek'">
+                      Trek Spot
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Content Section -->
+                <div class="col-md-9 p-4 d-flex flex-column">
+
+                  <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-3">
+                    <div>
+                      <h4 class="fw-bold text-primary mb-1">
+                        {{ item.booking_type === 'trek' ? 'Trek Spot: ' + item.rooms.name : item.rooms.restort }}
+                      </h4>
+                      <p class="mb-0 text-muted small fw-medium">
+                        Booking ID: <span class="text-dark font-monospace">{{ item.booking_id }}</span> |
+                        Reserved On: <span class="text-dark">{{ item.reservation_date }}</span>
+                      </p>
+                    </div>
+                    <div class="text-end">
+                      <div class="fs-4 fw-bold text-dark">₹{{ item.total_payable_amt }}</div>
+
+                      <!-- Status Badge -->
+                      <span class="badge rounded-pill px-3 py-1 mt-1 small shadow-sm" [ngClass]="{
+                           'bg-success-subtle border-success border text-success': item.status === 'Reserved' && item.pay_status === 'Paid',
+                           'bg-danger-subtle border-danger border text-danger': item.status === 'Canceled' || item.pay_status === 'failed',
+                           'bg-warning-subtle border-warning border text-dark': item.pay_status === 'Pending' || item.pay_status === 'Not Paid' || item.status === 'Pending'
+                        }">
+                        {{ item.pay_status === 'Not Paid' ? 'Pending Payment' : (item.status === 'Reserved' ?
+                        'Confirmed' : item.status) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="row flex-grow-1">
+                    <!-- Specific Details Section -->
+                    <div class="col-md-6 mb-3 mb-md-0">
+
+                      <!-- Trek Structure -->
+                      <div *ngIf="item.booking_type === 'trek'" class="h-100 bg-light rounded-3 p-3">
+                        <div class="mb-2">
+                          <span class="text-muted small text-uppercase fw-semibold d-block">Visit Date</span>
+                          <span class="fw-medium text-dark"><i class="fas fa-calendar-day text-primary me-2"></i>{{
+                            formatDate(item.checkin).day }} {{ formatDate(item.checkin).month }} {{
+                            formatDate(item.checkin).year }}</span>
+                        </div>
+                        <div>
+                          <span class="text-muted small text-uppercase fw-semibold d-block">Guests Overview</span>
+                          <span class="fw-medium text-dark"><i class="fas fa-users text-primary me-2"></i>{{
+                            item.noof_guest }} guests<span *ngIf="item.noof_cameras > 0">, {{ item.noof_cameras }}
+                              camera<span *ngIf="item.noof_cameras > 1">s</span></span></span>
+                        </div>
+                      </div>
+
+                      <!-- Room / Tent Structure -->
+                      <div *ngIf="item.booking_type !== 'trek'" class="h-100 bg-light rounded-3 p-3">
+                        <div class="d-flex mb-3 pb-2 border-bottom border-light-subtle gap-3">
+                          <div class="flex-fill">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Check In</span>
+                            <span class="fw-medium text-dark"><i class="fas fa-calendar-plus text-primary me-2"></i>{{
+                              formatDate(item.checkin).day }} {{ formatDate(item.checkin).month }} {{
+                              formatDate(item.checkin).year }}</span>
+                          </div>
+                          <div class="flex-fill">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Check Out</span>
+                            <span class="fw-medium text-dark"><i class="fas fa-calendar-minus text-primary me-2"></i>{{
+                              formatDate(item.checkout).day }} {{ formatDate(item.checkout).month }} {{
+                              formatDate(item.checkout).year }}</span>
+                          </div>
+                        </div>
+
+                        <div class="mb-2">
+                          <span class="text-muted small text-uppercase fw-semibold d-block">Stay Info</span>
+                          <span class="fw-medium text-dark"><i class="fas fa-door-open text-primary me-2"></i>{{
+                            item.rooms.name }} ({{ item.rooms.cottage }})</span>
+                        </div>
+
+                        <div>
+                          <span class="text-muted small text-uppercase fw-semibold d-block">Guests Overview</span>
+                          <span class="fw-medium text-dark"><i class="fas fa-users text-primary me-2"></i>{{
+                            item.noof_guest }} adults, {{ item.noof_children }} children<span
+                              *ngIf="item.noof_extra_guest > 0">, {{ item.noof_extra_guest }} extra</span></span>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <!-- Actions / Warning Section -->
+                    <div
+                      class="col-md-6 d-flex flex-column justify-content-center align-items-md-end text-md-end mt-3 mt-md-0 border-start ps-md-4">
+
+                      <div *ngIf="item.pay_status === 'Not Paid'"
+                        class="alert alert-warning py-2 mb-3 px-3 small border-0 w-100 text-start">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Payment pending or confirming. If amount was
+                        debited, it will be refunded in 5-7 days.
+                      </div>
+
+                      <div *ngIf="item.rooms.restort == 'Jungle Star, Valamuru'"
+                        class="mb-3 w-100 text-start text-md-end">
+                        <a class="text-decoration-none fw-medium text-primary" href="/#/food-menu" target="_blank">
+                          <i class="fa-solid fa-utensils me-1"></i> View Food Menu
+                        </a>
+                      </div>
+
+                      <div class="dropdown w-100 text-start text-md-end mt-auto">
+                        <button class="btn btn-outline-secondary dropdown-toggle rounded-pill px-4 shadow-sm"
+                          type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                          Manage Booking
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2"
+                          aria-labelledby="dropdownMenuButton">
+
+                          <li>
+                            <button class="dropdown-item py-2" (click)="callSupport('Vanavihari, Maredumilli')"
+                              *ngIf="item.rooms.restort === 'Vanavihari, Maredumilli'">
+                              <i class="fas fa-phone-alt text-primary me-2"></i> Call Support (9494151617)
+                            </button>
+                          </li>
+                          <li>
+                            <button class="dropdown-item py-2" (click)="callSupport('Jungle Star, Valamuru')"
+                              *ngIf="item.rooms.restort === 'Jungle Star, Valamuru'">
+                              <i class="fas fa-phone-alt text-primary me-2"></i> Call Support (7382151617)
+                            </button>
+                          </li>
+                          <li>
+                            <button class="dropdown-item py-2" (click)="sendEmail(item)">
+                              <i class="fas fa-envelope text-primary me-2"></i> Email Support
+                            </button>
+                          </li>
+                          <li>
+                            <button class="dropdown-item py-2" (click)="sendWhatsApp(item)">
+                              <i class='fab fa-whatsapp text-success fs-5 align-middle me-2'></i> WhatsApp
+                            </button>
+                          </li>
+
+                          <li>
+                            <hr class="dropdown-divider opacity-25">
+                          </li>
+
+                          <li>
+                            <button class="dropdown-item text-danger py-2 fw-medium"
+                              *ngIf="item.pay_status == 'Paid' && item.status != 'Canceled'"
+                              (click)="InitiateCancel(item)">
+                              <i class="fas fa-ban me-2"></i> Cancel Booking
+                            </button>
+                          </li>
+
+                        </ul>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-        <!-- </div> -->
       </div>
     </section>
   </div>

@@ -1,8 +1,8 @@
 <h1 mat-dialog-title>Confirmation</h1>
 <div mat-dialog-content>
-  <p>Are you sure you want to leave this page, you may loose the data saved?</p>
+  <p>Do you want to change your selection?</p>
 </div>
 <div mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="true"  (click)="clearData()">Yes</button>
-  <button *ngIf="showCancelBtn" mat-button  [mat-dialog-close]="false">Cancel</button>
+  <button mat-button class="btn-yes" [mat-dialog-close]="true" (click)="clearData()">Yes</button>
+  <button *ngIf="showCancelBtn" class="btn-cancel" mat-button [mat-dialog-close]="false">Cancel</button>
 </div>

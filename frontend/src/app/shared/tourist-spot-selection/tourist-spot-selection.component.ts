@@ -221,15 +221,15 @@ export class TouristSpotSelectionComponent implements OnChanges {
     this.setGalleryData(index);
   }
 
-  scrollLeft() {
-    if (this.images.length > 1) {
-      this.currentImageIndex = (this.currentImageIndex - 1 + this.images.length) % this.images.length;
+  scrollLeftBtn(cardContainer: HTMLElement) {
+    if (cardContainer) {
+      cardContainer.scrollBy({ left: -300, behavior: 'smooth' });
     }
   }
 
-  scrollRight() {
-    if (this.images.length > 1) {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
+  scrollRightBtn(cardContainer: HTMLElement) {
+    if (cardContainer) {
+      cardContainer.scrollBy({ left: 300, behavior: 'smooth' });
     }
   }
 }

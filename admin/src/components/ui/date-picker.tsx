@@ -35,7 +35,8 @@ export function DatePickerField({
 }: DatePickerFieldProps) {
   const [open, setOpen] = React.useState(false);
 
-  const selected = value && isValid(parseISO(value)) ? parseISO(value) : undefined;
+  const selected =
+    value && isValid(parseISO(value)) ? parseISO(value) : undefined;
   const fromDate = minDate ? parseISO(minDate) : undefined;
   const toDate = maxDate ? parseISO(maxDate) : undefined;
 
@@ -57,14 +58,16 @@ export function DatePickerField({
           disabled={disabled}
           onClick={() => !disabled && setOpen(true)}
           className={cn(
-            "w-full h-10 justify-start text-left font-normal px-3 border border-slate-300 rounded-sm bg-slate-50 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500",
-            !selected && "text-slate-400",
+            "w-full px-4 py-3 h-auto justify-between text-left font-normal border border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors",
+            !selected && "text-slate-500",
             disabled && "opacity-50 cursor-not-allowed bg-slate-100",
             className,
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4 text-slate-400 shrink-0" />
-          {selected ? format(selected, "dd MMM yyyy") : placeholder}
+          <span>
+            {selected ? format(selected, "dd MMM yyyy") : placeholder}
+          </span>
+          <CalendarIcon className="h-4 w-4 text-slate-500 shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

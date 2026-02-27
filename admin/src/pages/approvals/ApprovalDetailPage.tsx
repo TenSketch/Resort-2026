@@ -76,14 +76,28 @@ const ApprovalDetailPage = () => {
   const [actionError, setActionError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
 
-  const apiUrl = (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
+  const apiUrl =
+    (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
 
   const formatDate = (val: string) => {
     if (!val) return "—";
     const d = new Date(val);
     if (isNaN(d.getTime())) return val;
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${String(d.getUTCDate()).padStart(2,"0")} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${String(d.getUTCDate()).padStart(2, "0")} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   };
 
   useEffect(() => {
@@ -117,18 +131,28 @@ const ApprovalDetailPage = () => {
         }
 
         const resortMap = new Map(
-          ((resortsData.resorts || []) as any[]).map((x: any) => [x._id, x.resortName])
+          ((resortsData.resorts || []) as any[]).map((x: any) => [
+            x._id,
+            x.resortName,
+          ]),
         );
         const roomMap = new Map(
-          ((roomsData.rooms || []) as any[]).map((x: any) => [x._id, x.roomName || x.roomId || x.roomNumber])
+          ((roomsData.rooms || []) as any[]).map((x: any) => [
+            x._id,
+            x.roomName || x.roomId || x.roomNumber,
+          ]),
         );
 
         let noOfDays = 0;
         if (r.checkIn && r.checkOut) {
           const d1 = new Date(r.checkIn);
           const d2 = new Date(r.checkOut);
-          d1.setUTCHours(0,0,0,0); d2.setUTCHours(0,0,0,0);
-          noOfDays = Math.max(1, Math.round((d2.getTime()-d1.getTime())/(1000*60*60*24)));
+          d1.setUTCHours(0, 0, 0, 0);
+          d2.setUTCHours(0, 0, 0, 0);
+          noOfDays = Math.max(
+            1,
+            Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)),
+          );
         }
 
         const mapped: FullReservation = {
@@ -145,9 +169,15 @@ const ApprovalDetailPage = () => {
           country: r.country || "",
           resortName: resortMap.get(r.resort) || r.resort || "—",
           resort: r.resort || "",
-          roomNames: Array.isArray(r.rooms) ? r.rooms.map((rid: string) => roomMap.get(rid) || rid) : [],
-          checkIn: r.checkIn ? new Date(r.checkIn).toISOString().slice(0,10) : "",
-          checkOut: r.checkOut ? new Date(r.checkOut).toISOString().slice(0,10) : "",
+          roomNames: Array.isArray(r.rooms)
+            ? r.rooms.map((rid: string) => roomMap.get(rid) || rid)
+            : [],
+          checkIn: r.checkIn
+            ? new Date(r.checkIn).toISOString().slice(0, 10)
+            : "",
+          checkOut: r.checkOut
+            ? new Date(r.checkOut).toISOString().slice(0, 10)
+            : "",
           guests: Number(r.guests) || 0,
           extraGuests: Number(r.extraGuests) || 0,
           children: Number(r.children) || 0,
@@ -196,11 +226,14 @@ const ApprovalDetailPage = () => {
       if (remarks) payload.approval_remarks = remarks;
 
       // Try dedicated approve endpoint first, fall back to PATCH
-      let res = await fetch(`${apiUrl}/api/reservations/${reservation.id}/approve`, {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify(payload),
-      });
+      let res = await fetch(
+        `${apiUrl}/api/reservations/${reservation.id}/approve`,
+        {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify(payload),
+        },
+      );
 
       if (res.status === 404) {
         // Fallback: use generic PATCH with approval fields
@@ -217,11 +250,15 @@ const ApprovalDetailPage = () => {
 
       if (!res.ok) {
         const errData = await res.json().catch(() => null);
-        throw new Error(errData?.error || errData?.message || "Failed to approve");
+        throw new Error(
+          errData?.error || errData?.message || "Failed to approve",
+        );
       }
 
       setActionSuccess("✅ Booking approved successfully! Room is confirmed.");
-      setReservation((prev) => prev ? { ...prev, approval_status: "APPROVED" } : prev);
+      setReservation((prev) =>
+        prev ? { ...prev, approval_status: "APPROVED" } : prev,
+      );
     } catch (err: any) {
       setActionError(err?.message || String(err));
     } finally {
@@ -245,11 +282,14 @@ const ApprovalDetailPage = () => {
       const payload = { approval_remarks: remarks };
 
       // Try dedicated reject endpoint first, fall back to PATCH
-      let res = await fetch(`${apiUrl}/api/reservations/${reservation.id}/reject`, {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify(payload),
-      });
+      let res = await fetch(
+        `${apiUrl}/api/reservations/${reservation.id}/reject`,
+        {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify(payload),
+        },
+      );
 
       if (res.status === 404) {
         res = await fetch(`${apiUrl}/api/reservations/${reservation.id}`, {
@@ -258,18 +298,22 @@ const ApprovalDetailPage = () => {
           body: JSON.stringify({
             ...payload,
             approval_status: "REJECTED",
-            status: "Not-reserved",
+            status: "Not-Reserved",
           }),
         });
       }
 
       if (!res.ok) {
         const errData = await res.json().catch(() => null);
-        throw new Error(errData?.error || errData?.message || "Failed to reject");
+        throw new Error(
+          errData?.error || errData?.message || "Failed to reject",
+        );
       }
 
       setActionSuccess("❌ Booking rejected. Room has been released.");
-      setReservation((prev) => prev ? { ...prev, approval_status: "REJECTED" } : prev);
+      setReservation((prev) =>
+        prev ? { ...prev, approval_status: "REJECTED" } : prev,
+      );
     } catch (err: any) {
       setActionError(err?.message || String(err));
     } finally {
@@ -293,8 +337,14 @@ const ApprovalDetailPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-slate-400 mx-auto mb-3" />
-          <h2 className="text-xl font-semibold text-slate-800">Booking Not Found</h2>
-          <Button variant="ghost" className="mt-4" onClick={() => navigate("/approvals")}>
+          <h2 className="text-xl font-semibold text-slate-800">
+            Booking Not Found
+          </h2>
+          <Button
+            variant="ghost"
+            className="mt-4"
+            onClick={() => navigate("/approvals")}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Approvals
           </Button>
         </div>
@@ -322,17 +372,29 @@ const ApprovalDetailPage = () => {
     <div className="min-h-screen p-4 md:p-8">
       {/* Header */}
       <div className="mb-6">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/approvals")} className="mb-4 -ml-1 text-slate-600">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/approvals")}
+          className="mb-4 -ml-1 text-slate-600"
+        >
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Approvals
         </Button>
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-800">Booking Approval</h1>
-            <p className="text-slate-500 text-sm mt-1 font-mono">{reservation.bookingId}</p>
+            <h1 className="text-2xl font-semibold text-slate-800">
+              Booking Approval
+            </h1>
+            <p className="text-slate-500 text-sm mt-1 font-mono">
+              {reservation.bookingId}
+            </p>
           </div>
-          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${statusColors[reservation.approval_status] || "bg-slate-100 text-slate-700"}`}>
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${statusColors[reservation.approval_status] || "bg-slate-100 text-slate-700"}`}
+          >
             {statusIcons[reservation.approval_status]}
-            {statusLabels[reservation.approval_status] || reservation.approval_status}
+            {statusLabels[reservation.approval_status] ||
+              reservation.approval_status}
           </span>
         </div>
       </div>
@@ -355,7 +417,11 @@ const ApprovalDetailPage = () => {
               <div className="col-span-2 md:col-span-3">
                 <InfoField
                   label="Address"
-                  value={[reservation.address1, reservation.address2].filter(Boolean).join(", ") || "—"}
+                  value={
+                    [reservation.address1, reservation.address2]
+                      .filter(Boolean)
+                      .join(", ") || "—"
+                  }
                 />
               </div>
             )}
@@ -370,19 +436,40 @@ const ApprovalDetailPage = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <InfoField label="Resort" value={reservation.resortName} />
-            <InfoField label="Rooms" value={reservation.roomNames.join(", ") || "—"} />
-            <InfoField label="No. of Rooms" value={String(reservation.numberOfRooms)} />
-            <InfoField label="Check-in" value={formatDate(reservation.checkIn)} />
-            <InfoField label="Check-out" value={formatDate(reservation.checkOut)} />
-            <InfoField label="No. of Nights" value={String(reservation.noOfDays)} />
+            <InfoField
+              label="Rooms"
+              value={reservation.roomNames.join(", ") || "—"}
+            />
+            <InfoField
+              label="No. of Rooms"
+              value={String(reservation.numberOfRooms)}
+            />
+            <InfoField
+              label="Check-in"
+              value={formatDate(reservation.checkIn)}
+            />
+            <InfoField
+              label="Check-out"
+              value={formatDate(reservation.checkOut)}
+            />
+            <InfoField
+              label="No. of Nights"
+              value={String(reservation.noOfDays)}
+            />
             <InfoField label="Guests" value={String(reservation.guests)} />
-            <InfoField label="Extra Guests" value={String(reservation.extraGuests)} />
+            <InfoField
+              label="Extra Guests"
+              value={String(reservation.extraGuests)}
+            />
             <InfoField label="Children" value={String(reservation.children)} />
             {reservation.createdBy && (
               <InfoField label="Created By" value={reservation.createdBy} />
             )}
             {reservation.createdAt && (
-              <InfoField label="Created At" value={formatDate(reservation.createdAt.slice(0,10))} />
+              <InfoField
+                label="Created At"
+                value={formatDate(reservation.createdAt.slice(0, 10))}
+              />
             )}
           </div>
 
@@ -390,12 +477,24 @@ const ApprovalDetailPage = () => {
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 mb-3">
               <IndianRupee className="h-4 w-4 text-slate-500" />
-              <span className="font-medium text-slate-700 text-sm">Proposed Amount</span>
+              <span className="font-medium text-slate-700 text-sm">
+                Proposed Amount
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <InfoField label="Room Price" value={`₹${reservation.roomPrice.toLocaleString()}`} />
-              <InfoField label="Extra Guest Charges" value={`₹${reservation.extraBedCharges.toLocaleString()}`} />
-              <InfoField label="Total Payable" value={`₹${reservation.totalPayable.toLocaleString()}`} bold />
+              <InfoField
+                label="Room Price"
+                value={`₹${reservation.roomPrice.toLocaleString()}`}
+              />
+              <InfoField
+                label="Extra Guest Charges"
+                value={`₹${reservation.extraBedCharges.toLocaleString()}`}
+              />
+              <InfoField
+                label="Total Payable"
+                value={`₹${reservation.totalPayable.toLocaleString()}`}
+                bold
+              />
             </div>
           </div>
         </div>
@@ -411,16 +510,30 @@ const ApprovalDetailPage = () => {
           {!isPending ? (
             <div className="space-y-3">
               {reservation.final_amount !== undefined && (
-                <InfoField label="Final Amount" value={`₹${Number(reservation.final_amount).toLocaleString()}`} bold />
+                <InfoField
+                  label="Final Amount"
+                  value={`₹${Number(reservation.final_amount).toLocaleString()}`}
+                  bold
+                />
               )}
-              {reservation.discount !== undefined && reservation.discount !== null && (
-                <InfoField label="Discount Applied" value={`₹${Number(reservation.discount).toLocaleString()}`} />
-              )}
+              {reservation.discount !== undefined &&
+                reservation.discount !== null && (
+                  <InfoField
+                    label="Discount Applied"
+                    value={`₹${Number(reservation.discount).toLocaleString()}`}
+                  />
+                )}
               {reservation.approval_remarks && (
-                <InfoField label="Remarks" value={reservation.approval_remarks} />
+                <InfoField
+                  label="Remarks"
+                  value={reservation.approval_remarks}
+                />
               )}
               {reservation.approved_by && (
-                <InfoField label="Actioned By" value={reservation.approved_by} />
+                <InfoField
+                  label="Actioned By"
+                  value={reservation.approved_by}
+                />
               )}
             </div>
           ) : (
@@ -429,12 +542,14 @@ const ApprovalDetailPage = () => {
                 <div className="space-y-1.5">
                   <Label className="text-sm font-medium text-slate-700">
                     Final Amount (₹)
-                    <span className="text-slate-400 font-normal ml-1 text-xs">(editable before approval)</span>
+                    <span className="text-slate-400 font-normal ml-1 text-xs">
+                      (editable before approval)
+                    </span>
                   </Label>
                   <Input
                     type="number"
                     value={finalAmount}
-                    onChange={e => setFinalAmount(e.target.value)}
+                    onChange={(e) => setFinalAmount(e.target.value)}
                     className="h-10"
                     disabled={!canAct}
                     min="0"
@@ -443,12 +558,14 @@ const ApprovalDetailPage = () => {
                 <div className="space-y-1.5">
                   <Label className="text-sm font-medium text-slate-700">
                     Discount (₹)
-                    <span className="text-slate-400 font-normal ml-1 text-xs">(optional)</span>
+                    <span className="text-slate-400 font-normal ml-1 text-xs">
+                      (optional)
+                    </span>
                   </Label>
                   <Input
                     type="number"
                     value={discount}
-                    onChange={e => setDiscount(e.target.value)}
+                    onChange={(e) => setDiscount(e.target.value)}
                     className="h-10"
                     disabled={!canAct}
                     min="0"
@@ -459,11 +576,13 @@ const ApprovalDetailPage = () => {
                 <Label className="text-sm font-medium text-slate-700">
                   Remarks
                   <span className="text-red-500 ml-1">*</span>
-                  <span className="text-slate-400 font-normal ml-1 text-xs">(mandatory if rejecting)</span>
+                  <span className="text-slate-400 font-normal ml-1 text-xs">
+                    (mandatory if rejecting)
+                  </span>
                 </Label>
                 <textarea
                   value={remarks}
-                  onChange={e => setRemarks(e.target.value)}
+                  onChange={(e) => setRemarks(e.target.value)}
                   disabled={!canAct}
                   rows={3}
                   placeholder="Add remarks here…"
@@ -493,9 +612,14 @@ const ApprovalDetailPage = () => {
                     disabled={isApproving || isRejecting}
                   >
                     {isApproving ? (
-                      <span className="flex items-center gap-2"><span className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" /> Approving…</span>
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />{" "}
+                        Approving…
+                      </span>
                     ) : (
-                      <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Approve</span>
+                      <span className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4" /> Approve
+                      </span>
                     )}
                   </Button>
                   <Button
@@ -505,9 +629,14 @@ const ApprovalDetailPage = () => {
                     disabled={isApproving || isRejecting}
                   >
                     {isRejecting ? (
-                      <span className="flex items-center gap-2"><span className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" /> Rejecting…</span>
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />{" "}
+                        Rejecting…
+                      </span>
                     ) : (
-                      <span className="flex items-center gap-2"><XCircle className="h-4 w-4" /> Reject</span>
+                      <span className="flex items-center gap-2">
+                        <XCircle className="h-4 w-4" /> Reject
+                      </span>
                     )}
                   </Button>
                 </div>
@@ -521,10 +650,20 @@ const ApprovalDetailPage = () => {
 };
 
 // Small reusable read-only field component
-const InfoField = ({ label, value, bold }: { label: string; value: string; bold?: boolean }) => (
+const InfoField = ({
+  label,
+  value,
+  bold,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) => (
   <div>
     <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-    <p className={`text-sm text-slate-800 ${bold ? "font-semibold" : ""}`}>{value || "—"}</p>
+    <p className={`text-sm text-slate-800 ${bold ? "font-semibold" : ""}`}>
+      {value || "—"}
+    </p>
   </div>
 );
 

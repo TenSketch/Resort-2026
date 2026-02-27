@@ -42,9 +42,9 @@ export function startTransactionPolling(bookingId, bdOrderId, mercid, authToken 
   const intervalId = setInterval(async () => {
     // Pass bookingId (orderid) not bdOrderId
     await pollTransaction(bookingId, bookingId, mercid, authToken, checkCount, bookingType);
-    
+
     checkCount++;
-    
+
     if (checkCount >= maxChecks) {
       console.log(`⏹️ Stopping polling for ${bookingId} - max checks reached`);
       stopTransactionPolling(bookingId);
@@ -78,16 +78,16 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
   try {
     // Get the appropriate model based on booking type
     const ReservationModel = bookingType === 'tent' ? TentReservation : Reservation;
-    
+
     // First check if reservation is still pending
     const reservation = await ReservationModel.findOne({ bookingId }).lean();
-    
+
     if (!reservation) {
       console.log(`❌ ${bookingType} reservation not found: ${bookingId}`);
       stopTransactionPolling(bookingId);
       return;
     }
-    
+
     // If status is already resolved (not pending), stop polling
     if (reservation.status !== 'Pending') {
       console.log(`✅ Reservation already resolved with status: ${reservation.status}`);
@@ -95,9 +95,9 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       stopTransactionPolling(bookingId);
       return;
     }
-    
+
     console.log(`   Current status: ${reservation.status} - continuing poll...`);
-    
+
     // Retrieve transaction from BillDesk using orderid (bookingId)
     const result = await retrieveTransaction(orderid, mercid, authToken);
 
@@ -112,14 +112,14 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
     // Parse response and update reservation status
     const authStatus = result.data.auth_status;
     const transactionId = result.data.transactionid;
-    
+
     console.log(`   Auth Status: ${authStatus}`);
-    
+
     // Handle different payment statuses
     if (authStatus === '0300') {
       // Payment successful
       console.log(`💰 Payment successful! Updating ${bookingType} reservation to paid/reserved...`);
-      
+
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
@@ -135,7 +135,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           }
         }
       );
-      
+
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
@@ -145,23 +145,23 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           decryptedResponse: result.data
         }
       );
-      
+
       console.log(`✅ ${bookingType} reservation updated to reserved/paid`);
-      
+
       // Stop polling since payment is confirmed
       stopTransactionPolling(bookingId);
-      
+
       // Send confirmation emails and SMS based on booking type
       console.log(`📧 Sending confirmation emails and SMS...`);
       const updatedReservation = await ReservationModel.findOne({ bookingId }).lean();
       const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
-      
+
       if (bookingType === 'tent') {
         // Send tent booking emails
         sendTentReservationEmails(updatedReservation, updatedPaymentTransaction)
           .then(() => console.log(`✅ Tent confirmation emails sent`))
           .catch(err => console.error(`❌ Tent email sending error: ${err.message}`));
-        
+
         // Send tent SMS
         sendTentReservationSMS(updatedReservation, updatedPaymentTransaction)
           .then(() => console.log(`✅ Tent reservation SMS sent`))
@@ -177,21 +177,21 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
             }
           })
           .catch(err => console.error(`❌ Room email sending error: ${err.message}`));
-        
+
         // Send room SMS
         sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
           .then(() => console.log(`✅ Room reservation SMS sent`))
           .catch(err => console.error(`❌ Room SMS sending error: ${err.message}`));
       }
-      
+
     } else if (authStatus === '0399') {
       // Payment failed
       console.log(`❌ Payment failed. Updating ${bookingType} reservation to not-reserved/unpaid...`);
-      
+
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Not-reserved',
+          status: 'Not-Reserved',
           paymentStatus: 'Unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
@@ -200,7 +200,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           }
         }
       );
-      
+
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
@@ -211,20 +211,20 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           decryptedResponse: result.data
         }
       );
-      
+
       console.log(`✅ ${bookingType} reservation updated to not-reserved/unpaid`);
-      
+
       // Stop polling since payment failed
       stopTransactionPolling(bookingId);
-      
+
     } else if (authStatus === '0398') {
       // User cancelled
       console.log(`🚫 Payment cancelled by user. Updating ${bookingType} reservation...`);
-      
+
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Not-reserved',
+          status: 'Not-Reserved',
           paymentStatus: 'Unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
@@ -232,7 +232,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           }
         }
       );
-      
+
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
@@ -242,16 +242,16 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
           decryptedResponse: result.data
         }
       );
-      
+
       console.log(`✅ ${bookingType} reservation updated to not-reserved/unpaid`);
-      
+
       // Stop polling
       stopTransactionPolling(bookingId);
-      
+
     } else if (authStatus === '0002') {
       // Payment pending
       console.log(`⏳ Payment still pending, will check again in 5 minutes...`);
-      
+
     } else {
       // Unknown status
       console.log(`⚠️ Unknown auth status: ${authStatus}, will keep polling...`);
@@ -288,9 +288,9 @@ async function sendTentReservationEmails(reservation, paymentTransaction) {
 
     const tentSpotName = tentSpotData?.spotName || 'Tent Spot';
     const tentList = tentsData.map(t => `${t.tentId || t.name} (${t.tentType || 'Tent'})`).join(', ') || 'N/A';
-    
-    const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { 
-      year: 'numeric', month: 'long', day: 'numeric' 
+
+    const formatDate = (date) => new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
     });
 
     // Prepare email data

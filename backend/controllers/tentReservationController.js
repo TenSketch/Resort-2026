@@ -109,10 +109,10 @@ export const createTentReservation = async (req, res) => {
             { checkinDate: { $lte: new Date(checkinDate) }, checkoutDate: { $gte: new Date(checkoutDate) } }
           ]
         });
-        
+
         const maxBookings = tent.tentCount || 1;
         const requestedTents = numberOfTents || 1;
-        
+
         if (overlappingCount + requestedTents > maxBookings) {
           return res.status(409).json({
             success: false,
@@ -192,7 +192,7 @@ export const createTentReservation = async (req, res) => {
 export const getAllTentReservations = async (req, res) => {
   try {
     const { status, tentSpotId } = req.query;
-    
+
     const query = {};
     if (status) query.status = status;
     if (tentSpotId) query.tentSpot = tentSpotId;
@@ -219,7 +219,7 @@ export const getAllTentReservations = async (req, res) => {
 export const getTentReservationById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const reservation = await TentReservation.findById(id)
       .populate('tentSpot', 'spotName location contactPerson contactNo')
       .populate('tents', 'tentId tentType rate noOfGuests');
@@ -248,7 +248,7 @@ export const getTentReservationById = async (req, res) => {
 export const getTentReservationByBookingId = async (req, res) => {
   try {
     const { bookingId } = req.params;
-    
+
     const reservation = await TentReservation.findOne({ bookingId })
       .populate('tentSpot', 'spotName location contactPerson contactNo')
       .populate('tents', 'tentId tentType rate noOfGuests');
@@ -420,7 +420,7 @@ export const deleteTentReservation = async (req, res) => {
 export const expirePendingTentReservations = async () => {
   try {
     const now = new Date();
-    
+
     const result = await TentReservation.updateMany(
       {
         status: 'Pending',
@@ -428,8 +428,8 @@ export const expirePendingTentReservations = async () => {
         expiresAt: { $lte: now }
       },
       {
-        $set: { 
-          status: 'Not-reserved',
+        $set: {
+          status: 'Not-Reserved',
           paymentStatus: 'Unpaid'
         }
       }
@@ -459,7 +459,7 @@ export const getUserTentBookings = async (req, res) => {
   try {
     // Get user ID from auth middleware
     const userId = req.user?._id?.toString();
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,

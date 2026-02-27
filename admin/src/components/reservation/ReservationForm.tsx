@@ -100,10 +100,7 @@ export default function AddReservationForm() {
 
     const maxGuests = selectedRooms.length * 2;
     const maxExtraGuests = selectedRooms.length * 1;
-    const maxChildren = selectedRooms.reduce(
-      (sum, room) => sum + (room.children || 0),
-      0,
-    );
+    const maxChildren = selectedRooms.length * 2;
 
     return { maxGuests, maxExtraGuests, maxChildren };
   }, [formData.rooms, rooms]);
@@ -118,11 +115,9 @@ export default function AddReservationForm() {
     const diffTime = checkOutDate.getTime() - checkInDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    // User requested 23-24 to be 2 days and 2 nights
-    const count = diffDays > 0 ? diffDays + 1 : 0;
     return {
-      days: count,
-      nights: count,
+      days: diffDays > 0 ? diffDays + 1 : 0,
+      nights: diffDays > 0 ? diffDays : 0,
     };
   }, [formData.checkIn, formData.checkOut]);
 
@@ -558,7 +553,9 @@ export default function AddReservationForm() {
           throw new Error(data?.error || "Failed to save reservation");
         // Success message differs by role
         if (isDFO || isSuperAdmin) {
-          alert("Booking created & confirmed! Status: Reserved, Payment: Paid.");
+          alert(
+            "Booking created & confirmed! Status: Reserved, Payment: Paid.",
+          );
         } else {
           alert(
             "Booking submitted!\n\u23F3 Awaiting DFO approval.\nRooms are blocked for 1 hour.\nIf not approved within the hour, the rooms will be released automatically.",
@@ -724,29 +721,40 @@ export default function AddReservationForm() {
               Booking Details
             </h3>
 
-            {/* Row 1: Check In + Check Out + Booking ID */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
+            {/* Row 1: Dates and Duration */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-3 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Check In <span className="text-red-500">*</span>
                 </Label>
                 <DatePickerField
                   value={formData.checkIn}
-                  onChange={(val) => setFormData((prev) => ({ ...prev, checkIn: val, checkOut: prev.checkOut && val && prev.checkOut <= val ? "" : prev.checkOut }))}
-                  placeholder="Select check-in date"
+                  onChange={(val) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      checkIn: val,
+                      checkOut:
+                        prev.checkOut && val && prev.checkOut <= val
+                          ? ""
+                          : prev.checkOut,
+                    }))
+                  }
+                  placeholder="Select check-in"
                   minDate={dateLimits.minDate}
                   maxDate={dateLimits.maxDate}
                   disabled={!formData.resort}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="md:col-span-3 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Check Out <span className="text-red-500">*</span>
                 </Label>
                 <DatePickerField
                   value={formData.checkOut}
-                  onChange={(val) => setFormData((prev) => ({ ...prev, checkOut: val }))}
-                  placeholder="Select check-out date"
+                  onChange={(val) =>
+                    setFormData((prev) => ({ ...prev, checkOut: val }))
+                  }
+                  placeholder="Select check-out"
                   minDate={
                     formData.checkIn
                       ? (() => {
@@ -760,6 +768,45 @@ export default function AddReservationForm() {
                   disabled={!formData.resort || !formData.checkIn}
                 />
               </div>
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:col-span-2">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">
+                    Days
+                  </Label>
+                  <Input
+                    value={bookingDuration.days}
+                    readOnly
+                    className="w-full h-11 px-2 border border-slate-300 rounded-sm bg-slate-50 cursor-not-allowed text-center"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">
+                    Nights
+                  </Label>
+                  <Input
+                    value={bookingDuration.nights}
+                    readOnly
+                    className="w-full h-11 px-2 border border-slate-300 rounded-sm bg-slate-50 cursor-not-allowed text-center"
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-4 space-y-2">
+                <Label className="text-sm font-medium text-slate-700">
+                  Reservation Date <span className="text-red-500">*</span>
+                </Label>
+                <DatePickerField
+                  disabled
+                  value={formData.reservationDate}
+                  onChange={(val) =>
+                    setFormData((prev) => ({ ...prev, reservationDate: val }))
+                  }
+                  placeholder="Reservation date"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Booking ID */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Booking ID <span className="text-red-500">*</span>
@@ -769,38 +816,7 @@ export default function AddReservationForm() {
                   value={formData.bookingId}
                   readOnly
                   placeholder="Auto-generated"
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            {/* Row 2: Days + Nights + Reservation Date */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Days</Label>
-                <Input
-                  value={bookingDuration.days}
-                  readOnly
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Nights</Label>
-                <Input
-                  value={bookingDuration.nights}
-                  readOnly
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm bg-slate-100 cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-2 col-span-2 md:col-span-1">
-                <Label className="text-sm font-medium text-slate-700">
-                  Reservation Date <span className="text-red-500">*</span>
-                </Label>
-                <DatePickerField
-                disabled
-                  value={formData.reservationDate}
-                  onChange={(val) => setFormData((prev) => ({ ...prev, reservationDate: val }))}
-                  placeholder="Select reservation date"
+                  className="w-full h-11 px-3 border border-slate-300 rounded-sm bg-slate-50 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -812,7 +828,7 @@ export default function AddReservationForm() {
               Guest Counts & Status
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
-              <div className="space-y-2" style={{minWidth: "140px"}}>
+              <div className="space-y-2" style={{ minWidth: "140px" }}>
                 <Label className="text-sm font-medium text-slate-700">
                   Guests{" "}
                   {formData.rooms.length > 0 && (
@@ -838,7 +854,7 @@ export default function AddReservationForm() {
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2" style={{minWidth: "140px"}}>
+              <div className="space-y-2" style={{ minWidth: "140px" }}>
                 <Label className="text-sm font-medium text-slate-700">
                   Extra Guests{" "}
                   {formData.rooms.length > 0 && (
@@ -861,7 +877,7 @@ export default function AddReservationForm() {
                   className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
                 />
               </div>
-              <div className="space-y-2" style={{minWidth: "140px"}}>
+              <div className="space-y-2" style={{ minWidth: "140px" }}>
                 <Label className="text-sm font-medium text-slate-700">
                   Children{" "}
                   {formData.rooms.length > 0 && (
@@ -902,7 +918,7 @@ export default function AddReservationForm() {
                   <SelectContent>
                     <SelectItem value="Reserved">Reserved</SelectItem>
                     <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="Not-Reserved">Not Reserved</SelectItem>
                     <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
@@ -914,7 +930,9 @@ export default function AddReservationForm() {
                 <Select
                   disabled
                   value={formData.paymentStatus}
-                  onValueChange={(value) => handleSelect("paymentStatus", value)}
+                  onValueChange={(value) =>
+                    handleSelect("paymentStatus", value)
+                  }
                 >
                   <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
                     <SelectValue placeholder="Select" />

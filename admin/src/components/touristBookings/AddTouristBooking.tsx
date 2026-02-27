@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { useToast } from "@/components/ui/ToastProvider";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 interface TouristSpot {
   _id: string;
@@ -411,15 +412,12 @@ const AddTouristBooking = () => {
                 <Label className="text-sm font-medium text-slate-700">
                   Visit Date <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  type="date"
-                  name="visitDate"
+                <DatePickerField
                   value={formData.visitDate}
-                  onChange={handleChange}
-                  min={dateLimits.minDate}
-                  max={dateLimits.maxDate}
-                  required
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  onChange={(val) => handleSelect("visitDate", val)}
+                  minDate={dateLimits.minDate}
+                  maxDate={dateLimits.maxDate}
+                  className="bg-slate-50"
                 />
               </div>
 
@@ -458,12 +456,10 @@ const AddTouristBooking = () => {
                 <Label className="text-sm font-medium text-slate-700">
                   Reservation Date
                 </Label>
-                <Input
-                  type="date"
-                  name="reservationDate"
+                <DatePickerField
                   value={formData.reservationDate}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors bg-slate-50"
+                  onChange={(val) => handleSelect("reservationDate", val)}
+                  className="bg-slate-50"
                 />
               </div>
 
@@ -481,7 +477,7 @@ const AddTouristBooking = () => {
                   <SelectContent>
                     <SelectItem value="Reserved">Reserved</SelectItem>
                     <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="Not-Reserved">Not Reserved</SelectItem>
                     <SelectItem value="Cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>

@@ -15,7 +15,7 @@ import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from '@/lib/AdminProvider'
+import { usePermissions } from "@/lib/AdminProvider";
 // Removed Dialog imports (edit & confirm modals eliminated)
 import {
   Sheet,
@@ -55,26 +55,35 @@ interface Room {
 export default function RoomsTable() {
   const tableRef = useRef(null);
   const dtRef = useRef<any>(null);
-  const perms = usePermissions()
-  const permsRef = useRef(perms)
+  const perms = usePermissions();
+  const permsRef = useRef(perms);
   // Removed separate edit & confirm disable dialogs
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [disabledRooms, setDisabledRooms] = useState<Set<string>>(new Set());
   const [roomsData, setRoomsData] = useState<Room[]>([]);
   const [loadingRooms, setLoadingRooms] = useState<boolean>(true);
   // keep a ref to always have latest rooms list for event listeners
   const roomsDataRef = useRef<Room[]>(roomsData);
-  useEffect(() => { roomsDataRef.current = roomsData; }, [roomsData]);
-  useEffect(() => { permsRef.current = perms }, [perms])
+  useEffect(() => {
+    roomsDataRef.current = roomsData;
+  }, [roomsData]);
+  useEffect(() => {
+    permsRef.current = perms;
+  }, [perms]);
   const [editData, setEditData] = useState<Partial<Room>>({});
   const [saving, setSaving] = useState(false);
   const [newImages, setNewImages] = useState<File[]>([]);
-  const [resorts, setResorts] = useState<Array<{ _id: string; resortName: string }>>([]);
-  const [cottageTypes, setCottageTypes] = useState<Array<{ _id: string; name: string }>>([]);
+  const [resorts, setResorts] = useState<
+    Array<{ _id: string; resortName: string }>
+  >([]);
+  const [cottageTypes, setCottageTypes] = useState<
+    Array<{ _id: string; name: string; resortId?: string }>
+  >([]);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
-  const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+  const apiBase =
+    (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
   const exportToExcel = () => {
     const headers = [
@@ -94,7 +103,9 @@ export default function RoomsTable() {
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: Room[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : roomsDataRef.current;
+    const dataToExport: Room[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : roomsDataRef.current;
 
     const csvContent = [
       headers.join(","),
@@ -112,7 +123,7 @@ export default function RoomsTable() {
           row.children || 0,
           row.bedChargeWeekday,
           row.bedChargeWeekend,
-          `"${disabledRooms.has(row.id) ? 'Disabled' : 'Available'}"`,
+          `"${disabledRooms.has(row.id) ? "Disabled" : "Available"}"`,
         ].join(",");
       }),
     ].join("\n");
@@ -128,48 +139,49 @@ export default function RoomsTable() {
   };
 
   const handleEdit = (room: Room) => {
-    if (!permsRef.current.canEdit) return
+    if (!permsRef.current.canEdit) return;
     setSelectedRoom(room);
     setEditData({ ...room });
     setNewImages([]);
-    setSheetMode('edit')
+    setSheetMode("edit");
     setIsDetailSheetOpen(true);
   };
-
-
 
   const handleRowClick = (room: Room) => {
     setSelectedRoom(room);
     setIsDetailSheetOpen(true);
     setEditData({ ...room });
     setNewImages([]);
-    setSheetMode('view')
+    setSheetMode("view");
   };
 
   const handleFieldChange = (field: keyof Room, value: any) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
+    setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleDeleteImage = async (publicId: string) => {
     if (!permsRef.current.canEdit) return;
     if (!selectedRoom || !selectedRoom._id) {
-      alert('Cannot delete images from static seed data.');
+      alert("Cannot delete images from static seed data.");
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this image?')) {
+    if (!confirm("Are you sure you want to delete this image?")) {
       return;
     }
 
     setDeletingImage(publicId);
     try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${apiBase}/api/rooms/${selectedRoom._id}/images/${encodeURIComponent(publicId)}`, {
-        method: 'DELETE',
-        headers: {
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        }
-      });
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(
+        `${apiBase}/api/rooms/${selectedRoom._id}/images/${encodeURIComponent(publicId)}`,
+        {
+          method: "DELETE",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
 
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error((data && data.error) || res.statusText);
@@ -177,61 +189,85 @@ export default function RoomsTable() {
       // Update local state
       if (data && data.room) {
         const updatedImages = data.room.images || [];
-        setSelectedRoom(prev => prev ? { ...prev, images: updatedImages } : prev);
-        setEditData(prev => ({ ...prev, images: updatedImages }));
-        setRoomsData(prev => prev.map(r =>
-          r._id === selectedRoom._id ? { ...r, images: updatedImages } as Room : r
-        ));
+        setSelectedRoom((prev) =>
+          prev ? { ...prev, images: updatedImages } : prev,
+        );
+        setEditData((prev) => ({ ...prev, images: updatedImages }));
+        setRoomsData((prev) =>
+          prev.map((r) =>
+            r._id === selectedRoom._id
+              ? ({ ...r, images: updatedImages } as Room)
+              : r,
+          ),
+        );
       }
 
-      alert('Image deleted successfully!');
+      alert("Image deleted successfully!");
     } catch (e: any) {
       console.error(e);
-      alert('Failed to delete image: ' + e.message);
+      alert("Failed to delete image: " + e.message);
     } finally {
       setDeletingImage(null);
     }
   };
 
   const handleSave = async () => {
-    if (!permsRef.current.canEdit) return
+    if (!permsRef.current.canEdit) return;
     if (!selectedRoom) return;
     if (!selectedRoom._id) {
-      alert('This room exists only in static seed data. Create it in backend first to enable saving.');
+      alert(
+        "This room exists only in static seed data. Create it in backend first to enable saving.",
+      );
       return;
     }
     const idForApi = selectedRoom._id; // use real Mongo _id
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('admin_token');
-      const statusValue = disabledRooms.has(selectedRoom.id) ? 'disabled' : 'available';
+      const token = localStorage.getItem("admin_token");
+      const statusValue = disabledRooms.has(selectedRoom.id)
+        ? "disabled"
+        : "available";
 
       // Use FormData if there are new images
       if (newImages.length > 0) {
         const formData = new FormData();
         newImages.forEach((file) => {
-          formData.append('images', file);
+          formData.append("images", file);
         });
 
         // Append other fields
-        if (editData.roomName) formData.append('roomName', editData.roomName);
-        if (editData.roomId) formData.append('roomId', editData.roomId);
-        if (editData.resortId) formData.append('resort', editData.resortId);
-        if (editData.cottageTypeId) formData.append('cottageType', editData.cottageTypeId);
-        formData.append('status', statusValue);
-        if (editData.weekdayRate !== undefined) formData.append('weekdayRate', String(editData.weekdayRate));
-        if (editData.weekendRate !== undefined) formData.append('weekendRate', String(editData.weekendRate));
-        if (editData.guests !== undefined) formData.append('guests', String(editData.guests));
-        if (editData.extraGuests !== undefined) formData.append('extraGuests', String(editData.extraGuests));
-        if (editData.children !== undefined) formData.append('children', String(editData.children));
-        if (editData.bedChargeWeekday !== undefined) formData.append('bedChargeWeekday', String(editData.bedChargeWeekday));
-        if (editData.bedChargeWeekend !== undefined) formData.append('bedChargeWeekend', String(editData.bedChargeWeekend));
+        if (editData.roomName) formData.append("roomName", editData.roomName);
+        if (editData.roomId) formData.append("roomId", editData.roomId);
+        if (editData.resortId) formData.append("resort", editData.resortId);
+        if (editData.cottageTypeId)
+          formData.append("cottageType", editData.cottageTypeId);
+        formData.append("status", statusValue);
+        if (editData.weekdayRate !== undefined)
+          formData.append("weekdayRate", String(editData.weekdayRate));
+        if (editData.weekendRate !== undefined)
+          formData.append("weekendRate", String(editData.weekendRate));
+        if (editData.guests !== undefined)
+          formData.append("guests", String(editData.guests));
+        if (editData.extraGuests !== undefined)
+          formData.append("extraGuests", String(editData.extraGuests));
+        if (editData.children !== undefined)
+          formData.append("children", String(editData.children));
+        if (editData.bedChargeWeekday !== undefined)
+          formData.append(
+            "bedChargeWeekday",
+            String(editData.bedChargeWeekday),
+          );
+        if (editData.bedChargeWeekend !== undefined)
+          formData.append(
+            "bedChargeWeekend",
+            String(editData.bedChargeWeekend),
+          );
 
         const res = await fetch(`${apiBase}/api/rooms/${idForApi}`, {
-          method: 'PUT',
-          headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-          body: formData
+          method: "PUT",
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: formData,
         });
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new Error((data && data.error) || res.statusText);
@@ -247,20 +283,28 @@ export default function RoomsTable() {
             guests: srv.guests ?? selectedRoom.guests,
             extraGuests: srv.extraGuests ?? selectedRoom.extraGuests,
             children: srv.children ?? selectedRoom.children,
-            bedChargeWeekday: srv.bedChargeWeekday ?? selectedRoom.bedChargeWeekday,
-            bedChargeWeekend: srv.bedChargeWeekend ?? selectedRoom.bedChargeWeekend,
+            bedChargeWeekday:
+              srv.bedChargeWeekday ?? selectedRoom.bedChargeWeekday,
+            bedChargeWeekend:
+              srv.bedChargeWeekend ?? selectedRoom.bedChargeWeekend,
             images: srv.images || selectedRoom.images,
-            roomImage: (srv.images && srv.images[0] && srv.images[0].url) || selectedRoom.roomImage,
+            roomImage:
+              (srv.images && srv.images[0] && srv.images[0].url) ||
+              selectedRoom.roomImage,
           };
-          setSelectedRoom(prev => prev ? { ...prev, ...mapped } : prev);
-          setEditData(prev => ({ ...prev, ...mapped }));
-          setRoomsData(prev => prev.map(r => (r._id === srv._id ? { ...r, ...mapped } as Room : r)));
+          setSelectedRoom((prev) => (prev ? { ...prev, ...mapped } : prev));
+          setEditData((prev) => ({ ...prev, ...mapped }));
+          setRoomsData((prev) =>
+            prev.map((r) =>
+              r._id === srv._id ? ({ ...r, ...mapped } as Room) : r,
+            ),
+          );
         }
       } else {
         // No new images, use JSON
         const payload: any = {
-          roomName: editData.roomName ?? '',
-          roomId: editData.roomId ?? '',
+          roomName: editData.roomName ?? "",
+          roomId: editData.roomId ?? "",
           resort: editData.resortId ?? undefined,
           cottageType: editData.cottageTypeId ?? undefined,
           status: statusValue,
@@ -274,9 +318,12 @@ export default function RoomsTable() {
         };
 
         const res = await fetch(`${apiBase}/api/rooms/${idForApi}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-          body: JSON.stringify(payload)
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
         });
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new Error((data && data.error) || res.statusText);
@@ -292,21 +339,27 @@ export default function RoomsTable() {
             guests: srv.guests ?? selectedRoom.guests,
             extraGuests: srv.extraGuests ?? selectedRoom.extraGuests,
             children: srv.children ?? selectedRoom.children,
-            bedChargeWeekday: srv.bedChargeWeekday ?? selectedRoom.bedChargeWeekday,
-            bedChargeWeekend: srv.bedChargeWeekend ?? selectedRoom.bedChargeWeekend,
+            bedChargeWeekday:
+              srv.bedChargeWeekday ?? selectedRoom.bedChargeWeekday,
+            bedChargeWeekend:
+              srv.bedChargeWeekend ?? selectedRoom.bedChargeWeekend,
           };
-          setSelectedRoom(prev => prev ? { ...prev, ...mapped } : prev);
-          setEditData(prev => ({ ...prev, ...mapped }));
-          setRoomsData(prev => prev.map(r => (r._id === srv._id ? { ...r, ...mapped } as Room : r)));
+          setSelectedRoom((prev) => (prev ? { ...prev, ...mapped } : prev));
+          setEditData((prev) => ({ ...prev, ...mapped }));
+          setRoomsData((prev) =>
+            prev.map((r) =>
+              r._id === srv._id ? ({ ...r, ...mapped } as Room) : r,
+            ),
+          );
         }
       }
 
-      alert('Saved successfully!');
+      alert("Saved successfully!");
       setNewImages([]);
-      setSheetMode('view')
+      setSheetMode("view");
     } catch (e: any) {
       console.error(e);
-      alert('Save failed: ' + e.message);
+      alert("Save failed: " + e.message);
     } finally {
       setSaving(false);
     }
@@ -318,10 +371,10 @@ export default function RoomsTable() {
     // fetch real rooms (including disabled ones for admin panel)
     (async () => {
       try {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem("admin_token");
         const headers: Record<string, string> = {};
         if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
+          headers["Authorization"] = `Bearer ${token}`;
         }
 
         // Fetch rooms
@@ -331,29 +384,38 @@ export default function RoomsTable() {
           const mapped: Room[] = data.rooms.map((r: any, idx: number) => ({
             id: r._id || String(idx + 1),
             _id: r._id,
-            resort: (r.resort && (r.resort.resortName || r.resort.name)) || r.resortName || '—',
-            resortId: (r.resort && r.resort._id) || r.resort || '',
-            cottageType: (r.cottageType && r.cottageType.name) || r.cottageTypeName || '—',
-            cottageTypeId: (r.cottageType && r.cottageType._id) || r.cottageType || '',
-            roomId: r.roomId || r.roomNumber || '',
-            roomName: r.roomName || r.roomNumber || r.roomId || `Room ${idx + 1}`,
-            roomImage: (r.images && r.images[0] && r.images[0].url) || '/img/placeholder.jpg',
+            resort:
+              (r.resort && (r.resort.resortName || r.resort.name)) ||
+              r.resortName ||
+              "—",
+            resortId: (r.resort && r.resort._id) || r.resort || "",
+            cottageType:
+              (r.cottageType && r.cottageType.name) || r.cottageTypeName || "—",
+            cottageTypeId:
+              (r.cottageType && r.cottageType._id) || r.cottageType || "",
+            roomId: r.roomId || r.roomNumber || "",
+            roomName:
+              r.roomName || r.roomNumber || r.roomId || `Room ${idx + 1}`,
+            roomImage:
+              (r.images && r.images[0] && r.images[0].url) ||
+              "/img/placeholder.jpg",
             images: r.images || [],
             weekdayRate: r.weekdayRate || r.price || 0,
             weekendRate: r.weekendRate || r.price || 0,
             guests: r.guests || r.noOfGuests || 0,
             extraGuests: r.extraGuests || 0,
             children: r.children || r.noOfChildren || 0,
-            bedChargeWeekday: r.bedChargeWeekday || r.chargesPerBedWeekDays || 0,
+            bedChargeWeekday:
+              r.bedChargeWeekday || r.chargesPerBedWeekDays || 0,
             bedChargeWeekend: r.bedChargeWeekend || r.chargesPerBedWeekEnd || 0,
-            status: r.status || 'available',
+            status: r.status || "available",
           }));
           setRoomsData(mapped);
 
           // Initialize disabledRooms set based on status from backend
           const disabled = new Set<string>();
-          mapped.forEach(room => {
-            if (room.status === 'disabled') {
+          mapped.forEach((room) => {
+            if (room.status === "disabled") {
               disabled.add(room.id);
             }
           });
@@ -363,24 +425,39 @@ export default function RoomsTable() {
         // Fetch resorts
         const resortsRes = await fetch(`${apiBase}/api/resorts`, { headers });
         const resortsData = await resortsRes.json().catch(() => null);
-        if (resortsRes.ok && resortsData && Array.isArray(resortsData.resorts)) {
-          setResorts(resortsData.resorts.map((r: any) => ({
-            _id: r._id || r.id,
-            resortName: r.resortName || r.name
-          })));
+        if (
+          resortsRes.ok &&
+          resortsData &&
+          Array.isArray(resortsData.resorts)
+        ) {
+          setResorts(
+            resortsData.resorts.map((r: any) => ({
+              _id: r._id || r.id,
+              resortName: r.resortName || r.name,
+            })),
+          );
         }
 
         // Fetch cottage types
-        const cottageTypesRes = await fetch(`${apiBase}/api/cottage-types`, { headers });
+        const cottageTypesRes = await fetch(`${apiBase}/api/cottage-types`, {
+          headers,
+        });
         const cottageTypesData = await cottageTypesRes.json().catch(() => null);
-        if (cottageTypesRes.ok && cottageTypesData && Array.isArray(cottageTypesData.cottageTypes)) {
-          setCottageTypes(cottageTypesData.cottageTypes.map((ct: any) => ({
-            _id: ct._id,
-            name: ct.name
-          })));
+        if (
+          cottageTypesRes.ok &&
+          cottageTypesData &&
+          Array.isArray(cottageTypesData.cottageTypes)
+        ) {
+          setCottageTypes(
+            cottageTypesData.cottageTypes.map((ct: any) => ({
+              _id: ct._id,
+              name: ct.name,
+              resortId: ct.resort?._id || ct.resort,
+            })),
+          );
         }
       } catch (e) {
-        console.warn('Failed to load rooms; using static data');
+        console.warn("Failed to load rooms; using static data");
       } finally {
         setLoadingRooms(false);
       }
@@ -465,17 +542,25 @@ export default function RoomsTable() {
 
     const handleButtonClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const roomId = target.getAttribute('data-id') || target.closest('button')?.getAttribute('data-id');
-      const room = roomsDataRef.current.find(r => r.id === roomId);
+      const roomId =
+        target.getAttribute("data-id") ||
+        target.closest("button")?.getAttribute("data-id");
+      const room = roomsDataRef.current.find((r) => r.id === roomId);
 
       if (room) {
         // Stop propagation to prevent row click when button is clicked
         event.stopPropagation();
 
-        if (target.classList.contains('view-btn') || target.closest('.view-btn')) {
+        if (
+          target.classList.contains("view-btn") ||
+          target.closest(".view-btn")
+        ) {
           handleRowClick(room);
-        } else if (target.classList.contains('edit-btn') || target.closest('.edit-btn')) {
-          if (!permsRef.current.canEdit) return
+        } else if (
+          target.classList.contains("edit-btn") ||
+          target.closest(".edit-btn")
+        ) {
+          if (!permsRef.current.canEdit) return;
           handleEdit(room);
         }
       }
@@ -485,12 +570,12 @@ export default function RoomsTable() {
       const target = event.target as HTMLElement;
 
       // Don't trigger row click if a button was clicked
-      if (target.closest('.view-btn, .edit-btn')) {
+      if (target.closest(".view-btn, .edit-btn")) {
         return;
       }
 
-      const row = target.closest('tr');
-      if (row && row.parentElement?.tagName === 'TBODY') {
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
         const rowIndex = Array.from(row.parentElement.children).indexOf(row);
         const room = roomsDataRef.current[rowIndex];
         if (room) {
@@ -499,12 +584,12 @@ export default function RoomsTable() {
       }
     };
 
-    document.addEventListener('click', handleButtonClick);
-    document.addEventListener('click', handleTableRowClick);
+    document.addEventListener("click", handleButtonClick);
+    document.addEventListener("click", handleTableRowClick);
 
     return () => {
-      document.removeEventListener('click', handleButtonClick);
-      document.removeEventListener('click', handleTableRowClick);
+      document.removeEventListener("click", handleButtonClick);
+      document.removeEventListener("click", handleTableRowClick);
     };
   }, []);
 
@@ -515,8 +600,9 @@ export default function RoomsTable() {
       orderable: false,
       searchable: false,
       render: (_data: any, _type: any, _row: any, meta: any) => {
-        return meta.row + 1;
-      }
+        const displayIndex = meta.settings?.aiDisplay?.indexOf(meta.row);
+        return (displayIndex > -1 ? displayIndex : meta.row) + 1;
+      },
     },
     { data: "resort", title: "Resort" },
     { data: "cottageType", title: "Cottage Type" },
@@ -586,7 +672,9 @@ export default function RoomsTable() {
             >
               View
             </button>
-            ${perms.canEdit ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -602,13 +690,15 @@ export default function RoomsTable() {
                 cursor: pointer;
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                ${isDisabled ? 'opacity: 0.5;' : ''}
+                ${isDisabled ? "opacity: 0.5;" : ""}
               "
               onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 6px rgba(0, 0, 0, 0.15)'"
               onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'"
             >
               Edit
-            </button>` : ''}
+            </button>`
+                : ""
+            }
           </div>
         `;
       },
@@ -742,401 +832,625 @@ export default function RoomsTable() {
         }
       `}</style>
       <div className="w-full max-w-full overflow-hidden rooms-table-container">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-slate-800">Rooms Table</h2>
-        <button
-          onClick={() => (perms.canExport ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
-          disabled={!perms.canExport}
-          title={
-            perms.canExport
-              ? "Export to Excel"
-              : "You do not have permission to export data"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-slate-800">Rooms Table</h2>
+          <button
+            onClick={() => (perms.canExport ? exportToExcel() : null)}
+            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+            disabled={!perms.canExport}
+            title={
+              perms.canExport
+                ? "Export to Excel"
+                : "You do not have permission to export data"
+            }
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
-      </div>
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Export to Excel
+          </button>
+        </div>
 
-      <div ref={tableRef} className="w-full">
-        {loadingRooms && <div className="p-4 text-sm text-gray-500">Loading rooms...</div>}
-        <DataTable
-          ref={dtRef}
-          data={roomsData}
-          columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollCollapse: true,
-            scrollY: "400px",
-            layout: {
-              topStart: "buttons",
-              bottom1Start: "pageLength",
-            },
-            buttons: [
-              {
-                extend: "colvis",
-                text: "Column Visibility",
-                collectionLayout: "fixed two-column",
+        <div ref={tableRef} className="w-full">
+          {loadingRooms && (
+            <div className="p-4 text-sm text-gray-500">Loading rooms...</div>
+          )}
+          <DataTable
+            ref={dtRef}
+            data={roomsData}
+            columns={columns}
+            className="display nowrap w-full border border-gray-400"
+            options={{
+              pageLength: 10,
+              lengthMenu: [5, 10, 25, 50, 100],
+              order: [[0, "asc"]],
+              searching: true,
+              paging: true,
+              info: true,
+              scrollX: true,
+              scrollCollapse: true,
+              scrollY: "400px",
+              layout: {
+                topStart: "buttons",
+                bottom1Start: "pageLength",
               },
-            ],
-            columnControl: ["order", ["orderAsc", "orderDesc", "spacer", "search"]],
-            rowCallback: (row: any, data: any) => {
-              if (disabledRooms.has(data.id)) {
-                row.classList.add('disabled-row');
-              } else {
-                row.classList.remove('disabled-row');
-              }
-              return row;
-            },
-          }}
-        />
-      </div>
+              buttons: [
+                {
+                  extend: "colvis",
+                  text: "Column Visibility",
+                  collectionLayout: "fixed two-column",
+                },
+              ],
+              columnControl: [
+                "order",
+                ["orderAsc", "orderDesc", "spacer", "search"],
+              ],
+              initComplete: function () {
+                const wrapper = (this as any).api().table().container();
+                const topRow = wrapper.querySelector(
+                  ".dt-layout-row:first-child",
+                );
+                if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                  const btn = document.createElement("button");
+                  btn.className = "reset-filters-btn";
+                  btn.textContent = "Reset Filters";
+                  btn.style.cssText =
+                    "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                  btn.onmouseenter = () => {
+                    btn.style.background = "#e2e8f0";
+                  };
+                  btn.onmouseleave = () => {
+                    btn.style.background = "#f8fafc";
+                  };
+                  btn.onclick = () => {
+                    const api = (this as any).api();
+                    const container = api.table().container();
 
-      {/* Room Details Sheet */}
-      <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
-          <SheetHeader className="flex-shrink-0">
-            <SheetTitle>Room Details</SheetTitle>
-            <SheetDescription>
-              Complete information about the selected room
-            </SheetDescription>
-          </SheetHeader>
+                    // 1. Clear global search and column searches
+                    api.search("").columns().search("");
 
-          {selectedRoom && (
-            <>
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Room ID</Label>
-                    {sheetMode === 'edit' ? (
-                      <input
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.roomId || ''}
-                        onChange={(e) => handleFieldChange('roomId', e.target.value)}
-                        placeholder="e.g., JS1, VM1"
-                      />
-                    ) : (
-                      <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                        <span className="text-sm text-gray-900">{selectedRoom.roomId}</span>
-                      </div>
-                    )}
-                  </div>
+                    // 2. Clear Column Control plugin filters (API method)
+                    if (api.columns().ccSearchClear) {
+                      (api.columns() as any).ccSearchClear();
+                    }
 
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Room Name</Label>
-                    <input
-                      className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                      value={editData.roomName || ''}
-                      onChange={(e) => handleFieldChange('roomName', e.target.value)}
-                      disabled={sheetMode === 'view'}
-                    />
-                  </div>
+                    // 3. Clear all inputs and trigger events to sync UI
+                    container
+                      .querySelectorAll("input")
+                      .forEach((input: any) => {
+                        input.value = "";
+                        input.dispatchEvent(
+                          new Event("input", { bubbles: true }),
+                        );
+                        input.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      });
 
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Resort</Label>
-                    {sheetMode === 'edit' ? (
-                      <select
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.resortId || selectedRoom.resortId || ''}
-                        onChange={(e) => handleFieldChange('resortId' as keyof Room, e.target.value)}
-                      >
-                        <option value="">-- Select Resort --</option>
-                        {resorts.map((resort) => (
-                          <option key={resort._id} value={resort._id}>
-                            {resort.resortName}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                        <span className="text-sm text-gray-900">{selectedRoom.resort}</span>
-                      </div>
-                    )}
-                  </div>
+                    // 4. Clear all selects and trigger events
+                    container
+                      .querySelectorAll("select")
+                      .forEach((select: any) => {
+                        if (select.options.length > 0) {
+                          select.selectedIndex = 0;
+                          select.dispatchEvent(
+                            new Event("change", { bubbles: true }),
+                          );
+                        }
+                      });
 
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Cottage Type</Label>
-                    {sheetMode === 'edit' ? (
-                      <select
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.cottageTypeId || selectedRoom.cottageTypeId || ''}
-                        onChange={(e) => handleFieldChange('cottageTypeId' as keyof Room, e.target.value)}
-                      >
-                        <option value="">-- Select Cottage Type --</option>
-                        {cottageTypes.map((ct) => (
-                          <option key={ct._id} value={ct._id}>
-                            {ct.name}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                        <span className="text-sm text-gray-900">{selectedRoom.cottageType}</span>
-                      </div>
-                    )}
-                  </div>
+                    // 5. Force remove active state from column header buttons
+                    container
+                      .querySelectorAll(".dtcc-button_active")
+                      .forEach((btn: any) => {
+                        btn.classList.remove("dtcc-button_active");
+                      });
 
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Room Images</Label>
-                    <div className="mt-1 space-y-2">
-                      {/* Display existing images */}
-                      {selectedRoom.images && selectedRoom.images.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2">
-                          {selectedRoom.images.map((img, idx) => (
-                            <div key={idx} className="relative group">
-                              <img
-                                src={img.url}
-                                alt={`${selectedRoom.roomName} ${idx + 1}`}
-                                className="w-full h-32 object-cover rounded-md border"
-                              />
-                              {sheetMode === 'edit' && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteImage(img.public_id)}
-                                  disabled={deletingImage === img.public_id}
-                                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-                                  title="Delete image"
-                                >
-                                  {deletingImage === img.public_id ? (
-                                    <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                  ) : (
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                  )}
-                                </button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <img
-                          src={selectedRoom.roomImage}
-                          alt={selectedRoom.roomName}
-                          className="w-full h-48 object-cover rounded-md border"
-                        />
-                      )}
+                    // 6. Draw once to sync everything
+                    api.draw();
+                  };
+                  topRow.appendChild(btn);
+                }
+              },
+              rowCallback: (row: any, data: any) => {
+                if (disabledRooms.has(data.id)) {
+                  row.classList.add("disabled-row");
+                } else {
+                  row.classList.remove("disabled-row");
+                }
+                return row;
+              },
+            }}
+          />
+        </div>
 
-                      {/* Upload new images in edit mode */}
-                      {sheetMode === 'edit' && (
-                        <div className="mt-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={(e) => {
-                              const files = e.target.files;
-                              if (files) {
-                                setNewImages(Array.from(files));
-                              }
-                            }}
-                            className="w-full p-2 text-sm border rounded-md"
-                          />
-                          {newImages.length > 0 && (
-                            <p className="text-xs text-green-600 mt-1">
-                              {newImages.length} new image(s) selected
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-500 mt-1">
-                            Select new images to add (will be appended to existing images)
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+        {/* Room Details Sheet */}
+        <Sheet open={isDetailSheetOpen} onOpenChange={setIsDetailSheetOpen}>
+          <SheetContent className="w-[400px] sm:w-[700px] lg:w-[800px] flex flex-col">
+            <SheetHeader className="flex-shrink-0">
+              <SheetTitle>Room Details</SheetTitle>
+              <SheetDescription>
+                Complete information about the selected room
+              </SheetDescription>
+            </SheetHeader>
 
-                  <div className="grid grid-cols-2 gap-4">
+            {selectedRoom && (
+              <>
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <div className="space-y-4">
                     <div>
-                      <Label className="text-sm font-medium text-gray-700">Weekday Rate</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.weekdayRate ?? ''}
-                        onChange={(e) => handleFieldChange('weekdayRate', Number(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Weekend Rate</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.weekendRate ?? ''}
-                        onChange={(e) => handleFieldChange('weekendRate', Number(e.target.value))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Guests</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.guests ?? ''}
-                        onChange={(e) => handleFieldChange('guests', Number(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Extra Guests</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.extraGuests ?? ''}
-                        onChange={(e) => handleFieldChange('extraGuests', Number(e.target.value))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Children</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.children ?? ''}
-                        onChange={(e) => handleFieldChange('children', Number(e.target.value))}
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Bed Charge (Weekday)</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.bedChargeWeekday ?? ''}
-                        onChange={(e) => handleFieldChange('bedChargeWeekday', Number(e.target.value))}
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Bed Charge (Weekend)</Label>
-                      <input
-                        type="number"
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={editData.bedChargeWeekend ?? ''}
-                        onChange={(e) => handleFieldChange('bedChargeWeekend', Number(e.target.value))}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700">Status</Label>
-                    {sheetMode === 'edit' ? (
-                      <select
-                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
-                        value={disabledRooms.has(selectedRoom.id) ? 'disabled' : 'available'}
-                        onChange={(e) => {
-                          const newStatus = e.target.value;
-                          if (newStatus === 'disabled') {
-                            setDisabledRooms(prev => new Set([...prev, selectedRoom.id]));
-                          } else {
-                            setDisabledRooms(prev => {
-                              const newSet = new Set(prev);
-                              newSet.delete(selectedRoom.id);
-                              return newSet;
-                            });
+                      <Label className="text-sm font-medium text-gray-700">
+                        Room ID
+                      </Label>
+                      {sheetMode === "edit" ? (
+                        <input
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.roomId || ""}
+                          onChange={(e) =>
+                            handleFieldChange("roomId", e.target.value)
                           }
-                          handleFieldChange('status' as keyof Room, newStatus);
-                        }}
-                      >
-                        <option value="available">Available</option>
-                        <option value="disabled">Disabled</option>
-                      </select>
-                    ) : (
-                      <div className="mt-1">
-                        <Badge
-                          variant={disabledRooms.has(selectedRoom.id) ? "destructive" : "default"}
-                          className="px-2 py-1"
+                          placeholder="e.g., JS1, VM1"
+                        />
+                      ) : (
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <span className="text-sm text-gray-900">
+                            {selectedRoom.roomId}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Room Name
+                      </Label>
+                      <input
+                        className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                        value={editData.roomName || ""}
+                        onChange={(e) =>
+                          handleFieldChange("roomName", e.target.value)
+                        }
+                        disabled={sheetMode === "view"}
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Resort
+                      </Label>
+                      {sheetMode === "edit" ? (
+                        <select
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={
+                            editData.resortId || selectedRoom.resortId || ""
+                          }
+                          onChange={(e) => {
+                            handleFieldChange(
+                              "resortId" as keyof Room,
+                              e.target.value,
+                            );
+                            handleFieldChange(
+                              "cottageTypeId" as keyof Room,
+                              "",
+                            );
+                          }}
                         >
-                          {disabledRooms.has(selectedRoom.id) ? "Disabled" : "Available"}
-                        </Badge>
+                          <option value="">-- Select Resort --</option>
+                          {resorts.map((resort) => (
+                            <option key={resort._id} value={resort._id}>
+                              {resort.resortName}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <span className="text-sm text-gray-900">
+                            {selectedRoom.resort}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Cottage Type
+                      </Label>
+                      {sheetMode === "edit" ? (
+                        <select
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={
+                            editData.cottageTypeId ||
+                            selectedRoom.cottageTypeId ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "cottageTypeId" as keyof Room,
+                              e.target.value,
+                            )
+                          }
+                        >
+                          <option value="">-- Select Cottage Type --</option>
+                          {cottageTypes
+                            .filter((ct) => {
+                              const currentResortId =
+                                editData.resortId !== undefined
+                                  ? editData.resortId
+                                  : selectedRoom.resortId;
+                              return (
+                                !currentResortId ||
+                                ct.resortId === currentResortId
+                              );
+                            })
+                            .map((ct) => (
+                              <option key={ct._id} value={ct._id}>
+                                {ct.name}
+                              </option>
+                            ))}
+                        </select>
+                      ) : (
+                        <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                          <span className="text-sm text-gray-900">
+                            {selectedRoom.cottageType}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Room Images
+                      </Label>
+                      <div className="mt-1 space-y-2">
+                        {/* Display existing images */}
+                        {selectedRoom.images &&
+                        selectedRoom.images.length > 0 ? (
+                          <div className="grid grid-cols-2 gap-2">
+                            {selectedRoom.images.map((img, idx) => (
+                              <div key={idx} className="relative group">
+                                <img
+                                  src={img.url}
+                                  alt={`${selectedRoom.roomName} ${idx + 1}`}
+                                  className="w-full h-32 object-cover rounded-md border"
+                                />
+                                {sheetMode === "edit" && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleDeleteImage(img.public_id)
+                                    }
+                                    disabled={deletingImage === img.public_id}
+                                    className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                                    title="Delete image"
+                                  >
+                                    {deletingImage === img.public_id ? (
+                                      <svg
+                                        className="w-4 h-4 animate-spin"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <circle
+                                          className="opacity-25"
+                                          cx="12"
+                                          cy="12"
+                                          r="10"
+                                          stroke="currentColor"
+                                          strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                          className="opacity-75"
+                                          fill="currentColor"
+                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                      </svg>
+                                    ) : (
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"
+                                        />
+                                      </svg>
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <img
+                            src={selectedRoom.roomImage}
+                            alt={selectedRoom.roomName}
+                            className="w-full h-48 object-cover rounded-md border"
+                          />
+                        )}
+
+                        {/* Upload new images in edit mode */}
+                        {sheetMode === "edit" && (
+                          <div className="mt-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={(e) => {
+                                const files = e.target.files;
+                                if (files) {
+                                  setNewImages(Array.from(files));
+                                }
+                              }}
+                              className="w-full p-2 text-sm border rounded-md"
+                            />
+                            {newImages.length > 0 && (
+                              <p className="text-xs text-green-600 mt-1">
+                                {newImages.length} new image(s) selected
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">
+                              Select new images to add (will be appended to
+                              existing images)
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Weekday Rate
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.weekdayRate ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "weekdayRate",
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Weekend Rate
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.weekendRate ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "weekendRate",
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Guests
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.guests ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange("guests", Number(e.target.value))
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Extra Guests
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.extraGuests ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "extraGuests",
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Children
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.children ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "children",
+                              Number(e.target.value),
+                            )
+                          }
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Bed Charge (Weekday)
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.bedChargeWeekday ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "bedChargeWeekday",
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">
+                          Bed Charge (Weekend)
+                        </Label>
+                        <input
+                          type="number"
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={editData.bedChargeWeekend ?? ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "bedChargeWeekend",
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Status
+                      </Label>
+                      {sheetMode === "edit" ? (
+                        <select
+                          className="mt-1 w-full p-2 bg-white rounded-md border text-sm"
+                          value={
+                            disabledRooms.has(selectedRoom.id)
+                              ? "disabled"
+                              : "available"
+                          }
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
+                            if (newStatus === "disabled") {
+                              setDisabledRooms(
+                                (prev) => new Set([...prev, selectedRoom.id]),
+                              );
+                            } else {
+                              setDisabledRooms((prev) => {
+                                const newSet = new Set(prev);
+                                newSet.delete(selectedRoom.id);
+                                return newSet;
+                              });
+                            }
+                            handleFieldChange(
+                              "status" as keyof Room,
+                              newStatus,
+                            );
+                          }}
+                        >
+                          <option value="available">Available</option>
+                          <option value="disabled">Disabled</option>
+                        </select>
+                      ) : (
+                        <div className="mt-1">
+                          <Badge
+                            variant={
+                              disabledRooms.has(selectedRoom.id)
+                                ? "destructive"
+                                : "default"
+                            }
+                            className="px-2 py-1"
+                          >
+                            {disabledRooms.has(selectedRoom.id)
+                              ? "Disabled"
+                              : "Available"}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Fixed Action Buttons */}
-              <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === 'view' ? (
-                  <>
-                    <Button
-                      onClick={() => setSheetMode('edit')}
-                      disabled={saving || !perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      disabled={saving}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSheetMode('view')}
-                      disabled={saving}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleSave}
-                      disabled={saving || !perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to update' : undefined}
-                    >
-                      {saving ? 'Saving...' : 'Save'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDetailSheetOpen(false)}
-                      disabled={saving}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Close
-                    </Button>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </div>
+                {/* Fixed Action Buttons */}
+                <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
+                  {sheetMode === "view" ? (
+                    <>
+                      <Button
+                        onClick={() => setSheetMode("edit")}
+                        disabled={saving || !perms.canEdit}
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to edit"
+                            : undefined
+                        }
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        disabled={saving}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSheetMode("view")}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleSave}
+                        disabled={saving || !perms.canEdit}
+                        title={
+                          !perms.canEdit
+                            ? "You do not have permission to update"
+                            : undefined
+                        }
+                      >
+                        {saving ? "Saving..." : "Save"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDetailSheetOpen(false)}
+                        disabled={saving}
+                        className="flex-1 sm:flex-none"
+                      >
+                        Close
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </>
   );
 }

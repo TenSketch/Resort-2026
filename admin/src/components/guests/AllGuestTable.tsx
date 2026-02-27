@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 DataTable.use(DT);
 
@@ -669,8 +670,10 @@ export default function GuestTable() {
     {
       title: "S.No",
       data: null,
-      render: (_data: any, _type: any, _row: any, meta: any) =>
-        meta.row + 1 + meta.settings._iDisplayStart,
+      render: (_data: any, _type: any, _row: any, meta: any) => {
+        const displayIndex = meta.settings?.aiDisplay?.indexOf(meta.row);
+        return (displayIndex > -1 ? displayIndex : meta.row) + 1;
+      },
       orderable: false,
       searchable: false,
     },
@@ -1007,6 +1010,73 @@ export default function GuestTable() {
                   "order",
                   ["orderAsc", "orderDesc", "spacer", "search"],
                 ],
+                initComplete: function () {
+                  const wrapper = (this as any).api().table().container();
+                  const topRow = wrapper.querySelector(
+                    ".dt-layout-row:first-child",
+                  );
+                  if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                    const btn = document.createElement("button");
+                    btn.className = "reset-filters-btn";
+                    btn.textContent = "Reset Filters";
+                    btn.style.cssText =
+                      "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                    btn.onmouseenter = () => {
+                      btn.style.background = "#e2e8f0";
+                    };
+                    btn.onmouseleave = () => {
+                      btn.style.background = "#f8fafc";
+                    };
+                    btn.onclick = () => {
+                      const api = (this as any).api();
+                      const container = api.table().container();
+
+                      // 1. Clear global search and column searches
+                      api.search("").columns().search("");
+
+                      // 2. Clear Column Control plugin filters (API method)
+                      if (api.columns().ccSearchClear) {
+                        (api.columns() as any).ccSearchClear();
+                      }
+
+                      // 3. Clear all inputs and trigger events to sync UI
+                      container
+                        .querySelectorAll("input")
+                        .forEach((input: any) => {
+                          input.value = "";
+                          input.dispatchEvent(
+                            new Event("input", { bubbles: true }),
+                          );
+                          input.dispatchEvent(
+                            new Event("change", { bubbles: true }),
+                          );
+                        });
+
+                      // 4. Clear all selects and trigger events
+                      container
+                        .querySelectorAll("select")
+                        .forEach((select: any) => {
+                          if (select.options.length > 0) {
+                            select.selectedIndex = 0;
+                            select.dispatchEvent(
+                              new Event("change", { bubbles: true }),
+                            );
+                          }
+                        });
+
+                      // 5. Force remove active state from column header buttons
+                      container
+                        .querySelectorAll(".dtcc-button_active")
+                        .forEach((btn: any) => {
+                          btn.classList.remove("dtcc-button_active");
+                        });
+
+                      // 6. Draw once to sync everything
+                      api.draw();
+                    };
+                    topRow.appendChild(btn);
+                  }
+                },
               }}
             />
           )}
@@ -1230,13 +1300,9 @@ export default function GuestTable() {
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="dob">Date of Birth</Label>
-                          <Input
-                            id="dob"
-                            type="date"
+                          <DatePickerField
                             value={formData.dob || ""}
-                            onChange={(e) =>
-                              handleInputChange("dob", e.target.value)
-                            }
+                            onChange={(val) => handleInputChange("dob", val)}
                           />
                         </div>
                         <div className="grid gap-2">

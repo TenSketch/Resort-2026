@@ -25,6 +25,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
+import { DatePickerField } from "@/components/ui/date-picker";
 
 DataTable.use(DT);
 
@@ -80,7 +81,7 @@ export default function AllTentBookings() {
   useEffect(() => {
     permsRef.current = perms;
   }, [perms]);
-  
+
   // Sync editForm with selected booking
   useEffect(() => {
     if (selected) {
@@ -359,7 +360,9 @@ export default function AllTentBookings() {
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TentBooking[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : bookingsRef.current;
+    const dataToExport: TentBooking[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : bookingsRef.current;
 
     const csv = [
       headers.join(","),
@@ -436,8 +439,6 @@ export default function AllTentBookings() {
       setIsSaving(false);
     }
   };
-
-
 
   return (
     <div className="w-full max-w-full overflow-hidden">
@@ -585,6 +586,67 @@ export default function AllTentBookings() {
               "order",
               ["orderAsc", "orderDesc", "spacer", "search"],
             ],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
+
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
           }}
         />
       </div>
@@ -628,7 +690,9 @@ export default function AllTentBookings() {
                         <div className="md:col-span-2">
                           <Label className="text-xs">Address</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border">
-                            <span className="text-sm">{formatAddress(selected)}</span>
+                            <span className="text-sm">
+                              {formatAddress(selected)}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -657,13 +721,17 @@ export default function AllTentBookings() {
                         <div>
                           <Label className="text-xs">Tent Spot</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{getTentSpotName(selected)}</span>
+                            <span className="text-sm">
+                              {getTentSpotName(selected)}
+                            </span>
                           </div>
                         </div>
                         <div>
                           <Label className="text-xs">Tents</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{getTentIds(selected)}</span>
+                            <span className="text-sm">
+                              {getTentIds(selected)}
+                            </span>
                           </div>
                         </div>
                         <div>
@@ -706,13 +774,17 @@ export default function AllTentBookings() {
                         <div>
                           <Label className="text-xs">Guests</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.guests ?? 0}</span>
+                            <span className="text-sm">
+                              {selected.guests ?? 0}
+                            </span>
                           </div>
                         </div>
                         <div>
                           <Label className="text-xs">Children</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.children ?? 0}</span>
+                            <span className="text-sm">
+                              {selected.children ?? 0}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -731,7 +803,9 @@ export default function AllTentBookings() {
                         <div>
                           <Label className="text-xs">Payment Status</Label>
                           <div className="mt-1 p-2 bg-gray-50 rounded border text-center">
-                            <span className="text-sm">{selected.paymentStatus}</span>
+                            <span className="text-sm">
+                              {selected.paymentStatus}
+                            </span>
                           </div>
                         </div>
                         <div>
@@ -791,30 +865,28 @@ export default function AllTentBookings() {
                         </div>
                         <div>
                           <Label>Check In</Label>
-                          <input
-                            type="date"
-                            className="mt-1 p-2 w-full border rounded"
+                          <DatePickerField
                             value={editForm?.checkinDate?.split("T")[0] || ""}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setEditForm((prev) => ({
                                 ...(prev || {}),
-                                checkinDate: e.target.value,
+                                checkinDate: val,
                               }))
                             }
+                            className="mt-1"
                           />
                         </div>
                         <div>
                           <Label>Check Out</Label>
-                          <input
-                            type="date"
-                            className="mt-1 p-2 w-full border rounded"
+                          <DatePickerField
                             value={editForm?.checkoutDate?.split("T")[0] || ""}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setEditForm((prev) => ({
                                 ...(prev || {}),
-                                checkoutDate: e.target.value,
+                                checkoutDate: val,
                               }))
                             }
+                            className="mt-1"
                           />
                         </div>
                         <div>

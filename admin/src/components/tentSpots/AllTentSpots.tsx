@@ -10,7 +10,7 @@ import "datatables.net-fixedcolumns";
 import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 import { useEffect, useRef, useState } from "react";
-import { usePermissions } from '@/lib/AdminProvider'
+import { usePermissions } from "@/lib/AdminProvider";
 import {
   Sheet,
   SheetContent,
@@ -21,7 +21,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
 
 DataTable.use(DT);
 
@@ -48,13 +47,13 @@ interface TentSpot {
 export default function AllTentSpotsTable() {
   const tableRef = useRef(null);
   const dtRef = useRef<any>(null);
-  const perms = usePermissions()
-  const permsRef = useRef(perms)
+  const perms = usePermissions();
+  const permsRef = useRef(perms);
   const [isDetailSheetOpen, setIsDetailSheetOpen] = useState(false);
-  const [sheetMode, setSheetMode] = useState<'view' | 'edit'>('view')
+  const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [selectedSpot, setSelectedSpot] = useState<TentSpot | null>(null);
   const [tentSpots, setTentSpots] = useState<TentSpot[]>([]);
-  const tentSpotsRef = useRef<TentSpot[]>([])
+  const tentSpotsRef = useRef<TentSpot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -76,7 +75,8 @@ export default function AllTentSpotsTable() {
 
   // Fetch tent spots from backend
   useEffect(() => {
-    const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+    const apiBase =
+      (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
     const fetchTentSpots = async () => {
       setIsLoading(true);
       setLoadError(null);
@@ -84,33 +84,35 @@ export default function AllTentSpotsTable() {
         const res = await fetch(`${apiBase}/api/tent-spots`);
         if (!res.ok) {
           const e = await res.json().catch(() => ({}));
-          throw new Error(e.error || `Failed to fetch tent spots (status ${res.status})`);
+          throw new Error(
+            e.error || `Failed to fetch tent spots (status ${res.status})`,
+          );
         }
         const data = await res.json();
         const list = Array.isArray(data.tentSpots) ? data.tentSpots : [];
         const mapped = list.map((t: any, idx: number) => ({
           id: t._id,
           sno: idx + 1,
-          spotName: t.spotName || '',
-          tentIdPrefix: t.tentIdPrefix || '',
-          location: t.location || '',
-          slugUrl: t.slugUrl || '',
-          contactPerson: t.contactPerson || '',
-          contactNo: t.contactNo || '',
-          email: t.email || '',
-          rules: t.rules || '',
-          accommodation: t.accommodation || '',
-          foodAvailable: t.foodAvailable || '',
-          kidsStay: t.kidsStay || '',
-          womenStay: t.womenStay || '',
-          checkIn: t.checkIn || '',
-          checkOut: t.checkOut || '',
+          spotName: t.spotName || "",
+          tentIdPrefix: t.tentIdPrefix || "",
+          location: t.location || "",
+          slugUrl: t.slugUrl || "",
+          contactPerson: t.contactPerson || "",
+          contactNo: t.contactNo || "",
+          email: t.email || "",
+          rules: t.rules || "",
+          accommodation: t.accommodation || "",
+          foodAvailable: t.foodAvailable || "",
+          kidsStay: t.kidsStay || "",
+          womenStay: t.womenStay || "",
+          checkIn: t.checkIn || "",
+          checkOut: t.checkOut || "",
           isActive: !t.isDisabled,
         }));
         setTentSpots(mapped);
       } catch (err: any) {
-        console.error('Failed to load tent spots', err);
-        setLoadError(err.message || 'Failed to load tent spots');
+        console.error("Failed to load tent spots", err);
+        setLoadError(err.message || "Failed to load tent spots");
       } finally {
         setIsLoading(false);
       }
@@ -119,8 +121,12 @@ export default function AllTentSpotsTable() {
     fetchTentSpots();
   }, []);
 
-  useEffect(() => { tentSpotsRef.current = tentSpots }, [tentSpots])
-  useEffect(() => { permsRef.current = perms }, [perms])
+  useEffect(() => {
+    tentSpotsRef.current = tentSpots;
+  }, [tentSpots]);
+  useEffect(() => {
+    permsRef.current = perms;
+  }, [perms]);
 
   const exportToExcel = () => {
     const headers = [
@@ -139,11 +145,13 @@ export default function AllTentSpotsTable() {
       "Women Stay",
       "Check-in Time",
       "Check-out Time",
-      "Status"
+      "Status",
     ];
 
     const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TentSpot[] = dtApi ? dtApi.rows({ search: 'applied' }).data().toArray() : tentSpots;
+    const dataToExport: TentSpot[] = dtApi
+      ? dtApi.rows({ search: "applied" }).data().toArray()
+      : tentSpots;
 
     const csvContent = [
       headers.join(","),
@@ -157,16 +165,16 @@ export default function AllTentSpotsTable() {
           `"${spot.contactPerson.replace(/"/g, '""')}"`,
           `"${spot.contactNo}"`,
           `"${spot.email}"`,
-          `"${spot.rules.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          `"${spot.rules.replace(/"/g, '""').replace(/\n/g, " ")}"`,
           `"${spot.accommodation.replace(/"/g, '""')}"`,
           `"${spot.foodAvailable.replace(/"/g, '""')}"`,
           `"${spot.kidsStay.replace(/"/g, '""')}"`,
           `"${spot.womenStay.replace(/"/g, '""')}"`,
           `"${spot.checkIn}"`,
           `"${spot.checkOut}"`,
-          `"${spot.isActive ? 'Active' : 'Inactive'}"`
+          `"${spot.isActive ? "Active" : "Inactive"}"`,
         ].join(",");
-      })
+      }),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -195,17 +203,15 @@ export default function AllTentSpotsTable() {
     setEditWomenStay(spot.womenStay);
     setEditCheckIn(spot.checkIn);
     setEditCheckOut(spot.checkOut);
-    setSheetMode('view')
+    setSheetMode("view");
     setIsDetailSheetOpen(true);
   };
 
   const handleEdit = (spot: TentSpot) => {
-    if (!permsRef.current.canEdit) return
-    openForView(spot)
-    setSheetMode('edit')
+    if (!permsRef.current.canEdit) return;
+    openForView(spot);
+    setSheetMode("edit");
   };
-
-
 
   const columns = [
     { data: "sno", title: "S.No" },
@@ -214,12 +220,14 @@ export default function AllTentSpotsTable() {
     {
       data: "location",
       title: "Location & Map",
-      render: (data: string) => `<div class="dt-ellipsis" title="${data}">${data}</div>`,
+      render: (data: string) =>
+        `<div class="dt-ellipsis" title="${data}">${data}</div>`,
     },
     {
       data: "slugUrl",
       title: "Slug URL",
-      render: (data: string) => `<div class="dt-ellipsis font-mono text-blue-600" title="${data}">${data}</div>`,
+      render: (data: string) =>
+        `<div class="dt-ellipsis font-mono text-blue-600" title="${data}">${data}</div>`,
     },
     { data: "contactPerson", title: "Contact Person" },
     { data: "contactNo", title: "Contact No." },
@@ -228,7 +236,7 @@ export default function AllTentSpotsTable() {
       data: "rules",
       title: "Rules",
       render: (data: string) =>
-        `<div class="dt-ellipsis" title="${data}">${String(data).replace(/\n/g, ' ')}</div>`,
+        `<div class="dt-ellipsis" title="${data}">${String(data).replace(/\n/g, " ")}</div>`,
     },
     { data: "accommodation", title: "Accommodation (Gender)" },
     { data: "foodAvailable", title: "Food" },
@@ -263,7 +271,9 @@ export default function AllTentSpotsTable() {
             >
               View
             </button>
-            ${perms.canEdit ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}"
@@ -272,7 +282,9 @@ export default function AllTentSpotsTable() {
               title="Edit Tent Spot"
             >
               Edit
-            </button>` : ''}
+            </button>`
+                : ""
+            }
           </div>
         `;
       },
@@ -283,30 +295,32 @@ export default function AllTentSpotsTable() {
   useEffect(() => {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      const button = target.closest('button') as HTMLElement | null
-      if (button?.classList.contains('view-btn')) {
-        event.stopPropagation()
-        const spotId = button.getAttribute('data-id') || ''
-        const spot = tentSpotsRef.current.find(t => t.id === spotId)
-        if (spot) openForView(spot)
-        return
+      const button = target.closest("button") as HTMLElement | null;
+      if (button?.classList.contains("view-btn")) {
+        event.stopPropagation();
+        const spotId = button.getAttribute("data-id") || "";
+        const spot = tentSpotsRef.current.find((t) => t.id === spotId);
+        if (spot) openForView(spot);
+        return;
       }
-      if (button?.classList.contains('edit-btn')) {
-        event.stopPropagation()
-        const spotId = button.getAttribute('data-id') || ''
-        const spot = tentSpotsRef.current.find(t => t.id === spotId)
-        if (!spot) return
-        if (!permsRef.current.canEdit) return
-        handleEdit(spot)
-        return
+      if (button?.classList.contains("edit-btn")) {
+        event.stopPropagation();
+        const spotId = button.getAttribute("data-id") || "";
+        const spot = tentSpotsRef.current.find((t) => t.id === spotId);
+        if (!spot) return;
+        if (!permsRef.current.canEdit) return;
+        handleEdit(spot);
+        return;
       }
 
       // Row click opens view-only detail
-      const row = target.closest('tr')
-      if (row && row.parentElement?.tagName === 'TBODY') {
-        const rowIndex = Array.from(row.parentElement.children).indexOf(row as any)
-        const spot = tentSpotsRef.current[rowIndex]
-        if (spot) openForView(spot)
+      const row = target.closest("tr");
+      if (row && row.parentElement?.tagName === "TBODY") {
+        const rowIndex = Array.from(row.parentElement.children).indexOf(
+          row as any,
+        );
+        const spot = tentSpotsRef.current[rowIndex];
+        if (spot) openForView(spot);
       }
     };
     document.addEventListener("click", handleClick);
@@ -395,17 +409,20 @@ export default function AllTentSpotsTable() {
         }
       `}</style>
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h2 className="text-xl font-semibold text-slate-800">
-          Tent Spots
-        </h2>
+        <h2 className="text-xl font-semibold text-slate-800">Tent Spots</h2>
         <button
-          onClick={() => perms.canExport ? exportToExcel() : null}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport
-            ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-            : 'bg-gray-300 cursor-not-allowed'
-            }`}
+          onClick={() => (perms.canExport ? exportToExcel() : null)}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+            perms.canExport
+              ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+              : "bg-gray-300 cursor-not-allowed"
+          }`}
           disabled={!perms.canExport}
-          title={perms.canExport ? 'Export to Excel' : 'You do not have permission to export data'}
+          title={
+            perms.canExport
+              ? "Export to Excel"
+              : "You do not have permission to export data"
+          }
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -424,12 +441,19 @@ export default function AllTentSpotsTable() {
         </button>
       </div>
 
-      <div ref={tableRef} className="tent-spots-table-container flex-1 overflow-hidden">
+      <div
+        ref={tableRef}
+        className="tent-spots-table-container flex-1 overflow-hidden"
+      >
         {isLoading && (
-          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">Loading tent spots...</div>
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">
+            Loading tent spots...
+          </div>
         )}
         {loadError && (
-          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">{loadError}</div>
+          <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">
+            {loadError}
+          </div>
         )}
         <DataTable
           ref={dtRef}
@@ -463,25 +487,91 @@ export default function AllTentSpotsTable() {
               },
             ],
             columnControl: ["order"],
+            initComplete: function () {
+              const wrapper = (this as any).api().table().container();
+              const topRow = wrapper.querySelector(
+                ".dt-layout-row:first-child",
+              );
+              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const btn = document.createElement("button");
+                btn.className = "reset-filters-btn";
+                btn.textContent = "Reset Filters";
+                btn.style.cssText =
+                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
+                btn.onmouseenter = () => {
+                  btn.style.background = "#e2e8f0";
+                };
+                btn.onmouseleave = () => {
+                  btn.style.background = "#f8fafc";
+                };
+                btn.onclick = () => {
+                  const api = (this as any).api();
+                  const container = api.table().container();
+
+                  // 1. Clear global search and column searches
+                  api.search("").columns().search("");
+
+                  // 2. Clear Column Control plugin filters (API method)
+                  if (api.columns().ccSearchClear) {
+                    (api.columns() as any).ccSearchClear();
+                  }
+
+                  // 3. Clear all inputs and trigger events to sync UI
+                  container.querySelectorAll("input").forEach((input: any) => {
+                    input.value = "";
+                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                  });
+
+                  // 4. Clear all selects and trigger events
+                  container
+                    .querySelectorAll("select")
+                    .forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(
+                          new Event("change", { bubbles: true }),
+                        );
+                      }
+                    });
+
+                  // 5. Force remove active state from column header buttons
+                  container
+                    .querySelectorAll(".dtcc-button_active")
+                    .forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                  // 6. Draw once to sync everything
+                  api.draw();
+                };
+                topRow.appendChild(btn);
+              }
+            },
             columnDefs: [
-              { targets: 0, width: '50px', className: 'dt-center' }, // S.No
-              { targets: 1, width: '180px' }, // Spot Name
-              { targets: 2, width: '100px' }, // Tent ID Prefix
-              { targets: 3, width: '260px' }, // Location
-              { targets: 4, width: '200px' }, // Slug URL
-              { targets: 5, width: '140px' }, // Contact Person
-              { targets: 6, width: '120px' }, // Contact No
-              { targets: 7, width: '180px' }, // Email
-              { targets: 8, width: '320px' }, // Rules
-              { targets: 9, width: '160px' }, // Accommodation
-              { targets: 10, width: '80px' }, // Food
-              { targets: 11, width: '90px' }, // Kids
-              { targets: 12, width: '110px' }, // Women
-              { targets: 13, width: '110px' }, // Check-in
-              { targets: 14, width: '110px' }, // Check-out
-              { targets: 15, width: '100px' }, // Status
-              { targets: 16, width: '180px', orderable: false, searchable: false }, // Actions
-              { targets: '_all', visible: true },
+              { targets: 0, width: "50px", className: "dt-center" }, // S.No
+              { targets: 1, width: "180px" }, // Spot Name
+              { targets: 2, width: "100px" }, // Tent ID Prefix
+              { targets: 3, width: "260px" }, // Location
+              { targets: 4, width: "200px" }, // Slug URL
+              { targets: 5, width: "140px" }, // Contact Person
+              { targets: 6, width: "120px" }, // Contact No
+              { targets: 7, width: "180px" }, // Email
+              { targets: 8, width: "320px" }, // Rules
+              { targets: 9, width: "160px" }, // Accommodation
+              { targets: 10, width: "80px" }, // Food
+              { targets: 11, width: "90px" }, // Kids
+              { targets: 12, width: "110px" }, // Women
+              { targets: 13, width: "110px" }, // Check-in
+              { targets: 14, width: "110px" }, // Check-out
+              { targets: 15, width: "100px" }, // Status
+              {
+                targets: 16,
+                width: "180px",
+                orderable: false,
+                searchable: false,
+              }, // Actions
+              { targets: "_all", visible: true },
             ],
           }}
         />
@@ -513,16 +603,21 @@ export default function AllTentSpotsTable() {
 
                 <div>
                   <Label>Spot Name</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editSpotName} onChange={(e) => setEditSpotName(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editSpotName}
+                      onChange={(e) => setEditSpotName(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.spotName}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.spotName}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Tent ID Prefix</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       value={editTentIdPrefix}
                       onChange={(e) => setEditTentIdPrefix(e.target.value)}
@@ -530,134 +625,202 @@ export default function AllTentSpotsTable() {
                       placeholder="e.g., VM, VH"
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">{selectedSpot.tentIdPrefix}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">
+                      {selectedSpot.tentIdPrefix}
+                    </div>
                   )}
-                  <p className="text-xs text-slate-500 mt-1">Used to generate tent IDs (e.g., {selectedSpot.tentIdPrefix}-T-01)</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Used to generate tent IDs (e.g., {selectedSpot.tentIdPrefix}
+                    -T-01)
+                  </p>
                 </div>
 
                 <div>
                   <Label>Location & Map</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editLocation} onChange={(e) => setEditLocation(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editLocation}
+                      onChange={(e) => setEditLocation(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.location}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.location}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Slug URL</Label>
-                  {sheetMode === 'edit' ? (
+                  {sheetMode === "edit" ? (
                     <Input
                       value={editSlugUrl}
                       onChange={(e) => setEditSlugUrl(e.target.value)}
                       placeholder="e.g., vanavihari-marudemalli"
                     />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">{selectedSpot.slugUrl}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border font-mono text-blue-600">
+                      {selectedSpot.slugUrl}
+                    </div>
                   )}
-                  <p className="text-xs text-slate-500 mt-1">Used for URL-friendly identification</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Used for URL-friendly identification
+                  </p>
                 </div>
 
                 <div>
                   <Label>Contact Person</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editContactPerson} onChange={(e) => setEditContactPerson(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editContactPerson}
+                      onChange={(e) => setEditContactPerson(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.contactPerson}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.contactPerson}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Contact No</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editContactNo} onChange={(e) => setEditContactNo(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editContactNo}
+                      onChange={(e) => setEditContactNo(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.contactNo}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.contactNo}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Email</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editEmail}
+                      onChange={(e) => setEditEmail(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.email}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.email}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Rules</Label>
-                  {sheetMode === 'edit' ? (
-                    <textarea rows={4} value={editRules} onChange={(e) => setEditRules(e.target.value)} className="w-full px-3 py-2 border rounded-md bg-slate-50" />
+                  {sheetMode === "edit" ? (
+                    <textarea
+                      rows={4}
+                      value={editRules}
+                      onChange={(e) => setEditRules(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-md bg-slate-50"
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">{selectedSpot.rules}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border whitespace-pre-wrap">
+                      {selectedSpot.rules}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Accommodation</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editAccommodation} onChange={(e) => setEditAccommodation(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editAccommodation}
+                      onChange={(e) => setEditAccommodation(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.accommodation}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.accommodation}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Food Availability</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editFoodAvailable} onChange={(e) => setEditFoodAvailable(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editFoodAvailable}
+                      onChange={(e) => setEditFoodAvailable(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.foodAvailable}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.foodAvailable}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Kids Stay</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editKidsStay} onChange={(e) => setEditKidsStay(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editKidsStay}
+                      onChange={(e) => setEditKidsStay(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.kidsStay}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.kidsStay}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Women Stay</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editWomenStay} onChange={(e) => setEditWomenStay(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editWomenStay}
+                      onChange={(e) => setEditWomenStay(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.womenStay}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.womenStay}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Check-In</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editCheckIn} onChange={(e) => setEditCheckIn(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editCheckIn}
+                      onChange={(e) => setEditCheckIn(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.checkIn}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.checkIn}
+                    </div>
                   )}
                 </div>
 
                 <div>
                   <Label>Check-Out</Label>
-                  {sheetMode === 'edit' ? (
-                    <Input value={editCheckOut} onChange={(e) => setEditCheckOut(e.target.value)} />
+                  {sheetMode === "edit" ? (
+                    <Input
+                      value={editCheckOut}
+                      onChange={(e) => setEditCheckOut(e.target.value)}
+                    />
                   ) : (
-                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">{selectedSpot.checkOut}</div>
+                    <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                      {selectedSpot.checkOut}
+                    </div>
                   )}
                 </div>
-
-
               </div>
 
               <div className="flex-shrink-0 flex flex-wrap gap-2 p-6 pt-4 border-t bg-white">
-                {sheetMode === 'view' ? (
+                {sheetMode === "view" ? (
                   <>
                     <Button
-                      onClick={() => setSheetMode('edit')}
+                      onClick={() => setSheetMode("edit")}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to edit' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to edit"
+                          : undefined
+                      }
                     >
                       Edit
                     </Button>
@@ -671,14 +834,21 @@ export default function AllTentSpotsTable() {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={() => setSheetMode('view')}>Cancel</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSheetMode("view")}
+                    >
+                      Cancel
+                    </Button>
                     <Button
                       onClick={async () => {
-                        if (!perms.canEdit) return
+                        if (!perms.canEdit) return;
 
                         try {
-                          const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-                          const token = localStorage.getItem('admin_token');
+                          const apiBase =
+                            (import.meta as any).env?.VITE_API_URL ||
+                            "http://localhost:5000";
+                          const token = localStorage.getItem("admin_token");
 
                           const updateData = {
                             spotName: editSpotName,
@@ -698,22 +868,27 @@ export default function AllTentSpotsTable() {
                           };
 
                           const headers: Record<string, string> = {
-                            'Content-Type': 'application/json',
+                            "Content-Type": "application/json",
                           };
                           if (token) {
-                            headers['Authorization'] = `Bearer ${token}`;
+                            headers["Authorization"] = `Bearer ${token}`;
                           }
 
-                          const response = await fetch(`${apiBase}/api/tent-spots/${selectedSpot.id}`, {
-                            method: 'PUT',
-                            headers,
-                            body: JSON.stringify(updateData),
-                          });
+                          const response = await fetch(
+                            `${apiBase}/api/tent-spots/${selectedSpot.id}`,
+                            {
+                              method: "PUT",
+                              headers,
+                              body: JSON.stringify(updateData),
+                            },
+                          );
 
                           const data = await response.json();
 
                           if (!response.ok) {
-                            throw new Error(data.error || 'Failed to update tent spot');
+                            throw new Error(
+                              data.error || "Failed to update tent spot",
+                            );
                           }
 
                           // Update local state
@@ -721,19 +896,26 @@ export default function AllTentSpotsTable() {
                             prev.map((t) =>
                               t.id === selectedSpot.id
                                 ? { ...t, ...updateData }
-                                : t
-                            )
+                                : t,
+                            ),
                           );
-                          setSheetMode('view')
+                          setSheetMode("view");
                           setIsDetailSheetOpen(false);
-                          alert('Tent spot updated successfully!');
+                          alert("Tent spot updated successfully!");
                         } catch (err: any) {
-                          console.error('Failed to update tent spot:', err);
-                          alert('Failed to update tent spot: ' + (err.message || String(err)));
+                          console.error("Failed to update tent spot:", err);
+                          alert(
+                            "Failed to update tent spot: " +
+                              (err.message || String(err)),
+                          );
                         }
                       }}
                       disabled={!perms.canEdit}
-                      title={!perms.canEdit ? 'You do not have permission to save' : undefined}
+                      title={
+                        !perms.canEdit
+                          ? "You do not have permission to save"
+                          : undefined
+                      }
                     >
                       Save
                     </Button>

@@ -23,7 +23,7 @@ export const expirePendingReservations = async () => {
       },
       {
         $set: {
-          status: 'Not-reserved',
+          status: 'Not-Reserved',
           paymentStatus: 'Unpaid'
         }
       }
@@ -65,12 +65,12 @@ export const createReservation = async (req, res) => {
 
     if (role === 'superadmin') {
       // Superadmin: immediately confirmed
-      payload.status = 'reserved'
-      payload.paymentStatus = 'paid'
+      payload.status = 'Reserved'
+      payload.paymentStatus = 'Paid'
     } else if (role !== 'dfo') {
       // Admin / staff: pending + 1-hour room block, needs DFO approval
-      payload.status = 'pending'
-      payload.paymentStatus = 'unpaid'
+      payload.status = 'Pending'
+      payload.paymentStatus = 'Unpaid'
       payload.approval_status = 'PENDING_DFO_APPROVAL'
       const expiryTime = new Date()
       expiryTime.setHours(expiryTime.getHours() + 1)
@@ -104,8 +104,8 @@ export const createReservation = async (req, res) => {
     // DFO auto-confirm: save was pending/unpaid, now immediately set to reserved+paid
     if (role === 'dfo') {
       await Reservation.findByIdAndUpdate(reservation._id, {
-        status: 'reserved',
-        paymentStatus: 'paid',
+        status: 'Reserved',
+        paymentStatus: 'Paid',
         approved_by: payload.createdBy,
         approved_at: new Date(),
       })

@@ -403,70 +403,80 @@
     <!-- NEW OUR RESORTS SECTION (Dynamic) -->
     <section class="our-resorts-new py-5">
       <div class="container">
-        <h1 class="section-title text-center mb-5">{{ resortsTitle }}</h1>
+        <ng-container *ngFor="let item of destinations; let i = index">
 
-        <div class="resort-card mb-5" *ngFor="let item of destinations; let i = index">
-          <div class="resort-card-header">
-            <h3 class="resort-name">{{ item.name }}</h3>
-          </div>
-          <div class="resort-card-body">
-            <div class="row g-4">
-              <!-- Left: Mini Gallery (2x2 grid) -->
-              <div class="col-md-6">
-                <div class="mini-gallery">
-                  <div class="gallery-bento">
-                    <div class="bento-main" (click)="openLightbox(0, item.id)">
-                      <img [src]="item.images.main" [alt]="item.name + ' Gallery 1'" />
-                    </div>
-                    <div class="bento-side-top" (click)="openLightbox(1, item.id)">
-                      <img [src]="item.images.sideTop" [alt]="item.name + ' Gallery 2'" />
-                    </div>
-                    <div class="bento-side-bottom gallery-more" (click)="openLightbox(0, item.id)">
-                      <img [src]="item.images.sideBottom" alt="More Photos" />
-                      <div class="gallery-overlay">
-                        <span>+{{ item.images.gallery.length - 2 }} Photos</span>
+          <!-- Show "Our Resorts" heading before the very first resort entry -->
+          <h1 *ngIf="item.type === 'resort' && (i === 0 || destinations[i - 1].type !== 'resort')"
+            class="section-title text-center mb-5">Our Resorts</h1>
+
+          <!-- Show "Our Treks" heading before the very first trek entry -->
+          <h1 *ngIf="item.type === 'trek' && (i === 0 || destinations[i - 1].type !== 'trek')"
+            class="section-title text-center mb-5 mt-4">Our Treks</h1>
+
+          <div class="resort-card mb-5">
+            <div class="resort-card-header">
+              <h3 class="resort-name">{{ item.name }}</h3>
+            </div>
+            <div class="resort-card-body">
+              <div class="row g-4">
+                <!-- Left: Mini Gallery (2x2 grid) -->
+                <div class="col-md-6">
+                  <div class="mini-gallery">
+                    <div class="gallery-bento">
+                      <div class="bento-main" (click)="openLightbox(0, item.id)">
+                        <img [src]="item.images.main" [alt]="item.name + ' Gallery 1'" />
+                      </div>
+                      <div class="bento-side-top" (click)="openLightbox(1, item.id)">
+                        <img [src]="item.images.sideTop" [alt]="item.name + ' Gallery 2'" />
+                      </div>
+                      <div class="bento-side-bottom gallery-more" (click)="openLightbox(0, item.id)">
+                        <img [src]="item.images.sideBottom" alt="More Photos" />
+                        <div class="gallery-overlay">
+                          <span>+{{ item.images.gallery.length - 2 }} Photos</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- Right: Resort/Trek Info -->
-              <div class="col-md-6">
-                <div class="resort-info mx-auto" style="max-width: 90%">
-                  <p class="resort-description">
-                    {{ item.description }}
-                  </p>
-                  <div class="resort-meta">
-                    <div class="meta-item">
-                      <i class="fa-solid fa-location-dot text-primary"></i>
-                      <span>{{ item.location }}</span>
+                <!-- Right: Resort/Trek Info -->
+                <div class="col-md-6">
+                  <div class="resort-info mx-auto" style="max-width: 90%">
+                    <p class="resort-description">
+                      {{ item.description }}
+                    </p>
+                    <div class="resort-meta">
+                      <div class="meta-item">
+                        <i class="fa-solid fa-location-dot text-primary"></i>
+                        <span>{{ item.location }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <i class="fa-solid fa-indian-rupee-sign text-success"></i>
+                        <span class="price">{{ item.priceCheck }} <strong>{{ item.priceValue }}</strong> / {{ item.type
+                          === 'resort' ? 'night' : 'person' }}</span>
+                      </div>
                     </div>
-                    <div class="meta-item">
-                      <i class="fa-solid fa-indian-rupee-sign text-success"></i>
-                      <span class="price">{{ item.priceCheck }} <strong>{{ item.priceValue }}</strong> / {{ item.type
-                        === 'resort' ? 'night' : 'person' }}</span>
+                    <div class="resort-actions">
+                      <button class="btn btn-outline-secondary btn-how-to-reach" data-bs-toggle="modal"
+                        data-bs-target="#dynamicHowToReachModal" (click)="openReachModal(item)">
+                        <i class="fa-solid fa-compass me-2"></i> How to Reach
+                      </button>
+                      <!-- Action button logic -->
+                      <button *ngIf="item.type === 'resort'" class="btn btn-primary btn-view-resort"
+                        (click)="goToResortPage(item.originalData)">
+                        View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
+                      </button>
+                      <button *ngIf="item.type === 'trek'" class="btn btn-primary btn-view-resort"
+                        routerLink="/tourist-places" [fragment]="item.originalData.detailsFragment">
+                        View Trek <i class="fa-solid fa-arrow-right ms-2"></i>
+                      </button>
                     </div>
-                  </div>
-                  <div class="resort-actions">
-                    <button class="btn btn-outline-secondary btn-how-to-reach" data-bs-toggle="modal"
-                      data-bs-target="#dynamicHowToReachModal" (click)="openReachModal(item)">
-                      <i class="fa-solid fa-compass me-2"></i> How to Reach
-                    </button>
-                    <!-- Action button logic -->
-                    <button *ngIf="item.type === 'resort'" class="btn btn-primary btn-view-resort"
-                      (click)="goToResortPage(item.originalData)">
-                      View Resort <i class="fa-solid fa-arrow-right ms-2"></i>
-                    </button>
-                    <button *ngIf="item.type === 'trek'" class="btn btn-primary btn-view-resort"
-                      routerLink="/tourist-places" [fragment]="item.originalData.detailsFragment">
-                      View Trek <i class="fa-solid fa-arrow-right ms-2"></i>
-                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+
+        </ng-container>
       </div>
     </section>
 

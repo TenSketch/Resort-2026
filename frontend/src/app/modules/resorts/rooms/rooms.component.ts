@@ -211,6 +211,12 @@ export class RoomsComponent implements OnInit {
   showMessage = false;
   resortData: any = null; // Store resort data including extraGuestCharges
 
+  /**
+   * Rooms the user had already added (from localStorage) that are no longer
+   * available for the selected dates — booked by someone else in the meantime.
+   */
+  unavailableStoredRooms: { roomId: string; roomName: string }[] = [];
+
   cottageTypes: { [key: string]: boolean } = {
     'Bison Cottages': false,
     Vihari: false,
@@ -355,10 +361,42 @@ export class RoomsComponent implements OnInit {
         ? this.authService.getBookingRooms(this.bookingTypeResort)
         : [];
 
-    // this.authService.clearBookingRooms(this.bookingTypeResort);
-
     if (this.roomIds.length > 0) {
       this.showBookingSummary = true;
+
+      // ── Restore guest counts ──────────────────────────────────────────────
+      const storedNoofGuests = this.authService.getNoOfGuests(this.bookingTypeResort);
+      if (storedNoofGuests && Array.isArray(storedNoofGuests)) {
+        this.noofGuestsIds = storedNoofGuests;
+        // Keep as string — mat-option values are "1" / "2" (not numbers)
+        storedNoofGuests.forEach((entry: string) => {
+          const [roomId, guestCount] = entry.split(':');
+          if (roomId && guestCount) {
+            this.selectedValues[roomId] = guestCount; // string, not Number()
+          }
+        });
+      }
+
+      // ── Restore children counts per room ─────────────────────────────────
+      try {
+        const storedChildrenStr = localStorage.getItem('children_per_room');
+        if (storedChildrenStr) {
+          const storedChildrenMap: { [roomId: string]: number } = JSON.parse(storedChildrenStr);
+          this.roomIds.forEach((roomId: string) => {
+            if (storedChildrenMap[roomId] !== undefined) {
+              this.selectedChildrenValues[roomId] = storedChildrenMap[roomId];
+            }
+          });
+        }
+      } catch (_) {}
+
+      // ── Restore extra guest selections ───────────────────────────────────
+      const storedExtraGuests = this.authService.getExtraGuests(this.extraGuestsType);
+      if (storedExtraGuests && Array.isArray(storedExtraGuests)) {
+        this.extraGuestsIds = storedExtraGuests;
+        this.isAddedExtraGuest = this.extraGuestsIds.length > 0;
+        // NOTE: per-room extra_guest flag is applied after roomData loads — see checkStoredRoomsAvailability()
+      }
     } else {
       this.showBookingSummary = false;
     }
@@ -801,7 +839,10 @@ export class RoomsComponent implements OnInit {
               );
 
               this.previousFilteredRoomData = [...this.filteredRoomData];
-              
+
+              // Cross-check: flag any already-selected rooms that are no longer available
+              this.checkStoredRoomsAvailability();
+
               if (this.roomData.length == 0) {
                 this.isRoomDataEmpty = true;
               } else {
@@ -866,6 +907,65 @@ export class RoomsComponent implements OnInit {
   isAnyRoomChecked(): boolean {
     // Check if any room has the extra guest checkbox checked
     return this.roomData.some((room) => room.isExtraGuestChecked ?? false);
+  }
+
+  /**
+   * After fetching available rooms, cross-checks the user's already-stored room IDs
+   * against the live availability list. Any stored room NOT in the available results
+   * is added to `unavailableStoredRooms` so the template can warn the user.
+   */
+  checkStoredRoomsAvailability(): void {
+    this.unavailableStoredRooms = [];
+
+    if (!this.roomIds || this.roomIds.length === 0) {
+      return;
+    }
+
+    // Build a Set of available room IDs from the fresh API response
+    const availableRoomIds = new Set<string>(
+      (this.filteredRoomData || []).map((room: any) => room.Room_Id as string)
+    );
+
+    this.roomIds.forEach((storedRoomId: string) => {
+      if (!availableRoomIds.has(storedRoomId)) {
+        // Room was previously selected but is no longer available
+        // Try to get the room name from the stored room_data in localStorage
+        let roomName = storedRoomId; // fallback to ID
+        try {
+          const storedRoomDataStr = localStorage.getItem('room_data');
+          if (storedRoomDataStr) {
+            const storedRooms: any[] = JSON.parse(storedRoomDataStr);
+            const match = storedRooms.find(
+              (r: any) => r.Room_Id === storedRoomId || r.ID === storedRoomId
+            );
+            if (match?.Room_Name) {
+              roomName = match.Room_Name;
+            }
+          }
+        } catch (_) {}
+
+        this.unavailableStoredRooms.push({ roomId: storedRoomId, roomName });
+      }
+    });
+
+    // ── Restore per-room extra_guest checkbox flag (roomData is now populated) ──
+    if (this.extraGuestsIds && this.extraGuestsIds.length > 0) {
+      this.extraGuestsIds.forEach((roomId: string) => {
+        const room = this.roomData?.find((r: any) => r.Room_Id === roomId);
+        if (room) {
+          room.extra_guest = true;
+          room.isExtraGuestChecked = true;
+        }
+      });
+    }
+  }
+
+  /**
+   * Returns true if any of the user's stored rooms are no longer available.
+   * Used to disable the Proceed button in the sidebar.
+   */
+  hasUnavailableRooms(): boolean {
+    return this.unavailableStoredRooms.length > 0;
   }
 
   toggleButtonDisabledById(room_id: number, roomIds: any[]): any {
@@ -1049,6 +1149,8 @@ export class RoomsComponent implements OnInit {
     localStorage.setItem('checkindate', JSON.stringify(this.checkinDate));
     localStorage.setItem('checkoutdate', JSON.stringify(this.checkoutDate));
     localStorage.setItem('noofrooms', JSON.stringify(length));
+    // Persist per-room children counts so they can be restored when returning to this page
+    localStorage.setItem('children_per_room', JSON.stringify(this.selectedChildrenValues));
 
     const bookingRoomsStr = localStorage.getItem('booking_rooms');
     if (bookingRoomsStr) {
@@ -1093,7 +1195,7 @@ export class RoomsComponent implements OnInit {
   trackByRoomCard(index: number, card: any): string {
     return card.roomName;
   }
-  selectedValues: { [key: string]: number } = {};
+  selectedValues: { [key: string]: string | number } = {};
   selectedChildrenValues: { [key: string]: number } = {};
 
   isGuestSelectEmpty(): boolean {

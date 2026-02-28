@@ -1,8 +1,10 @@
-<h1 mat-dialog-title>Confirmation</h1>
+<h1 mat-dialog-title>Change Selection</h1>
 <div mat-dialog-content>
-  <p>Do you want to change your selection?</p>
+  <p>Do you want to go back and change your room selection?</p>
+  <p class="text-muted small">Your already-added rooms and guest counts will be kept. You can modify them on the rooms
+    page.</p>
 </div>
 <div mat-dialog-actions>
-  <button mat-button class="btn-yes" [mat-dialog-close]="true" (click)="clearData()">Yes</button>
+  <button mat-button class="btn-yes" [mat-dialog-close]="true">Yes</button>
   <button *ngIf="showCancelBtn" class="btn-cancel" mat-button [mat-dialog-close]="false">Cancel</button>
 </div>

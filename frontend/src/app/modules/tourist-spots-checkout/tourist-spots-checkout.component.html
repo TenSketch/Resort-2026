@@ -30,11 +30,9 @@
               <div class="pb-4">
                 <div class="pt-2" *ngFor="let spot of bookingData?.spots">
                   <h6 class="fst-italic">
-                    <strong>Spot:</strong
-                    ><span>
+                    <strong>Spot:</strong><span>
                       {{ spot.difficulty ? spot.difficulty + " Trek: " : ""
-                      }}{{ spot.name }}</span
-                    >
+                      }}{{ spot.name }}</span>
                   </h6>
                   <p class="mb-1 ms-2" *ngIf="spot.visitDate">
                     <strong>Date:</strong>
@@ -43,12 +41,12 @@
                   <div class="small text-muted ms-2">
                     <div *ngIf="spot.counts?.adults > 0">
                       <strong>Guests:</strong> {{ spot.counts.adults }} | ₹{{
-                        spot.breakdown?.entry || 0
+                      spot.breakdown?.entry || 0
                       }}
                     </div>
                     <div *ngIf="spot.counts?.cameras > 0">
                       <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{
-                        spot.breakdown?.camera || 0
+                      spot.breakdown?.camera || 0
                       }}
                     </div>
                   </div>
@@ -56,25 +54,19 @@
                 </div>
 
                 <h6>
-                  <strong>Number of spot(s): </strong
-                  ><span>{{ bookingData?.spots?.length || 0 }}</span>
+                  <strong>Number of spot(s): </strong><span>{{ bookingData?.spots?.length || 0 }}</span>
                 </h6>
                 <p class="mb-1">
-                  <strong>Total Tourists: </strong
-                  ><span>{{ getTotalGuests() }}</span>
+                  <strong>Total Tourists: </strong><span>{{ getTotalGuests() }}</span>
                 </p>
                 <hr class="my-2" />
-                <a
-                  class="font-weight-bold"
-                  title="go back to change selection"
-                  (click)="triggerModal()"
-                  >Change your selection</a
-                >
+                <a class="font-weight-bold" title="go back to change selection" (click)="triggerModal()">Change your
+                  selection</a>
               </div>
             </div>
 
             <!-- Visit Details Card -->
-            <div class="card">
+            <!-- <div class="card">
               <h5>Your visit details</h5>
               <div class="d-flex">
                 <div class="col">
@@ -85,8 +77,8 @@
                   </p>
                 </div>
               </div>
-              <!-- Duration moved up -->
-            </div>
+            
+            </div> -->
 
             <!-- Payment Details Card -->
             <div class="card">
@@ -129,11 +121,7 @@
           </div>
 
           <div class="col-md-6 me-auto mt-5 mt-md-0">
-            <h5
-              class="mb-4"
-              *ngIf="isLoggedIn(); else loginNotify"
-              style="line-height: 1.5"
-            >
+            <h5 class="mb-4" *ngIf="isLoggedIn(); else loginNotify" style="line-height: 1.5">
               Check the details we have fetched from your user account
               {{ getFullUser }}!
             </h5>
@@ -147,98 +135,41 @@
             <form [formGroup]="form">
               <mat-form-field appearance="outline">
                 <mat-label>Guest Name</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  formControlName="gname"
-                  placeholder="Enter Full Name"
-                />
+                <input type="text" matInput required formControlName="gname" placeholder="Enter Full Name" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Mobile no.</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  placeholder="Enter Mobile Number"
-                  formControlName="gphone"
-                />
-                <mat-error *ngIf="f['gphone'].hasError('required')"
-                  >Mobile number is required</mat-error
-                >
-                <mat-error *ngIf="f['gphone'].hasError('pattern')"
-                  >Enter a valid 10-digit mobile number</mat-error
-                >
+                <input type="text" matInput required placeholder="Enter Mobile Number" formControlName="gphone" />
+                <mat-error *ngIf="f['gphone'].hasError('required')">Mobile number is required</mat-error>
+                <mat-error *ngIf="f['gphone'].hasError('pattern')">Enter a valid 10-digit mobile number</mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Email</mat-label>
-                <input
-                  type="email"
-                  matInput
-                  required
-                  placeholder="Enter Email Address"
-                  formControlName="gemail"
-                />
+                <input type="email" matInput required placeholder="Enter Email Address" formControlName="gemail" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Address</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  placeholder="Enter your address"
-                  formControlName="gaddress"
-                />
+                <input type="text" matInput required placeholder="Enter your address" formControlName="gaddress" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>City</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  placeholder="Enter your city"
-                  formControlName="gcity"
-                />
+                <input type="text" matInput required placeholder="Enter your city" formControlName="gcity" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>State</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  placeholder="Enter your state"
-                  formControlName="gstate"
-                />
+                <input type="text" matInput required placeholder="Enter your state" formControlName="gstate" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Pincode</mat-label>
-                <input
-                  type="number"
-                  matInput
-                  required
-                  placeholder="Enter your pincode"
-                  formControlName="gpincode"
-                />
+                <input type="number" matInput required placeholder="Enter your pincode" formControlName="gpincode" />
               </mat-form-field>
               <mat-form-field appearance="outline" class="mt-3">
                 <mat-label>Country</mat-label>
-                <input
-                  type="text"
-                  matInput
-                  required
-                  placeholder="Enter your country"
-                  formControlName="gcountry"
-                />
+                <input type="text" matInput required placeholder="Enter your country" formControlName="gcountry" />
               </mat-form-field>
 
-              <button
-                mat-raised-button
-                color="primary"
-                class="w-100"
-                (click)="triggerInfoModal()"
-                [disabled]="!form.valid"
-              >
+              <button mat-raised-button color="primary" class="w-100" (click)="triggerInfoModal()"
+                [disabled]="!form.valid">
                 Confirm and Pay
               </button>
               <br /><br />
@@ -347,22 +278,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="onCancel()"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to modify booking?</p>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary text-bg-secondary"
-          (click)="onCancel()"
-        >
+        <button type="button" class="btn btn-secondary text-bg-secondary" (click)="onCancel()">
           Cancel
         </button>
         <button type="button" class="btn btn-primary" (click)="onConfirm()">
@@ -374,23 +296,13 @@
 </div>
 
 <!-- Payment Info Modal -->
-<div
-  class="modal"
-  tabindex="-1"
-  *ngIf="isInfoModalVisible"
-  style="display: block"
->
+<div class="modal" tabindex="-1" *ngIf="isInfoModalVisible" style="display: block">
   <div class="modal-overlay" [ngClass]="{ 'dark-overlay': isDarkMode }"></div>
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="onCancel()"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <ul>
@@ -447,12 +359,7 @@
         </ul>
       </div>
       <div class="modal-footer justify-content-center">
-        <button
-          mat-raised-button
-          color="primary"
-          class="font-weight-bold w-25"
-          (click)="onOk()"
-        >
+        <button mat-raised-button color="primary" class="font-weight-bold w-25" (click)="onOk()">
           OK
         </button>
       </div>

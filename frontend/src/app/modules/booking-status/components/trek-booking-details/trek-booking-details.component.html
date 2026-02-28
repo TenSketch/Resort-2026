@@ -1,0 +1,84 @@
+<div class="card shadow-sm border-0 d-flex flex-column mb-4 rounded-4 overflow-hidden">
+    <div class="row g-0">
+        <div class="col-md-5 d-flex align-items-stretch">
+            <img *ngIf="reservationDetails.touristSpots && reservationDetails.touristSpots.length > 0 && reservationDetails.touristSpots[0].images && reservationDetails.touristSpots[0].images.length > 0"
+                src="{{ reservationDetails.touristSpots[0].images[0].url }}"
+                class="img-fluid w-100 h-100 object-fit-cover" alt="Trek Spot Image" />
+            <div *ngIf="!reservationDetails.touristSpots || !reservationDetails.touristSpots[0].images || reservationDetails.touristSpots[0].images.length === 0"
+                class="w-100 h-100 bg-light d-flex align-items-center justify-content-center text-muted flex-column py-5">
+                <i class="fas fa-mountain fa-3x mb-3 text-opacity-50"></i>
+                <span>No image available</span>
+            </div>
+        </div>
+        <div class="col-md-7 p-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <h3 class="text-primary fw-bold mb-0">Trek Spot Booking</h3>
+                <span
+                    class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill fw-medium">
+                    <i class="fas fa-hiking me-1"></i> Trekking
+                </span>
+            </div>
+
+            <div class="row w-100 mb-3">
+                <div class="col-sm-6 mb-2">
+                    <p class="mb-1 text-muted small text-uppercase fw-semibold">Guest Name</p>
+                    <p class="mb-0 fw-medium">{{ reservationDetails.guestName }}</p>
+                </div>
+                <div class="col-sm-6 mb-2">
+                    <p class="mb-1 text-muted small text-uppercase fw-semibold">Email</p>
+                    <p class="mb-0 fw-medium text-truncate" title="{{ reservationDetails.email }}">
+                        {{ reservationDetails.email }}
+                    </p>
+                </div>
+                <div class="col-sm-6 mb-2">
+                    <p class="mb-1 text-muted small text-uppercase fw-semibold">Booking ID</p>
+                    <p class="mb-0 fw-medium font-monospace">{{ reservationDetails.bookingId }}</p>
+                </div>
+                <div class="col-sm-6 mb-2" *ngIf="reservationDetails.transactionId">
+                    <p class="mb-1 text-muted small text-uppercase fw-semibold">Transaction ID</p>
+                    <p class="mb-0 fw-medium font-monospace">{{ reservationDetails.transactionId }}</p>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="row w-100 mb-4">
+                <div class="col-12 mb-3">
+                    <div class="d-flex align-items-center mb-1 text-muted small text-uppercase fw-semibold">
+                        <i class="fas fa-calendar-day me-2"></i> Visit Date
+                    </div>
+                    <p class="mb-0 fw-medium fs-5 text-dark">{{ reservationDetails.checkInDate }}</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <p class="mb-2 text-muted small text-uppercase fw-semibold">Spots Booked</p>
+                <div class="d-flex flex-column gap-2">
+                    <div *ngFor="let spot of reservationDetails.rooms"
+                        class="d-flex justify-content-between align-items-center p-3 border rounded-3 bg-light">
+                        <div class="fw-bold text-dark"><i class="fas fa-map-marker-alt text-danger me-2"></i>{{
+                            spot.room_name }}</div>
+                        <div class="text-muted small fw-medium">{{ spot.cottage_type }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row w-100 bg-primary-subtle rounded-3 p-3 m-0 border border-primary-subtle">
+                <div class="col-6 d-flex align-items-center">
+                    <i class="fas fa-users fa-2x text-primary me-3 opacity-75"></i>
+                    <div>
+                        <div class="small text-primary text-uppercase fw-bold">Total Guests</div>
+                        <div class="fs-4 fw-bold text-dark">{{ reservationDetails.totalGuest }}</div>
+                    </div>
+                </div>
+                <div class="col-6 d-flex align-items-center justify-content-end text-end">
+                    <div>
+                        <div class="small text-primary text-uppercase fw-bold">Children</div>
+                        <div class="fs-4 fw-bold text-dark">{{ reservationDetails.totalChildren }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

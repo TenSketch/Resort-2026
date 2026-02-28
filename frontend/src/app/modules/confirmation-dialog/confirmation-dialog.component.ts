@@ -8,21 +8,19 @@ import { Component } from '@angular/core';
 })
 export class ConfirmationDialogComponent {
   bookingTypeResort: string;
-  showCancelBtn:any = true
+  showCancelBtn: any = true;
+
   constructor(private authService: AuthService) {
-    let status = localStorage.getItem('showCancel')
-    if(status == 'no'){
-      this.showCancelBtn = false
-    }
-    if(status == 'yes'){
-      this.showCancelBtn = true
-    }
+    const status = localStorage.getItem('showCancel');
+    this.showCancelBtn = status !== 'no';
   }
 
+  /**
+   * Called only when the user wants to fully clear their booking and start over.
+   * NOT called when clicking Yes to go back and modify the selection.
+   */
   clearData() {
-    localStorage.setItem('showCancel','yes')
+    localStorage.setItem('showCancel', 'yes');
     this.authService.clearBookingRooms(this.bookingTypeResort);
   }
-
-
 }

@@ -1,137 +1,92 @@
-<div class="tourist-spot-section">
-  <div class="tourist-card">
-    <!-- Left: Media Section -->
-    <div class="tourist-card__media">
-      <div
-        class="gallery-wrapper"
-        (click)="images.length ? openLightbox(currentImageIndex) : null"
-      >
-        <img
-          [src]="images[currentImageIndex]"
-          [alt]="name"
-          *ngIf="images.length; else placeholder"
-        />
-        <ng-template #placeholder>
-          <img src="assets/images/placeholder-trek.jpg" alt="No Image" />
-        </ng-template>
-      </div>
-
-      <!-- Difficulty Badge -->
-      <div
-        class="difficulty-badge"
-        [ngClass]="difficulty?.toLowerCase() || 'medium'"
-        *ngIf="difficulty"
-      >
-        {{ difficulty }} Trek
-      </div>
-
-      <!-- Navigation -->
-      <div
-        class="nav-btn prev"
-        *ngIf="images.length > 1"
-        (click)="$event.stopPropagation(); scrollLeft()"
-      >
-        <i class="fas fa-chevron-left"></i>
-      </div>
-      <div
-        class="nav-btn next"
-        *ngIf="images.length > 1"
-        (click)="$event.stopPropagation(); scrollRight()"
-      >
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </div>
-
-    <!-- Right: Content Section -->
-    <div class="tourist-card__content">
-      <!-- Header -->
-      <header class="header">
-        <h3 class="title">{{ name }}</h3>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i> {{ location }}
-        </div>
-      </header>
-
-      <!-- Stats Grid -->
-      <div class="stats">
-        <div class="stat" *ngIf="distance">
-          <span class="label">Distance</span>
-          <span class="value"
-            ><i class="fas fa-route"></i> {{ distance }} km</span
-          >
-        </div>
-        <div class="stat" *ngIf="elevationGain">
-          <span class="label">Elevation</span>
-          <span class="value"
-            ><i class="fas fa-mountain"></i> {{ elevationGain }} m</span
-          >
-        </div>
-        <div class="stat" *ngIf="timings">
-          <span class="label">Duration</span>
-          <span class="value"><i class="fas fa-clock"></i> {{ timings }}</span>
-        </div>
-      </div>
-
-      <!-- Features / Tags -->
-      <div class="features">
-        <span class="tag" *ngIf="type">{{ type }}</span>
-        <!-- Dynamic features if available in future -->
-      </div>
-
-      <!-- Footer: Pricing & Actions -->
-      <div class="footer">
-        <div class="price-block">
-          <span class="label">Starting from</span>
-          <div class="price">
-            <span *ngIf="unitEntry !== undefined">{{
-              unitEntry | currency: "INR" : "symbol" : "1.0-0"
-            }}</span>
-            <span *ngIf="unitEntry === undefined && entryFee">{{
-              entryFee
-            }}</span>
-            <small>/ person</small>
+<div class="card mb-3 tourist-card">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="containerg">
+        <div class="card-containerg" #cardContainer>
+          <div class="card py-0" *ngFor="let item of images; let i = index">
+            <img class="img-responsive" src="{{ item }}" alt="" (click)="openLightbox(i)" />
+          </div>
+          <!-- Placeholder if no images -->
+          <div class="card py-0" *ngIf="images.length === 0">
+            <img src="assets/images/placeholder-trek.jpg" alt="No Image" class="img-responsive" />
           </div>
         </div>
 
-        <div class="actions">
+        <div class="scroll-icon left" (click)="scrollLeftBtn(cardContainer)" #scrollLeftIcon>
+          <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="scroll-icon right" (click)="scrollRightBtn(cardContainer)" #scrollRightIcon>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-7 row justify-content-between">
+      <div class="col-md-7 p-3">
+        <h5>
+          <span class="text-primary-dark font-weight-bold">Spot name: </span>{{ name }}
+        </h5>
+        <h6>
+          <span class="text-primary-dark font-weight-bold">Location: </span>{{ location }}
+        </h6>
+
+        <div class="mt-2">
+          <p class="m-0" *ngIf="distance">
+            <span class="text-primary-dark font-weight-bold">Distance: </span>{{ distance }} km
+          </p>
+          <p class="m-0" *ngIf="elevationGain">
+            <span class="text-primary-dark font-weight-bold">Elevation: </span>{{ elevationGain }} m
+          </p>
+          <p class="m-0" *ngIf="timings">
+            <span class="text-primary-dark font-weight-bold">Duration: </span>{{ timings }}
+          </p>
+          <p class="m-0" *ngIf="difficulty">
+            <span class="text-primary-dark font-weight-bold">Difficulty: </span>{{ difficulty }} Trek
+          </p>
+          <p class="m-0" *ngIf="type">
+            <span class="text-primary-dark font-weight-bold">Type: </span>{{ type }}
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-5 d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0 p-3">
+        <div>
+          <h6 class="p-0 m-0">
+            <ng-container *ngIf="unitEntry !== undefined">
+              <strong>{{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}</strong>
+            </ng-container>
+            <ng-container *ngIf="unitEntry === undefined && entryFee">
+              <strong>{{ entryFee }}</strong>
+            </ng-container>
+          </h6>
+
+          <p class="text-primary-dark text-end">
+            <i class="fas fa-user" aria-hidden="true"></i> / person
+          </p>
+        </div>
+
+        <div class="col-12 mt-3">
           <ng-container *ngIf="openInNewTab; else inlineLink">
-            <a
-              [href]="detailsHref"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn-icon"
-              title="View Details"
-            >
-              <i class="fas fa-arrow-right"></i>
+            <a [href]="detailsHref" target="_blank" rel="noopener noreferrer"
+              class="btn btn-outline-primary btn-sm rounded-pill px-3" title="View Details">
+              Details <i class="fas fa-arrow-right ms-1"></i>
             </a>
           </ng-container>
           <ng-template #inlineLink>
-            <a
-              [routerLink]="detailsLink"
-              [fragment]="detailsFragment"
-              class="btn-icon"
-              title="View Details"
-            >
-              <i class="fas fa-arrow-right"></i>
+            <a [routerLink]="detailsLink" [fragment]="detailsFragment"
+              class="btn btn-outline-primary btn-sm rounded-pill px-3" title="View Details">
+              Details <i class="fas fa-arrow-right ms-1"></i>
             </a>
           </ng-template>
-
-          <button
-            class="btn-add"
-            (click)="onAddToBooking()"
-            [disabled]="isSoldOut || !isSearchPerformed"
-            [title]="
-              !isSearchPerformed
-                ? 'Select a visit date first'
-                : isSoldOut
-                  ? 'Sold Out'
-                  : 'Add to Booking'
-            "
-          >
-            <i class="fas fa-plus"></i>
-            {{ isSoldOut ? "Sold Out" : "Add Spot" }}
-          </button>
         </div>
+      </div>
+
+      <div class="col-12 my-2 pe-0">
+        <button class="btn btn-lg btn-primary mb-3 rounded-pill px-4 float-end float-md-start"
+          (click)="onAddToBooking()" [disabled]="isSoldOut || !isSearchPerformed"
+          [title]="!isSearchPerformed ? 'Select a visit date first' : isSoldOut ? 'Sold Out' : 'Add spot'">
+          {{ isSoldOut ? "Sold Out" : "Add spot" }}
+        </button>
       </div>
     </div>
   </div>

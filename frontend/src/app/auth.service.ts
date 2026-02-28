@@ -107,7 +107,7 @@ export class AuthService {
     localStorage.removeItem(this.noofGuests);
     localStorage.removeItem(this.summaryData);
     localStorage.removeItem(this.roomData);
-
+    localStorage.removeItem('children_per_room');
   }
 
   setSearchData(data: any[]): void {

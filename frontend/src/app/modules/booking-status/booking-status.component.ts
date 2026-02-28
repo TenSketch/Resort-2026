@@ -51,13 +51,10 @@ export class BookingStatusComponent {
   api_url: any;
 
   constructor(
-    private userService: UserService,
     private route: ActivatedRoute,
-    private router: Router,
     private authService: AuthService,
     private http: HttpClient,
-    private formBuilder: FormBuilder,
-    private galleryService: GalleryService
+    public galleryService: GalleryService // Make it public to access in template
   ) {
     this.api_url = environment.API_URL;
   }

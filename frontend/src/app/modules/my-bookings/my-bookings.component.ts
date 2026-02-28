@@ -29,6 +29,22 @@ export class MyBookingsComponent {
   cancellationReason: string = '';
   currentDate: Date = new Date();
 
+  // Modular UI Filtering State
+  currentFilter: 'all' | 'resort' | 'trek' = 'all';
+
+  get filteredBookings() {
+    if (this.currentFilter === 'resort') {
+      return this.bookingData.filter(item => item.booking_type === 'room' || item.booking_type === 'tent');
+    } else if (this.currentFilter === 'trek') {
+      return this.bookingData.filter(item => item.booking_type === 'trek');
+    }
+    return this.bookingData;
+  }
+
+  setFilter(filter: 'all' | 'resort' | 'trek') {
+    this.currentFilter = filter;
+  }
+
   days: { date: number; booked: boolean }[] = [];
   monthName: string = '';
   year: number = new Date().getFullYear();

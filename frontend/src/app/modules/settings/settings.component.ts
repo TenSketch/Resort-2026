@@ -6,6 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../auth.service';
 import { environment } from '@/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-settings',
@@ -276,6 +278,8 @@ export class SettingsComponent implements OnInit {
   ];
 
   showLoader = false;
+  /** Separate flag so pincode lookup doesn't hide the whole form */
+  fetchingPincode = false;
   api_url: any;
   maxDate: Date;
   isDarkMode = false;
@@ -339,6 +343,16 @@ export class SettingsComponent implements OnInit {
       if (idControl) {
         idControl.setValidators([Validators.required, this.getIdCardValidator(type)]);
         idControl.updateValueAndValidity();
+      }
+    });
+
+    // Auto-fetch city/state when a complete & valid 6-digit pincode is typed
+    this.form.get('pincode')?.valueChanges.pipe(
+      debounceTime(600),
+      distinctUntilChanged()
+    ).subscribe((value: string) => {
+      if (value && /^[1-9][0-9]{5}$/.test(value)) {
+        this.fetchAddressByPincode();
       }
     });
   }
@@ -425,10 +439,10 @@ export class SettingsComponent implements OnInit {
   fetchAddressByPincode() {
     const pincode = this.form.get('pincode')?.value;
     if (pincode && pincode.length === 6) {
-      this.showLoader = true;
+      this.fetchingPincode = true;
       this.http.get<any>(`https://api.postalpincode.in/pincode/${pincode}`).subscribe({
         next: (response) => {
-          this.showLoader = false;
+          this.fetchingPincode = false;
           if (response && response[0] && response[0].Status === 'Success') {
             const details = response[0].PostOffice[0];
             this.form.patchValue({
@@ -436,13 +450,13 @@ export class SettingsComponent implements OnInit {
               state: details.State,
               country: 'India'
             });
-            this.showSnackBar('Address details fetched successfully!', 'success-snackbar');
+            this.showSnackBar('Address auto-filled from pincode!', 'success-snackbar');
           } else {
             this.showSnackBar('Invalid Pincode or data not found.', 'error-snackbar');
           }
         },
         error: (err) => {
-          this.showLoader = false;
+          this.fetchingPincode = false;
           console.error('Pincode fetch error:', err);
           this.showSnackBar('Failed to fetch address details.', 'error-snackbar');
         }

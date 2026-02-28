@@ -121,10 +121,12 @@
                     <mat-label>Pincode *</mat-label>
                     <input matInput formControlName="pincode" type="text" maxlength="6" placeholder="6-digit Pincode">
                     <button mat-icon-button matSuffix type="button" (click)="fetchAddressByPincode()"
-                      [disabled]="form.get('pincode')?.invalid" matTooltip="Auto-fill city & state">
-                      <i class="fas fa-search-location"></i>
+                      [disabled]="form.get('pincode')?.invalid || fetchingPincode" matTooltip="Auto-fill city & state">
+                      <i *ngIf="!fetchingPincode" class="fas fa-search-location"></i>
+                      <i *ngIf="fetchingPincode" class="fas fa-spinner fa-spin text-primary"></i>
                     </button>
-                    <mat-hint>Enter pincode to auto-fill city &amp; state</mat-hint>
+                    <mat-hint *ngIf="!fetchingPincode">Enter pincode to auto-fill city &amp; state</mat-hint>
+                    <mat-hint *ngIf="fetchingPincode" class="text-primary">Fetching address details...</mat-hint>
                     <mat-error *ngIf="form.get('pincode')?.hasError('required')">Pincode is required</mat-error>
                     <mat-error *ngIf="form.get('pincode')?.hasError('pattern')">Enter valid 6-digit Pincode</mat-error>
                   </mat-form-field>

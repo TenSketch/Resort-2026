@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./datatables-responsive.css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -138,50 +140,4 @@ m Loading Animation */
 
 .animate-loading-bar {
   animation: loading-bar 2s ease-in-out infinite;
-}
-
-/* Mobile fixes for DataTables Column Visibility dropdown menu */
-@media (max-width: 768px) {
-
-  /* Center the menu on screen */
-  div.dt-button-collection {
-    position: fixed !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: calc(100vw - 32px) !important;
-    max-width: 400px !important;
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-    border-radius: 8px !important;
-    padding: 12px !important;
-    background-color: white !important;
-    z-index: 9999 !important;
-    margin: 0 !important;
-
-    /* Force Grid Layout */
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
-    align-content: start !important;
-  }
-
-  /* If DataTables wraps buttons in a div, apply grid there instead */
-  div.dt-button-collection>div {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
-    grid-column: 1 / -1 !important;
-    width: 100% !important;
-  }
-
-  div.dt-button-collection .dt-button {
-    width: 100% !important;
-    margin: 0 !important;
-    text-align: left !important;
-    padding: 8px !important;
-    font-size: 13px !important;
-    white-space: normal !important;
-    box-sizing: border-box !important;
-  }
 }

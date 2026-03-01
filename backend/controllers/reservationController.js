@@ -14,11 +14,12 @@ export const expirePendingReservations = async () => {
   try {
     const now = new Date()
 
-    // Find all pending reservations that have expired
-    const expiredReservations = await Reservation.updateMany(
+    // 1. Expire 15-min user-facing pending reservations (Unpaid, Pending, expired)
+    const expiredUserReservations = await Reservation.updateMany(
       {
         status: 'Pending',
         paymentStatus: 'Unpaid',
+        approval_status: { $in: [null, undefined] },
         expiresAt: { $lte: now }
       },
       {
@@ -29,11 +30,48 @@ export const expirePendingReservations = async () => {
       }
     )
 
-    if (expiredReservations.modifiedCount > 0) {
-      console.log(`Expired ${expiredReservations.modifiedCount} pending reservations`)
+    if (expiredUserReservations.modifiedCount > 0) {
+      console.log(`Expired ${expiredUserReservations.modifiedCount} user pending reservations`)
     }
 
-    return expiredReservations
+    // 2. Auto-release 12-hour DFO-pending bookings that were never approved/rejected
+    //    Find them individually so we can send notifications to the creator
+    const dfoExpired = await Reservation.find({
+      approval_status: 'PENDING_DFO_APPROVAL',
+      expiresAt: { $lte: now }
+    }).lean()
+
+    if (dfoExpired.length > 0) {
+      const ids = dfoExpired.map(r => r._id)
+      await Reservation.updateMany(
+        { _id: { $in: ids } },
+        {
+          $set: {
+            status: 'Not-Reserved',
+            paymentStatus: 'Unpaid',
+            approval_status: 'REJECTED',
+            approval_remarks: 'Auto-released: DFO did not approve within 12 hours.'
+          }
+        }
+      )
+
+      // Send a notification to each booking creator
+      const notifPromises = dfoExpired.map(r => {
+        if (!r.createdBy) return Promise.resolve()
+        return Notification.create({
+          title: 'Reservation Auto-Released',
+          message: `Booking ${r.bookingId || r._id} was not approved by DFO within 12 hours and has been automatically released.`,
+          type: 'RESERVATION_CANCELLED',
+          targetUser: r.createdBy,
+          link: `/reservation/all`
+        }).catch(e => console.error('Notification error for auto-release', e))
+      })
+      await Promise.all(notifPromises)
+
+      console.log(`Auto-released ${dfoExpired.length} DFO-pending reservations (1-hour timeout)`)
+    }
+
+    return { expiredUserReservations, dfoReleasedCount: dfoExpired.length }
   } catch (err) {
     console.error('Error expiring pending reservations:', err)
     return null
@@ -67,17 +105,19 @@ export const createReservation = async (req, res) => {
       // Superadmin: immediately confirmed
       payload.status = 'Reserved'
       payload.paymentStatus = 'Paid'
-    } else if (role !== 'dfo') {
+    } else if (role === 'dfo') {
+      // DFO: immediately confirmed — set valid enums before save, then confirm after
+      payload.status = 'Pending'
+      payload.paymentStatus = 'Unpaid'
+    } else {
       // Admin / staff: pending + 1-hour room block, needs DFO approval
       payload.status = 'Pending'
       payload.paymentStatus = 'Unpaid'
       payload.approval_status = 'PENDING_DFO_APPROVAL'
       const expiryTime = new Date()
-      expiryTime.setHours(expiryTime.getHours() + 1)
+      expiryTime.setHours(expiryTime.getHours() + 1)  // 1-hour DFO approval window
       payload.expiresAt = expiryTime
     }
-    // DFO: leave status/paymentStatus as sent from form (pending/unpaid)
-    // — we'll update to reserved/paid after save below
 
     // Check room availability (unless admin explicitly bypasses with forceBook flag)
     if (!payload.forceBook && payload.rooms && Array.isArray(payload.rooms) && payload.rooms.length > 0) {

@@ -819,10 +819,10 @@ export default function ReservationTable() {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
       }
       .dataTables_wrapper .dataTables_length {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
       }
       .dataTables_wrapper {
         width: 100%;
@@ -1047,7 +1047,20 @@ export default function ReservationTable() {
       title: "Food Preference",
       render: (data: string) => data || "NA",
     },
-    { data: "status", title: "Status" },
+    {
+      data: null,
+      title: "Status",
+      render: (_data: any, _type: any, row: Reservation) => {
+        const approvalBadge = row.approval_status === 'PENDING_DFO_APPROVAL'
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">⏳ Awaiting DFO</span>`
+          : row.approval_status === 'APPROVED'
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
+          : row.approval_status === 'REJECTED'
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
+          : '';
+        return `<div style="display:flex;flex-direction:column;gap:2px;">${row.status || ''}${approvalBadge}</div>`;
+      },
+    },
     {
       data: "totalPayable",
       title: "Amount Payable",
@@ -1175,132 +1188,7 @@ export default function ReservationTable() {
 
   return (
     <>
-      <style>{`
-        @media (max-width: 768px) {
-          .reservations-table-container .dt-layout-row {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            gap: 12px !important;
-            flex-wrap: nowrap !important;
-            width: 100% !important;
-          }
-
-          .reservations-table-container .dt-layout-table {
-            display: flex !important;
-            width: 100% !important;
-          }
-
-          .reservations-table-container .dt-layout-cell {
-            display: inline-flex !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            align-items: center !important;
-            flex-shrink: 0 !important;
-          }
-
-          .reservations-table-container .dt-layout-cell.dt-start {
-            flex: 0 1 auto !important;
-            width: auto !important;
-            justify-content: flex-start !important;
-            order: 1 !important;
-          }
-
-          .reservations-table-container .dt-layout-cell.dt-end {
-            flex: 1 1 auto !important;
-            width: auto !important;
-            justify-content: flex-end !important;
-            margin-left: auto !important;
-            order: 2 !important;
-          }
-
-          .reservations-table-container .dt-buttons {
-            display: inline-flex !important;
-            justify-content: flex-start !important;
-            flex-wrap: nowrap !important;
-          }
-
-          .reservations-table-container .dt-buttons .dt-button {
-            padding: 6px 12px !important;
-            font-size: 11px !important;
-            white-space: nowrap !important;
-            margin: 0 !important;
-          }
-
-          .reservations-table-container .dt-search {
-            display: inline-flex !important;
-            justify-content: flex-end !important;
-            align-items: center !important;
-            flex-wrap: nowrap !important;
-          }
-
-          .reservations-table-container .dt-search input {
-            padding: 6px 10px !important;
-            font-size: 10px !important;
-            width: 140px !important;
-            max-width: 100% !important;
-          }
-
-          .reservations-table-container .dt-search label {
-            font-size: 10px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 6px !important;
-            margin: 0 !important;
-            white-space: nowrap !important;
-          }
-
-          .reservations-table-container .dt-length {
-            flex: 0 0 auto !important;
-            margin: 0 !important;
-            display: inline-flex !important;
-            align-items: center !important;
-          }
-
-          .reservations-table-container .dt-length label {
-            font-size: 10px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 4px !important;
-            flex-wrap: nowrap !important;
-            margin: 0 !important;
-            white-space: nowrap !important;
-          }
-
-          .reservations-table-container .dt-length select {
-            padding: 4px 8px !important;
-            font-size: 11px !important;
-            margin: 0 4px !important;
-          }
-
-          .reservations-table-container .dt-paging {
-            flex: 0 0 auto !important;
-            margin: 0 !important;
-            display: inline-flex !important;
-            justify-content: center !important;
-            width: 100% !important;
-            align-items: center !important;
-            flex-wrap: nowrap !important;
-          }
-
-          .reservations-table-container .dt-paging .dt-paging-button {
-            padding: 4px 8px !important;
-            font-size: 10px !important;
-            margin: 0 1px !important;
-            min-width: 28px !important;
-          }
-
-          .reservations-table-container .dt-info {
-            display: none !important;
-          }
-
-          .reservations-table-container .dt-layout-row:last-child {
-            margin-top: 12px !important;
-          }
-        }
-      `}</style>
-      <div className="w-full max-w-full overflow-hidden reservations-table-container">
+      <div className="w-full max-w-full overflow-hidden dt-table-container">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
           <button
@@ -2253,9 +2141,46 @@ export default function ReservationTable() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  
+                </div>
+
+                  {/* DFO Approval Status — shown only if approval flow applies */}
+                  {selectedReservation.approval_status && (
+                    <div className="border-b pb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        DFO Approval Status
+                      </h3>
+                      {selectedReservation.approval_status === 'PENDING_DFO_APPROVAL' && (
+                        <div className="flex items-center gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
+                          <div>
+                            <span className="text-sm font-semibold text-amber-800">Awaiting DFO Approval</span>
+                            <p className="text-xs text-amber-600 mt-0.5">Room is blocked. Rooms will be auto-released if not approved within 1 hour.</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedReservation.approval_status === 'APPROVED' && (
+                        <div className="flex items-center gap-2.5 p-3 bg-green-50 border border-green-200 rounded-md">
+                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
+                          <span className="text-sm font-semibold text-green-800">Approved by DFO</span>
+                        </div>
+                      )}
+                      {selectedReservation.approval_status === 'REJECTED' && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                          <div className="flex items-center gap-2.5 mb-1">
+                            <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0" />
+                            <span className="text-sm font-semibold text-red-800">Rejected / Auto-Released by DFO</span>
+                          </div>
+                          {selectedReservation.approval_remarks && (
+                            <p className="text-xs text-red-600 mt-1 pl-5">{selectedReservation.approval_remarks}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Payment Information */}
+
                   <div className="border-b pb-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Payment Information

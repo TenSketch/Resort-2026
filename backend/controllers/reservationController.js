@@ -6,6 +6,7 @@ import Notification from '../models/notificationModel.js'
 import mongoose from 'mongoose'
 import transporter from '../config/nodemailer.js'
 import { checkRoomAvailability } from '../utils/roomAvailability.js'
+import { sendCancellationSMS } from '../services/reservationSmsService.js'
 
 
 
@@ -329,6 +330,25 @@ export const updateReservation = async (req, res) => {
             targetRoles: ['superadmin', 'dfo'],
             link: `/reservation/all`
           });
+
+          // Determine refund amount
+          const refundAmount = updated.refundAmount ?? (updated.refundPercentage > 0
+            ? ((updated.refundPercentage / 100) * (updated.totalPayable || 0))
+            : 0);
+
+          // Derive human-readable resort name
+          let resortName = 'VANAVIHARI';
+          if (updated.resort) {
+            try {
+              const resortDoc = await Resort.findById(updated.resort).lean();
+              if (resortDoc?.resortName) resortName = resortDoc.resortName.toUpperCase();
+            } catch (_) { /* ignore */ }
+          }
+
+          // Send guest + admin cancellation SMS (non-blocking)
+          sendCancellationSMS(updated, refundAmount, resortName)
+            .then(r => console.log(`📱 Cancellation SMS: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+            .catch(err => console.error('❌ Cancellation SMS error:', err.message));
         }
       } catch (notifErr) {
         console.error('Failed to create notification for reservation update', notifErr);

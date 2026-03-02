@@ -3,7 +3,7 @@ import { sendToBillDesk } from "../services/sendToBilldesk.js";
 import { retrieveTransaction } from "../services/retrieveTransaction.js";
 import { startTransactionPolling, stopTransactionPolling } from "../services/transactionPoller.js";
 import { sendTrekReservationEmails } from "../services/trekReservationEmailService.js";
-import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
+import { sendTrekReservationSMS } from "../services/reservationSmsService.js";
 import TouristSpotReservation from "../models/touristSpotReservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Resort from "../models/resortModel.js";
@@ -396,8 +396,8 @@ export const handlePaymentCallback = async (req, res) => {
                 const { sendTrekReservationEmails } = await import('../services/trekReservationEmailService.js');
                 sendTrekReservationEmails(updatedReservation, updatedPaymentTransaction)
                   .catch(err => console.error('Trek email error:', err.message));
-                sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
-                  .catch(err => console.error('SMS error:', err.message));
+                sendTrekReservationSMS(updatedReservation, updatedPaymentTransaction)
+                  .catch(err => console.error('Trek SMS error:', err.message));
               }
             } catch (err) {
               console.error('Immediate check error:', err.message);
@@ -433,10 +433,10 @@ export const handlePaymentCallback = async (req, res) => {
           .then(() => console.log('✅ Trek emails sent successfully'))
           .catch(err => console.error('❌ Trek email sending failed:', err.message));
 
-        // Send SMS asynchronously (don't wait for completion)
-        sendRoomReservationSMS(reservation, paymentTransaction)
+        // Send trek SMS asynchronously (don't wait for completion)
+        sendTrekReservationSMS(reservation, paymentTransaction)
           .then(() => console.log('✅ Trek reservation SMS sent successfully'))
-          .catch(err => console.error('❌ SMS sending failed:', err.message));
+          .catch(err => console.error('❌ Trek SMS sending failed:', err.message));
       }
 
       // Redirect based on status (Angular uses hash routing with type=trek)

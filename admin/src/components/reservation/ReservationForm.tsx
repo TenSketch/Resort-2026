@@ -39,6 +39,7 @@ interface Room {
 
 export default function AddReservationForm() {
   const { isDFO, isSuperAdmin } = useAdmin();
+  const [showDFOModal, setShowDFOModal] = useState(false);
   const [formData, setFormData] = useState({
     resort: "",
     cottageTypes: [] as string[],
@@ -557,9 +558,7 @@ export default function AddReservationForm() {
             "Booking created & confirmed! Status: Reserved, Payment: Paid.",
           );
         } else {
-          alert(
-            "Booking submitted!\n\u23F3 Awaiting DFO approval.\nRooms are blocked for 1 hour.\nIf not approved within the hour, the rooms will be released automatically.",
-          );
+          setShowDFOModal(true);
         }
         // reset form
         setFormData({
@@ -1166,6 +1165,74 @@ export default function AddReservationForm() {
           </div>
         </form>
       </div>
+
+      {/* ── DFO Approval Modal ─────────────────────────────── */}
+      {showDFOModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+          onClick={() => setShowDFOModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon */}
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-amber-50 border-2 border-amber-300 mx-auto">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-7 h-7 text-amber-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+
+            {/* Title */}
+            <div className="text-center">
+              <h2 className="text-lg font-semibold text-slate-800 mb-1">
+                Reservation Submitted
+              </h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                This reservation needs to be approved by{" "}
+                <span className="font-semibold text-slate-700">DFO</span>{" "}
+                within{" "}
+                <span className="font-semibold text-amber-600">1 hour</span>.
+                <br />
+                After 1 hour, if not approved,{" "}
+                <span className="font-medium text-slate-700">
+                  rooms will be released
+                </span>
+                .
+              </p>
+            </div>
+
+            {/* Status badge */}
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
+              <span className="text-xs text-amber-700 font-medium">
+                Rooms are blocked for 1 hour — awaiting DFO approval
+              </span>
+            </div>
+
+            {/* Dismiss */}
+            <button
+              onClick={() => setShowDFOModal(false)}
+              className="w-full mt-1 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

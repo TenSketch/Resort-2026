@@ -1,6 +1,6 @@
 import { retrieveTransaction } from './retrieveTransaction.js';
 import { sendReservationSuccessEmails } from './reservationEmailService.js';
-import { sendRoomReservationSMS, sendTentReservationSMS } from './reservationSmsService.js';
+import { sendRoomReservationSMS, sendTentReservationSMS, sendTrekReservationSMS } from './reservationSmsService.js';
 import Reservation from '../models/reservationModel.js';
 import TentReservation from '../models/tentReservationModel.js';
 import PaymentTransaction from '../models/paymentTransactionModel.js';
@@ -77,7 +77,16 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
 
   try {
     // Get the appropriate model based on booking type
-    const ReservationModel = bookingType === 'tent' ? TentReservation : Reservation;
+    let ReservationModel;
+    if (bookingType === 'tent') {
+      ReservationModel = TentReservation;
+    } else if (bookingType === 'trek') {
+      // Trek uses a dynamic import to avoid circular deps
+      const { default: TouristSpotReservation } = await import('../models/touristSpotReservationModel.js');
+      ReservationModel = TouristSpotReservation;
+    } else {
+      ReservationModel = Reservation;
+    }
 
     // First check if reservation is still pending
     const reservation = await ReservationModel.findOne({ bookingId }).lean();
@@ -166,6 +175,18 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
         sendTentReservationSMS(updatedReservation, updatedPaymentTransaction)
           .then(() => console.log(`✅ Tent reservation SMS sent`))
           .catch(err => console.error(`❌ Tent SMS sending error: ${err.message}`));
+
+      } else if (bookingType === 'trek') {
+        // Send trek booking emails
+        const { sendTrekReservationEmails } = await import('./trekReservationEmailService.js');
+        sendTrekReservationEmails(updatedReservation, updatedPaymentTransaction)
+          .then(() => console.log(`✅ Trek confirmation emails sent`))
+          .catch(err => console.error(`❌ Trek email sending error: ${err.message}`));
+
+        // Send trek SMS (dedicated trek template)
+        sendTrekReservationSMS(updatedReservation, updatedPaymentTransaction)
+          .then(() => console.log(`✅ Trek reservation SMS sent`))
+          .catch(err => console.error(`❌ Trek SMS sending error: ${err.message}`));
       } else {
         // Send room booking emails
         sendReservationSuccessEmails(updatedReservation, updatedPaymentTransaction)

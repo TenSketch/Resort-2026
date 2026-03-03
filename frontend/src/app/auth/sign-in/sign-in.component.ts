@@ -82,7 +82,7 @@ export class SignInComponent implements OnInit {
         .subscribe({
           next: (response) => {
             this.disableSign = false;
-            if (response.code == 3000 && response.result.status == 'Success') {
+            if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
               this.isLoading = false;
               this.showAlert = false;
               this.showSnackBarAlert('Login Success', false);
@@ -106,9 +106,9 @@ export class SignInComponent implements OnInit {
               
               let rooms = localStorage.getItem('booking_rooms');
               if (rooms == '[]' || rooms == null) {
-                this.router.navigateByUrl('home');
+                this.router.navigate(['/home']);
               } else {
-                this.router.navigateByUrl('booking-summary');
+                this.router.navigate(['/booking-summary']);
               }
             } else if (response.code == 3000) {
               this.isLoading = false;

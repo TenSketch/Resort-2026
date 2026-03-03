@@ -382,7 +382,7 @@ export class SettingsComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.showLoader = false;
-          if (response.code == 3000 && response.result.status == 'Success') {
+          if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
             const result = response.result;
             
             this.form.patchValue({
@@ -480,7 +480,7 @@ onSubmit() {
         .subscribe({
           next: (response) => {
             this.showLoader = false;
-            if (response.code == 3000 && response.result.status == 'Success') {
+            if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
               this.showSnackBar('Profile updated successfully!', 'success-snackbar');
             } else {
               this.showSnackBar(response.result.msg || 'Update failed', 'error-snackbar');

@@ -353,7 +353,9 @@ mat-hint {
 .modal {
   z-index: 15050 !important;
 }
-
+.modal-dialog {
+  z-index: 1000 !important;
+}
 // .modal-dialog {
 //   z-index: 1000 !important;
 //   margin: 0 auto !important;

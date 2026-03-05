@@ -5,7 +5,7 @@ import {
   LogOut,
   Building2,
   Tent,
-  MapPin,
+  Mountain,
   Check,
   ChevronDown,
   Users,
@@ -160,7 +160,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   }[] = [
     { value: "resort", label: "Resort", icon: Building2 },
     { value: "tent", label: "Tent", icon: Tent },
-    { value: "tourist-spot", label: "Trek Spot", icon: MapPin },
+    { value: "tourist-spot", label: "Trek Spot", icon: Mountain },
   ];
 
   const currentViewOption = viewTypeOptions.find(

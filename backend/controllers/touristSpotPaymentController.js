@@ -41,8 +41,8 @@ export const initiatePayment = async (req, res) => {
     const istDate = new Date(now.getTime() + istOffset);
     const orderDate = istDate.toISOString().split('.')[0] + '+05:30';
 
-    // Generate unique order ID (use bookingId)
-    const orderId = bookingId;
+    // Generate unique order ID (use bookingId but sanitized)
+    const orderId = bookingId.replace(/[^a-zA-Z0-9-]/g, '');
 
     // Get real client IP - check proxy headers first
     let clientIp = req.headers['x-forwarded-for']
@@ -92,9 +92,9 @@ export const initiatePayment = async (req, res) => {
       ru: process.env.BILLDESK_TREK_RETURN_URL || process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').substring(0, 50),
-        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').substring(0, 20),
-        additional_info3: (reservation.user?.email || reservation.email || 'NA').substring(0, 50),
+        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
+        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 20) || 'NA',
+        additional_info3: (reservation.user?.email || reservation.email || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",
@@ -249,10 +249,10 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
   }
 };
 
-// Handle payment callback from BillDesk
+// Handle payment callback from BillDesk (RU - Return URL for frontend redirect only)
 export const handlePaymentCallback = async (req, res) => {
   try {
-    console.log("\n=== PAYMENT CALLBACK RECEIVED ===");
+    console.log("\n=== RETURN URL (RU) CALLBACK RECEIVED ===");
     console.log("Request Method:", req.method);
     console.log("Request Headers:", req.headers);
     console.log("Request Body:", req.body);
@@ -298,16 +298,71 @@ export const handlePaymentCallback = async (req, res) => {
       orderid: bookingId,
       transactionid,
       auth_status,
-      amount,
-      transaction_error_type,
+      transaction_error_desc
+    } = decryptedResponse;
+
+    // Check auth_status to determine redirect (Do NOT update DB here, Webhook does that)
+    if (auth_status === '0300') {
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&type=trek`);
+    } else if (auth_status === '0002') {
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending&type=trek`);
+    } else {
+      const errorMsg = encodeURIComponent(transaction_error_desc || 'payment_failed');
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=failed&error=${errorMsg}&type=trek`);
+    }
+
+  } catch (err) {
+    console.error("handlePaymentCallback Error:", err);
+    return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=callback_error`);
+  }
+};
+
+// Handle Webhook callback from BillDesk (S2S - For DB updates)
+export const handleWebhookCallback = async (req, res) => {
+  try {
+    console.log("\n=== WEBHOOK CALLBACK RECEIVED ===");
+    console.log("Request Method:", req.method);
+    console.log("Request Headers:", req.headers);
+    console.log("Request Body:", req.body);
+    
+    const encryptedResponse = req.body?.encrypted_response
+      || req.body?.transaction_response
+      || req.body?.msg
+      || req.query?.msg
+      || req.body?.response
+      || req.query?.response;
+
+    if (!encryptedResponse) {
+      console.error("❌ No encrypted response received in webhook");
+      return res.status(400).send("No encrypted response received");
+    }
+
+    const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
+    const signKey = process.env.BILLDESK_SIGNING_KEY;
+
+    // Verify signature
+    const isValid = await verifySignature(encryptedResponse, signKey);
+    if (!isValid) {
+      console.error("Invalid signature in webhook");
+      return res.status(400).send("Invalid signature");
+    }
+
+    // Decrypt response
+    const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
+    console.log("Webhook Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
+
+    const {
+      orderid: bookingId,
+      transactionid,
+      auth_status,
       transaction_error_desc
     } = decryptedResponse;
 
     // Find reservation
     const reservation = await TouristSpotReservation.findOne({ bookingId });
     if (!reservation) {
-      console.error("Reservation not found:", bookingId);
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=reservation_not_found`);
+      console.error("Reservation not found in webhook:", bookingId);
+      return res.status(404).send("Reservation not found");
     }
 
     // Find payment transaction
@@ -315,148 +370,77 @@ export const handlePaymentCallback = async (req, res) => {
 
     // Update payment transaction
     if (paymentTransaction) {
-      paymentTransaction.transactionId = transactionid;
-      paymentTransaction.authStatus = auth_status;
-      paymentTransaction.decryptedResponse = decryptedResponse;
+      // Only process if it's not already a final state, or if this is a success override
+      if (['Initiated', 'Pending'].includes(paymentTransaction.status) || auth_status === '0300') {
+        paymentTransaction.transactionId = transactionid;
+        paymentTransaction.authStatus = auth_status;
+        paymentTransaction.decryptedResponse = decryptedResponse;
+        paymentTransaction.encryptedResponse = encryptedResponse;
 
-      // Determine status based on auth_status
-      if (auth_status === '0300') {
-        // Success
-        paymentTransaction.status = 'Success';
-        reservation.status = 'Reserved';
-        reservation.paymentStatus = 'Paid';
-        reservation.expiresAt = null; // Clear expiry
-        // Store transaction ID in rawSource for easy access
-        if (!reservation.rawSource) reservation.rawSource = {};
-        reservation.rawSource.transactionId = transactionid;
-        reservation.rawSource.bankRefNo = decryptedResponse.bank_ref_no;
-        reservation.rawSource.authCode = decryptedResponse.authcode;
-        // Mark rawSource as modified for Mongoose to save it
-        reservation.markModified('rawSource');
-      } else if (auth_status === '0399') {
-        // Failed
-        paymentTransaction.status = 'Failed';
-        paymentTransaction.errorMessage = transaction_error_desc;
-        reservation.status = 'Not-Reserved';
-        reservation.paymentStatus = 'Unpaid';
-        // Store error info
-        if (!reservation.rawSource) reservation.rawSource = {};
-        reservation.rawSource.paymentError = transaction_error_desc;
-      } else if (auth_status === '0002') {
-        // Pending - but check if it's actually successful (BillDesk UAT quirk)
-        console.log('⏳ Payment pending, but checking if actually successful...');
-        paymentTransaction.status = 'Pending';
-        reservation.paymentStatus = 'Unpaid';
-
-        // If transaction_error_desc says "successful", immediately retrieve real status
-        if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
-          console.log('🔍 Transaction says "successful" but status is pending - will retrieve immediately');
-          // Import at top if not already: import { retrieveTransaction } from '../services/retrieveTransaction.js';
-          // Schedule immediate check (after 10 seconds to allow BillDesk to update)
-          setTimeout(async () => {
-            try {
-              console.log(`🔍 Immediate status check for ${bookingId}`);
-              const authToken = reservation?.rawSource?.authToken || null;
-              const result = await retrieveTransaction(bookingId, process.env.BILLDESK_MERCID, authToken);
-
-              if (result.success && result.data.auth_status === '0300') {
-                console.log('✅ Payment actually successful! Updating now...');
-
-                await TouristSpotReservation.findOneAndUpdate(
-                  { bookingId },
-                  {
-                    status: 'Reserved',
-                    paymentStatus: 'Paid',
-                    expiresAt: null,
-                    $set: {
-                      'rawSource.transactionId': result.data.transactionid,
-                      'rawSource.authStatus': '0300',
-                      'rawSource.bankRefNo': result.data.bank_ref_no,
-                      'rawSource.authCode': result.data.authcode
-                    }
-                  }
-                );
-
-                await PaymentTransaction.findOneAndUpdate(
-                  { bookingId },
-                  {
-                    status: 'Success',
-                    authStatus: '0300',
-                    decryptedResponse: result.data
-                  }
-                );
-
-                // Stop polling and send emails
-                const { stopTransactionPolling } = await import('../services/transactionPoller.js');
-                stopTransactionPolling(bookingId);
-
-                const updatedReservation = await TouristSpotReservation.findOne({ bookingId }).lean();
-                const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
-
-                const { sendTrekReservationEmails } = await import('../services/trekReservationEmailService.js');
-                sendTrekReservationEmails(updatedReservation, updatedPaymentTransaction)
-                  .catch(err => console.error('Trek email error:', err.message));
-                sendTrekReservationSMS(updatedReservation, updatedPaymentTransaction)
-                  .catch(err => console.error('Trek SMS error:', err.message));
-              }
-            } catch (err) {
-              console.error('Immediate check error:', err.message);
-            }
-          }, 10000); // Check after 10 seconds
+        // Determine status based on auth_status
+        if (auth_status === '0300') {
+          // Success
+          paymentTransaction.status = 'Success';
+          reservation.status = 'Reserved';
+          reservation.paymentStatus = 'Paid';
+          reservation.expiresAt = null; // Clear expiry
+          if (!reservation.rawSource) reservation.rawSource = {};
+          reservation.rawSource.transactionId = transactionid;
+          reservation.rawSource.bankRefNo = decryptedResponse.bank_ref_no;
+          reservation.rawSource.authCode = decryptedResponse.authcode;
+          reservation.markModified('rawSource');
+        } else if (auth_status === '0399') {
+          // Failed
+          paymentTransaction.status = 'Failed';
+          paymentTransaction.errorMessage = transaction_error_desc;
+          reservation.status = 'Not-Reserved';
+          reservation.paymentStatus = 'Unpaid';
+          if (!reservation.rawSource) reservation.rawSource = {};
+          reservation.rawSource.paymentError = transaction_error_desc;
+        } else if (auth_status === '0002') {
+          // Pending
+          paymentTransaction.status = 'Pending';
+          reservation.paymentStatus = 'Unpaid';
+        } else if (auth_status === '0398') {
+          // User cancelled
+          paymentTransaction.status = 'Cancelled';
+          reservation.status = 'Not-Reserved';
+          reservation.paymentStatus = 'Unpaid';
         }
-      } else if (auth_status === '0398') {
-        // User cancelled
-        paymentTransaction.status = 'Cancelled';
-        reservation.status = 'Not-Reserved';
-        reservation.paymentStatus = 'Unpaid';
+
+        await paymentTransaction.save();
+        await reservation.save();
+
+        console.log("Webhook Payment Status:", paymentTransaction.status);
+
+        // Send emails only once when transitioning to Success
+        if (paymentTransaction.status === 'Success') {
+           const { stopTransactionPolling } = await import('../services/transactionPoller.js');
+           stopTransactionPolling(bookingId);
+           
+           try {
+             const userEmail = reservation.user?.email || reservation.email;
+             console.log(`📧 Sending trek confirmation emails from webhook to ${userEmail}...`);
+             sendTrekReservationEmails(reservation, paymentTransaction).catch(e => console.error(e));
+             sendTrekReservationSMS(reservation, paymentTransaction).catch(e => console.error(e));
+           } catch(e) {
+             console.error('Error sending communications from webhook:', e);
+           }
+        }
       } else {
-        // Unknown status - keep as unpaid
-        paymentTransaction.status = 'Pending';
-        reservation.paymentStatus = 'Unpaid';
+        console.log(`Webhook ignoring update, tx already in final state: ${paymentTransaction.status}`);
       }
-
-      await paymentTransaction.save();
-      await reservation.save();
-
-      console.log("Payment Status:", paymentTransaction.status);
-      console.log("Reservation Status:", reservation.status);
-      console.log("================================\n");
-
-      // Send email notifications for successful payments
-      if (paymentTransaction.status === 'Success') {
-        const userEmail = reservation.user?.email || reservation.email;
-        console.log(`📧 Sending trek confirmation emails to ${userEmail}...`);
-        // Stop polling since payment is confirmed
-        stopTransactionPolling(bookingId);
-        // Send emails asynchronously (don't wait for completion)
-        sendTrekReservationEmails(reservation, paymentTransaction)
-          .then(() => console.log('✅ Trek emails sent successfully'))
-          .catch(err => console.error('❌ Trek email sending failed:', err.message));
-
-        // Send trek SMS asynchronously (don't wait for completion)
-        sendTrekReservationSMS(reservation, paymentTransaction)
-          .then(() => console.log('✅ Trek reservation SMS sent successfully'))
-          .catch(err => console.error('❌ Trek SMS sending failed:', err.message));
-      }
-
-      // Redirect based on status (Angular uses hash routing with type=trek)
-      if (paymentTransaction.status === 'Success') {
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&type=trek`);
-      } else if (paymentTransaction.status === 'Pending') {
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending&type=trek`);
-      } else {
-        // URL encode the error message to handle special characters
-        const errorMsg = encodeURIComponent(transaction_error_desc || 'payment_failed');
-        return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=failed&error=${errorMsg}&type=trek`);
-      }
+      
+      // Send 200 OK back to BillDesk as Ack
+      return res.status(200).send("OK");
     } else {
-      console.error("Payment transaction not found");
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=transaction_not_found`);
+      console.error("Payment transaction not found in webhook");
+      return res.status(404).send("Transaction not found");
     }
 
   } catch (err) {
-    console.error("handlePaymentCallback Error:", err);
-    return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=callback_error`);
+    console.error("handleWebhookCallback Error:", err);
+    return res.status(500).send("Internal Server Error");
   }
 };
 

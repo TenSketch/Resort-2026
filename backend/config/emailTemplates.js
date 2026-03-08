@@ -418,7 +418,7 @@ export const RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE =`
       <p>
         Vanavihari Booking System<br>
         
-        <a href="mailto:info@tensketch.com">info@tensketch.com</a>
+        <a href="mailto:info@vanavihari.com">info@vanavihari.com</a>
       </p>
     </div>
   </div>
@@ -614,7 +614,7 @@ export const TENT_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
       <p>
         Vanavihari Booking System<br>
         
-        <a href="mailto:info@tensketch.com">info@tensketch.com</a>
+        <a href="mailto:info@vanavihari.com">info@vanavihari.com</a>
       </p>
     </div>
   </div>
@@ -808,7 +808,7 @@ export const TREK_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
       <p>
         Vanavihari Booking System<br>
         
-        <a href="mailto:info@tensketch.com">info@tensketch.com</a>
+        <a href="mailto:info@vanavihari.com">info@vanavihari.com</a>
       </p>
     </div>
   </div>

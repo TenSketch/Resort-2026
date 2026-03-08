@@ -1,5 +1,6 @@
 import express from "express";
 import { initiatePayment, handlePaymentCallback, retrieveTransactionStatus } from "../controllers/paymentController.js";
+import { processRefund } from "../controllers/refundController.js";
 import auth from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -13,5 +14,8 @@ router.get("/callback", handlePaymentCallback); // Some gateways use GET
 
 // Retrieve transaction status (requires user authentication)
 router.get("/transaction/:bookingId", auth, retrieveTransactionStatus);
+
+// Process a refund
+router.post("/refund", auth, processRefund);
 
 export default router;

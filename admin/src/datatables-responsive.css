@@ -31,7 +31,7 @@ div.dt-button-collection {
     align-content: start !important;
   }
 
-  div.dt-button-collection > div {
+  div.dt-button-collection>div {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 6px !important;
@@ -60,12 +60,6 @@ div.dt-button-collection {
 .dt-table-container .dataTables_wrapper .dt-buttons {
   margin-bottom: 0 !important;
   margin-top: 0 !important;
-}
-
-.dt-table-container .dataTables_info,
-.dt-table-container .dataTables_wrapper .dataTables_info,
-.dt-table-container .dt-info {
-  display: none !important;
 }
 
 /* ── Reset Filters button ────────────────────────────────── */
@@ -160,8 +154,8 @@ div.dt-button-collection {
   }
 
   /* Heading + action button row above the table */
-  .dt-table-container > .flex.justify-between,
-  .dt-table-container > div > .flex.justify-between,
+  .dt-table-container>.flex.justify-between,
+  .dt-table-container>div>.flex.justify-between,
   .dt-table-container .flex.justify-between.items-center.mb-4 {
     margin-bottom: 8px !important;
   }
@@ -199,6 +193,20 @@ div.dt-button-collection {
     order: 1 !important;
   }
 
+  /* Specifically center the info cell if it is on top */
+  .dt-table-container .dt-layout-row:first-child .dt-layout-cell.dt-start {
+    justify-content: center !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .dt-table-container .dt-layout-row:first-child .dt-layout-cell.dt-start .dt-info {
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
   /* Search row → full width, below buttons */
   .dt-table-container .dt-layout-cell.dt-end {
     flex: 1 1 100% !important;
@@ -218,7 +226,7 @@ div.dt-button-collection {
 
   .dt-table-container .dt-buttons .dt-button {
     padding: 5px 10px !important;
-    
+
     white-space: nowrap !important;
     margin: 0 !important;
     height: 30px !important;
@@ -227,7 +235,7 @@ div.dt-button-collection {
 
   /* Reset Filters */
   .dt-table-container .reset-filters-btn {
-    
+
     padding: 5px 10px !important;
     margin-left: 0px !important;
     height: 30px !important;
@@ -244,7 +252,7 @@ div.dt-button-collection {
   }
 
   .dt-table-container .dt-search label {
-    
+
     display: inline-flex !important;
     align-items: center !important;
     gap: 5px !important;
@@ -255,23 +263,24 @@ div.dt-button-collection {
 
   .dt-table-container .dt-search input {
     padding: 5px 8px !important;
-    
+
     width: 150px !important;
     max-width: 150px !important;
     flex: 1 1 auto !important;
     height: 30px !important;
   }
 
-  /* Page-length row */
+
   .dt-table-container .dt-length {
     flex: 0 0 auto !important;
+    width: 100% !important;
+    justify-content: center !important;
     margin: 0 !important;
     display: inline-flex !important;
     align-items: center !important;
   }
 
   .dt-table-container .dt-length label {
-    
     display: inline-flex !important;
     align-items: center !important;
     gap: 3px !important;
@@ -282,7 +291,6 @@ div.dt-button-collection {
 
   .dt-table-container .dt-length select {
     padding: 3px 6px !important;
-    
     margin: 0 3px !important;
     height: 28px !important;
   }
@@ -290,19 +298,20 @@ div.dt-button-collection {
   /* Pagination */
   .dt-table-container .dt-paging {
     flex: 0 0 auto !important;
+    width: 100% !important;
+    justify-content: center !important;
     margin: 0 !important;
     display: inline-flex !important;
-    justify-content: flex-end !important;
     align-items: center !important;
     flex-wrap: wrap !important;
   }
 
   .dt-table-container .dt-paging .dt-paging-button {
-    padding: 3px 6px !important;
-    font-size: 10px !important;
-    margin: 0 1px !important;
-    min-width: 26px !important;
-    height: 26px !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    margin: 0 2px !important;
+    min-width: 30px !important;
+    height: 30px !important;
     line-height: 1 !important;
   }
 }

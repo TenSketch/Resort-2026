@@ -338,24 +338,24 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                ) + 1
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              ) + 1
               : updatedLocal.noOfDays,
           noOfNights:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                )
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              )
               : updatedLocal.noOfNights || 0,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -888,6 +888,223 @@ export default function ReservationTable() {
       table.dataTable tbody tr:hover.disabled-row {
         background-color: #eeeeee !important;
       }
+      /* Pagination styling - Clear & Professional */
+      .dt-paging {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        margin-top: 1.5rem !important;
+        justify-content: flex-end !important;
+      }
+      .dt-paging-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 2rem !important;
+        height: 2rem !important;
+        padding: 0 0.5rem !important;
+        margin: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: #64748b !important;
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        border-radius: 9999px !important;
+      }
+      .dt-paging-button:hover:not(.disabled):not(.current) {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+      }
+      .dt-paging-button.current {
+        background: #3b82f6 !important;
+        color: white !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3) !important;
+      }
+      .dt-paging-button.disabled {
+        color: #cbd5e1 !important;
+        cursor: not-allowed !important;
+        opacity: 0.5 !important;
+      }
+      /* Pagination styling - Final Refined Look */
+      .dt-paging {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        margin-top: 1.5rem !important;
+        justify-content: flex-end !important;
+      }
+      .dt-paging .dt-paging-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: #000000 !important;
+        font-size: 1.1rem !important; /* Base size for numbers */
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        border-radius: 6px !important;
+      }
+      /* Specific sizing for symbols to make them 'medium' and 'clear' */
+      .dt-paging .dt-paging-button.first,
+      .dt-paging .dt-paging-button.last,
+      .dt-paging .dt-paging-button.previous,
+      .dt-paging .dt-paging-button.next {
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+      }
+      .dt-paging .dt-paging-button:hover:not(.disabled):not(.current) {
+        background: #f1f5f9 !important;
+      }
+      .dt-paging .dt-paging-button.current {
+        background: #3b82f6 !important;
+        color: white !important;
+        font-weight: 700 !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      .dt-paging .dt-paging-button.disabled {
+        color: #000000 !important;
+        cursor: not-allowed !important;
+        opacity: 0.7 !important; /* Keep it clear but indicate disabled */
+      }
+      /* Desktop Alignment for Column Visibility next to Search */
+      @media (min-width: 1024px) {
+        .dt-layout-row:first-child .dt-layout-end {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 1.5rem !important;
+        }
+        .dt-buttons {
+          margin-bottom: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 0.75rem !important;
+        }
+        .dataTables_filter {
+          margin-top: 0 !important;
+        }
+      }
+      .dt-info {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        line-height: normal !important;
+      }
+      @media (max-width: 768px) {
+        .dt-table-container .dt-layout-row {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          gap: 1rem !important;
+          margin: 0.75rem 0 !important;
+        }
+        .dt-layout-start {
+          order: 1 !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+        }
+        .dt-layout-end {
+          order: 2 !important;
+          width: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 1rem !important;
+        }
+        .dt-info {
+          font-size: 15px !important;
+          font-weight: 500 !important;
+          color: #64748b !important;
+          margin-top: 1.5rem !important;
+          text-align: center !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+        }
+        .dt-table-container .dt-search {
+          order: 1 !important;
+          width: auto !important;
+          max-width: fit-content !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          gap: 8px !important;
+          margin: 0.75rem auto !important;
+          padding: 0 !important;
+        }
+        .dt-search label {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          width: auto !important;
+          font-weight: 600 !important;
+          font-size: 14px !important;
+          color: #334155 !important;
+          white-space: nowrap !important;
+          margin: 0 !important;
+        }
+        .dt-search input {
+          width: 150px !important;
+          height: 36px !important;
+          border: 1px solid #cbd5e1 !important;
+          border-radius: 8px !important;
+          padding: 0 10px !important;
+          font-size: 14px !important;
+          margin: 0 !important;
+        }
+        .dt-buttons {
+          order: 2 !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 0.75rem !important;
+          width: 100% !important;
+          padding: 0 5% !important;
+        }
+        .dt-buttons button, 
+        .dt-buttons .dt-button,
+        .reset-filters-btn {
+          flex: 1 !important;
+          min-width: 0 !important;
+          max-width: 160px !important;
+          height: 38px !important;
+          font-size: 13px !important;
+          white-space: nowrap !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          margin: 0 !important;
+        }
+        .dt-length {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          width: 100% !important;
+          margin: 1rem auto !important;
+          gap: 8px !important;
+        }
+        .dt-paging {
+          display: flex !important;
+          justify-content: center !important;
+          width: 100% !important;
+          margin: 1.5rem auto !important;
+        }
+      }
     `;
     document.head.appendChild(style);
 
@@ -1054,10 +1271,10 @@ export default function ReservationTable() {
         const approvalBadge = row.approval_status === 'PENDING_DFO_APPROVAL'
           ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">⏳ Awaiting DFO</span>`
           : row.approval_status === 'APPROVED'
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
-          : row.approval_status === 'REJECTED'
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
-          : '';
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
+            : row.approval_status === 'REJECTED'
+              ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
+              : '';
         return `<div style="display:flex;flex-direction:column;gap:2px;">${row.status || ''}${approvalBadge}</div>`;
       },
     },
@@ -1153,9 +1370,8 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1178,8 +1394,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -1234,8 +1450,17 @@ export default function ReservationTable() {
               scrollX: true,
               scrollCollapse: true,
               scrollY: "400px",
+              language: {
+                paginate: {
+                  first: "«",
+                  last: "»",
+                  next: "›",
+                  previous: "‹",
+                },
+              },
               layout: {
-                topStart: "buttons",
+                topStart: "info",
+                topEnd: ["buttons", "search"],
                 bottomStart: "pageLength",
                 bottomEnd: "paging",
               },
@@ -1251,70 +1476,46 @@ export default function ReservationTable() {
                 ["orderAsc", "orderDesc", "spacer", "search"],
               ],
               initComplete: function () {
-                const wrapper = (this as any).api().table().container();
-                const topRow = wrapper.querySelector(
-                  ".dt-layout-row:first-child",
-                );
-                if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const api = (this as any).api();
+                const wrapper = api.table().container();
+                const buttonsContainer = wrapper.querySelector(".dt-buttons");
+
+                if (buttonsContainer && !wrapper.querySelector(".reset-filters-btn")) {
                   const btn = document.createElement("button");
                   btn.className = "reset-filters-btn";
                   btn.textContent = "Reset Filters";
                   btn.style.cssText =
-                    "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                  btn.onmouseenter = () => {
-                    btn.style.background = "#e2e8f0";
-                  };
-                  btn.onmouseleave = () => {
-                    btn.style.background = "#f8fafc";
-                  };
+                    "padding:6px 16px; border-radius:6px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s ease;";
+
+                  btn.onmouseenter = () => { btn.style.background = "#e2e8f0"; };
+                  btn.onmouseleave = () => { btn.style.background = "#f8fafc"; };
+
                   btn.onclick = () => {
-                    const api = (this as any).api();
-                    const container = api.table().container();
-
-                    // 1. Clear global search and column searches
                     api.search("").columns().search("");
-
-                    // 2. Clear Column Control plugin filters (API method)
                     if (api.columns().ccSearchClear) {
                       (api.columns() as any).ccSearchClear();
                     }
 
-                    // 3. Clear all inputs and trigger events to sync UI
-                    container
-                      .querySelectorAll("input")
-                      .forEach((input: any) => {
-                        input.value = "";
-                        input.dispatchEvent(
-                          new Event("input", { bubbles: true }),
-                        );
-                        input.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      });
+                    wrapper.querySelectorAll("input").forEach((input: any) => {
+                      input.value = "";
+                      input.dispatchEvent(new Event("input", { bubbles: true }));
+                      input.dispatchEvent(new Event("change", { bubbles: true }));
+                    });
 
-                    // 4. Clear all selects and trigger events
-                    container
-                      .querySelectorAll("select")
-                      .forEach((select: any) => {
-                        if (select.options.length > 0) {
-                          select.selectedIndex = 0;
-                          select.dispatchEvent(
-                            new Event("change", { bubbles: true }),
-                          );
-                        }
-                      });
+                    wrapper.querySelectorAll("select").forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(new Event("change", { bubbles: true }));
+                      }
+                    });
 
-                    // 5. Force remove active state from column header buttons
-                    container
-                      .querySelectorAll(".dtcc-button_active")
-                      .forEach((btn: any) => {
-                        btn.classList.remove("dtcc-button_active");
-                      });
+                    wrapper.querySelectorAll(".dtcc-button_active").forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
 
-                    // 6. Draw once to sync everything
                     api.draw();
                   };
-                  topRow.appendChild(btn);
+                  buttonsContainer.appendChild(btn);
                 }
               },
             }}
@@ -1674,7 +1875,7 @@ export default function ReservationTable() {
                           <DatePickerField
                             className="w-full bg-gray-100 cursor-not-allowed"
                             value={editForm?.reservationDate || ""}
-                            onChange={() => {}}
+                            onChange={() => { }}
                             disabled
                           />
                         ) : (
@@ -1777,8 +1978,8 @@ export default function ReservationTable() {
                               {parseInt(
                                 String(
                                   editForm?.numberOfRooms ??
-                                    selectedReservation?.numberOfRooms ??
-                                    0,
+                                  selectedReservation?.numberOfRooms ??
+                                  0,
                                 ),
                               ) * 2}
                               )
@@ -1987,59 +2188,59 @@ export default function ReservationTable() {
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Food Preference
-                          </Label>
-                          {sheetMode === "edit" ? (
-                            <Select
-                              value={editForm?.foodPreference || ""}
-                              onValueChange={(value) =>
-                                handleEditChange("foodPreference", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select preference" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Vegetarian">
-                                  Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Non-Vegetarian">
-                                  Non-Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Vegan">Vegan</SelectItem>
-                                <SelectItem value="Jain">Jain</SelectItem>
-                                <SelectItem value="No Preference">
-                                  No Preference
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="p-3 bg-gray-50 rounded-md border">
-                              <span className="text-sm text-gray-900">
-                                {selectedReservation.foodPreference || "N/A"}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Food Preference
+                            </Label>
+                            {sheetMode === "edit" ? (
+                              <Select
+                                value={editForm?.foodPreference || ""}
+                                onValueChange={(value) =>
+                                  handleEditChange("foodPreference", value)
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select preference" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Vegetarian">
+                                    Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Non-Vegetarian">
+                                    Non-Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Vegan">Vegan</SelectItem>
+                                  <SelectItem value="Jain">Jain</SelectItem>
+                                  <SelectItem value="No Preference">
+                                    No Preference
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <div className="p-3 bg-gray-50 rounded-md border">
+                                <span className="text-sm text-gray-900">
+                                  {selectedReservation.foodPreference || "N/A"}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Foods Billed
-                          </Label>
-                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                            <span className="text-sm text-gray-600">
-                              {(Number(selectedReservation.guests) || 0) +
-                                (Number(selectedReservation.extraGuests) || 0)}
-                            </span>
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Foods Billed
+                            </Label>
+                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                              <span className="text-sm text-gray-600">
+                                {(Number(selectedReservation.guests) || 0) +
+                                  (Number(selectedReservation.extraGuests) || 0)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
 
@@ -2141,8 +2342,8 @@ export default function ReservationTable() {
                         </div>
                       )}
                     </div>
-                  
-                </div>
+
+                  </div>
 
                   {/* DFO Approval Status — shown only if approval flow applies */}
                   {selectedReservation.approval_status && (
@@ -2265,9 +2466,9 @@ export default function ReservationTable() {
                             value={
                               editForm?.paymentTransactionDateTime
                                 ? editForm.paymentTransactionDateTime.slice(
-                                    0,
-                                    10,
-                                  )
+                                  0,
+                                  10,
+                                )
                                 : ""
                             }
                             onChange={(val) =>
@@ -2282,8 +2483,8 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
                                 ? formatDateTimeForDisplay(
-                                    selectedReservation.paymentTransactionDateTime,
-                                  )
+                                  selectedReservation.paymentTransactionDateTime,
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2381,11 +2582,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.refundRequestedDateTime
                                 ? formatDateForDisplay(
-                                    selectedReservation.refundRequestedDateTime.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.refundRequestedDateTime.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2416,11 +2617,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.dateOfRefund
                                 ? formatDateForDisplay(
-                                    selectedReservation.dateOfRefund.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.dateOfRefund.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>

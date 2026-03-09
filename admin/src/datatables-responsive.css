@@ -217,10 +217,11 @@ div.dt-button-collection {
 
   /* Keep buttons compact and wrappable */
   .dt-table-container .dt-buttons {
-    display: inline-flex !important;
+    display: flex !important;
     flex-wrap: wrap !important;
     gap: 5px !important;
     justify-content: flex-start !important;
+    width: 100% !important;
     margin: 0 !important;
   }
 
@@ -237,7 +238,7 @@ div.dt-button-collection {
   .dt-table-container .reset-filters-btn {
 
     padding: 5px 10px !important;
-    margin-left: 0px !important;
+    margin-left: auto !important;
     height: 30px !important;
     line-height: 1 !important;
   }
@@ -252,22 +253,26 @@ div.dt-button-collection {
   }
 
   .dt-table-container .dt-search label {
-
     display: inline-flex !important;
     align-items: center !important;
-    gap: 5px !important;
+    gap: 8px !important;
+    /* tighter spacing after colon */
     margin: 0 !important;
     white-space: nowrap !important;
-    width: 100% !important;
+    /* Remove full width to keep label inline */
+    width: auto !important;
+    flex: 0 0 auto !important;
   }
 
   .dt-table-container .dt-search input {
     padding: 5px 8px !important;
-
-    width: 150px !important;
-    max-width: 150px !important;
-    flex: 1 1 auto !important;
+    /* Make input compact and not full width */
+    width: auto !important;
+    max-width: 180px !important;
+    flex: 0 0 auto !important;
     height: 30px !important;
+    margin-left: 0;
+    /* remove extra left margin */
   }
 
 

@@ -2,7 +2,24 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
 }
-
+@media (max-width: 768px) {
+.tourist-card .btn{
+          font-size: 0.85rem;
+        padding: 0.4rem 0.5rem;
+}
+}
+.info-items{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  align-items: flex-end;
+    @media (max-width: 768px) {
+      display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    align-items: center;
+    }
+}
 .containerg {
   position: relative;
 

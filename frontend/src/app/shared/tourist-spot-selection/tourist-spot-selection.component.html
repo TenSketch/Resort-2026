@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="col-md-7 row justify-content-between">
+    <div class="col-md-7 row justify-content-between m-auto">
       <div class="col-md-7 p-3">
         <h5>
           <span class="text-primary-dark font-weight-bold">Spot name: </span>{{ name }}
@@ -49,8 +49,9 @@
         </div>
       </div>
 
-      <div class="col-md-5 d-md-block gap-2 text-md-end mt-2 mt-md-0 pe-md-0 p-3">
-        <div>
+      <div class="col-md-5 mt-2 mt-md-0 pe-md-0 p-3">
+        <!-- Price and Person Container -->
+        <div class="info-items">
           <h6 class="p-0 m-0">
             <ng-container *ngIf="unitEntry !== undefined">
               <strong>{{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}</strong>
@@ -59,34 +60,34 @@
               <strong>{{ entryFee }}</strong>
             </ng-container>
           </h6>
-
-          <p class="text-primary-dark text-end">
+          <p class="text-primary-dark m-0">
             <i class="fas fa-user" aria-hidden="true"></i> / person
           </p>
         </div>
 
-        <div class="col-12 mt-3">
-          <ng-container *ngIf="openInNewTab; else inlineLink">
-            <a [href]="detailsHref" target="_blank" rel="noopener noreferrer"
-              class="btn btn-outline-primary btn-sm rounded-pill px-3" title="View Details">
-              Details <i class="fas fa-arrow-right ms-1"></i>
-            </a>
-          </ng-container>
-          <ng-template #inlineLink>
-            <a [routerLink]="detailsLink" [fragment]="detailsFragment"
-              class="btn btn-outline-primary btn-sm rounded-pill px-3" title="View Details">
-              Details <i class="fas fa-arrow-right ms-1"></i>
-            </a>
-          </ng-template>
-        </div>
-      </div>
+        <!-- Buttons Container -->
+        <div class="d-flex flex-row flex-md-column justify-content-between align-items-end gap-2 mt-3 w-100">
+          <div class="d-flex justify-content-start justify-content-md-end w-100 mb-md-2">
+            <ng-container *ngIf="openInNewTab; else inlineLink">
+              <a [href]="detailsHref" target="_blank" rel="noopener noreferrer"
+                class="btn btn-outline-primary btn-sm rounded-pill px-3 w-100 w-md-auto" title="View Details">
+                Details <i class="fas fa-arrow-right ms-1"></i>
+              </a>
+            </ng-container>
+            <ng-template #inlineLink>
+              <a [routerLink]="detailsLink" [fragment]="detailsFragment"
+                class="btn btn-outline-primary btn-sm rounded-pill px-3 w-100 w-md-auto" title="View Details">
+                Details <i class="fas fa-arrow-right ms-1"></i>
+              </a>
+            </ng-template>
+          </div>
 
-      <div class="col-12 my-2 pe-0">
-        <button class="btn btn-lg btn-primary mb-3 rounded-pill px-4 float-end float-md-start"
-          (click)="onAddToBooking()" [disabled]="isSoldOut || !isSearchPerformed"
-          [title]="!isSearchPerformed ? 'Select a visit date first' : isSoldOut ? 'Sold Out' : 'Add spot'">
-          {{ isSoldOut ? "Sold Out" : "Add spot" }}
-        </button>
+          <button class="btn btn-primary btn-lg rounded-pill px-4 w-100 w-md-auto" (click)="onAddToBooking()"
+            [disabled]="isSoldOut || !isSearchPerformed"
+            [title]="!isSearchPerformed ? 'Select a visit date first' : isSoldOut ? 'Sold Out' : 'Add spot'">
+            {{ isSoldOut ? "Sold Out" : "Add spot" }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

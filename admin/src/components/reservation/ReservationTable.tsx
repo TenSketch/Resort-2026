@@ -1490,7 +1490,7 @@ export default function ReservationTable() {
                   next: "›",
                   previous: "‹",
                 },
-              },
+              } as any,
               layout: {
                 topStart: "info",
                 topEnd: ["buttons", "search"],

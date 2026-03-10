@@ -1,40 +1,161 @@
-.page-banner {
-    background-image: url('/assets/img/home-gallery/vanavihari-home-gallery-1.jpg');
+@use "/src/scss/base/" as *;
+
+.main {
+  min-height: 100vh;
+  padding-top: 80px;
+  background-color: #f9f9f9; // Light background for modular look
 }
-.nav-link.active {
-    color: #f06807 !important; 
+
+// Hero Section
+.hero-section {
+  position: relative;
+  height: 55vh; // Standardized height
+  min-height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; // Parallax effect
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4); // Dark overlay
+    z-index: 1;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
 }
-.gallery-image {
-    transition: transform 0.3s ease;
+
+// Modern Tabs
+.category-nav {
+  display: inline-flex;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-bottom: 2rem; // Space below tabs
+  position: relative;
+  z-index: 10;
+
+  .nav-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    border: none;
+    border-radius: 30px;
+    padding: 0.75rem 2rem;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.3s ease;
     cursor: pointer;
+
+    &:hover {
+      background-color: rgba($clr-primary, 0.05);
+      color: $clr-primary;
+    }
+
+    &.active {
+      background-color: $clr-primary;
+      color: white !important;
+      box-shadow: 0 4px 10px rgba($clr-primary, 0.3);
+    }
   }
-  .gallery-image:hover {
-    transform: scale(1.1);
+}
+
+// Gallery Grid
+.masonry-layout {
+  column-count: 3;
+  column-gap: 1.5rem;
+  
+  .gallery-item-wrapper {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.gallery-image {
+  width: 100%;
+  border-radius: 16px; // Soft corners
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08); // Subtle shadow
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+  cursor: pointer;
+  display: block;
+
+  &:hover {
+    transform: scale(1.02); // Subtle zoom
+    z-index: 2;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  }
+}
+
+// Loading Animation
+app-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+// Fade in animation
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// Responsive
+@media (max-width: 992px) {
+  .masonry-layout {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    height: 40vh;
+    h1 { font-size: 2.5rem; }
   }
 
-
-  // 
-  @media (max-width: 767px) {
-    .navbar-nav {
-      flex-direction: row;
-      align-items: baseline;
-    }
-  
-    .navbar-nav .nav-item {
-      margin: 0.5rem 0;
-    }
-  
-    .navbar-nav .nav-link {
-      padding: 0.5rem 0;
-    }
-  
-    .navbar-nav .nav-link.active {
-      font-weight: bold;
-      color: #000; /* Adjust the color for active link */
+  .category-nav {
+    flex-wrap: wrap;
+    border-radius: 12px;
+    width: 100%;
+    justify-content: center;
+    
+    .nav-link {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
     }
   }
 
   .masonry-layout {
-    column-count: 2;
+    column-count: 1;
   }
-  
+}

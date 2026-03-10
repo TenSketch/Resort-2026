@@ -16,6 +16,7 @@ const paymentTransactionSchema = new mongoose.Schema({
   traceId: String,
   timestamp: String,
   encryptedRequest: String, // Store for debugging
+  encryptedResponse: String, // Store original encoded response
   decryptedResponse: mongoose.Schema.Types.Mixed, // Store full response
   errorMessage: String,
   customerDetails: {

@@ -350,7 +350,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     onClick={() => window.innerWidth < 1024 && onClose()}
                   >
                     <item.icon className="h-5 w-5" />
-                    <span>{item.label}</span>
+                    <span className="text-base font-medium">{item.label}</span>
                   </Link>
                 );
               }
@@ -364,7 +364,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     <Button
                       variant="ghost"
                       className={cn(
-                        "w-full justify-between px-3 py-2 h-auto text-left font-normal",
+                        "w-full justify-between px-3 py-2 h-auto text-left font-medium",
                         hasActiveChild
                           ? "bg-slate-700 text-white"
                           : "text-gray-300 hover:bg-slate-700 hover:text-white"
@@ -372,7 +372,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     >
                       <div className="flex items-center space-x-3">
                         <item.icon className="h-5 w-5" />
-                        <span>{item.label}</span>
+                        <span className="text-base font-medium">{item.label}</span>
                       </div>
                       {isOpen ? (
                         <ChevronDown className="h-4 w-4" />
@@ -395,7 +395,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         onClick={() => window.innerWidth < 1024 && onClose()}
                       >
                         <child.icon className="h-4 w-4" />
-                        <span>{child.label}</span>
+                        <span className="text-base font-medium">{child.label}</span>
                       </Link>
                     ))}
                   </CollapsibleContent>

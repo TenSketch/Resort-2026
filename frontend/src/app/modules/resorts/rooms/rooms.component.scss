@@ -22,6 +22,18 @@
     justify-content: center;
   }
 }
+.info-items{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    align-items: flex-end;
+    @media (max-width: 768px) {
+      display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    align-items: center;
+    }
+}
 
 .breadcrumb {
   padding: 10px;

@@ -142,7 +142,7 @@ export class TentCheckoutComponent implements OnInit, OnDestroy {
 
   private startTimer() {
     this.targetTime = new Date();
-    this.targetTime.setMinutes(this.targetTime.getMinutes() + 5);
+    this.targetTime.setMinutes(this.targetTime.getMinutes() + 3);
     let redirectDone = false;
 
     this.intervalId = setInterval(() => {

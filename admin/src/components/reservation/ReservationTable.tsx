@@ -338,24 +338,24 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                ) + 1
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              ) + 1
               : updatedLocal.noOfDays,
           noOfNights:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                )
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              )
               : updatedLocal.noOfNights || 0,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -798,7 +798,9 @@ export default function ReservationTable() {
           };
         });
 
-        setReservations(mapped);
+        // Deduplicate reservations by booking ID (or ID as fallback) to prevent cloned duplicate data rendering
+        const uniqueMapped = Array.from(new Map(mapped.map((m) => [m.bookingId || m.id, m])).values());
+        setReservations(uniqueMapped);
       } catch (err) {
         console.error("Failed to load reservations", err);
       }
@@ -877,6 +879,20 @@ export default function ReservationTable() {
         transform: translateY(0) !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
       }
+      .reset-filters-btn {
+        padding: 6px 16px !important;
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #f8fafc !important;
+        color: #334155 !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all .15s ease !important;
+      }
+      .reset-filters-btn:hover {
+        background: #e2e8f0 !important;
+      }
       /* Clickable row styling */
       table.dataTable tbody tr {
         cursor: pointer !important;
@@ -887,6 +903,240 @@ export default function ReservationTable() {
       }
       table.dataTable tbody tr:hover.disabled-row {
         background-color: #eeeeee !important;
+      }
+      /* Pagination styling - Clear & Professional */
+      .dt-paging {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        margin-top: 1.5rem !important;
+        justify-content: flex-end !important;
+      }
+      .dt-paging-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 2rem !important;
+        height: 2rem !important;
+        padding: 0 0.5rem !important;
+        margin: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: #64748b !important;
+        font-size: 1.1rem !important;
+        font-weight: normal !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        border-radius: 9999px !important;
+      }
+      .dt-paging-button:hover:not(.disabled):not(.current) {
+        background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
+        color: white !important;
+        border: 1px solid #111111 !important;
+      }
+      .dt-paging-button.current {
+        background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
+        color: #333333 !important;
+        font-weight: normal !important;
+        border: 1px solid #979797 !important;
+        box-shadow: none !important;
+      }
+      .dt-paging-button.disabled {
+        color: #cbd5e1 !important;
+        cursor: not-allowed !important;
+        opacity: 0.5 !important;
+      }
+      /* Pagination styling - Final Refined Look */
+      .dt-paging {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.25rem !important;
+        margin-top: 1.5rem !important;
+        justify-content: flex-end !important;
+      }
+      .dt-paging .dt-paging-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0 !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        color: #333333 !important;
+        font-size: 1.1rem !important;
+        font-weight: normal !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        border-radius: 2px !important;
+      }
+      /* Specific sizing for symbols to make them 'medium' and 'clear' */
+      .dt-paging .dt-paging-button.first,
+      .dt-paging .dt-paging-button.last,
+      .dt-paging .dt-paging-button.previous,
+      .dt-paging .dt-paging-button.next {
+        font-size: 1.4rem !important;
+        font-weight: normal !important;
+      }
+      .dt-paging .dt-paging-button:hover:not(.disabled):not(.current) {
+        background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
+        color: white !important;
+        border: 1px solid #111111 !important;
+      }
+      .dt-paging .dt-paging-button.current {
+        background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
+        color: #333333 !important;
+        font-weight: normal !important;
+        border: 1px solid #979797 !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      .dt-paging .dt-paging-button.disabled {
+        color: #666666 !important;
+        cursor: not-allowed !important;
+        opacity: 0.7 !important; /* Keep it clear but indicate disabled */
+      }
+      /* Desktop Alignment for Column Visibility next to Search */
+      @media (min-width: 1024px) {
+        .dt-layout-row:first-child .dt-layout-end {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 1.5rem !important;
+        }
+        .dt-buttons {
+          margin-bottom: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 0.75rem !important;
+        }
+        .dataTables_filter {
+          margin-top: 0 !important;
+        }
+      }
+      .dt-info {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+        line-height: normal !important;
+      }
+      @media (max-width: 768px) {
+        .dt-table-container .dt-layout-row {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          gap: 1rem !important;
+          margin: 0.75rem 0 !important;
+        }
+        .dt-layout-start {
+          order: 1 !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+        }
+        .dt-layout-end {
+          order: 2 !important;
+          width: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 1rem !important;
+        }
+        .dt-info {
+          font-size: 15px !important;
+          font-weight: 500 !important;
+          color: #64748b !important;
+          margin-top: 1.5rem !important;
+          text-align: center !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+        }
+        .dt-table-container .dt-search {
+          order: 1 !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          margin: 0.75rem 0 !important;
+          padding: 0 5% !important;
+          box-sizing: border-box !important;
+        }
+        .dt-search label {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 4px !important;
+          width: auto !important;
+          font-weight: 600 !important;
+          font-size: 14px !important;
+          color: #334155 !important;
+          white-space: nowrap !important;
+          margin: 0 auto !important;
+        }
+        .dt-search input {
+          width: 220px !important;
+          max-width: 100% !important;
+          height: 36px !important;
+          border: 1px solid #cbd5e1 !important;
+          border-radius: 4px !important;
+          padding: 0 10px !important;
+          font-size: 14px !important;
+          margin: 0 !important;
+          box-sizing: border-box !important;
+        }
+        .dt-buttons {
+          order: 2 !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
+          gap: 0 !important;
+          padding: 0 5% !important;
+        }
+        .dt-buttons button:not(.reset-filters-btn), 
+        .dt-buttons .dt-button:not(.reset-filters-btn) {
+          flex: 1 !important;
+          min-width: 0 !important;
+          max-width: 160px !important;
+          height: 38px !important;
+          font-size: 13px !important;
+          white-space: nowrap !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          margin: 0 !important;
+        }
+        .reset-filters-btn {
+          width: auto !important;
+          padding: 0.5rem 1rem !important;
+          flex: 0 0 auto !important;
+          height: 38px !important;
+          font-size: 13px !important;
+          white-space: nowrap !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          margin: 0 !important;
+        }
+        .dt-length {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          width: 100% !important;
+          margin: 1rem auto !important;
+          gap: 8px !important;
+        }
+        .dt-paging {
+          display: flex !important;
+          justify-content: center !important;
+          width: 100% !important;
+          margin: 1.5rem auto !important;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -1054,10 +1304,10 @@ export default function ReservationTable() {
         const approvalBadge = row.approval_status === 'PENDING_DFO_APPROVAL'
           ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">⏳ Awaiting DFO</span>`
           : row.approval_status === 'APPROVED'
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
-          : row.approval_status === 'REJECTED'
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
-          : '';
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
+            : row.approval_status === 'REJECTED'
+              ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
+              : '';
         return `<div style="display:flex;flex-direction:column;gap:2px;">${row.status || ''}${approvalBadge}</div>`;
       },
     },
@@ -1153,9 +1403,8 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1178,8 +1427,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -1234,8 +1483,17 @@ export default function ReservationTable() {
               scrollX: true,
               scrollCollapse: true,
               scrollY: "400px",
+              language: {
+                paginate: {
+                  first: "«",
+                  last: "»",
+                  next: "›",
+                  previous: "‹",
+                },
+              } as any,
               layout: {
-                topStart: "buttons",
+                topStart: "info",
+                topEnd: ["buttons", "search"],
                 bottomStart: "pageLength",
                 bottomEnd: "paging",
               },
@@ -1251,70 +1509,41 @@ export default function ReservationTable() {
                 ["orderAsc", "orderDesc", "spacer", "search"],
               ],
               initComplete: function () {
-                const wrapper = (this as any).api().table().container();
-                const topRow = wrapper.querySelector(
-                  ".dt-layout-row:first-child",
-                );
-                if (topRow && !topRow.querySelector(".reset-filters-btn")) {
+                const api = (this as any).api();
+                const wrapper = api.table().container();
+                const buttonsContainer = wrapper.querySelector(".dt-buttons");
+
+                if (buttonsContainer && !wrapper.querySelector(".reset-filters-btn")) {
                   const btn = document.createElement("button");
                   btn.className = "reset-filters-btn";
                   btn.textContent = "Reset Filters";
-                  btn.style.cssText =
-                    "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                  btn.onmouseenter = () => {
-                    btn.style.background = "#e2e8f0";
-                  };
-                  btn.onmouseleave = () => {
-                    btn.style.background = "#f8fafc";
-                  };
+
                   btn.onclick = () => {
-                    const api = (this as any).api();
-                    const container = api.table().container();
-
-                    // 1. Clear global search and column searches
                     api.search("").columns().search("");
-
-                    // 2. Clear Column Control plugin filters (API method)
                     if (api.columns().ccSearchClear) {
                       (api.columns() as any).ccSearchClear();
                     }
 
-                    // 3. Clear all inputs and trigger events to sync UI
-                    container
-                      .querySelectorAll("input")
-                      .forEach((input: any) => {
-                        input.value = "";
-                        input.dispatchEvent(
-                          new Event("input", { bubbles: true }),
-                        );
-                        input.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      });
+                    wrapper.querySelectorAll("input").forEach((input: any) => {
+                      input.value = "";
+                      input.dispatchEvent(new Event("input", { bubbles: true }));
+                      input.dispatchEvent(new Event("change", { bubbles: true }));
+                    });
 
-                    // 4. Clear all selects and trigger events
-                    container
-                      .querySelectorAll("select")
-                      .forEach((select: any) => {
-                        if (select.options.length > 0) {
-                          select.selectedIndex = 0;
-                          select.dispatchEvent(
-                            new Event("change", { bubbles: true }),
-                          );
-                        }
-                      });
+                    wrapper.querySelectorAll("select").forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(new Event("change", { bubbles: true }));
+                      }
+                    });
 
-                    // 5. Force remove active state from column header buttons
-                    container
-                      .querySelectorAll(".dtcc-button_active")
-                      .forEach((btn: any) => {
-                        btn.classList.remove("dtcc-button_active");
-                      });
+                    wrapper.querySelectorAll(".dtcc-button_active").forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
 
-                    // 6. Draw once to sync everything
                     api.draw();
                   };
-                  topRow.appendChild(btn);
+                  buttonsContainer.appendChild(btn);
                 }
               },
             }}
@@ -1400,42 +1629,42 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      <div className="col-span-1">
+                      <div className="col-span-1 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Phone
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="w-full"
+                            className="w-full mt-auto"
                             value={editForm?.phone || ""}
                             onChange={(e) =>
                               handleEditChange("phone", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
+                          <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
+                            <span className="text-sm text-gray-900 break-all">
                               {selectedReservation.phone}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="col-span-2 md:col-span-3">
+                      <div className="col-span-1 md:col-span-3 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Email
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="w-full"
+                            className="w-full mt-auto"
                             value={editForm?.email || ""}
                             onChange={(e) =>
                               handleEditChange("email", e.target.value)
                             }
                           />
                         ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
+                          <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
+                            <span className="text-sm text-gray-900 break-all">
                               {selectedReservation.email}
                             </span>
                           </div>
@@ -1599,90 +1828,87 @@ export default function ReservationTable() {
                       Booking Information
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="col-span-1">
+                      {/* Row 1: Check In & Check Out */}
+                      <div className="col-span-1 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check In
                         </Label>
                         {sheetMode === "edit" ? (
                           <DatePickerField
-                            className="w-full"
+                            className="w-full mt-auto"
                             value={editForm?.checkIn || ""}
                             onChange={(val) => handleEditChange("checkIn", val)}
                           />
                         ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(
-                                selectedReservation.checkIn,
-                              )}
+                              {formatDateForDisplay(selectedReservation.checkIn)}
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <div className="col-span-1">
+                      <div className="col-span-1 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Check Out
                         </Label>
                         {sheetMode === "edit" ? (
                           <DatePickerField
-                            className="w-full"
+                            className="w-full mt-auto"
                             value={editForm?.checkOut || ""}
-                            onChange={(val) =>
-                              handleEditChange("checkOut", val)
-                            }
+                            onChange={(val) => handleEditChange("checkOut", val)}
                           />
                         ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(
-                                selectedReservation.checkOut,
-                              )}
+                              {formatDateForDisplay(selectedReservation.checkOut)}
                             </span>
                           </div>
                         )}
                       </div>
 
+                      {/* Row 2: Day/Night in Col 1, Reservation Date in Col 2 */}
                       <div className="col-span-1">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          No. of Days
-                        </Label>
-                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600 text-center block">
-                            {editForm?.noOfDays ?? selectedReservation.noOfDays}
-                          </span>
+                        <div className="flex gap-2">
+                          <div className="flex flex-col">
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Days
+                            </Label>
+                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300 w-20 flex items-center justify-center">
+                              <span className="text-sm text-gray-600 font-medium">
+                                {editForm?.noOfDays ?? selectedReservation.noOfDays}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col">
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Nights
+                            </Label>
+                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300 w-20 flex items-center justify-center">
+                              <span className="text-sm text-gray-600 font-medium">
+                                {editForm?.noOfNights ?? selectedReservation.noOfNights}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="col-span-1">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          No. of Nights
-                        </Label>
-                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600 text-center block">
-                            {editForm?.noOfNights ??
-                              selectedReservation.noOfNights}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-span-1">
+                      <div className="col-span-1 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Reservation Date
                         </Label>
                         {sheetMode === "edit" ? (
                           <DatePickerField
-                            className="w-full bg-gray-100 cursor-not-allowed"
+                            className="w-full bg-gray-100 cursor-not-allowed mt-auto"
                             value={editForm?.reservationDate || ""}
-                            onChange={() => {}}
+                            onChange={() => { }}
                             disabled
                           />
                         ) : (
-                          <div className="p-3 bg-gray-50 rounded-md border">
+                          <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(
-                                selectedReservation.reservationDate,
-                              )}
+                              {formatDateForDisplay(selectedReservation.reservationDate)}
                             </span>
                           </div>
                         )}
@@ -1690,33 +1916,33 @@ export default function ReservationTable() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                      <div className="col-span-1">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Booking ID
-                        </Label>
-                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                          <span className="text-sm text-gray-600 font-mono">
-                            {selectedReservation.bookingId}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-span-1">
+                      <div className="col-span-2 md:col-span-4 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Resort
                         </Label>
-                        <div className="p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center min-h-[46px]">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.resortName}
                           </span>
                         </div>
                       </div>
 
-                      <div className="col-span-2 md:col-span-4">
+                      <div className="col-span-1 md:col-span-2 flex flex-col">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                          Booking ID
+                        </Label>
+                        <div className="p-3 bg-gray-100 rounded-md border border-gray-300 flex-1 flex items-center">
+                          <span className="text-sm text-gray-600 font-mono">
+                            {selectedReservation.bookingId}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-span-1 md:col-span-2 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Cottage Types
                         </Label>
-                        <div className="p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.cottageTypeNames.join(", ") ||
                               "N/A"}
@@ -1724,141 +1950,24 @@ export default function ReservationTable() {
                         </div>
                       </div>
 
-                      <div className="col-span-2 md:col-span-4">
+                      <div className="col-span-1 md:col-span-3 flex flex-col">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">
                           Rooms
                         </Label>
-                        <div className="p-3 bg-gray-50 rounded-md border">
+                        <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                           <span className="text-sm text-gray-900">
                             {selectedReservation.roomNames.join(", ") || "N/A"}
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Guest Details */}
-                  <div className="border-b pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Guest Details
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Guests
+                      <div className="col-span-1 md:col-span-1 flex flex-col">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block truncate" title="No. of Rooms">
+                          No. of Rooms
                         </Label>
                         {sheetMode === "edit" ? (
                           <Input
-                            className="mt-1"
-                            type="number"
-                            value={String(editForm?.guests ?? 0)}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "guests",
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.guests}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Children
-                          {sheetMode === "edit" && (
-                            <span className="text-[10px] text-gray-400 ml-1">
-                              (Max:{" "}
-                              {parseInt(
-                                String(
-                                  editForm?.numberOfRooms ??
-                                    selectedReservation?.numberOfRooms ??
-                                    0,
-                                ),
-                              ) * 2}
-                              )
-                            </span>
-                          )}
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="mt-1"
-                            type="number"
-                            value={String(editForm?.children ?? 0)}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "children",
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.children}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Extra Guests
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="mt-1"
-                            type="number"
-                            value={String(editForm?.extraGuests ?? 0)}
-                            onChange={(e) =>
-                              handleEditChange(
-                                "extraGuests",
-                                parseInt(e.target.value) || 0,
-                              )
-                            }
-                          />
-                        ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
-                              {selectedReservation.extraGuests}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Total Guests
-                        </Label>
-                        <div className="mt-1 p-3 bg-blue-50 rounded-md border border-blue-200">
-                          <span className="text-sm font-semibold text-blue-900">
-                            {Number(editForm?.guests || 0) +
-                              Number(editForm?.children || 0) +
-                              Number(editForm?.extraGuests || 0)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Room Information */}
-                  <div className="border-b pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Room Information
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700">
-                          Number of Rooms
-                        </Label>
-                        {sheetMode === "edit" ? (
-                          <Input
-                            className="mt-1"
+                            className="w-full mt-auto"
                             type="number"
                             value={String(editForm?.numberOfRooms ?? 0)}
                             onChange={(e) =>
@@ -1869,8 +1978,8 @@ export default function ReservationTable() {
                             }
                           />
                         ) : (
-                          <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                            <span className="text-sm text-gray-900">
+                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300 w-full flex items-center justify-center flex-1">
+                            <span className="text-sm text-gray-600 font-medium">
                               {selectedReservation.numberOfRooms}
                             </span>
                           </div>
@@ -1878,6 +1987,109 @@ export default function ReservationTable() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Guest Details */}
+                  <div className="border-b pb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Guest Details
+                    </h3>
+                    <div className="grid grid-cols-4 gap-2 sm:gap-4">
+                      <div className="flex flex-col h-full">
+                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Guests">
+                          Guests
+                        </Label>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full h-11"
+                            type="number"
+                            value={String(editForm?.guests ?? 0)}
+                            onChange={(e) =>
+                              handleEditChange(
+                                "guests",
+                                parseInt(e.target.value) || 0,
+                              )
+                            }
+                          />
+                        ) : (
+                          <div className="p-2 bg-gray-50 rounded-md border h-11 flex items-center justify-center">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.guests}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col h-full">
+                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Children">
+                          Children
+                        </Label>
+                        {sheetMode === "edit" ? (
+                          <div className="flex flex-col gap-1 mt-auto">
+                            <Input
+                              className="w-full h-11"
+                              type="number"
+                              value={String(editForm?.children ?? 0)}
+                              onChange={(e) =>
+                                handleEditChange(
+                                  "children",
+                                  parseInt(e.target.value) || 0,
+                                )
+                              }
+                            />
+                            <span className="text-[8px] text-gray-400 leading-none font-medium">
+                              Max: {parseInt(String(editForm?.numberOfRooms ?? selectedReservation?.numberOfRooms ?? 0)) * 2}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="p-2 bg-gray-50 rounded-md border h-11 flex items-center justify-center">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.children}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col h-full">
+                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Extra Guests">
+                          Extra Guests
+                        </Label>
+                        {sheetMode === "edit" ? (
+                          <Input
+                            className="w-full h-11 mt-auto"
+                            type="number"
+                            value={String(editForm?.extraGuests ?? 0)}
+                            onChange={(e) =>
+                              handleEditChange(
+                                "extraGuests",
+                                parseInt(e.target.value) || 0,
+                              )
+                            }
+                          />
+                        ) : (
+                          <div className="p-2 bg-gray-50 rounded-md border h-11 flex items-center justify-center">
+                            <span className="text-sm text-gray-900">
+                              {selectedReservation.extraGuests}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col h-full">
+                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Total Guests">
+                          Total Guests
+                        </Label>
+                        <div className="p-2 bg-blue-50 rounded-md border border-blue-200 h-11 flex items-center justify-center">
+                          <span className="text-sm font-semibold text-blue-900">
+                            {Number(editForm?.guests || 0) +
+                              Number(editForm?.children || 0) +
+                              Number(editForm?.extraGuests || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
 
                   {/* Pricing Information */}
                   <div className="border-b pb-6">
@@ -1987,59 +2199,59 @@ export default function ReservationTable() {
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Food Preference
-                          </Label>
-                          {sheetMode === "edit" ? (
-                            <Select
-                              value={editForm?.foodPreference || ""}
-                              onValueChange={(value) =>
-                                handleEditChange("foodPreference", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select preference" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Vegetarian">
-                                  Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Non-Vegetarian">
-                                  Non-Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Vegan">Vegan</SelectItem>
-                                <SelectItem value="Jain">Jain</SelectItem>
-                                <SelectItem value="No Preference">
-                                  No Preference
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="p-3 bg-gray-50 rounded-md border">
-                              <span className="text-sm text-gray-900">
-                                {selectedReservation.foodPreference || "N/A"}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Food Preference
+                            </Label>
+                            {sheetMode === "edit" ? (
+                              <Select
+                                value={editForm?.foodPreference || ""}
+                                onValueChange={(value) =>
+                                  handleEditChange("foodPreference", value)
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select preference" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Vegetarian">
+                                    Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Non-Vegetarian">
+                                    Non-Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Vegan">Vegan</SelectItem>
+                                  <SelectItem value="Jain">Jain</SelectItem>
+                                  <SelectItem value="No Preference">
+                                    No Preference
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <div className="p-3 bg-gray-50 rounded-md border">
+                                <span className="text-sm text-gray-900">
+                                  {selectedReservation.foodPreference || "N/A"}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Foods Billed
-                          </Label>
-                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                            <span className="text-sm text-gray-600">
-                              {(Number(selectedReservation.guests) || 0) +
-                                (Number(selectedReservation.extraGuests) || 0)}
-                            </span>
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Foods Billed
+                            </Label>
+                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                              <span className="text-sm text-gray-600">
+                                {(Number(selectedReservation.guests) || 0) +
+                                  (Number(selectedReservation.extraGuests) || 0)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
 
@@ -2141,8 +2353,8 @@ export default function ReservationTable() {
                         </div>
                       )}
                     </div>
-                  
-                </div>
+
+                  </div>
 
                   {/* DFO Approval Status — shown only if approval flow applies */}
                   {selectedReservation.approval_status && (
@@ -2265,9 +2477,9 @@ export default function ReservationTable() {
                             value={
                               editForm?.paymentTransactionDateTime
                                 ? editForm.paymentTransactionDateTime.slice(
-                                    0,
-                                    10,
-                                  )
+                                  0,
+                                  10,
+                                )
                                 : ""
                             }
                             onChange={(val) =>
@@ -2282,8 +2494,8 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
                                 ? formatDateTimeForDisplay(
-                                    selectedReservation.paymentTransactionDateTime,
-                                  )
+                                  selectedReservation.paymentTransactionDateTime,
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2381,11 +2593,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.refundRequestedDateTime
                                 ? formatDateForDisplay(
-                                    selectedReservation.refundRequestedDateTime.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.refundRequestedDateTime.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -2416,11 +2628,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.dateOfRefund
                                 ? formatDateForDisplay(
-                                    selectedReservation.dateOfRefund.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.dateOfRefund.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>

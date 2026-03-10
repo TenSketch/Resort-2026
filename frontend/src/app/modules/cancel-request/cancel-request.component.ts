@@ -109,7 +109,7 @@ export class CancelRequestComponent {
     };
     console.log('params', params);
     this.http
-      .post<any>(`${this.api_url}?api_type=cancel_init`, params)
+      .post<any>(`${environment.apiUrl}/payment/refund`, params)
       .subscribe({
         next: (response: any) => {
           this.showLoader = false;

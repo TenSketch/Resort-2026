@@ -83,7 +83,7 @@ export class BookingSummaryComponent {
   ngAfterViewInit() {
     // Set target time 5 minutes from now
     this.targetTime = new Date();
-    this.targetTime.setMinutes(this.targetTime.getMinutes() + 5);
+    this.targetTime.setMinutes(this.targetTime.getMinutes() + 3);
 
     let redirectDone = false; // Flag to track if redirection has been done
 

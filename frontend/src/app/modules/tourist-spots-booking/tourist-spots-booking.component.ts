@@ -428,6 +428,20 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         });
       }
 
+      // Sort spots: Soft Trek -> Medium/Hard -> Very Hard
+      built.forEach(cat => {
+        cat.spots.sort((a, b) => {
+          const getRank = (name: string) => {
+            const lower = name.toLowerCase();
+            if (lower.includes('soft') || lower.includes('jalatarangini')) return 1;
+            if (lower.includes('medium') || (lower.includes('hard') && !lower.includes('very hard'))) return 2;
+            if (lower.includes('very hard') || lower.includes('gudisa')) return 3;
+            return 4; // Default rank for other spots
+          };
+          return getRank(a.name) - getRank(b.name);
+        });
+      });
+
       this.categories = built;
       
       // Refresh booked spots with latest prices
@@ -751,7 +765,6 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
       if (shouldFilterByCategory && !selectedCategories.includes(category.key)) {
         return { ...category, spots: [] };
       }
-console.log(this.filteredCategories)
       let filteredSpots = category.spots;
 
       // Apply time filter (placeholder logic - adjust based on your data)

@@ -1,5 +1,5 @@
 import express from 'express'
-import { getDailyOccupancyReport, getDailyOccupancyReportBySlug, getDashboardStats, getTentDashboardStats } from '../controllers/reportsContoller.js'
+import { getDailyOccupancyReport, getDailyOccupancyReportBySlug, getDashboardStats, getTentDashboardStats, getTouristDashboardStats } from '../controllers/reportsContoller.js'
 
 const router = express.Router()
 
@@ -8,6 +8,9 @@ router.get('/dashboard', getDashboardStats)
 
 // Get tent dashboard statistics
 router.get('/tent-dashboard', getTentDashboardStats)
+
+// Get tourist spot dashboard statistics
+router.get('/tourist-dashboard', getTouristDashboardStats)
 
 // Get daily occupancy report by resort ID
 router.get('/daily-occupancy/:resortId', getDailyOccupancyReport)

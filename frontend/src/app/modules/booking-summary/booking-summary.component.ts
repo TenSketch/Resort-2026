@@ -498,6 +498,7 @@ export class BookingSummaryComponent {
 
     this.extra_children = JSON.parse(this.summaryData.extra_children);
     const roomIdsWithGuests = JSON.parse(this.summaryData.noof_guests);
+    this.roomNamesWithGuests = []; // clear previous values
     roomIdsWithGuests.forEach(
       (item: { split: (arg0: string) => [any, any] }) => {
         const [roomId, noof_guests] = item.split(':');
@@ -518,7 +519,7 @@ export class BookingSummaryComponent {
       return { roomName, numGuests };
     });
     this.totalGuests = this.guestDetails.reduce(
-      (total, room) => total + room.numGuests,
+      (total, room) =>  room.numGuests,
       0
     );
     this.extra_guests = JSON.parse(this.summaryData.extra_guests).length;

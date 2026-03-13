@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import UserFormModal from "@/components/users/UserFormModal";
-import LoadingScreen from "@/components/shared/LoadingScreen";
+import PageLoader from "@/components/shared/PageLoader";
 
 interface AdminUser {
     _id: string;
@@ -104,7 +104,7 @@ const UserManagementPage = () => {
     }
 
     if (loading) {
-        return <LoadingScreen />;
+        return <PageLoader message="Loading user management..." />;
     }
 
     return (

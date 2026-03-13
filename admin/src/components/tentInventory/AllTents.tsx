@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -575,11 +576,7 @@ export default function AllTentsTable() {
         ref={tableRef}
         className="tent-inventory-table-container flex-1 overflow-hidden"
       >
-        {isLoading && (
-          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-blue-800 mb-3">
-            Loading tents...
-          </div>
-        )}
+        {isLoading && <PageLoader message="Loading tents..." />}
         {loadError && (
           <div className="p-3 bg-red-50 border border-red-100 rounded-md text-red-800 mb-3">
             {loadError}

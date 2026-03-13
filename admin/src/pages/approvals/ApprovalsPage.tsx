@@ -19,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { DatePickerField } from "@/components/ui/date-picker";
 import { useAdmin } from "@/lib/AdminProvider";
+import PageLoader from "@/components/shared/PageLoader";
 
 interface ApprovalReservation {
   id: string;
@@ -352,9 +353,7 @@ const ApprovalsPage = () => {
       {/* Table */}
       <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800" />
-          </div>
+          <PageLoader message="Loading approvals..." />
         ) : filteredReservations.length === 0 ? (
           <div className="text-center py-20">
             <ClipboardCheck className="h-10 w-10 text-slate-300 mx-auto mb-3" />

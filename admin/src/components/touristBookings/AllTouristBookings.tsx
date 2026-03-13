@@ -20,6 +20,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -74,6 +75,7 @@ export default function AllTouristBookings() {
     null,
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     bookingsRef.current = bookings;
@@ -131,6 +133,7 @@ export default function AllTouristBookings() {
 
   const fetchBookings = async () => {
     try {
+      setLoading(true);
       const apiUrl =
         (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
       const token = localStorage.getItem("admin_token");
@@ -183,6 +186,8 @@ export default function AllTouristBookings() {
     } catch (err) {
       console.error("Failed to fetch trek bookings:", err);
       setBookings([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -634,6 +639,7 @@ export default function AllTouristBookings() {
       </div>
 
       <div ref={tableRef} className="tourist-bookings-table-container w-full">
+        {loading && <PageLoader message="Loading Trek Bookings..." />}
         <DataTable
           ref={dtRef}
           data={bookings}

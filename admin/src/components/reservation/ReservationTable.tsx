@@ -43,6 +43,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PageLoader from "@/components/shared/PageLoader";
 import { DatePickerField } from "@/components/ui/date-picker";
 
 DataTable.use(DT);
@@ -126,6 +127,7 @@ export default function ReservationTable() {
 
   // edit form state for side sheet
   const [editForm, setEditForm] = useState<Partial<Reservation> | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   // populate edit form when selection changes
@@ -432,6 +434,246 @@ export default function ReservationTable() {
     }
   };
 
+  // Download single reservation as PDF
+  const downloadPDF = (reservation: Reservation) => {
+    const fmt = formatDateForDisplay;
+    const fmtDT = formatDateTimeForDisplay;
+    const address = [reservation.address1, reservation.address2, reservation.city, reservation.state, reservation.postalCode, reservation.country].filter(Boolean).join(', ') || 'N/A';
+    const isVana = reservation.resort?.toLowerCase().includes('vana') || reservation.resortName?.toLowerCase().includes('vana');
+    const foodsBilled = isVana ? 'NA' : String((Number(reservation.guests) || 0) + (Number(reservation.extraGuests) || 0));
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Reservation - ${reservation.bookingId}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', Arial, sans-serif; background: #fff; color: #1e293b; font-size: 13px; padding: 32px; }
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid #0f766e; }
+  .header-left h1 { font-size: 22px; font-weight: 700; color: #0f766e; letter-spacing: -0.3px; }
+  .header-left p { font-size: 12px; color: #64748b; margin-top: 3px; }
+  .header-right { text-align: right; }
+  .header-right .booking-id { font-size: 15px; font-weight: 700; color: #1e293b; }
+  .header-right .booking-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .status-confirmed { background: #d1fae5; color: #065f46; }
+  .status-pending { background: #fef3c7; color: #92400e; }
+  .status-cancelled { background: #fee2e2; color: #991b1b; }
+  .section { margin-bottom: 22px; }
+  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #0f766e; padding: 5px 0 8px 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 12px; }
+  .grid { display: grid; gap: 10px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .field { }
+  .field-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .field-value { font-size: 13px; color: #1e293b; font-weight: 500; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; min-height: 32px; display: flex; align-items: center; word-break: break-all; }
+  .field-value.highlight { background: #f0fdf4; border-color: #bbf7d0; color: #065f46; font-weight: 600; }
+  .field-value.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; font-weight: 600; }
+  .field-span-2 { grid-column: span 2; }
+  .field-span-3 { grid-column: span 3; }
+  .field-span-4 { grid-column: span 4; }
+  .divider { border: none; border-top: 1px solid #f1f5f9; margin: 6px 0; }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; }
+  @media print {
+    body { padding: 20px; }
+    @page { margin: 15mm; size: A4; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>Reservation Details</h1>
+    <p>Generated on ${new Date().toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' })}</p>
+  </div>
+  <div class="header-right">
+    <div class="booking-label">Booking ID</div>
+    <div class="booking-id">${reservation.bookingId || 'N/A'}</div>
+    <div class="status-badge ${reservation.status?.toLowerCase() === 'confirmed' ? 'status-confirmed' : reservation.status?.toLowerCase() === 'cancelled' ? 'status-cancelled' : 'status-pending'}">${reservation.status || 'N/A'}</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Guest Information</div>
+  <div class="grid grid-4">
+    <div class="field field-span-4">
+      <div class="field-label">Full Name</div>
+      <div class="field-value">${reservation.fullName || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Phone</div>
+      <div class="field-value">${reservation.phone || 'N/A'}</div>
+    </div>
+    <div class="field field-span-3">
+      <div class="field-label">Email</div>
+      <div class="field-value">${reservation.email || 'N/A'}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Address Information</div>
+  <div class="grid grid-4">
+    <div class="field field-span-4">
+      <div class="field-label">Full Address</div>
+      <div class="field-value">${address}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Booking Information</div>
+  <div class="grid grid-4">
+    <div class="field">
+      <div class="field-label">Check In</div>
+      <div class="field-value">${fmt(reservation.checkIn) || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Check Out</div>
+      <div class="field-value">${fmt(reservation.checkOut) || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Days / Nights</div>
+      <div class="field-value">${reservation.noOfDays} days / ${reservation.noOfNights} nights</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Reservation Date</div>
+      <div class="field-value">${fmt(reservation.reservationDate) || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Reserved From</div>
+      <div class="field-value">${reservation.reservedFrom || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Resort</div>
+      <div class="field-value">${reservation.resortName || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Cottage Type</div>
+      <div class="field-value">${(reservation.cottageTypeNames || []).join(', ') || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Room Name(s)</div>
+      <div class="field-value">${(reservation.roomNames || []).join(', ') || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">No. of Rooms</div>
+      <div class="field-value">${reservation.numberOfRooms}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Food Preference</div>
+      <div class="field-value">${reservation.foodPreference || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Existing Guest</div>
+      <div class="field-value">${reservation.existingGuest || 'N/A'}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Guest Count</div>
+  <div class="grid grid-4">
+    <div class="field">
+      <div class="field-label">Guests</div>
+      <div class="field-value">${reservation.guests}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Extra Guests</div>
+      <div class="field-value">${reservation.extraGuests}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Children</div>
+      <div class="field-value">${reservation.children}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Total Guests</div>
+      <div class="field-value highlight">${reservation.totalGuests}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Foods Billed</div>
+      <div class="field-value">${foodsBilled}</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Pricing & Payment</div>
+  <div class="grid grid-4">
+    <div class="field">
+      <div class="field-label">Room Price</div>
+      <div class="field-value">₹${reservation.roomPrice || 0}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Extra Bed Charges</div>
+      <div class="field-value">₹${reservation.extraBedCharges || 0}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Total Payable</div>
+      <div class="field-value highlight">₹${reservation.totalPayable || 0}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Payment Status</div>
+      <div class="field-value ${reservation.paymentStatus?.toLowerCase() === 'paid' || reservation.paymentStatus?.toLowerCase() === 'success' ? 'highlight' : 'warn'}">${reservation.paymentStatus || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Transaction ID</div>
+      <div class="field-value">${reservation.paymentTransactionId || 'N/A'}</div>
+    </div>
+    <div class="field field-span-3">
+      <div class="field-label">Transaction Date & Time</div>
+      <div class="field-value">${reservation.paymentTransactionDateTime ? fmtDT(reservation.paymentTransactionDateTime) : 'N/A'}</div>
+    </div>
+  </div>
+</div>
+
+${reservation.cancelBookingReason || reservation.refundableAmount ? `
+<div class="section">
+  <div class="section-title">Cancellation & Refund</div>
+  <div class="grid grid-4">
+    <div class="field field-span-4">
+      <div class="field-label">Cancel Reason</div>
+      <div class="field-value">${reservation.cancelBookingReason || 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Refund Requested</div>
+      <div class="field-value">${reservation.refundRequestedDateTime ? fmt(reservation.refundRequestedDateTime.slice(0, 10)) : 'N/A'}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Refundable Amount</div>
+      <div class="field-value">₹${reservation.refundableAmount || 0}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Amount Refunded</div>
+      <div class="field-value">₹${reservation.amountRefunded || 0}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Date of Refund</div>
+      <div class="field-value">${reservation.dateOfRefund ? fmt(reservation.dateOfRefund.slice(0, 10)) : 'N/A'}</div>
+    </div>
+  </div>
+</div>
+` : ''}
+
+<div class="footer">
+  <span>Vanavihari Admin Panel</span>
+  <span>Booking ID: ${reservation.bookingId || 'N/A'} &nbsp;|&nbsp; ${reservation.resortName || ''}</span>
+</div>
+
+<script>window.onload = function() { window.print(); }<\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+  };
+
   // Export to CSV (uses current reservations)
   const exportToExcel = () => {
     // Format date to DD-MMM-YY (e.g. 07-Nov-25). If value is empty or invalid,
@@ -651,6 +893,7 @@ export default function ReservationTable() {
     // fetch reservations and setup table event listeners/styles
     const fetchReservations = async () => {
       try {
+        setLoading(true);
         // Fetch all data in parallel
         const [resRes, resortsRes, cottagesRes, roomsRes] = await Promise.all([
           fetch(`${apiUrl}/api/reservations`),
@@ -803,6 +1046,8 @@ export default function ReservationTable() {
         setReservations(uniqueMapped);
       } catch (err) {
         console.error("Failed to load reservations", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -1435,6 +1680,10 @@ export default function ReservationTable() {
     },
   ];
 
+  if (loading) {
+    return <PageLoader message="Loading reservations..." />;
+  }
+
   return (
     <>
       <div className="w-full max-w-full overflow-hidden dt-table-container">
@@ -1490,6 +1739,11 @@ export default function ReservationTable() {
                   next: "›",
                   previous: "‹",
                 },
+                columnControl: {
+   
+    reorder: "Reorder"
+  }
+                
               },
               layout: {
                 topStart: "info",
@@ -1604,9 +1858,38 @@ export default function ReservationTable() {
                 <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                   {/* Guest Information */}
                   <div className="border-b pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Guest Information
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Guest Information
+                      </h3>
+                      {selectedReservation && (
+                        <button
+                          onClick={() => downloadPDF(selectedReservation)}
+                          className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200"
+                          style={{
+                            background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
+                            boxShadow: '0 2px 8px rgba(225,29,72,0.3)',
+                          }}
+                          onMouseOver={e => {
+                            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 14px rgba(225,29,72,0.45)';
+                            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseOut={e => {
+                            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(225,29,72,0.3)';
+                            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                          }}
+                          title="Download reservation as PDF"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="12" y1="18" x2="12" y2="12" />
+                            <line x1="9" y1="15" x2="15" y2="15" />
+                          </svg>
+                          Download PDF
+                        </button>
+                      )}
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="col-span-2 md:col-span-4">
                         <Label className="text-sm font-medium text-gray-700 mb-2 block">

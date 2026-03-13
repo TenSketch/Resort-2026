@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card, CardHeader, CardTitle, CardContent
 } from "@/components/ui/card";
@@ -112,6 +112,27 @@ export default function TouristSpotDashboard() {
       totalRevenue: 0
     }
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading to match other dashboards
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800); // adjust time as needed
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading trek dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const { stats, comparison, topSpots, bookingsByCategory, upcomingBookings, monthlySummary } = data;
 

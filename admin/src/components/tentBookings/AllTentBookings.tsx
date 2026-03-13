@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { DatePickerField } from "@/components/ui/date-picker";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -70,6 +71,7 @@ export default function AllTentBookings() {
   const [sheetMode, setSheetMode] = useState<"view" | "edit">("view");
   const [editForm, setEditForm] = useState<Partial<TentBooking> | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const apiUrl =
     (import.meta.env && import.meta.env.VITE_API_URL) ||
@@ -151,6 +153,7 @@ export default function AllTentBookings() {
 
   const fetchBookings = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("admin_token");
       const headers: Record<string, string> = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -162,6 +165,8 @@ export default function AllTentBookings() {
       }
     } catch (err) {
       console.error("Error fetching tent bookings:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -551,6 +556,7 @@ export default function AllTentBookings() {
       </div>
 
       <div ref={tableRef} className="tent-bookings-table-container w-full">
+        {isLoading && <PageLoader message="Loading tent bookings..." />}
         <DataTable
           ref={dtRef}
           data={bookings}

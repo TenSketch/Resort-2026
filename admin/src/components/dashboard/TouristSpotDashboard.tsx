@@ -89,41 +89,33 @@ const StatCard = ({ title, value, footer, Icon }: { title: string, value: string
 };
 
 export default function TouristSpotDashboard() {
-  const [data] = useState<DashboardData>({
-    stats: {
-      todayBookings: 0,
-      todayGuests: 0,
-      todayRevenue: 0,
-      todayCancellations: 0,
-      upcomingCount: 0
-    },
-    comparison: {
-      bookings: 0,
-      cancellations: 0,
-      revenueToday: 0,
-      revenueYesterday: 0
-    },
-    topSpots: [],
-    bookingsByCategory: [],
-    upcomingBookings: [],
-    monthlySummary: {
-      totalBookings: 0,
-      totalGuests: 0,
-      totalRevenue: 0
-    }
-  });
-
+  const apiUrl = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000';
+  const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate loading to match other dashboards
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800); // adjust time as needed
-    return () => clearTimeout(timer);
-  }, []);
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${apiUrl}/api/reports/tourist-dashboard`);
+        const result = await response.json();
+        
+        if (result.success) {
+          setData(result);
+        } else {
+          console.error('Failed to fetch tourist dashboard data:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching tourist dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  if (isLoading) {
+    fetchDashboardData();
+  }, [apiUrl]);
+
+  if (isLoading || !data) {
     return (
       <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
         <div className="text-center">

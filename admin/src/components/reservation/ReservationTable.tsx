@@ -1739,11 +1739,8 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                   next: "›",
                   previous: "‹",
                 },
-                columnControl: {
+                restore:"restore"
    
-    reorder: "Reorder"
-  }
-                
               },
               layout: {
                 topStart: "info",

@@ -69,7 +69,7 @@ export const expirePendingReservations = async () => {
       })
       await Promise.all(notifPromises)
 
-      console.log(`Auto-released ${dfoExpired.length} DFO-pending reservations (1-hour timeout)`)
+      console.log(`Auto-released ${dfoExpired.length} DFO-pending reservations (12-hour timeout)`)
     }
 
     return { expiredUserReservations, dfoReleasedCount: dfoExpired.length }
@@ -116,7 +116,7 @@ export const createReservation = async (req, res) => {
       payload.paymentStatus = 'Unpaid'
       payload.approval_status = 'PENDING_DFO_APPROVAL'
       const expiryTime = new Date()
-      expiryTime.setHours(expiryTime.getHours() + 1)  // 1-hour DFO approval window
+      expiryTime.setHours(expiryTime.getHours() + 12)  // 12-hour DFO approval window
       payload.expiresAt = expiryTime
     }
 

@@ -66,9 +66,6 @@
                 <a class="dropdown-item text-nowrap" routerLink="/my-account/my-bookings" (click)="toggleSidebar()">
                   <i class="fa-solid fa-list-check"></i><span class="menu-text">My Bookings</span>
                 </a>
-                <a class="dropdown-item text-nowrap" (click)="toggleSidebar(); triggerModal()">
-                  <i class="fa-solid fa-right-from-bracket"></i><span class="menu-text">Sign Out</span>
-                </a>
               </div>
             </div>
           </div>
@@ -192,6 +189,26 @@
         <li class="sidebar-item d-flex">
           <a class="sidebar-link" (click)="toggleSidebar(); goToAwards()">
             <i class="fa-solid fa-award"></i><span class="ms-3">Awards & News</span>
+          </a>
+        </li>
+
+        <li class="sidebar-item ">
+          <hr class="mx-3 my-2 text-muted" />
+        </li>
+
+        <!-- Category: SETTINGS -->
+        <li class="menu-category  mb-2 px-4 text-muted text-uppercase fw-bold"
+          style="font-size: 0.75rem; letter-spacing: 1px">
+          Settings
+        </li>
+        <li class="sidebar-item d-flex">
+          <a class="sidebar-link" (click)="toggleSidebar(); goToContact()">
+            <i class="fa-solid fa-phone-volume"></i><span class="ms-3">Contact us</span>
+          </a>
+        </li>
+        <li class="sidebar-item d-flex" *ngIf="isLoggedIn()">
+          <a class="sidebar-link text-danger" (click)="toggleSidebar(); triggerModal()">
+            <i class="fa-solid fa-right-from-bracket text-danger"></i><span class="ms-3">Sign Out</span>
           </a>
         </li>
       </ul>
@@ -340,7 +357,7 @@
         <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to sign out?</p>
+        <p>Confirm Sign Out</p>
       </div>
       <div class="modal-footer">
         <button type="button" mat-raised-button color="primary" (click)="onCancel()">

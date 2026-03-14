@@ -22,7 +22,7 @@ export const initiateBilldeskRefund = async (refundData, encKey, signKey, keyId,
     // For refund, we might need BDAuth token, but usually signature is enough.
     // Let's check sendToBillDesk.js what it does.
     const host = process.env.BILLDESK_API_URL || "https://uat1.billdesk.com";
-    const url = `${host}/u2/payments/v1_2/refunds`;
+    const url = `${host}/u2/payments/ve1_2/refunds/create`;
 
     console.log("SENDING REFUND REQUEST TO BILLDESK:");
     console.log("URL:", url);

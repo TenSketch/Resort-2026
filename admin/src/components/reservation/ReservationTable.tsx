@@ -1795,7 +1795,7 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                   buttonsContainer.appendChild(btn);
                 }
               },
-            }}
+            } as any}
           />
         </div>
 

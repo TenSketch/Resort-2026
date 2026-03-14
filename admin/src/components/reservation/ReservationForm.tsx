@@ -534,14 +534,10 @@ export default function AddReservationForm() {
           headers["Authorization"] = `Bearer ${token}`;
         }
 
-        // Remove status, paymentStatus, and referredBy from payload
-        // The backend controller sets status & paymentStatus based on admin role
-        const { status, paymentStatus, referredBy, ...cleanPayload } = formData;
-
         const res = await fetch(`${apiUrl}/api/reservations`, {
           method: "POST",
           headers,
-          body: JSON.stringify(cleanPayload),
+          body: JSON.stringify(formData),
         });
         const contentType = res.headers.get("content-type") || "";
         let data: { error?: string } | null = null;

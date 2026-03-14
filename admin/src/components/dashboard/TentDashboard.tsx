@@ -85,7 +85,7 @@ export default function TentDashboard() {
         const queryParam = selectedTentSpot !== 'all' ? `?tentSpotId=${selectedTentSpot}` : '';
         const response = await fetch(`${apiUrl}/api/reports/tent-dashboard${queryParam}`);
         const result = await response.json();
-        
+
         if (result.success) {
           setDashboardData(result);
         } else {
@@ -137,32 +137,32 @@ export default function TentDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          Icon={CalendarDays} 
-          title="Total Bookings Today" 
-          value={stats.totalBookingsToday} 
+        <StatCard
+          Icon={CalendarDays}
+          title="Total Bookings Today"
+          value={stats.totalBookingsToday}
           color="text-green-500"
         />
         <StatCard
           Icon={Tent}
           title="Vacant Tents"
-          value={selectedTentSpot === 'all' 
-            ? stats.vacantTents 
+          value={selectedTentSpot === 'all'
+            ? stats.vacantTents
             : tentSpots.find(ts => ts.id === selectedTentSpot)?.vacantToday ?? 0
           }
           color="text-purple-500"
         />
-        <StatCard 
-          Icon={Users} 
-          title="Total Guests Today" 
-          value={stats.totalGuestsToday} 
+        <StatCard
+          Icon={Users}
+          title="Total Guests Today"
+          value={stats.totalGuestsToday}
           color="text-orange-500"
         />
-        <StatCard 
-          Icon={LogOut} 
-          title="Expected Checkouts" 
-          value={stats.expectedCheckouts} 
-          color="text-red-500" 
+        <StatCard
+          Icon={LogOut}
+          title="Expected Checkouts"
+          value={stats.expectedCheckouts}
+          color="text-red-500"
         />
       </div>
 
@@ -256,13 +256,13 @@ export default function TentDashboard() {
                 <XAxis dataKey="day" />
                 <YAxis domain={[0, 100]} />
                 <ReTooltip formatter={(v) => `${v}%`} />
-                <Line 
-                  type="monotone" 
-                  dataKey="occupancy" 
-                  stroke={LINE_COLOR} 
-                  strokeWidth={2} 
-                  dot={{ fill: LINE_COLOR, r: 5 }} 
-                  activeDot={{ r: 7 }} 
+                <Line
+                  type="monotone"
+                  dataKey="occupancy"
+                  stroke={LINE_COLOR}
+                  strokeWidth={2}
+                  dot={{ fill: LINE_COLOR, r: 5 }}
+                  activeDot={{ r: 7 }}
                 />
               </LineChart>
             </ResponsiveContainer>

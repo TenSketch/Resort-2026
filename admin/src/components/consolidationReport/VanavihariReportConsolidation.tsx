@@ -13,6 +13,7 @@ import "datatables.net-buttons-dt/css/buttons.dataTables.css";
 import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
 import { useState, useEffect } from "react";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -58,12 +59,15 @@ interface AmountDebited {
 const VanavihariConsolidationReport = () => {
     const [creditedData, setCreditedData] = useState<AmountCredited[]>([]);
     const [debitedData, setDebitedData] = useState<AmountDebited[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Fetch data from API or use sample data
     useEffect(() => {
+        setIsLoading(true);
         // TODO: Replace with actual API call
         // Sample dummy data for manual QA
-        setCreditedData([
+        const timer = setTimeout(() => {
+            setCreditedData([
             {
                 id: "1",
                 month: "Feb-26",
@@ -271,6 +275,10 @@ const VanavihariConsolidationReport = () => {
                 amountCreditedToVanaBankAcc: 0,
             },
         ]);
+        setIsLoading(false);
+        }, 1000); // Simulate network delay
+
+        return () => clearTimeout(timer);
     }, []);
 
     const creditedColumns = [
@@ -322,6 +330,10 @@ const VanavihariConsolidationReport = () => {
             render: (data: number) => data == null ? "" : `₹${data.toLocaleString('en-IN')}`,
         },
     ];
+
+    if (isLoading) {
+        return <PageLoader message="Loading consolidation report..." />;
+    }
 
     return (
         <div className="w-full max-w-full overflow-hidden p-6">

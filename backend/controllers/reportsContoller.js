@@ -542,170 +542,190 @@ export const getTouristDashboardStats = async (req, res) => {
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    // Yesterday
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    // First day of this month
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
     // Build query filter
-    // Note: touristSpots schema holds spotId inside an array of spots in the reservation
     const spotFilter = spotId ? { 'touristSpots.spotId': spotId } : {}
 
     // Get all tourist spots
     const touristSpots = await TouristSpot.find().lean()
 
-    // Total bookings today (reservations created today)
-    const totalBookingsToday = await TouristSpotReservation.countDocuments({
+    // 1. STATS & COMPARISON
+    // Today's Reservations
+    const todaysReservations = await TouristSpotReservation.find({
       ...spotFilter,
       createdAt: { $gte: today, $lt: tomorrow }
-    })
+    }).lean()
 
-    // Active reservations for today
-    // We check if any spot in the reservation has visitDate for today
-    const activeReservations = await TouristSpotReservation.find({
+    // Yesterday's Reservations
+    const yesterdaysReservations = await TouristSpotReservation.find({
+      ...spotFilter,
+      createdAt: { $gte: yesterday, $lt: today }
+    }).lean()
+
+    const todayBookings = todaysReservations.length
+    const todayRevenue = todaysReservations
+      .filter(r => r.paymentStatus === 'Paid')
+      .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
+    const todayCancellations = todaysReservations.filter(r => r.status === 'Cancelled' || r.paymentStatus === 'Failed').length
+    
+    // Total Guests Today calculation (touristSpots.visitDate is today)
+    const activeReservationsToday = await TouristSpotReservation.find({
       ...spotFilter,
       status: 'Reserved',
       'touristSpots.visitDate': { $gte: today, $lt: tomorrow }
     }).lean()
 
-    // Total Guests Today calculation
-    const totalGuestsToday = activeReservations.reduce((sum, r) => {
-      // Loop through spots that are visiting today and match filter (if any)
+    const todayGuests = activeReservationsToday.reduce((sum, r) => {
       const validSpots = r.touristSpots.filter(ts => {
         const visitDate = new Date(ts.visitDate);
         const isToday = visitDate >= today && visitDate < tomorrow;
         const matchesFilter = spotId ? ts.spotId === spotId : true;
         return isToday && matchesFilter;
       });
-
       const spotsGuests = validSpots.reduce((sSum, spot) => 
         sSum + (spot.counts?.guests || (spot.counts?.adults || 0) + (spot.counts?.children || 0)), 0);
-      
       return sum + spotsGuests;
     }, 0)
 
-    // Payment breakdown (last 30 days)
-    const thirtyDaysAgo = new Date(today)
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-    const recentReservations = await TouristSpotReservation.find({
+    // Upcoming Count (next 7 days)
+    const next7Days = new Date(today)
+    next7Days.setDate(next7Days.getDate() + 7)
+    
+    const upcomingCount = await TouristSpotReservation.countDocuments({
       ...spotFilter,
-      createdAt: { $gte: thirtyDaysAgo }
-    }).lean()
-
-    const paymentStats = recentReservations.reduce((acc, r) => {
-      acc[r.paymentStatus] = (acc[r.paymentStatus] || 0) + 1
-      return acc
-    }, {})
-
-    const totalPayments = recentReservations.length || 1
-    const paymentBreakdown = [
-      { name: 'Paid', value: Math.round(((paymentStats.Paid || 0) / totalPayments) * 100) },
-      { name: 'Pending', value: Math.round(((paymentStats.Pending || 0) / totalPayments) * 100) },
-      { name: 'Unpaid', value: Math.round(((paymentStats.Unpaid || 0) / totalPayments) * 100) },
-      { name: 'Failed', value: Math.round(((paymentStats.Failed || 0) / totalPayments) * 100) },
-      { name: 'Refunded', value: Math.round(((paymentStats.Refunded || 0) / totalPayments) * 100) }
-    ].filter(item => item.value > 0)
-
-    // Last 5 bookings
-    const last5Bookings = await TouristSpotReservation.find(spotFilter)
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .lean()
-
-    const last5BookingsFormatted = last5Bookings.map((booking) => {
-      // If filtering by a specific spot, favor displaying it, otherwise show generic/first spot
-      let primarySpotName = 'Multiple Spots'
-      if (booking.touristSpots && booking.touristSpots.length > 0) {
-        if (booking.touristSpots.length === 1) {
-          primarySpotName = booking.touristSpots[0].name || 'Unknown Spot'
-        } else if (spotId) {
-          const matched = booking.touristSpots.find(ts => ts.spotId === spotId)
-          primarySpotName = matched ? matched.name : booking.touristSpots[0].name
-        }
-      }
-
-      return {
-        id: booking.bookingId || booking._id.toString().slice(-6),
-        guest: booking.user?.name || 'Guest',
-        spotName: primarySpotName,
-        status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
-        amount: booking.totalPayable || 0
-      }
+      status: 'Reserved',
+      'touristSpots.visitDate': { $gte: tomorrow, $lt: next7Days }
     })
 
-    // 7-day expected guests forecast (similar to occupancy)
-    const occupancy7Day = []
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today)
-      date.setDate(date.getDate() + i)
-      const nextDate = new Date(date)
-      nextDate.setDate(nextDate.getDate() + 1)
+    const comparison = {
+      bookings: todayBookings,
+      cancellations: todayCancellations,
+      revenueToday: todayRevenue,
+      revenueYesterday: yesterdaysReservations
+        .filter(r => r.paymentStatus === 'Paid')
+        .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
+    }
 
-      const reservationsOnDate = await TouristSpotReservation.find({
-        ...spotFilter,
-        status: 'Reserved',
-        'touristSpots.visitDate': { $gte: date, $lt: nextDate }
-      }).lean()
+    // 2. MONTHLY SUMMARY & TOP SPOTS
+    const thisMonthReservations = await TouristSpotReservation.find({
+      ...spotFilter,
+      createdAt: { $gte: startOfMonth }
+    }).lean()
 
-      const guestsOnDate = reservationsOnDate.reduce((sum, r) => {
-        const validSpots = r.touristSpots.filter(ts => {
-          const visitDate = new Date(ts.visitDate);
-          const isTargetDate = visitDate >= date && visitDate < nextDate;
-          const matchesFilter = spotId ? ts.spotId === spotId : true;
-          return isTargetDate && matchesFilter;
-        });
+    const monthlySummary = {
+      totalBookings: thisMonthReservations.length,
+      totalGuests: 0,
+      totalRevenue: thisMonthReservations
+        .filter(r => r.paymentStatus === 'Paid')
+        .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
+    }
 
-        const spotsGuests = validSpots.reduce((sSum, spot) => 
-          sSum + (spot.counts?.guests || (spot.counts?.adults || 0) + (spot.counts?.children || 0)), 0);
-        
-        return sum + spotsGuests;
-      }, 0)
-      
-      occupancy7Day.push({
-        day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        guests: guestsOnDate
+    // Calculate monthly guests and top spots
+    const spotStats = {}
+    
+    thisMonthReservations.forEach(r => {
+      // Add guests for the month
+      let rGuests = 0
+      r.touristSpots.forEach(ts => {
+        const matchesFilter = spotId ? ts.spotId === spotId : true;
+        if (matchesFilter) {
+           const g = (ts.counts?.guests || (ts.counts?.adults || 0) + (ts.counts?.children || 0))
+           rGuests += g
+           
+           // Aggregate top spots
+           const sId = ts.spotId || ts.name
+           if (!spotStats[sId]) {
+             spotStats[sId] = { name: ts.name || 'Unknown', bookings: 0, guests: 0, revenue: 0 }
+           }
+           spotStats[sId].bookings += 1
+           spotStats[sId].guests += g
+           // Pro-rate revenue if multiple spots, or just add amounts.total if available
+           if (r.paymentStatus === 'Paid') {
+             spotStats[sId].revenue += (ts.amounts?.total || r.totalPayable || 0)
+           }
+        }
       })
-    }
+      monthlySummary.totalGuests += rGuests
+    })
 
-    // specific spot numbers for selection grid representation
-    const spotWiseGuests = {}
-    for (const tspo of touristSpots) {
-      const tsId = tspo.slug || tspo._id.toString()
+    const topSpots = Object.values(spotStats)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5)
+
+    // 3. BOOKINGS BY CATEGORY (Pie Chart)
+    const paymentStats = thisMonthReservations.reduce((acc, r) => {
+      const status = r.paymentStatus || 'Unknown'
+      acc[status] = (acc[status] || 0) + 1
+      return acc
+    }, {})
+    
+    const bookingsByCategory = Object.entries(paymentStats).map(([name, value]) => ({ name, value }))
+    
+    const categoryStats = {}
+    thisMonthReservations.forEach(r => {
+      r.touristSpots.forEach(ts => {
+        const name = ts.name || 'Unknown'
+        categoryStats[name] = (categoryStats[name] || 0) + 1
+      })
+    })
+    
+    const bookingsBySpotCategory = Object.entries(categoryStats).map(([name, value]) => ({ name, value }))
+    const pieData = spotId ? bookingsByCategory : bookingsBySpotCategory
+
+    // 4. UPCOMING BOOKINGS (Next 7 Days)
+    const upcomingReservations = await TouristSpotReservation.find({
+      ...spotFilter,
+      status: 'Reserved',
+      'touristSpots.visitDate': { $gte: tomorrow, $lt: next7Days }
+    }).sort({ 'touristSpots.visitDate': 1 }).limit(10).lean()
+
+    const upcomingBookings = upcomingReservations.map(r => {
+      // Find the relevant spot
+      let primarySpotName = 'Multiple Spots'
+      let visitDate = r.createdAt
+      let spotsGuests = 0
       
-      const spotActiveReservations = await TouristSpotReservation.find({
-        status: 'Reserved',
-        'touristSpots.visitDate': { $gte: today, $lt: tomorrow },
-        'touristSpots.spotId': tsId
-      }).lean()
-
-      const guestsCount = spotActiveReservations.reduce((sum, r) => {
-        const validSpots = r.touristSpots.filter(ts => {
-           const visitDate = new Date(ts.visitDate);
-           const isToday = visitDate >= today && visitDate < tomorrow;
-           return isToday && ts.spotId === tsId;
-        });
-
-        const numG = validSpots.reduce((sSum, spot) => 
-          sSum + (spot.counts?.guests || (spot.counts?.adults || 0) + (spot.counts?.children || 0)), 0);
-        
-        return sum + numG;
-      }, 0)
-
-      // Use either slug or id for matching in admin
-      spotWiseGuests[tsId] = guestsCount
-    }
+      if (r.touristSpots && r.touristSpots.length > 0) {
+         const spot = spotId ? r.touristSpots.find(ts => ts.spotId === spotId) : r.touristSpots[0]
+         if (spot) {
+           primarySpotName = spot.name || 'Unknown'
+           visitDate = spot.visitDate || visitDate
+           spotsGuests = spot.counts?.guests || (spot.counts?.adults || 0) + (spot.counts?.children || 0)
+         }
+      }
+      
+      return {
+        id: r.bookingId || r._id.toString().slice(-6),
+        date: visitDate,
+        guestName: r.user?.name || 'Guest',
+        trekSpot: primarySpotName,
+        guests: spotsGuests,
+        amount: r.totalPayable || 0,
+        status: r.status
+      }
+    })
 
     res.json({
       success: true,
       stats: {
-        totalBookingsToday,
-        totalGuestsToday,
+        todayBookings,
+        todayGuests,
+        todayRevenue,
+        todayCancellations,
+        upcomingCount
       },
-      paymentBreakdown,
-      last5Bookings: last5BookingsFormatted,
-      occupancy7Day,
-      touristSpots: touristSpots.map(ts => ({
-         id: ts.slug || ts._id.toString(), // The ID string expected by the frontend
-         name: ts.name,
-         guestsToday: spotWiseGuests[ts.slug || ts._id.toString()] || 0
-      }))
+      comparison,
+      topSpots,
+      bookingsByCategory: pieData,
+      upcomingBookings,
+      monthlySummary
     })
   } catch (err) {
     console.error('getTouristDashboardStats error', err)

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card, CardHeader, CardTitle, CardContent
 } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import PageLoader from "@/components/shared/PageLoader";
 import { Badge } from "@/components/ui/badge";
 import {
   CalendarCheck,
@@ -112,6 +113,20 @@ export default function TouristSpotDashboard() {
       totalRevenue: 0
     }
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading to match other dashboards
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800); // adjust time as needed
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <PageLoader message="Loading trek dashboard..." />;
+  }
 
   const { stats, comparison, topSpots, bookingsByCategory, upcomingBookings, monthlySummary } = data;
 

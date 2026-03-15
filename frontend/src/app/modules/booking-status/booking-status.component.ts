@@ -164,7 +164,7 @@ export class BookingStatusComponent {
 
   processRoomBooking(booking: any): void {
     // Check payment status
-    if (booking.paymentStatus === 'Paid' && booking.status === 'Reserved') {
+    if (booking.paymentStatus?.toLowerCase() === 'paid' && booking.status?.toLowerCase() === 'reserved') {
       this.bookingStatus = 'success';
 
       setTimeout(() => {
@@ -248,7 +248,7 @@ export class BookingStatusComponent {
         stayDuration: isTouristSpot ? 1 : this.durationOfStay(booking.checkIn, booking.checkOut),
         email: booking.email || booking.user?.email,
       };
-    } else if (booking.paymentStatus === 'Pending') {
+    } else if (booking.paymentStatus?.toLowerCase() === 'pending') {
       this.bookingStatus = 'pending';
     } else {
       this.bookingStatus = 'failed';
@@ -257,7 +257,7 @@ export class BookingStatusComponent {
 
   processTentBooking(booking: any): void {
     // Check payment status - tent bookings use 'reserved' status
-    if (booking.paymentStatus === 'Paid' && booking.status === 'Reserved') {
+    if (booking.paymentStatus?.toLowerCase() === 'paid' && booking.status?.toLowerCase() === 'reserved') {
       this.bookingStatus = 'success';
 
       const tentSpotName = booking.tentSpot?.spotName || 'Tent Spot';
@@ -293,7 +293,7 @@ export class BookingStatusComponent {
         stayDuration: this.durationOfStay(booking.checkinDate, booking.checkoutDate),
         email: booking.email,
       };
-    } else if (booking.paymentStatus === 'Pending') {
+    } else if (booking.paymentStatus?.toLowerCase() === 'pending') {
       this.bookingStatus = 'pending';
     } else {
       this.bookingStatus = 'failed';
@@ -302,7 +302,7 @@ export class BookingStatusComponent {
 
   processTrekBooking(booking: any): void {
     // Check payment status - trek bookings use 'reserved' status
-    if (booking.paymentStatus === 'Paid' && booking.status === 'Reserved') {
+    if (booking.paymentStatus?.toLowerCase() === 'paid' && booking.status?.toLowerCase() === 'reserved') {
       this.bookingStatus = 'success';
 
       // Build trek spots array for display
@@ -360,7 +360,7 @@ export class BookingStatusComponent {
         isTrek: true, // Flag to identify trek bookings in template
         touristSpots: booking.touristSpots // Include full spots data
       };
-    } else if (booking.paymentStatus === 'Pending') {
+    } else if (booking.paymentStatus?.toLowerCase() === 'pending') {
       this.bookingStatus = 'pending';
     } else {
       this.bookingStatus = 'failed';

@@ -3,6 +3,7 @@ import {
   Card, CardHeader, CardTitle, CardContent
 } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import PageLoader from "@/components/shared/PageLoader";
 
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -138,14 +139,7 @@ export default function AdminDashboard() {
   }, [apiUrl, selectedResort]);
 
   if (isLoading || !dashboardData) {
-    return (
-      <div className="p-4 md:p-6 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Loading dashboard..." />;
   }
 
   const { stats, last5Bookings, occupancy7Day, resorts } = dashboardData;

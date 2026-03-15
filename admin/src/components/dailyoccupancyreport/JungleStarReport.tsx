@@ -9,6 +9,7 @@ import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePermissions } from "@/lib/AdminProvider";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -279,14 +280,7 @@ export default function DailyOccupancyReport() {
   ];
 
   if (isLoading) {
-    return (
-      <div className="p-6 w-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading report data...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Loading report data..." />;
   }
 
   return (

@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -75,6 +76,7 @@ export default function LogsTable() {
   const [disabledLogs, setDisabledLogs] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState<Partial<LogEntry>>({});
   const [rows, setRows] = useState<LogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleEdit = (log: LogEntry) => {
     setEditingLog(log);
@@ -336,6 +338,7 @@ export default function LogsTable() {
   // fetch logs from backend on mount
   useEffect(() => {
     const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    setIsLoading(true);
     fetch(`${apiBase}/api/logs`)
       .then((res) => res.json())
       .then((data) => {
@@ -349,7 +352,8 @@ export default function LogsTable() {
           setRows(normalized);
         }
       })
-      .catch((err) => console.error("fetch logs error", err));
+      .catch((err) => console.error("fetch logs error", err))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const columns = [
@@ -432,6 +436,10 @@ export default function LogsTable() {
       },
     },
   ];
+
+  if (isLoading) {
+    return <PageLoader message="Loading log reports..." />;
+  }
 
   return (
     <div className="flex flex-col h-full max-h-screen overflow-hidden">

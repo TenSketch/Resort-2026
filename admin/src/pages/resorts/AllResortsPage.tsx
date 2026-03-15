@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import ResortCard from "@/components/resorts/ResortCard"
 import ResortDetailPanel from "@/components/resorts/ResortDetailPanel"
+import PageLoader from "@/components/shared/PageLoader"
 
 // Shape aligned strictly with backend MongoDB schema (resortModel.js)
 interface ResortData {
@@ -100,10 +101,13 @@ const AllResortsPage = () => {
     setSelectedResort(null)
   }
 
+  if (loading) {
+    return <PageLoader message="Loading resorts..." />
+  }
+
   return (
     <div className="relative">
       <div className="p-4">
-        {loading && <div className="text-sm text-slate-600">Loading resorts...</div>}
         {error && <div className="text-sm text-red-600">{error}</div>}
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 mt-3">
           {(!loading && !error && resorts.length === 0) && (

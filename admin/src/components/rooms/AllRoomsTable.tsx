@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 // Removed Input import (no inline edit modal now)
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -672,9 +673,8 @@ export default function RoomsTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -697,8 +697,8 @@ export default function RoomsTable() {
             >
               Edit
             </button>`
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -738,9 +738,7 @@ export default function RoomsTable() {
         </div>
 
         <div ref={tableRef} className="w-full">
-          {loadingRooms && (
-            <div className="p-4 text-sm text-gray-500">Loading rooms...</div>
-          )}
+          {loadingRooms && <PageLoader message="Loading rooms..." />}
           <DataTable
             ref={dtRef}
             data={roomsData}
@@ -991,7 +989,7 @@ export default function RoomsTable() {
                       <div className="mt-1 space-y-2">
                         {/* Display existing images */}
                         {selectedRoom.images &&
-                        selectedRoom.images.length > 0 ? (
+                          selectedRoom.images.length > 0 ? (
                           <div className="grid grid-cols-2 gap-2">
                             {selectedRoom.images.map((img, idx) => (
                               <div key={idx} className="relative group">

@@ -18,7 +18,6 @@ import {
   ClipboardCheck,
   Tent,
   Binoculars,
-  Users,
 } from "lucide-react";
 import {
   Collapsible,
@@ -235,16 +234,6 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     //   ],
     // },
 
-    // User Management (SuperAdmin only, shown in all views)
-    {
-      id: "user-management",
-      label: "User Management",
-      icon: Users,
-      path: "/users/manage",
-      viewTypes: ["resort", "tent", "tourist-spot"] as ViewType[],
-      pageId: "user-management",
-      superAdminOnly: true,
-    },
   ];
 
   // Filter menu items based on current view type AND user permissions

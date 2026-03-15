@@ -15,6 +15,7 @@ import { usePermissions } from "@/lib/AdminProvider";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TouristSpotDetailPanel from "@/components/touristSpot/TouristSpotDetailPanel";
+import PageLoader from "@/components/shared/PageLoader";
 
 DataTable.use(DT);
 
@@ -341,9 +342,7 @@ export default function AllTouristSpots() {
       </div>
 
       <div ref={tableRef} className="tourist-spots-table-container w-full">
-        {loading && (
-          <div className="p-4 text-sm text-gray-500">Loading Trek Spots...</div>
-        )}
+        {loading && <PageLoader message="Loading Trek Spots..." />}
         <DataTable
           ref={dtRef}
           data={spots}

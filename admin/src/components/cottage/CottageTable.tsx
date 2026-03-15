@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import PageLoader from "@/components/shared/PageLoader";
 import {
   Collapsible,
   CollapsibleContent,
@@ -405,8 +406,8 @@ export default function CottageDataTable() {
       render: (data: string[]) =>
         `<div style="display: flex; flex-wrap: wrap; gap: 4px;">
           ${data
-            .map(
-              (item) => `
+          .map(
+            (item) => `
                 <span style="
                   background: #dbeafe;
                   color: #1e3a8a;
@@ -418,8 +419,8 @@ export default function CottageDataTable() {
                   overflow: hidden;
                   text-overflow: ellipsis;
                 ">${item}</span>`,
-            )
-            .join("")}
+          )
+          .join("")}
         </div>`,
     },
     {
@@ -452,9 +453,8 @@ export default function CottageDataTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row._id}" 
@@ -477,8 +477,8 @@ export default function CottageDataTable() {
             >
               Edit
             </button>`
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -520,7 +520,7 @@ export default function CottageDataTable() {
         </div>
         <div ref={tableRef} className="flex-1 overflow-hidden">
           {error && <div className="text-red-600 p-2">{error}</div>}
-          {loading && <div className="p-2">Loading...</div>}
+          {loading && <PageLoader message="Loading cottage types..." />}
           <DataTable
             ref={dtRef}
             key={version}
@@ -686,8 +686,8 @@ export default function CottageDataTable() {
                           {typeof selectedCottage.resort === "string"
                             ? selectedCottage.resort
                             : selectedCottage.resort?.resortName ||
-                              selectedCottage.resort?.name ||
-                              ""}
+                            selectedCottage.resort?.name ||
+                            ""}
                         </span>
                       </div>
                     </div>

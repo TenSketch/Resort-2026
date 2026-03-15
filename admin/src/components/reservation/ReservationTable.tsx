@@ -129,8 +129,6 @@ export default function ReservationTable() {
   const [editForm, setEditForm] = useState<Partial<Reservation> | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [resorts, setResorts] = useState<{ _id: string; resortName: string }[]>([]);
-  const [resortFilter, setResortFilter] = useState("all");
 
   // populate edit form when selection changes
   useEffect(() => {
@@ -448,7 +446,7 @@ export default function ReservationTable() {
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Reservation - ${reservation.bookingId}</title>
+<title>${reservation.bookingId} - ${reservation.fullName}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1046,7 +1044,6 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         // Deduplicate reservations by booking ID (or ID as fallback) to prevent cloned duplicate data rendering
         const uniqueMapped = Array.from(new Map(mapped.map((m) => [m.bookingId || m.id, m])).values());
         setReservations(uniqueMapped);
-        setResorts(resortsData.resorts || []);
       } catch (err) {
         console.error("Failed to load reservations", err);
       } finally {
@@ -1127,58 +1124,19 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         transform: translateY(0) !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
       }
-      .reset-filters-btn, .dt-button, .dt-search input, .resort-filter-select {
-        height: 38px !important;
-        padding: 0 16px !important;
+      .reset-filters-btn {
+        padding: 6px 16px !important;
         border-radius: 6px !important;
         border: 1px solid #cbd5e1 !important;
-        background: #ffffff !important;
+        background: #f8fafc !important;
         color: #334155 !important;
         font-size: 13px !important;
         font-weight: 500 !important;
         cursor: pointer !important;
-        transition: all .2s ease !important;
-        box-sizing: border-box !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        transition: all .15s ease !important;
       }
-      .dt-search input {
-        width: 200px !important;
-        cursor: text !important;
-      }
-      .dt-search label {
-        display: none !important; /* Hide "Search:" text */
-      }
-      .reset-filters-btn:hover, .dt-button:hover, .resort-filter-select:hover {
-        background: #f8fafc !important;
-        border-color: #94a3b8 !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-      }
-      .resort-filter-select {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 14px;
-        padding-right: 32px !important;
-        min-width: 150px !important;
-      }
-      @media (min-width: 1024px) {
-        .dt-layout-end {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          gap: 0.75rem !important;
-        }
-        .dt-buttons {
-          margin: 0 !important;
-          display: flex !important;
-          gap: 0.75rem !important;
-        }
+      .reset-filters-btn:hover {
+        background: #e2e8f0 !important;
       }
       /* Clickable row styling */
       table.dataTable tbody tr {
@@ -1282,149 +1240,150 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         cursor: not-allowed !important;
         opacity: 0.7 !important; /* Keep it clear but indicate disabled */
       }
-      /* Desktop Alignment for Column Visibility next to Search */
+      /* --- UNIFIED TOP CONTROLS STYLING (Column Visibility, Reset Filters, Search) --- */
+      .dt-buttons .dt-button,
+      .reset-filters-btn,
+      .dt-length select {
+        height: 38px !important;
+        padding: 0 16px !important;
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        color: #334155 !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      .dt-search input {
+        height: 38px !important;
+        padding: 0 16px !important;
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        color: #334155 !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      .dt-buttons .dt-button:hover,
+      .reset-filters-btn:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #1e293b !important;
+      }
+
+      .dt-search input:focus {
+        outline: none !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+      }
+
+      /* Desktop Alignment */
       @media (min-width: 1024px) {
         .dt-layout-row:first-child .dt-layout-end {
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
-          gap: 1.5rem !important;
+          gap: 1rem !important;
         }
         .dt-buttons {
-          margin-bottom: 0 !important;
+          margin: 0 !important;
           display: flex !important;
           align-items: center !important;
-          gap: 0.75rem !important;
+          gap: 8px !important;
         }
-        .dataTables_filter {
-          margin-top: 0 !important;
+        .dt-search {
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+        }
+        .dt-search label {
+          font-weight: 600 !important;
+          color: #64748b !important;
+          margin: 0 !important;
+          font-size: 15px !important;
+        }
+        .dt-search input {
+          width: 200px !important;
         }
       }
-      .dt-info {
-        padding-top: 0 !important;
-        margin-top: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        height: 100% !important;
-        line-height: normal !important;
-      }
+
+      /* Mobile Sizing & Scaling */
       @media (max-width: 768px) {
         .dt-table-container .dt-layout-row {
           display: flex !important;
           flex-direction: column !important;
           align-items: center !important;
-          justify-content: center !important;
-          width: 100% !important;
-          gap: 1rem !important;
-          margin: 0.75rem 0 !important;
+          gap: 12px !important;
+          margin: 12px 0 !important;
         }
-        .dt-layout-start {
-          order: 1 !important;
+        .dt-search {
           width: 100% !important;
           display: flex !important;
           justify-content: center !important;
-        }
-        .dt-layout-end {
-          order: 2 !important;
-          width: 100% !important;
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
-          gap: 1rem !important;
-        }
-        .dt-info {
-          font-size: 15px !important;
-          font-weight: 500 !important;
-          color: #64748b !important;
-          margin-top: 1.5rem !important;
-          text-align: center !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-          align-items: center !important;
-        }
-        .dt-table-container .dt-search {
-          order: 1 !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-          margin: 0.75rem 0 !important;
-          padding: 0 5% !important;
-          box-sizing: border-box !important;
         }
         .dt-search label {
           display: flex !important;
           align-items: center !important;
-          justify-content: center !important;
-          gap: 4px !important;
-          width: auto !important;
-          font-weight: 600 !important;
-          font-size: 14px !important;
-          color: #334155 !important;
-          white-space: nowrap !important;
-          margin: 0 auto !important;
+          gap: 8px !important;
+          font-size: 15px !important;
         }
         .dt-search input {
-          width: 220px !important;
-          max-width: 100% !important;
-          height: 36px !important;
-          border: 1px solid #cbd5e1 !important;
-          border-radius: 4px !important;
-          padding: 0 10px !important;
-          font-size: 14px !important;
-          margin: 0 !important;
-          box-sizing: border-box !important;
+          width: 180px !important;
         }
         .dt-buttons {
-          order: 2 !important;
           display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          width: 100% !important;
-          gap: 0 !important;
-          padding: 0 5% !important;
-        }
-        .dt-buttons button:not(.reset-filters-btn), 
-        .dt-buttons .dt-button:not(.reset-filters-btn) {
-          flex: 1 !important;
-          min-width: 0 !important;
-          max-width: 160px !important;
-          height: 38px !important;
-          font-size: 13px !important;
-          white-space: nowrap !important;
-          display: flex !important;
-          align-items: center !important;
+          flex-wrap: wrap !important;
           justify-content: center !important;
-          margin: 0 !important;
-        }
-        .reset-filters-btn {
-          width: auto !important;
-          padding: 0.5rem 1rem !important;
-          flex: 0 0 auto !important;
-          height: 38px !important;
-          font-size: 13px !important;
-          white-space: nowrap !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          margin: 0 !important;
-        }
-        .dt-length {
-          display: flex !important;
-          justify-content: center !important;
-          align-items: center !important;
-          width: 100% !important;
-          margin: 1rem auto !important;
           gap: 8px !important;
-        }
-        .dt-paging {
-          display: flex !important;
-          justify-content: center !important;
           width: 100% !important;
-          margin: 1.5rem auto !important;
+        }
+        .dt-buttons .dt-button, 
+        .reset-filters-btn {
+          height: 36px !important;
+          padding: 0 12px !important;
+          font-size: 12px !important;
         }
       }
+
+      /* Sheet Close Button Styling - Enlarged for better visibility */
+      [data-slot="sheet-content"] > button {
+        width: 36px !important;
+        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        top: 1rem !important;
+        right: 1rem !important;
+        background: #f1f5f9 !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+        opacity: 0.8 !important;
+      }
+      [data-slot="sheet-content"] > button:hover {
+        opacity: 1 !important;
+        background: #e2e8f0 !important;
+        transform: scale(1.05);
+      }
+      [data-slot="sheet-content"] > button svg {
+        width: 24px !important;
+        height: 24px !important;
+        stroke-width: 2.5 !important;
+      }
+
     `;
     document.head.appendChild(style);
 
@@ -1731,6 +1690,31 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
       <div className="w-full max-w-full overflow-hidden dt-table-container">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
+          <button
+            onClick={() => (perms.canExport ? exportToExcel() : null)}
+            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+            disabled={!perms.canExport}
+            title={
+              perms.canExport
+                ? "Export to Excel"
+                : "You do not have permission to export data"
+            }
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Export to Excel
+          </button>
         </div>
 
         <div ref={tableRef} className="w-full">
@@ -1756,6 +1740,7 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                   next: "›",
                   previous: "‹",
                 },
+                columnControl: {},
               },
               layout: {
                 topStart: "info",
@@ -1769,31 +1754,6 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                   text: "Column Visibility",
                   collectionLayout: "fixed two-column",
                 },
-                {
-                  text: "Reset Filters",
-                  className: "reset-filters-btn",
-                  action: function (e: any, dt: any) {
-                    dt.search("").columns().search("");
-                    const wrapper = dt.table().container();
-                    wrapper.querySelectorAll("input").forEach((input: any) => {
-                      input.value = "";
-                      input.dispatchEvent(new Event("input", { bubbles: true }));
-                    });
-                    wrapper.querySelectorAll("select").forEach((select: any) => {
-                      select.selectedIndex = 0;
-                      select.dispatchEvent(new Event("change", { bubbles: true }));
-                    });
-                    dt.draw();
-                  }
-                },
-                {
-                  text: perms.canExport ? "Export to Excel" : "Export (No Perms)",
-                  className: `export-excel-btn ${!perms.canExport ? "opacity-50 cursor-not-allowed" : ""}`,
-                  enabled: perms.canExport,
-                  action: function () {
-                    if (perms.canExport) exportToExcel();
-                  }
-                }
               ],
               columnControl: [
                 "order",
@@ -1804,32 +1764,37 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                 const wrapper = api.table().container();
                 const buttonsContainer = wrapper.querySelector(".dt-buttons");
 
-                if (buttonsContainer && !wrapper.querySelector(".resort-filter-select")) {
-                  const select = document.createElement("select");
-                  select.className = "resort-filter-select";
-                  select.innerHTML = `<option value="all">All Resorts</option>`;
+                if (buttonsContainer && !wrapper.querySelector(".reset-filters-btn")) {
+                  const btn = document.createElement("button");
+                  btn.className = "reset-filters-btn";
+                  btn.textContent = "Reset Filters";
 
-                  // We need the resorts list here. Since this is a native function, 
-                  // we can't easily access 'resorts' state directly in a stable way if it changes,
-                  // but we can use the resorts we fetched.
-                  // For now, let's assume resorts are available in the component scope.
-                  resorts.forEach(r => {
-                    const opt = document.createElement("option");
-                    opt.value = r.resortName;
-                    opt.textContent = r.resortName;
-                    select.appendChild(opt);
-                  });
-
-                  select.onchange = (e: any) => {
-                    const val = e.target.value;
-                    if (val === "all") {
-                      api.column(6).search("").draw();
-                    } else {
-                      api.column(6).search(val).draw();
+                  btn.onclick = () => {
+                    api.search("").columns().search("");
+                    if (api.columns().ccSearchClear) {
+                      (api.columns() as any).ccSearchClear();
                     }
-                  };
 
-                  buttonsContainer.appendChild(select);
+                    wrapper.querySelectorAll("input").forEach((input: any) => {
+                      input.value = "";
+                      input.dispatchEvent(new Event("input", { bubbles: true }));
+                      input.dispatchEvent(new Event("change", { bubbles: true }));
+                    });
+
+                    wrapper.querySelectorAll("select").forEach((select: any) => {
+                      if (select.options.length > 0) {
+                        select.selectedIndex = 0;
+                        select.dispatchEvent(new Event("change", { bubbles: true }));
+                      }
+                    });
+
+                    wrapper.querySelectorAll(".dtcc-button_active").forEach((btn: any) => {
+                      btn.classList.remove("dtcc-button_active");
+                    });
+
+                    api.draw();
+                  };
+                  buttonsContainer.appendChild(btn);
                 }
               },
             }}

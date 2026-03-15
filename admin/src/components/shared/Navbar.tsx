@@ -350,6 +350,15 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>
+              {isSuperAdmin && (
+                <DropdownMenuItem
+                  onClick={() => navigate("/users/manage")}
+                  className="cursor-pointer"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  User Management
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={handleUploadClick}
                 className="cursor-pointer"

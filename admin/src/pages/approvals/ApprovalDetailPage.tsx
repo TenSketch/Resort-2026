@@ -59,7 +59,7 @@ interface FullReservation {
 const ApprovalDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDFO, isSuperAdmin } = useAdmin();
+  const { isDFO } = useAdmin();
 
   const [reservation, setReservation] = useState<FullReservation | null>(null);
   const [loading, setLoading] = useState(true);

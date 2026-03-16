@@ -9,6 +9,9 @@ html {
     font-size: 14px;
   }
 }
+.mat-mdc-snack-bar-container {
+ margin-top: 100px !important;
+}
 
 .main {
   min-height: 100vh;
@@ -454,6 +457,12 @@ mat-hint {
 // }
 
 /* When the button is expanded (no `.collapsed` class) show the arrow pointing down */
+
+// Fix snackbar being hidden behind sticky/fixed elements on mobile
+// (aside has z-index:1000, #filterCottage.active has z-index:1000000)
+.mat-mdc-snack-bar-container {
+  z-index: 1100000 !important;
+}
 
 /* Fix for gallery/overlays being covered by fixed sidebar */
 .cdk-global-overlay-wrapper {

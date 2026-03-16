@@ -59,7 +59,7 @@ interface FullReservation {
 const ApprovalDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDFO, isSuperAdmin } = useAdmin();
+  const { isDFO } = useAdmin();
 
   const [reservation, setReservation] = useState<FullReservation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -322,7 +322,7 @@ const ApprovalDetailPage = () => {
   };
 
   const isPending = reservation?.approval_status === "PENDING_DFO_APPROVAL";
-  const canAct = (isDFO || isSuperAdmin) && isPending;
+  const canAct = (isDFO ) && isPending;
 
   if (loading) {
     return (
@@ -507,7 +507,7 @@ const ApprovalDetailPage = () => {
           </div>
 
           {/* If already decided, show read-only */}
-          {!isPending ? (
+          {!isPending && isDFO ? (
             <div className="space-y-3">
               {reservation.final_amount !== undefined && (
                 <InfoField

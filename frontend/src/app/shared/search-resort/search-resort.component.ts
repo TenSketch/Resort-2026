@@ -34,7 +34,7 @@ export class SearchResortComponent implements OnInit {
     'Vanavihari Tents, Maredumilli',
     'Karthikavanam Tents, Valamuru',
   ];
-  trekLocations = ['Soft Trek', 'Very Hard Trek'];
+  trekLocations = ['Soft Trek','Medium/Hard Trek' ,'Very Hard Trek'];
 
   selectedResort: string;
   checkinDate: string;
@@ -66,7 +66,7 @@ export class SearchResortComponent implements OnInit {
 
     this.selectedResort = this.authService.getSearchData('resort');
     this.checkinDate = this.authService.getSearchData('checkin');
-    this.checkoutDate = this.authService.getSearchData('checkout');
+    this.checkoutDate = "";
 
     this.RoomValues = 'Adult-' + 2 + ' Children- ' + 0 + ' Rooms-' + 1;
 

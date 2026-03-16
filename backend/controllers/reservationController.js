@@ -104,12 +104,14 @@ export const createReservation = async (req, res) => {
 
     if (role === 'superadmin') {
       // Superadmin: immediately confirmed
-      payload.status = 'Reserved'
-      payload.paymentStatus = 'Paid'
-    } else if (role === 'dfo') {
-      // DFO: immediately confirmed — set valid enums before save, then confirm after
       payload.status = 'Pending'
       payload.paymentStatus = 'Unpaid'
+
+      payload.approval_status = 'PENDING_DFO_APPROVAL'
+    } else if (role === 'dfo') {
+      // DFO: immediately confirmed — set valid enums before save, then confirm after
+      payload.status = 'Reserved'
+      payload.paymentStatus = 'Paid'
     } else {
       // Admin / staff: pending + 1-hour room block, needs DFO approval
       payload.status = 'Pending'

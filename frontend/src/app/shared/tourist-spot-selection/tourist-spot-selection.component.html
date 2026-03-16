@@ -22,72 +22,117 @@
     </div>
 
     <div class="col-md-7 row justify-content-between m-auto">
-      <div class="col-md-7 p-3">
-        <h5>
-          <span class="text-primary-dark font-weight-bold">Spot name: </span>{{ name }}
-        </h5>
-        <h6>
-          <span class="text-primary-dark font-weight-bold">Location: </span>{{ location }}
-        </h6>
 
-        <div class="mt-2">
+      <!-- LEFT INFO -->
+      <div class="col-md-7 p-3">
+
+        <h5 class="fw-semibold mb-2">
+          {{ name }}
+        </h5>
+
+        <p class="text-muted mb-2">
+          <i class="fas fa-map-marker-alt text-success me-2"></i>
+          Location: {{ location }}
+        </p>
+
+        <div class="mt-2 small">
+
           <p class="m-0" *ngIf="distance">
-            <span class="text-primary-dark font-weight-bold">Distance: </span>{{ distance }} km
+            <i class="fas fa-route text-success me-2"></i>
+            <span class="text-primary-dark fw-semibold">Distance:</span>
+            {{ distance }} km
           </p>
+
           <p class="m-0" *ngIf="elevationGain">
-            <span class="text-primary-dark font-weight-bold">Elevation: </span>{{ elevationGain }} m
+            <i class="fas fa-mountain text-success me-2"></i>
+            <span class="text-primary-dark fw-semibold">Elevation:</span>
+            {{ elevationGain }} m
           </p>
+
           <p class="m-0" *ngIf="timings">
-            <span class="text-primary-dark font-weight-bold">Duration: </span>{{ timings }}
+            <i class="far fa-clock text-success me-2"></i>
+            <span class="text-primary-dark fw-semibold">Duration:</span>
+            {{ timings }}
           </p>
+
           <p class="m-0" *ngIf="difficulty">
-            <span class="text-primary-dark font-weight-bold">Difficulty: </span>{{ difficulty }} Trek
+            <i class="fas fa-signal text-success me-2"></i>
+            <span class="text-primary-dark fw-semibold">Difficulty:</span>
+            {{ difficulty }} Trek
           </p>
+
           <p class="m-0" *ngIf="type">
-            <span class="text-primary-dark font-weight-bold">Type: </span>{{ type }}
+            <i class="fas fa-hiking text-success me-2"></i>
+            <span class="text-primary-dark fw-semibold">Type:</span>
+            {{ type }}
           </p>
+
         </div>
+
       </div>
 
-      <div class="col-md-5 mt-2 mt-md-0 pe-md-0 p-3">
-        <!-- Price and Person Container -->
-        <div class="info-items">
-          <h6 class="p-0 m-0">
+
+      <!-- RIGHT PRICE + BUTTONS -->
+      <div class="col-md-5 mt-2 mt-md-0 pe-md-0 p-3 d-flex flex-column justify-content-between">
+
+        <!-- PRICE -->
+        <div class="info-items text-md-end">
+
+          <h4 class="fw-bold text-success m-0">
             <ng-container *ngIf="unitEntry !== undefined">
-              <strong>{{ unitEntry | currency: 'INR ':'symbol':'1.0-0' }}</strong>
+              {{ unitEntry | currency:'INR ':'symbol':'1.0-0' }}
             </ng-container>
+
             <ng-container *ngIf="unitEntry === undefined && entryFee">
-              <strong>{{ entryFee }}</strong>
+              {{ entryFee }}
             </ng-container>
-          </h6>
-          <p class="text-primary-dark m-0">
-            <i class="fas fa-user" aria-hidden="true"></i> / person
+          </h4>
+
+          <p class="text-muted m-0">
+            / person
           </p>
+
         </div>
 
-        <!-- Buttons Container -->
-        <div class="d-flex flex-row flex-md-column justify-content-between align-items-end gap-2 mt-3 w-100">
-          <div class="d-flex justify-content-start justify-content-md-end w-100 mb-md-2">
-            <ng-container *ngIf="openInNewTab; else inlineLink">
-              <a [href]="detailsHref" target="_blank" rel="noopener noreferrer"
-                class="btn btn-outline-primary btn-sm rounded-pill px-3 w-100 w-md-auto" title="View Details">
-                Details <i class="fas fa-arrow-right ms-1"></i>
-              </a>
-            </ng-container>
-            <ng-template #inlineLink>
-              <a [routerLink]="detailsLink" [fragment]="detailsFragment"
-                class="btn btn-outline-primary btn-sm rounded-pill px-3 w-100 w-md-auto" title="View Details">
-                Details <i class="fas fa-arrow-right ms-1"></i>
-              </a>
-            </ng-template>
-          </div>
 
-          <button class="btn btn-primary btn-lg rounded-pill px-4 w-100 w-md-auto" (click)="onAddToBooking()"
-            [disabled]="isSoldOut || !isSearchPerformed"
-            [title]="!isSearchPerformed ? 'Select a visit date first' : isSoldOut ? 'Sold Out' : 'Add spot'">
-            {{ isSoldOut ? "Sold Out" : "Add spot" }}
-          </button>
+        <!-- BUTTONS -->
+
+
+      </div>
+      <div class="d-flex flex-row justify-content-between align-items-center gap-2 mt-3">
+
+        <!-- DETAILS -->
+        <div class="w-100">
+
+          <ng-container *ngIf="openInNewTab; else inlineLink">
+            <a [href]="detailsHref" target="_blank" rel="noopener noreferrer"
+              class="btn btn-outline-success rounded-pill px-4 py-2 w-100" title="View Details">
+              Details
+              <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </ng-container>
+
+          <ng-template #inlineLink>
+            <a [routerLink]="detailsLink" [fragment]="detailsFragment"
+              class="btn btn-outline-success rounded-pill px-4 py-2 w-100" title="View Details">
+              Details
+              <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+          </ng-template>
+
         </div>
+
+
+        <!-- ADD BUTTON -->
+        <button class="btn btn-success rounded-pill px-4 py-2 w-100" (click)="onAddToBooking()"
+          [disabled]="isSoldOut || !isSearchPerformed"
+          [title]="!isSearchPerformed ? 'Select a visit date first' : isSoldOut ? 'Sold Out' : 'Add spot'">
+
+          <i class="fas fa-plus me-2"></i>
+          {{ isSoldOut ? "Sold Out" : "Add spot" }}
+
+        </button>
+
       </div>
     </div>
   </div>

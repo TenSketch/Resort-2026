@@ -166,24 +166,24 @@ export const TOURIST_SPOT_CATEGORIES: TouristSpotCategory[] = [
         mapurl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3802.6307719820206!2d81.6609907!3d17.6202596!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3724efa9ce126f%3A0x3bc3a36a8f5276ac!2sJalatarangini%20Water%20Fall!5e0!3m2!1sen!2sin!4v1754652808056!5m2!1sen!2sin"
  
       },
-    //   {
-    //     id: 'medium-trek',
-    //     name: 'Medium/Hard Trek: New Trail',
-    //     location: 'Maredumilli',
-    //     category: 'Trek',
-    //     typeLabel: 'Adventure Trek',
-    //     images: [
-    //        'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg', // Placeholder
-    //        'assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg'
-    //     ],
-    //     fees: { entryPerPerson: 800, parkingPerVehicle: 0, cameraPerCamera: 0, parkingTwoWheeler: undefined, parkingFourWheeler: undefined },
-    //     timing: 'morning-afternoon',
-    //     addOns: [],
-    //     detailsFragment: 'medium-trek',
-    //     difficulty: 'Hard',
-    //     distanceKm: 5,
-    //     elevationGainM: 450
-    //   },
+      {
+        id: 'medium-trek',
+        name: 'Medium/Hard Trek: New Trail',
+        location: 'Maredumilli',
+        category: 'Trek',
+        typeLabel: 'Adventure Trek',
+        images: [
+           'assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg', // Placeholder
+           'assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg'
+        ],
+        fees: { entryPerPerson: 800, parkingPerVehicle: 0, cameraPerCamera: 0, parkingTwoWheeler: undefined, parkingFourWheeler: undefined },
+        timing: 'morning-afternoon',
+        addOns: [],
+        detailsFragment: 'medium-trek',
+        difficulty: 'Hard',
+        distanceKm: 5,
+        elevationGainM: 450
+      },
       {
         id: 'hard-trek',
         name: 'Very Hard Trek: Jungle Star Eco Camp to Nellore',

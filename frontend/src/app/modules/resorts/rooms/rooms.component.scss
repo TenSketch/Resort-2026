@@ -29,9 +29,9 @@
     align-items: flex-end;
     @media (max-width: 768px) {
       display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: .5rem;
-    align-items: center;
+    align-items: start;
     }
 }
 

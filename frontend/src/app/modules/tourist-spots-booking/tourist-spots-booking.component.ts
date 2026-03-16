@@ -5,6 +5,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TouristBookingSelection } from '../../shared/tourist-spot-selection/tourist-spot-selection.component';
 import { TouristSpotCategory, TouristSpotConfig, TOURIST_SPOT_CATEGORIES } from './tourist-spots.data';
 import { TouristSpotService } from '../../services/tourist-spot.service';
+import { UserService } from 'src/app/user.service';
 
 export interface BookedTouristSpot {
   id: string;
@@ -118,9 +119,9 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private breakpointObserver: BreakpointObserver
-    ,
-    private touristSpotService: TouristSpotService
+    private breakpointObserver: BreakpointObserver,
+    private touristSpotService: TouristSpotService,
+    private userService: UserService
   ) {
     // Flatten local spots
     this.localSpots = TOURIST_SPOT_CATEGORIES.flatMap(c => c.spots);
@@ -725,8 +726,13 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
 
     localStorage.setItem('touristSpotsBooking', JSON.stringify(checkoutData));
 
-    // Navigate to checkout page
-    this.router.navigate(['/tourist-spots-checkout']);
+    let status = this.userService.isLoggedIn();
+    if (status) {
+      // Navigate to checkout page
+      this.router.navigate(['/tourist-spots-checkout']);
+    } else {
+      this.router.navigate(['/sign-in']);
+    }
   }
 
   private getSpotPrices(spotId: string): { entry: number; parking: number; camera: number } {

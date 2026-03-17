@@ -435,239 +435,306 @@ export default function ReservationTable() {
   };
 
   // Download single reservation as PDF
+  // Download single reservation as PDF
   const downloadPDF = (reservation: Reservation) => {
     const fmt = formatDateForDisplay;
-    const fmtDT = formatDateTimeForDisplay;
-    const address = [reservation.address1, reservation.address2, reservation.city, reservation.state, reservation.postalCode, reservation.country].filter(Boolean).join(', ') || 'N/A';
-    const isVana = reservation.resort?.toLowerCase().includes('vana') || reservation.resortName?.toLowerCase().includes('vana');
-    const foodsBilled = isVana ? 'NA' : String((Number(reservation.guests) || 0) + (Number(reservation.extraGuests) || 0));
+    const address = [reservation.address1, reservation.address2, reservation.city, reservation.state, reservation.postalCode, reservation.country].filter(Boolean).join(", ") || "N/A";
+    const fileName = `${reservation.bookingId || "N/A"}-${reservation.fullName || "Guest"}`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>${reservation.bookingId} - ${reservation.fullName}</title>
+<title>${fileName}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', Arial, sans-serif; background: #fff; color: #1e293b; font-size: 13px; padding: 32px; }
-  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid #0f766e; }
-  .header-left h1 { font-size: 22px; font-weight: 700; color: #0f766e; letter-spacing: -0.3px; }
-  .header-left p { font-size: 12px; color: #64748b; margin-top: 3px; }
-  .header-right { text-align: right; }
-  .header-right .booking-id { font-size: 15px; font-weight: 700; color: #1e293b; }
-  .header-right .booking-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-  .status-badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-top: 6px; }
-  .status-confirmed { background: #d1fae5; color: #065f46; }
-  .status-pending { background: #fef3c7; color: #92400e; }
-  .status-cancelled { background: #fee2e2; color: #991b1b; }
-  .section { margin-bottom: 22px; }
-  .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #0f766e; padding: 5px 0 8px 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 12px; }
-  .grid { display: grid; gap: 10px; }
-  .grid-2 { grid-template-columns: 1fr 1fr; }
-  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  .field { }
-  .field-label { font-size: 10px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-  .field-value { font-size: 13px; color: #1e293b; font-weight: 500; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; min-height: 32px; display: flex; align-items: center; word-break: break-all; }
-  .field-value.highlight { background: #f0fdf4; border-color: #bbf7d0; color: #065f46; font-weight: 600; }
-  .field-value.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; font-weight: 600; }
-  .field-span-2 { grid-column: span 2; }
-  .field-span-3 { grid-column: span 3; }
-  .field-span-4 { grid-column: span 4; }
-  .divider { border: none; border-top: 1px solid #f1f5f9; margin: 6px 0; }
-  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8; }
+  body { 
+    font-family: 'Inter', -apple-system, system-ui, sans-serif; 
+    background: #fff; 
+    color: #1a1a1a; 
+    font-size: 11px; 
+    line-height: 1.4; 
+    padding: 0; 
+    -webkit-print-color-adjust: exact; 
+  }
+  .receipt-wrapper { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 20px;
+  }
+  
+  .receipt-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-bottom: 15px; 
+    border-bottom: 1.5px solid #000; 
+    padding-bottom: 10px; 
+  }
+  .resort-logo h1 { 
+    font-size: 18px; 
+    color: #000; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    margin-bottom: 2px; 
+  }
+  
+  .booking-id-tag { text-align: right; }
+  .booking-id-tag h2 { 
+    font-size: 14px; 
+    font-weight: 700; 
+    color: #000; 
+    margin-bottom: 4px; 
+  }
+  .status-label { 
+    font-size: 10px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    color: #000;
+  }
+
+  .print-date { 
+    text-align: right; 
+    font-size: 8px; 
+    color: #666; 
+    margin-bottom: 10px; 
+  }
+  
+  .voucher-title {
+    text-align: center; 
+    font-size: 14px; 
+    font-weight: 700; 
+    color: #000; 
+    margin-bottom: 15px; 
+    text-transform: uppercase; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 5px;
+    letter-spacing: 0.5px;
+  }
+
+  .details-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 10px;
+  }
+  .details-table td { 
+    padding: 3px 0; 
+    vertical-align: top; 
+  }
+  .label-cell { 
+    width: 110px; 
+    color: #555; 
+    font-size: 9px; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+  }
+  .value-cell { 
+    color: #000; 
+    font-weight: 500; 
+    font-size: 10px; 
+  }
+  .value-cell.bold { 
+    font-weight: 700; 
+  }
+
+  .section-title { 
+    font-size: 10px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    color: #000; 
+    margin: 12px 0 6px 0; 
+    border-bottom: 1.5px solid #f0f0f0; 
+    padding-bottom: 2px; 
+  }
+
+  .billing-summary { 
+    margin-top: 15px; 
+    width: 100%; 
+    border-collapse: collapse; 
+  }
+  .billing-summary th { 
+    background-color: #fcfcfc; 
+    text-align: left; 
+    padding: 8px; 
+    color: #000; 
+    font-size: 9px; 
+    border-bottom: 1.5px solid #000; 
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .billing-summary td { 
+    padding: 8px; 
+    border-bottom: 1px solid #f9f9f9; 
+  }
+  .total-row { 
+    background-color: #fafafa; 
+  }
+  .total-row td { 
+    border-top: 1.5px solid #000;
+    border-bottom: 2px solid #000; 
+    font-weight: 700; 
+    color: #000; 
+    font-size: 12px; 
+  }
+
+  .footer-sig-area { 
+    margin-top: 40px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end; 
+  }
+  .sig-line { 
+    width: 160px; 
+    border-top: 1px solid #000; 
+    margin-bottom: 5px; 
+  }
+  .sig-text { 
+    font-size: 9px; 
+    color: #333; 
+    font-weight: 600; 
+  }
+  
+  .disclaimer-box { 
+    font-size: 8px; 
+    color: #666; 
+    font-style: italic; 
+    max-width: 400px;
+    line-height: 1.4;
+  }
+
   @media print {
-    body { padding: 20px; }
-    @page { margin: 15mm; size: A4; }
+    body { padding: 0; }
+    .receipt-wrapper { border: none; padding: 0; }
+    @page { 
+      margin: 12mm; 
+      size: A4 portrait; 
+    }
   }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="header-left">
-    <h1>Reservation Details</h1>
-    <p>Generated on ${new Date().toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' })}</p>
+<div class="receipt-wrapper">
+  <div class="receipt-header">
+    <div class="resort-logo">
+      <h1>Vanavihari Resort</h1>
+    </div>
+    <div class="booking-id-tag">
+      <h2>BOOKING ID: ${reservation.bookingId || "N/A"}</h2>
+      <div class="status-label">Status: ${(reservation.status || "N/A").toUpperCase()}</div>
+    </div>
   </div>
-  <div class="header-right">
-    <div class="booking-label">Booking ID</div>
-    <div class="booking-id">${reservation.bookingId || 'N/A'}</div>
-    <div class="status-badge ${reservation.status?.toLowerCase() === 'confirmed' ? 'status-confirmed' : reservation.status?.toLowerCase() === 'cancelled' ? 'status-cancelled' : 'status-pending'}">${reservation.status || 'N/A'}</div>
-  </div>
-</div>
 
-<div class="section">
-  <div class="section-title">Guest Information</div>
-  <div class="grid grid-4">
-    <div class="field field-span-4">
-      <div class="field-label">Full Name</div>
-      <div class="field-value">${reservation.fullName || 'N/A'}</div>
+  <p class="print-date">Date Issued: ${new Date().toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+
+  <div class="voucher-title">Official Booking Confirmation Receipt</div>
+
+  <div style="display: flex; gap: 40px; margin-bottom: 10px;">
+    <div style="flex: 1;">
+      <div class="section-title" style="margin-top: 0;">Guest Information</div>
+      <table class="details-table">
+        <tr>
+          <td class="label-cell">Primary Guest</td>
+          <td class="value-cell bold">${reservation.fullName || "N/A"}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Contact No.</td>
+          <td class="value-cell">${reservation.phone || "N/A"}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Email ID</td>
+          <td class="value-cell">${reservation.email || "N/A"}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Address</td>
+          <td class="value-cell">${address}</td>
+        </tr>
+      </table>
     </div>
-    <div class="field">
-      <div class="field-label">Phone</div>
-      <div class="field-value">${reservation.phone || 'N/A'}</div>
-    </div>
-    <div class="field field-span-3">
-      <div class="field-label">Email</div>
-      <div class="field-value">${reservation.email || 'N/A'}</div>
+    <div style="flex: 1;">
+      <div class="section-title" style="margin-top: 0;">Stay Details</div>
+      <table class="details-table">
+        <tr>
+          <td class="label-cell">Check-In Date</td>
+          <td class="value-cell bold">${fmt(reservation.checkIn) || "N/A"}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Check-Out Date</td>
+          <td class="value-cell bold">${fmt(reservation.checkOut) || "N/A"}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Stay Duration</td>
+          <td class="value-cell">${reservation.noOfDays} Days / ${reservation.noOfNights} Nights</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Property</td>
+          <td class="value-cell">${reservation.resortName || "N/A"}</td>
+        </tr>
+      </table>
     </div>
   </div>
-</div>
 
-<div class="section">
-  <div class="section-title">Address Information</div>
-  <div class="grid grid-4">
-    <div class="field field-span-4">
-      <div class="field-label">Full Address</div>
-      <div class="field-value">${address}</div>
+  <div class="section-title">Accommodation Details</div>
+  <table class="details-table">
+    <tr>
+      <td class="label-cell" style="width: 140px;">Cottage / Room Type</td>
+      <td class="value-cell">${(reservation.cottageTypeNames || []).join(", ") || "N/A"}</td>
+    </tr>
+    <tr>
+      <td class="label-cell" style="width: 140px;">Room Details</td>
+      <td class="value-cell">${reservation.numberOfRooms} Room(s) — ${(reservation.roomNames || []).join(", ") || "N/A"}</td>
+    </tr>
+    <tr>
+      <td class="label-cell" style="width: 140px;">Total Guests</td>
+      <td class="value-cell">${reservation.guests} Adults, ${reservation.extraGuests} Extra, ${reservation.children} Children (Total: ${reservation.totalGuests})</td>
+    </tr>
+    <tr>
+      <td class="label-cell" style="width: 140px;">Food Preference</td>
+      <td class="value-cell">${reservation.foodPreference || "N/A"}</td>
+    </tr>
+  </table>
+
+  <table class="billing-summary">
+    <thead>
+      <tr>
+        <th style="width: 75%;">Description of Charges</th>
+        <th style="text-align: right;">Amount (INR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="value-cell">Room Accommodation Charges (Base Price)</td>
+        <td class="value-cell bold" style="text-align: right;">₹${(reservation.roomPrice || 0).toLocaleString()}</td>
+      </tr>
+      <tr>
+        <td class="value-cell">Extra Guest / Additional Facility Charges</td>
+        <td class="value-cell bold" style="text-align: right;">₹${(reservation.extraBedCharges || 0).toLocaleString()}</td>
+      </tr>
+      <tr class="total-row">
+        <td>TOTAL NET AMOUNT PAID</td>
+        <td style="text-align: right;">₹${(reservation.totalPayable || 0).toLocaleString()}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 15px;">
+    <div style="display: flex; margin-bottom: 2px;">
+      <span class="label-cell" style="width: 110px;">Transaction ID:</span>
+      <span class="value-cell" style="font-family: monospace;">${reservation.paymentTransactionId || "N/A"}</span>
+    </div>
+    <div style="display: flex;">
+      <span class="label-cell" style="width: 110px;">Payment Status:</span>
+      <span class="value-cell bold">${(reservation.paymentStatus || "N/A").toUpperCase()}</span>
     </div>
   </div>
-</div>
 
-<div class="section">
-  <div class="section-title">Booking Information</div>
-  <div class="grid grid-4">
-    <div class="field">
-      <div class="field-label">Check In</div>
-      <div class="field-value">${fmt(reservation.checkIn) || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Check Out</div>
-      <div class="field-value">${fmt(reservation.checkOut) || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Days / Nights</div>
-      <div class="field-value">${reservation.noOfDays} days / ${reservation.noOfNights} nights</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Reservation Date</div>
-      <div class="field-value">${fmt(reservation.reservationDate) || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Reserved From</div>
-      <div class="field-value">${reservation.reservedFrom || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Resort</div>
-      <div class="field-value">${reservation.resortName || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Cottage Type</div>
-      <div class="field-value">${(reservation.cottageTypeNames || []).join(', ') || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Room Name(s)</div>
-      <div class="field-value">${(reservation.roomNames || []).join(', ') || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">No. of Rooms</div>
-      <div class="field-value">${reservation.numberOfRooms}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Food Preference</div>
-      <div class="field-value">${reservation.foodPreference || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Existing Guest</div>
-      <div class="field-value">${reservation.existingGuest || 'N/A'}</div>
-    </div>
   </div>
-</div>
-
-<div class="section">
-  <div class="section-title">Guest Count</div>
-  <div class="grid grid-4">
-    <div class="field">
-      <div class="field-label">Guests</div>
-      <div class="field-value">${reservation.guests}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Extra Guests</div>
-      <div class="field-value">${reservation.extraGuests}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Children</div>
-      <div class="field-value">${reservation.children}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Total Guests</div>
-      <div class="field-value highlight">${reservation.totalGuests}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Foods Billed</div>
-      <div class="field-value">${foodsBilled}</div>
-    </div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-title">Pricing & Payment</div>
-  <div class="grid grid-4">
-    <div class="field">
-      <div class="field-label">Room Price</div>
-      <div class="field-value">₹${reservation.roomPrice || 0}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Extra Bed Charges</div>
-      <div class="field-value">₹${reservation.extraBedCharges || 0}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Total Payable</div>
-      <div class="field-value highlight">₹${reservation.totalPayable || 0}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Payment Status</div>
-      <div class="field-value ${reservation.paymentStatus?.toLowerCase() === 'paid' || reservation.paymentStatus?.toLowerCase() === 'success' ? 'highlight' : 'warn'}">${reservation.paymentStatus || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Transaction ID</div>
-      <div class="field-value">${reservation.paymentTransactionId || 'N/A'}</div>
-    </div>
-    <div class="field field-span-3">
-      <div class="field-label">Transaction Date & Time</div>
-      <div class="field-value">${reservation.paymentTransactionDateTime ? fmtDT(reservation.paymentTransactionDateTime) : 'N/A'}</div>
-    </div>
-  </div>
-</div>
-
-${reservation.cancelBookingReason || reservation.refundableAmount ? `
-<div class="section">
-  <div class="section-title">Cancellation & Refund</div>
-  <div class="grid grid-4">
-    <div class="field field-span-4">
-      <div class="field-label">Cancel Reason</div>
-      <div class="field-value">${reservation.cancelBookingReason || 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Refund Requested</div>
-      <div class="field-value">${reservation.refundRequestedDateTime ? fmt(reservation.refundRequestedDateTime.slice(0, 10)) : 'N/A'}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Refundable Amount</div>
-      <div class="field-value">₹${reservation.refundableAmount || 0}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Amount Refunded</div>
-      <div class="field-value">₹${reservation.amountRefunded || 0}</div>
-    </div>
-    <div class="field">
-      <div class="field-label">Date of Refund</div>
-      <div class="field-value">${reservation.dateOfRefund ? fmt(reservation.dateOfRefund.slice(0, 10)) : 'N/A'}</div>
-    </div>
-  </div>
-</div>
-` : ''}
-
-<div class="footer">
-  <span>Vanavihari Admin Panel</span>
-  <span>Booking ID: ${reservation.bookingId || 'N/A'} &nbsp;|&nbsp; ${reservation.resortName || ''}</span>
-</div>
 
 <script>window.onload = function() { window.print(); }<\/script>
 </body>
 </html>`;
 
-    const win = window.open('', '_blank');
+    const win = window.open("", "_blank");
     if (win) {
       win.document.write(html);
       win.document.close();
@@ -1125,11 +1192,12 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
       }
       .reset-filters-btn {
+        height: 38px !important;
         padding: 6px 16px !important;
         border-radius: 6px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #f8fafc !important;
-        color: #334155 !important;
+        border: 1px solid #D5DCE5 !important;
+        background: #EEF2F6 !important;
+        color: #475467 !important;
         font-size: 13px !important;
         font-weight: 500 !important;
         cursor: pointer !important;
@@ -1154,7 +1222,8 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         display: flex !important;
         align-items: center !important;
         gap: 0.5rem !important;
-        margin-top: 1.5rem !important;
+        margin-top: 0 !important;
+        margin-left: auto !important;
         justify-content: flex-end !important;
       }
       .dt-paging-button {
@@ -1196,7 +1265,8 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         display: flex !important;
         align-items: center !important;
         gap: 0.25rem !important;
-        margin-top: 1.5rem !important;
+        margin-top: 0 !important;
+        margin-left: auto !important;
         justify-content: flex-end !important;
       }
       .dt-paging .dt-paging-button {
@@ -1242,7 +1312,6 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
       }
       /* --- UNIFIED TOP CONTROLS STYLING (Column Visibility, Reset Filters, Search) --- */
       .dt-buttons .dt-button,
-      .reset-filters-btn,
       .dt-length select {
         height: 38px !important;
         padding: 0 16px !important;
@@ -1311,6 +1380,9 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
           gap: 8px !important;
         }
         .dt-search label {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
           font-weight: 600 !important;
           color: #64748b !important;
           margin: 0 !important;
@@ -1318,6 +1390,18 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         }
         .dt-search input {
           width: 200px !important;
+        }
+        .dt-layout-row:last-child {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          width: 100% !important;
+          margin-top: 20px !important;
+        }
+        .dt-layout-row:last-child .dt-layout-end {
+          display: flex !important;
+          justify-content: flex-end !important;
+          flex-grow: 1 !important;
         }
       }
 
@@ -1330,6 +1414,13 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
           gap: 12px !important;
           margin: 12px 0 !important;
         }
+        .dt-layout-row .dt-layout-end {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          width: 100% !important;
+          gap: 12px !important;
+        }
         .dt-search {
           width: 100% !important;
           display: flex !important;
@@ -1338,7 +1429,7 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
         .dt-search label {
           display: flex !important;
           align-items: center !important;
-          gap: 8px !important;
+          gap: 12px !important;
           font-size: 15px !important;
         }
         .dt-search input {
@@ -1740,11 +1831,10 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                   next: "›",
                   previous: "‹",
                 },
-                columnControl: {},
               },
               layout: {
                 topStart: "info",
-                topEnd: ["buttons", "search"],
+                topEnd: ["search", "buttons"],
                 bottomStart: "pageLength",
                 bottomEnd: "paging",
               },
@@ -1864,15 +1954,15 @@ ${reservation.cancelBookingReason || reservation.refundableAmount ? `
                           onClick={() => downloadPDF(selectedReservation)}
                           className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200"
                           style={{
-                            background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
-                            boxShadow: '0 2px 8px rgba(225,29,72,0.3)',
+                            background: 'linear-gradient(135deg, #334155 0%, #1e293b 100%)',
+                            outline: 'none',
                           }}
                           onMouseOver={e => {
-                            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 14px rgba(225,29,72,0.45)';
+                            (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
                             (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
                           }}
                           onMouseOut={e => {
-                            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(225,29,72,0.3)';
+                            (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, #334155 0%, #1e293b 100%)';
                             (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
                           }}
                           title="Download reservation as PDF"

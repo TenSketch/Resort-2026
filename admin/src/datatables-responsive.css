@@ -239,10 +239,9 @@ div.dt-button-collection {
     margin: 0 !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    flex: 1 1 0 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
   }
 
   /* Reset Filters */
@@ -250,9 +249,9 @@ div.dt-button-collection {
     height: 38px !important;
     padding: 0 16px !important;
     border-radius: 6px !important;
-    border: 1px solid #cbd5e1 !important;
-    background: #f8fafc !important;
-    color: #334155 !important;
+    border: 1px solid #D5DCE5 !important;
+    background: #EEF2F6 !important;
+    color: #475467 !important;
     font-size: 13px !important;
     font-weight: 500 !important;
     display: inline-flex !important;
@@ -262,10 +261,10 @@ div.dt-button-collection {
     margin: 0 !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    flex: 1 1 0 !important;
+    flex: 0 0 auto !important;
+    /* Width according to text */
+    width: auto !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
   }
 
   /* Search bar — above info text */
@@ -283,31 +282,32 @@ div.dt-button-collection {
   .dt-table-container .dt-search label {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 12px !important;
     margin: 0 !important;
     white-space: nowrap !important;
     font-size: 15px !important;
     font-weight: 600 !important;
     color: #64748b !important;
+    width: auto !important;
   }
 
   .dt-table-container .dt-search input {
-    height: 38px !important;
-    padding: 0 16px !important;
-    border-radius: 6px !important;
-    border: 1px solid #cbd5e1 !important;
-    background: #ffffff !important;
-    color: #334155 !important;
-    font-size: 15px !important;
-    font-weight: 500 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    box-sizing: border-box !important;
-    margin: 0 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    width: 180px !important;
-  }
+  height: 38px !important;
+  padding: 0 16px !important;
+  border-radius: 6px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  margin-left: 8px !important;   /* ⭐ ADD THIS */
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  width: 180px !important;
+}
 
 
   .dt-table-container .dt-length {

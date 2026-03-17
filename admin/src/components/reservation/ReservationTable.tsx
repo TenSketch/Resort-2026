@@ -1361,11 +1361,23 @@ export default function ReservationTable() {
 
       /* Desktop Alignment */
       @media (min-width: 1024px) {
+        .dt-layout-row:first-child .dt-layout-start {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 1.5rem !important;
+        }
+        .dt-layout-row:first-child .dt-layout-start {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 1.5rem !important;
+        }
         .dt-layout-row:first-child .dt-layout-end {
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
-          gap: 1rem !important;
+          gap: 1.5rem !important;
         }
         .dt-buttons {
           margin: 0 !important;
@@ -1414,14 +1426,27 @@ export default function ReservationTable() {
           gap: 12px !important;
           margin: 12px 0 !important;
         }
+        .dt-layout-row .dt-layout-start,
         .dt-layout-row .dt-layout-end {
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
+          display: contents !important;
+        }
+        .dt-info {
+          order: 1 !important;
           width: 100% !important;
-          gap: 12px !important;
+          text-align: center !important;
+          display: flex !important;
+          justify-content: center !important;
+          margin-bottom: 4px !important;
+        }
+        .dt-length {
+          order: 2 !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          margin-bottom: 4px !important;
         }
         .dt-search {
+          order: 3 !important;
           width: 100% !important;
           display: flex !important;
           justify-content: center !important;
@@ -1431,22 +1456,36 @@ export default function ReservationTable() {
           align-items: center !important;
           gap: 12px !important;
           font-size: 15px !important;
+          width: auto !important;
         }
         .dt-search input {
-          width: 180px !important;
+          width: 200px !important;
+          flex: 0 0 auto !important;
         }
         .dt-buttons {
+          order: 4 !important;
           display: flex !important;
-          flex-wrap: wrap !important;
+          flex-wrap: nowrap !important; /* Ensure buttons stay in single row */
           justify-content: center !important;
           gap: 8px !important;
           width: 100% !important;
         }
-        .dt-buttons .dt-button, 
+        .dt-paging {
+          order: 5 !important;
+          width: 100% !important;
+          display: flex !important;
+          justify-content: center !important;
+          margin-left: 0 !important;
+          margin-top: 8px !important;
+        }
+        .dt-buttons .dt-button,
         .reset-filters-btn {
-          height: 36px !important;
-          padding: 0 12px !important;
-          font-size: 12px !important;
+          height: 38px !important;
+          padding: 0 12px !important; /* Adjust padding for better fit */
+          font-size: 13px !important;
+          width: auto !important;
+          flex: 0 0 auto !important;
+          white-space: nowrap !important; /* Prevent text wrapping inside buttons */
         }
       }
 
@@ -1783,7 +1822,7 @@ export default function ReservationTable() {
           <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
           <button
             onClick={() => (perms.canExport ? exportToExcel() : null)}
-            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+            className={`inline-flex items-center h-[38px] px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
             disabled={!perms.canExport}
             title={
               perms.canExport
@@ -1833,8 +1872,8 @@ export default function ReservationTable() {
                 },
               } as any,
               layout: {
-                topStart: "info",
-                topEnd: ["search", "buttons"],
+                topStart: ["info", "buttons"],
+                topEnd: "search",
                 bottomStart: "pageLength",
                 bottomEnd: "paging",
               },
@@ -1852,9 +1891,26 @@ export default function ReservationTable() {
               initComplete: function () {
                 const api = (this as any).api();
                 const wrapper = api.table().container();
-                const buttonsContainer = wrapper.querySelector(".dt-buttons");
+                const moveResetButton = () => {
+                  const btn = wrapper.querySelector(".reset-filters-btn") as HTMLElement;
+                  if (!btn) return;
 
-                if (buttonsContainer && !wrapper.querySelector(".reset-filters-btn")) {
+                  const isMobile = window.innerWidth < 1024;
+                  const buttonsContainer = wrapper.querySelector(".dt-buttons");
+                  const searchContainer = wrapper.querySelector(".dt-search");
+
+                  if (isMobile && buttonsContainer) {
+                    if (btn.parentElement !== buttonsContainer) {
+                      buttonsContainer.appendChild(btn);
+                    }
+                  } else if (!isMobile && searchContainer) {
+                    if (btn.parentElement !== searchContainer) {
+                      searchContainer.appendChild(btn);
+                    }
+                  }
+                };
+
+                if (!wrapper.querySelector(".reset-filters-btn")) {
                   const btn = document.createElement("button");
                   btn.className = "reset-filters-btn";
                   btn.textContent = "Reset Filters";
@@ -1884,7 +1940,19 @@ export default function ReservationTable() {
 
                     api.draw();
                   };
-                  buttonsContainer.appendChild(btn);
+
+                  // Initial placement
+                  const initialTarget = window.innerWidth < 1024
+                    ? wrapper.querySelector(".dt-buttons")
+                    : wrapper.querySelector(".dt-search");
+
+                  if (initialTarget) {
+                    initialTarget.appendChild(btn);
+                  } else {
+                    wrapper.appendChild(btn);
+                  }
+
+                  window.addEventListener("resize", moveResetButton);
                 }
               },
             }}

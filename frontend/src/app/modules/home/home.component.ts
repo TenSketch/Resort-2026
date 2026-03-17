@@ -234,7 +234,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       location: 'Jalatarangini / Jungle Star',
       tagline: 'Choose Your Path, Feel the Rush',
       startText: null,
-      price: 'Entry from ₹50',
+      price: 'Entry from ₹500',
       cta: 'Explore Treks',
       action: 'treks'
     }

@@ -523,6 +523,12 @@ export default function AddReservationForm() {
     // send to backend
     (async () => {
       try {
+        const payload = { ...formData };
+        if (isDFO || isSuperAdmin) {
+          payload.status = "Reserved";
+          payload.paymentStatus = "Paid";
+        }
+
         const apiUrl =
           (import.meta.env && import.meta.env.VITE_API_URL) ||
           "http://localhost:5000";
@@ -537,7 +543,7 @@ export default function AddReservationForm() {
         const res = await fetch(`${apiUrl}/api/reservations`, {
           method: "POST",
           headers,
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         const contentType = res.headers.get("content-type") || "";
         let data: { error?: string } | null = null;
@@ -555,7 +561,7 @@ export default function AddReservationForm() {
         // Success message differs by role
         if (isDFO || isSuperAdmin) {
           alert(
-            "Booking created & confirmed! Status: Reserved, Payment: Paid.",
+            "Booking created & confirmed! Status: " + payload.status + ", Payment: " + payload.paymentStatus,
           );
         } else {
           setShowDFOModal(true);
@@ -947,7 +953,7 @@ export default function AddReservationForm() {
           </div>
 
           {/* USER DETAILS */}
-          {/* <div className="space-y-4">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
               User Details
             </h3>
@@ -1105,7 +1111,7 @@ export default function AddReservationForm() {
                 </Select>
               </div>
             </div>
-          </div> */}
+          </div>
 
           {/* AMOUNT */}
           <div className="space-y-4">
@@ -1218,7 +1224,7 @@ export default function AddReservationForm() {
             <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5">
               <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
               <span className="text-xs text-amber-700 font-medium">
-                Rooms are blocked for 1 hour — awaiting DFO approval
+                Rooms are blocked for 12 hour — awaiting DFO approval
               </span>
             </div>
 

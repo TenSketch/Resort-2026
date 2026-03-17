@@ -2,31 +2,20 @@
   <div class="search-widget card-glass">
     <!-- Widget Title -->
 
-    <h3 class="step-title text-center mb-4 text-uppercase fw-bold">
+    <h3 class="step-title text-center mb-3 text-capitalize fw-bold">
       Choose your experience
     </h3>
 
     <!-- Progress Indicator -->
     <div class="progress-container">
       <div class="progress-track">
-        <div
-          class="progress-fill"
-          [style.width.%]="(currentStep - 1) * 50"
-        ></div>
+        <div class="progress-fill" [style.width.%]="(currentStep - 1) * 50"></div>
       </div>
       <div class="progress-steps">
-        <div
-          class="step-dot"
-          [class.active]="currentStep >= 1"
-          (click)="currentStep > 1 ? (currentStep = 1) : null"
-        >
+        <div class="step-dot" [class.active]="currentStep >= 1" (click)="currentStep > 1 ? (currentStep = 1) : null">
           1
         </div>
-        <div
-          class="step-dot"
-          [class.active]="currentStep >= 2"
-          (click)="currentStep > 2 ? (currentStep = 2) : null"
-        >
+        <div class="step-dot" [class.active]="currentStep >= 2" (click)="currentStep > 2 ? (currentStep = 2) : null">
           2
         </div>
         <div class="step-dot" [class.active]="currentStep >= 3">3</div>
@@ -39,11 +28,11 @@
         <div class="options-grid">
           <div class="option-card" (click)="selectType('resort')">
             <div class="icon-box resort-bg">
-              <i class="fa-solid fa-hotel"></i>
+              <i class="fa-solid fa-hotel" style="color: hsl(120, 49%, 50%); font-size: 25px;"></i>
             </div>
             <div class="option-info">
               <span class="option-name">Resorts</span>
-              <span class="option-desc">Luxury stays in nature</span>
+              <!-- <span class="option-desc">Luxury stays in nature</span> -->
             </div>
             <i class="fa-solid fa-chevron-right arrow-icon"></i>
           </div>
@@ -61,11 +50,11 @@
 
           <div class="option-card" (click)="selectType('trek')">
             <div class="icon-box trek-bg">
-              <i class="fa-solid fa-person-hiking"></i>
+              <i class="fa-solid fa-person-hiking" style="color:#cd8944; font-size: 25px;"></i>
             </div>
             <div class="option-info">
               <span class="option-name">Treks</span>
-              <span class="option-desc">Explore availability</span>
+              <!-- <span class="option-desc">Explore availability</span> -->
             </div>
             <i class="fa-solid fa-chevron-right arrow-icon"></i>
           </div>
@@ -82,11 +71,7 @@
         </div>
 
         <div class="locations-list">
-          <div
-            class="location-item"
-            *ngFor="let loc of currentLocations"
-            (click)="selectLocation(loc)"
-          >
+          <div class="location-item" *ngFor="let loc of currentLocations" (click)="selectLocation(loc)">
             <i class="fa-solid fa-location-dot loc-icon"></i>
             <span class="loc-name">{{ loc }}</span>
             <i class="fa-solid fa-check select-icon"></i>
@@ -107,9 +92,7 @@
 
         <!-- Selected Place Display (Aligned Left) -->
         <div class="w-100 mb-2" *ngIf="selectedResort">
-          <span
-            class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1"
-          >
+          <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1">
             <i class="fa-solid fa-location-dot me-2"></i>{{ selectedResort }}
           </span>
         </div>
@@ -119,15 +102,8 @@
             <label>Check-in</label>
             <div class="input-display">
               <i class="fa-regular fa-calendar"></i>
-              <input
-                matInput
-                [min]="minDate"
-                [max]="maxDate"
-                [matDatepicker]="picker"
-                [(ngModel)]="checkinDate"
-                readonly
-                placeholder="Add Date"
-              />
+              <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" [(ngModel)]="checkinDate"
+                readonly placeholder="Add Date" />
               <mat-datepicker #picker></mat-datepicker>
             </div>
           </div>
@@ -136,14 +112,8 @@
             <label>Check-out</label>
             <div class="input-display" [class.error-border]="showCheckoutError">
               <i class="fa-regular fa-calendar"></i>
-              <input
-                matInput
-                [matDatepicker]="picker1"
-                [(ngModel)]="checkoutDate"
-                [min]="setMinCheckoutDate()"
-                readonly
-                placeholder="Add Date"
-              />
+              <input matInput [matDatepicker]="picker1" [(ngModel)]="checkoutDate" [min]="setMinCheckoutDate()" readonly
+                placeholder="Add Date" />
               <mat-datepicker #picker1></mat-datepicker>
             </div>
             <div *ngIf="showCheckoutError" class="error-text">
@@ -157,15 +127,8 @@
             <label>Trek Date</label>
             <div class="input-display">
               <i class="fa-regular fa-calendar"></i>
-              <input
-                matInput
-                [min]="minDate"
-                [max]="maxDate"
-                [matDatepicker]="pickerTrek"
-                [(ngModel)]="checkinDate"
-                readonly
-                placeholder="Select Date"
-              />
+              <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="pickerTrek" [(ngModel)]="checkinDate"
+                readonly placeholder="Select Date" />
               <mat-datepicker #pickerTrek></mat-datepicker>
             </div>
           </div>
@@ -186,22 +149,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmation</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="onCancel()"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>Are you sure you want to edit booking details?</p>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary text-bg-secondary"
-          (click)="onCancel()"
-        >
+        <button type="button" class="btn btn-secondary text-bg-secondary" (click)="onCancel()">
           Cancel
         </button>
         <button type="button" class="btn btn-primary" (click)="onConfirm()">

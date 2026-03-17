@@ -1117,17 +1117,17 @@ export class RoomsComponent implements OnInit {
     return payablePrice;
   }
 
-  triggerModal() {
-    this.signinCheck = false;
-    let status = this.userService.isLoggedIn();
-    if (status) {
-      this.goToBooking();
-      this.router.navigate(['/booking-summary']);
-    } else {
-      // this.router.navigate(['/booking-summary']);
-      this.isPromptModalVisible = true;
-    }
-  }
+  // triggerModal() {
+  //   this.signinCheck = false;
+  //   let status = this.userService.isLoggedIn();
+  //   if (status) {
+  //     this.goToBooking();
+  //     this.router.navigate(['/booking-summary']);
+  //   } else {
+  //     // this.router.navigate(['/booking-summary']);
+  //     this.isPromptModalVisible = true;
+  //   }
+  // }
 
   goToBooking() {
     let summary = {

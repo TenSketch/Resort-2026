@@ -1,0 +1,73 @@
+<section [id]="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000" [ngClass]="{'d-none d-md-block': !isRoomsCarousel}">
+  
+  <!-- Indicators / Counter (Home Style) -->
+  <div class="carousel-indicators-counter text-white fw-bold" *ngIf="!isRoomsCarousel && slides && slides.length > 0">
+    <span>{{ (currentSlideIndex + 1).toString().padStart(2, "0") }}</span>
+    <span class="mx-1">/</span>
+    <span>{{ slides.length.toString().padStart(2, "0") }}</span>
+  </div>
+
+  <!-- Rooms Slide Counter -->
+  <div class="carousel-indicators-counter" *ngIf="isRoomsCarousel && slides.length > 1">
+    <span class="current">{{ (currentSlideIndex + 1).toString().padStart(2, "0") }}</span>
+    <span class="divider">/</span>
+    <span class="total">{{ slides.length.toString().padStart(2, "0") }}</span>
+  </div>
+
+  <div class="carousel-inner" *ngIf="slides && slides.length > 0">
+    <div *ngFor="let slide of slides; let i = index" class="carousel-item" [class.active]="i === currentSlideIndex">
+      <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
+      <div class="carousel-overlay"></div>
+      
+      <!-- Normal (Tourist/Home) Caption -->
+      <div *ngIf="!isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center" style="top: 0; bottom: 0; left: 10%; right: 10%">
+        <div class="container">
+          <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
+          
+          <div class="mt-3" style="min-height: 30px;">
+            <p class="h4 text-light m-0" *ngIf="slide.location">
+              <i class="fa-solid fa-location-dot me-2"></i>
+              {{ slide.location }}
+            </p>
+            <p class="h4 text-light m-0" *ngIf="slide.subtitle">
+              {{ slide.subtitle }}
+            </p>
+          </div>
+
+          <p class="h5 text-light mt-2 fst-italic" *ngIf="slide.tagline">"{{ slide.tagline }}"</p>
+
+          <div class="mt-3" style="min-height: 25px;">
+            <p class="h5 fw-bold text-warning m-0" *ngIf="slide.price">
+              {{ slide.price }}
+            </p>
+            <p class="h5 fw-bold text-light m-0" *ngIf="slide.startText">
+              {{ slide.startText }}
+            </p>
+          </div>
+
+          <button *ngIf="slide.cta" class="btn btn-lg btn-primary mt-4 rounded-pill px-4" (click)="handleSlideAction(slide.action)">
+            {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rooms Carousel Caption -->
+      <div *ngIf="isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center" style="top: 0; bottom: 0; left: 10%; right: 10%">
+        <div class="container text-center">
+            <h1 class="display-3">{{ slide.title }}</h1>
+            <p class="h4">{{ slide.tagline }}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="carousel-control-prev" type="button" (click)="prevSlide()" [attr.data-bs-target]="'#' + carouselId" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" (click)="nextSlide()" [attr.data-bs-target]="'#' + carouselId" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</section>

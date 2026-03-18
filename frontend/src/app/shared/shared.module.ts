@@ -12,6 +12,7 @@ import { SearchResortOnlyComponent } from './search-resort-only/search-resort-on
 import { SearchTentComponent } from './search-tent/search-tent.component';
 import { SearchTouristSpotComponent } from './search-tourist-spot/search-tourist-spot.component';
 import { TouristSpotSelectionComponent } from './tourist-spot-selection/tourist-spot-selection.component';
+import { SharedHeroCarouselComponent } from './components/shared-hero-carousel/shared-hero-carousel.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // Import FormsModule and ReactiveFormsModule
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,7 +38,8 @@ import { SafePipe } from './pipes/safe.pipe';
     SearchTentComponent,
     SearchTouristSpotComponent,
     TouristSpotSelectionComponent,
-    SafePipe
+    SafePipe,
+    SharedHeroCarouselComponent
   ],
   imports: [
     CommonModule,
@@ -54,6 +56,6 @@ import { SafePipe } from './pipes/safe.pipe';
     GalleryModule,
     LightboxModule
   ],
-  exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule, SafePipe],
+  exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule, SafePipe, SharedHeroCarouselComponent],
 })
 export class SharedModule {}

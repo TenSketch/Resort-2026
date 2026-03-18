@@ -235,7 +235,8 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="flex items-center justify-between min-h-[44px] h-11 sm:h-9 px-2 md:px-3 min-w-0"
+                size="sm"
+                className="flex items-center justify-between h-[38px] px-2 md:px-3 min-w-0"
               >
                 <div className="flex items-center gap-1 sm:gap-2">
                   <span className="text-[13px] font-medium text-gray-500 mr-1 whitespace-nowrap hidden sm:inline">

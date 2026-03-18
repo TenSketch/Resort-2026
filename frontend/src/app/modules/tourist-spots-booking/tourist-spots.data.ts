@@ -7,6 +7,7 @@ export interface TouristSpotConfig {
   category: 'Waterfall' | 'Picnic' | 'Eco' | 'Trek' | 'ViewPoint';
   typeLabel: string; // user-friendly label
   images: string[];
+  badge?: string;
   fees: { entryPerPerson: number; parkingPerVehicle: number; cameraPerCamera: number; parkingTwoWheeler?: number; parkingFourWheeler?: number };
   addOns: TouristAddOn[];
   timing: 'morning-evening' | 'morning-afternoon' | 'morning-and-evening';

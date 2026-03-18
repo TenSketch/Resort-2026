@@ -313,7 +313,7 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         const nameLower = (s.name || s.title || '').toLowerCase();
         
         if (nameLower.includes('trek')) {
-            if (nameLower.includes('soft') || nameLower.includes('jalatarangini')) {
+            if (nameLower.includes('soft') || nameLower.includes('jalatarangini') || nameLower.includes('jalatarangi')) {
                 // Soft Trek Logic (1)
                 capacity = { treksPerDay: 3, membersPerTrek: 30, totalCapacity: 90 };
                 timings = '6:00 AM – 3:00 PM';
@@ -346,7 +346,22 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
         const cfg: TouristSpotConfig = {
           id,
           name: s.name || s.title || 'Untitled',
-          location: s.address || '',
+          location: s.address || (function() {
+            if (nameLower.includes('trek')) {
+              if (nameLower.includes('soft') || nameLower.includes('jalatarangini') || nameLower.includes('jalatarangi')) return 'G.M.Valsa';
+              if (nameLower.includes('medium') || (nameLower.includes('hard') && !nameLower.includes('very hard'))) return 'Nellore';
+              if (nameLower.includes('very hard') || nameLower.includes('gudisa')) return 'Nellore (Tribal village)';
+            }
+            return 'Maredumilli, AP';
+          })(),
+          badge: s.badge || (function() {
+            if (nameLower.includes('trek')) {
+              if (nameLower.includes('soft') || nameLower.includes('jalatarangini') || nameLower.includes('jalatarangi')) return 'Soft';
+              if (nameLower.includes('medium') || (nameLower.includes('hard') && !nameLower.includes('very hard'))) return 'Medium/Hard';
+              if (nameLower.includes('very hard') || nameLower.includes('gudisa')) return 'Very Hard';
+            }
+            return nameLower.includes('soft') ? 'Soft' : nameLower.includes('very hard') ? 'Very Hard' : 'Nature';
+          })(),
           category: rawCategory as any, // Allow dynamic string
           typeLabel: s.category || '',
           images: Array.isArray(s.images) ? s.images.map((i: any) => typeof i === 'string' ? i : (i.url || '')) : [],

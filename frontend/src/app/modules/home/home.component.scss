@@ -10,38 +10,50 @@ $card-flex-basis: 35%;
 
 // Mobile Container Consistency - Handled globally in styles.scss
 .step-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: $clr-dark;
-    margin-bottom: 1rem;
-    text-align: center;
-    
-    @media (max-width: 768px) {
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
-    }
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $clr-dark;
+  margin-bottom: 1rem;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .fw-bold {
-font-weight: 600 !important;
+  font-weight: 600 !important;
 }
+
 // Quick Search Section (10%)
 .hero-search-section {
   height: auto;
   min-height: 10vh;
   padding: 1rem 0 0 0;
+  margin-bottom: 3rem; // Added for bottom spacing
+
   // background-color: $clr-light; // Optional: match background
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 10; // Ensure it sits above other content if needed
+
+  @media (max-width: 768px) {
+    margin-bottom: 3rem; // Changed back to 3rem for better view
+    min-height: auto; // Kept auto to prevent viewport forcing space
+    padding-bottom: 1rem;
+    align-items: flex-start;
+    /* aligns widget towards top, allowing margin at bottom to act as gap */
+    padding-top: 3rem; // Increased to 3rem as requested
+  }
 }
 
 // Mobile Hero Carousel
 #mobileHeroCarousel {
   @include hero-carousel-base;
-  
+
   // Mobile-specific override (if absolutely necessary to ensure it shows despite d-md-none)
   // The mixin already handles height: 40vh for mobile.
   // We just ensure it displays correctly.
@@ -49,35 +61,40 @@ font-weight: 600 !important;
 
   // Caption adjust for mobile specific content layout if needed
   .carousel-caption {
-      bottom: 0 !important; // Stick to bottom on mobile for more image visibility
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); // Text readability
-      left: 0 !important;
-      right: 0 !important;
-      padding: 1.5rem;
-      text-align: left;
-      
-      h5 {
-          font-size: 1.5rem;
-          margin-bottom: 0.5rem;
-          color: #fff;
-      }
-      
-      .small {
-          font-size: 0.9rem;
-          margin-bottom: 0.25rem;
-      }
+    top: 0 !important;
+    bottom: 0 !important; // Vertically center content properly
+    background: rgba(0, 0, 0, 0.3); // Text readability
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 1.5rem;
+    text-align: left;
 
-      // Ensure content (buttons/text) is clickable
-      pointer-events: none;
-      .container {
-          pointer-events: auto;
-      }
+    h5 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    // Ensure content (buttons/text) is clickable
+    pointer-events: none;
+
+    .container {
+      pointer-events: auto;
+    }
   }
 
   // Ensure controls are on top
   .carousel-control-prev,
   .carousel-control-next {
-      z-index: 100 !important;
+    z-index: 100 !important;
   }
 }
 
@@ -88,7 +105,7 @@ font-weight: 600 !important;
   .carousel-indicators-counter {
     position: absolute;
     bottom: 30px;
-    right: 10%; 
+    right: 10%;
     z-index: 20;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
@@ -192,11 +209,9 @@ font-weight: 600 !important;
   }
 
   .btn-primary {
-    background: linear-gradient(
-      135deg,
-      $clr-primary 0%,
-      $clr-primary-dark 100%
-    );
+    background: linear-gradient(135deg,
+        $clr-primary 0%,
+        $clr-primary-dark 100%);
     border: none;
     border-radius: 12px;
     font-weight: 600;
@@ -276,6 +291,7 @@ font-weight: 600 !important;
     .flip-card-front {
       background-color: transparent;
       z-index: 2;
+
       // Ensure front image covers
       img {
         border-radius: 1rem;
@@ -290,9 +306,7 @@ font-weight: 600 !important;
       // Ensure back image covers
       img {
         border-radius: 1rem;
-        transform: scaleX(
-          -1
-        ); // Check if we want to mirror the back image or not. Usually no for photos. Removing this line if text is involved.
+        transform: scaleX(-1); // Check if we want to mirror the back image or not. Usually no for photos. Removing this line if text is involved.
         transform: none; // Reset
       }
 
@@ -473,9 +487,10 @@ font-weight: 600 !important;
       }
     }
   }
+
   @media (max-width: 767.98px) {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 3rem !important; // Increased to match desktop gap
+    padding-bottom: 3rem !important;
 
     .announcement-content {
       text-align: center;
@@ -520,19 +535,23 @@ font-weight: 600 !important;
   0% {
     transform: translate(-50%, -50%) scale(1.3) rotate(0deg);
   }
+
   50% {
     transform: translate(-50%, -50%) scale(1.4) rotate(5deg);
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1.3) rotate(0deg);
   }
 }
 
 @keyframes float-y {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -619,11 +638,9 @@ font-weight: 600 !important;
     .resort-card-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid #f0f0f0;
-      background: linear-gradient(
-        135deg,
-        $clr-primary-lighter 0%,
-        #ffffff 100%
-      );
+      background: linear-gradient(135deg,
+          $clr-primary-lighter 0%,
+          #ffffff 100%);
 
       .resort-name {
         font-size: 1.25rem;
@@ -840,11 +857,9 @@ font-weight: 600 !important;
         border-radius: 50px;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
-        background: linear-gradient(
-          135deg,
-          $clr-primary 0%,
-          $clr-primary-dark 100%
-        );
+        background: linear-gradient(135deg,
+            $clr-primary 0%,
+            $clr-primary-dark 100%);
         border: none;
         transition: all 0.3s ease;
 
@@ -886,7 +901,7 @@ font-weight: 600 !important;
 
       .resort-actions {
         flex-direction: column;
-        
+
         .btn {
           width: 100%;
           flex: auto; // Reset flex: 1
@@ -973,6 +988,7 @@ font-weight: 600 !important;
 
   // Desktop Centered Modal Style - Robust Flexbox Approach
   @media (min-width: 768px) {
+
     // Make the modal container a flexbox to center its child (dialog)
     &.modal.show {
       display: flex !important;

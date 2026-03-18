@@ -4,6 +4,8 @@ const touristSpotSchema = new mongoose.Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   category: String,
+  address: String,
+  badge: String,
   entryFees: { type: Number, default: 0 },
   cameraFees: { type: Number, default: 0 },
   images: [

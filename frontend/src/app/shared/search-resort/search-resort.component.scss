@@ -26,9 +26,9 @@ $clr-neutral--700: #374151;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1), 
+  border-radius: 20px;
+  padding: 1rem 1.5rem; // Reduced vertical padding
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1),
               0 1px 3px rgba(0,0,0,0.05); // Dual shadow for depth
   width: 100%;
   max-width: 850px; // Wider for horizontal layout
@@ -44,7 +44,7 @@ $clr-neutral--700: #374151;
 
 // Progress Bar
 .progress-container {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem; // Reduced
   padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
@@ -108,7 +108,7 @@ $clr-neutral--700: #374151;
 
 // Step Views
 .widget-content {
-    min-height: 200px; 
+    min-height: auto; // Reduced from 200px
     display: flex;
     flex-direction: column;
 }
@@ -122,10 +122,10 @@ $clr-neutral--700: #374151;
 }
 
 .step-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem; // Reduced font
     font-weight: 700;
     color: $clr-dark;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem; // Reduced margin
     text-align: center;
     
     @media (max-width: 768px) {
@@ -182,7 +182,7 @@ $clr-neutral--700: #374151;
     flex-direction: column; // Vertical stack inside card
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0.75rem 1rem; // Reduced padding
     border: 1px solid $clr-neutral--200;
     border-radius: 20px;
     cursor: pointer;
@@ -217,9 +217,9 @@ $clr-neutral--700: #374151;
 }
 
 .icon-box {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+    width: 48px; // Reduced icon box
+    height: 48px;
+    border-radius: 12px;
     background: $clr-neutral--100;
     display: flex;
     align-items: center;
@@ -359,7 +359,7 @@ $clr-neutral--700: #374151;
     border: 1px solid $clr-neutral--200;
     border-radius: 14px;
     padding: 0 1.25rem;
-    height: 60px; // Taller
+    height: 50px; // Reduced from 60px
     transition: all 0.2s;
     cursor: pointer;
     
@@ -397,7 +397,7 @@ $clr-neutral--700: #374151;
     background: linear-gradient(135deg, $clr-primary, darken($clr-primary, 5%));
     color: white;
     border: none;
-    padding: 1.25rem;
+    padding: 1rem; // Reduced padding
     border-radius: 50px; // Pill shape
     font-size: 1.1rem;
     font-weight: 700;

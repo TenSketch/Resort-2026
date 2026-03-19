@@ -283,6 +283,9 @@ export class SettingsComponent implements OnInit {
   api_url: any;
   maxDate: Date;
   isDarkMode = false;
+  showConfirmation = false;
+  updatedFields: any[] = [];
+  lockedFields: Set<string> = new Set();
 
   // ID card format hints for display in UI
   idCardFormats: { [key: string]: string } = {
@@ -376,7 +379,7 @@ export class SettingsComponent implements OnInit {
     const headers = {
       'token': this.authService.getAccessToken() ?? ''
     };
-    
+
     this.http
       .get<any>(`${this.api_url}/api/user/profile`, { headers })
       .subscribe({
@@ -384,7 +387,7 @@ export class SettingsComponent implements OnInit {
           this.showLoader = false;
           if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
             const result = response.result;
-            
+
             this.form.patchValue({
               full_name: result.name,
               mobile_number: result.phone,
@@ -399,6 +402,15 @@ export class SettingsComponent implements OnInit {
               country: result.country || 'India',
               id_card_type: result.id_card_type || '',
               id_card_number: result.id_card_number || ''
+            });
+
+            // Mark personal & ID fields as locked if they have values
+            const fieldsToLock = ['full_name', 'mobile_number', 'email', 'dob', 'nationality', 'id_card_type', 'id_card_number'];
+            fieldsToLock.forEach(field => {
+              const value = this.form.get(field)?.value;
+              if (value) {
+                this.lockedFields.add(field);
+              }
             });
           } else {
             this.handleAuthError();
@@ -418,7 +430,11 @@ export class SettingsComponent implements OnInit {
   }
 
   get isNationalityDisabled(): boolean {
-    return !!this.form.get('nationality')?.value;
+    return this.lockedFields.has('nationality');
+  }
+
+  isFieldLocked(fieldName: string): boolean {
+    return this.lockedFields.has(fieldName);
   }
 
   formatDateToDDMMMYYYY(dateString: any) {
@@ -434,7 +450,7 @@ export class SettingsComponent implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     return formattedDate;
   }
-  
+
 
   fetchAddressByPincode() {
     const pincode = this.form.get('pincode')?.value;
@@ -464,39 +480,94 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-onSubmit() {
+  onSubmit() {
     if (this.form.valid) {
-      this.showLoader = true;
-      const headers = {
-        'token': this.authService.getAccessToken() ?? '',
-        'Content-Type': 'application/json'
-      };
-
-      const formData = this.form.value;
-      const updateData: any = { ...formData };
-
-      this.http
-        .put<any>(`${this.api_url}/api/user/profile`, updateData, { headers })
-        .subscribe({
-          next: (response) => {
-            this.showLoader = false;
-            if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
-              this.showSnackBar('Profile updated successfully!', 'success-snackbar');
-            } else {
-              this.showSnackBar(response.result.msg || 'Update failed', 'error-snackbar');
-            }
-          },
-          error: (err) => {
-            this.showLoader = false;
-            console.error('Profile update error:', err);
-            const msg = err.error?.result?.msg || 'Profile update failed. Please try again.';
-            this.showSnackBar(msg, 'error-snackbar');
-          },
-        });
+      this.prepareConfirmation();
     } else {
       this.form.markAllAsTouched();
       this.showValidationErrors();
     }
+  }
+
+  prepareConfirmation() {
+    this.updatedFields = [];
+    const formData = this.form.getRawValue();
+    
+    // List of fields to display in confirmation
+    const fieldMapping = [
+      { key: 'full_name', label: 'Full Name' },
+      { key: 'mobile_number', label: 'Mobile Number' },
+      { key: 'email', label: 'Email' },
+      { key: 'dob', label: 'Date of Birth', isDate: true },
+      { key: 'nationality', label: 'Nationality' },
+      { key: 'id_card_type', label: 'ID Card Type' },
+      { key: 'id_card_number', label: 'ID Card Number' },
+      { key: 'pincode', label: 'Pincode' },
+      { key: 'city', label: 'City' },
+      { key: 'state', label: 'State' },
+      { key: 'country', label: 'Country' },
+      { key: 'address1', label: 'Address Line 1' },
+      { key: 'address2', label: 'Address Line 2' }
+    ];
+
+    fieldMapping.forEach(field => {
+      let value = formData[field.key];
+      if (field.isDate && value) {
+        value = this.formatDateToDDMMMYYYY(value);
+      }
+      if (value !== undefined && value !== null && value !== '') {
+        this.updatedFields.push({ label: field.label, value: value });
+      }
+    });
+
+    this.showConfirmation = true;
+    // Scroll to top to see the confirmation box if it's at the top, 
+    // or we can just scroll the window to the confirmation section.
+    this.renderer.setProperty(document.documentElement, 'scrollTop', 0);
+  }
+
+  confirmUpdate() {
+    this.showLoader = true;
+    this.showConfirmation = false;
+    
+    const headers = {
+      'token': this.authService.getAccessToken() ?? '',
+      'Content-Type': 'application/json'
+    };
+
+    const formData = this.form.getRawValue();
+    const updateData: any = { ...formData };
+
+    this.http
+      .put<any>(`${this.api_url}/api/user/profile`, updateData, { headers })
+      .subscribe({
+        next: (response) => {
+          this.showLoader = false;
+          if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
+            this.showSnackBar('Profile updated successfully!', 'success-snackbar');
+            
+            // Lock fields immediately after success
+            const fieldsToLock = ['full_name', 'mobile_number', 'email', 'dob', 'nationality', 'id_card_type', 'id_card_number'];
+            fieldsToLock.forEach(field => {
+              if (this.form.get(field)?.value) {
+                this.lockedFields.add(field);
+              }
+            });
+          } else {
+            this.showSnackBar(response.result.msg || 'Update failed', 'error-snackbar');
+          }
+        },
+        error: (err) => {
+          this.showLoader = false;
+          console.error('Profile update error:', err);
+          const msg = err.error?.result?.msg || 'Profile update failed. Please try again.';
+          this.showSnackBar(msg, 'error-snackbar');
+        },
+      });
+  }
+
+  cancelConfirmation() {
+    this.showConfirmation = false;
   }
 
   showValidationErrors() {

@@ -27,8 +27,7 @@
             <p class="text-muted small mb-0">Fields marked with * are required</p>
           </div>
 
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
-
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!showConfirmation">
             <!-- Personal Details -->
             <div class="form-section">
               <h5 class="section-title"><i class="fas fa-user me-2"></i>Personal Details</h5>
@@ -36,7 +35,8 @@
                 <div class="col-md-6">
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Full Name *</mat-label>
-                    <input matInput formControlName="full_name" type="text" placeholder="e.g. John Doe">
+                    <input matInput formControlName="full_name" type="text" placeholder="e.g. John Doe" 
+                      [readonly]="isFieldLocked('full_name')" [class.readonly-field]="isFieldLocked('full_name')">
                     <mat-error *ngIf="form.get('full_name')?.hasError('required')">Full Name is required</mat-error>
                     <mat-error *ngIf="form.get('full_name')?.hasError('pattern')">Letters and spaces only (2–50
                       chars)</mat-error>
@@ -46,7 +46,7 @@
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Mobile Number *</mat-label>
                     <input matInput formControlName="mobile_number" type="tel" placeholder="10-digit number"
-                      maxlength="10">
+                      maxlength="10" [readonly]="isFieldLocked('mobile_number')" [class.readonly-field]="isFieldLocked('mobile_number')">
                     <mat-error *ngIf="form.get('mobile_number')?.hasError('required')">Mobile Number is
                       required</mat-error>
                     <mat-error *ngIf="form.get('mobile_number')?.hasError('pattern')">Enter valid 10-digit Indian number
@@ -64,17 +64,19 @@
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Date of Birth *</mat-label>
                     <input matInput [matDatepicker]="dobPicker" formControlName="dob" [max]="maxDate"
-                      placeholder="DD/MM/YYYY" (click)="dobPicker.open()">
-                    <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                      placeholder="DD/MM/YYYY" (click)="!isFieldLocked('dob') && dobPicker.open()" 
+                      [readonly]="isFieldLocked('dob')" [class.readonly-field]="isFieldLocked('dob')">
+                    <mat-datepicker-toggle matSuffix [for]="dobPicker" *ngIf="!isFieldLocked('dob')"></mat-datepicker-toggle>
                     <mat-datepicker #dobPicker></mat-datepicker>
-                    <mat-hint>Must be 18+ years old</mat-hint>
+                    <mat-hint *ngIf="!isFieldLocked('dob')">Must be 18+ years old</mat-hint>
                     <mat-error *ngIf="form.get('dob')?.hasError('required')">Date of Birth is required</mat-error>
                   </mat-form-field>
                 </div>
                 <div class="col-md-6">
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Nationality *</mat-label>
-                    <input matInput type="text" formControlName="nationality" placeholder="e.g. Indian">
+                    <input matInput type="text" formControlName="nationality" placeholder="e.g. Indian"
+                      [readonly]="isFieldLocked('nationality')" [class.readonly-field]="isFieldLocked('nationality')">
                     <mat-error *ngIf="form.get('nationality')?.hasError('required')">Nationality is required</mat-error>
                   </mat-form-field>
                 </div>
@@ -88,7 +90,7 @@
                 <div class="col-md-6">
                   <mat-form-field appearance="outline" class="w-100">
                     <mat-label>ID Card Type *</mat-label>
-                    <mat-select formControlName="id_card_type">
+                    <mat-select formControlName="id_card_type" [disabled]="isFieldLocked('id_card_type')">
                       <mat-option *ngFor="let type of idCardTypes" [value]="type">{{ type }}</mat-option>
                     </mat-select>
                     <mat-error *ngIf="form.get('id_card_type')?.hasError('required')">Please select an ID
@@ -100,8 +102,8 @@
                     <mat-label>ID Card Number *</mat-label>
                     <input matInput formControlName="id_card_number" type="text" placeholder="Enter ID number"
                       [attr.maxlength]="form.get('id_card_type')?.value === 'Aadhar Card' ? 12 : null"
-                      style="text-transform: uppercase;">
-                    <mat-hint>{{ selectedIdCardHint }}</mat-hint>
+                      style="text-transform: uppercase;" [readonly]="isFieldLocked('id_card_number')" [class.readonly-field]="isFieldLocked('id_card_number')">
+                    <mat-hint *ngIf="!isFieldLocked('id_card_number')">{{ selectedIdCardHint }}</mat-hint>
                     <mat-error *ngIf="form.get('id_card_number')?.hasError('required')">ID Card Number is
                       required</mat-error>
                     <mat-error *ngIf="form.get('id_card_number')?.hasError('invalidIdFormat')">
@@ -184,6 +186,36 @@
             </div>
 
           </form>
+
+          <!-- REVIEW / CONFIRMATION BOX -->
+          <div class="confirmation-box animate__animated animate__fadeIn" *ngIf="showConfirmation">
+            <div class="confirmation-header mb-4">
+              <h4 class="text-primary"><i class="fas fa-check-circle me-2"></i>Review Your Changes</h4>
+              <p class="text-muted">Please confirm the updated details before saving.</p>
+            </div>
+
+            <div class="review-details-list">
+              <div class="review-item" *ngFor="let item of updatedFields">
+                <span class="review-label">{{ item.label }}:</span>
+                <span class="review-value">{{ item.value || 'N/A' }}</span>
+              </div>
+            </div>
+
+            <div class="confirmation-footer mt-4 p-3 bg-light rounded shadow-sm border">
+               <div class="d-flex align-items-center mb-3">
+                  <i class="fas fa-info-circle text-info me-2"></i>
+                  <small class="text-muted">By clicking "Confirm &amp; Save", your profile will be updated with the above details.</small>
+               </div>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-secondary me-3" (click)="cancelConfirmation()">
+                  <i class="fas fa-edit me-1"></i> Edit Again
+                </button>
+                <button type="button" class="btn btn-success" (click)='confirmUpdate()'>
+                  <i class="fas fa-save me-1"></i> Confirm &amp; Save
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

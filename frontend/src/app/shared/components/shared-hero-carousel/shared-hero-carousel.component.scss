@@ -19,19 +19,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #fff;
 
     // Room specific overrides inside counter
     .current {
       font-size: 1.5rem;
       font-weight: 500;
-      color: $clr-primary; 
+      color: $clr-primary;
     }
+
     .divider {
       margin: 0 0.5rem;
       opacity: 0.6;
+      color: #fff;
     }
+
     .total {
       opacity: 0.8;
+      color: #fff;
+    }
+  }
+
+  h1 {
+    @media (max-width: 768px) {
+      font-size: 4.5vw !important; // Optimized to fit in single line
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      white-space: nowrap !important; // Force single line
+      overflow: visible !important; // Ensure full visibility
+      display: block !important;
+      width: 100% !important;
+      letter-spacing: -0.3px; // Slight narrowing to help fit
     }
   }
 }

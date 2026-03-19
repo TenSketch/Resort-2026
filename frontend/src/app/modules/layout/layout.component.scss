@@ -622,14 +622,14 @@
 // Main Content Area
 main {
   // Mobile/tablet (<992px): Full width, no sidebar margin
-  padding-top: 8px;
+  // padding-top: 8px;
 
   // Large screens (992px - 1199px): Account for sidebar
   @media (min-width: 992px) and (max-width: 1199px) {
     margin-right: min(40%, 320px);
     margin-left: 0;
     transition: margin-right 0.3s ease;
-    padding-top: 11px;
+    // padding-top: 11px;
 
     &.sidebar-collapsed {
       margin-right: 70px;
@@ -641,7 +641,7 @@ main {
     margin-right: 260px;
     margin-left: 0;
     transition: margin-right 0.3s ease;
-    padding-top: 11px;
+    // padding-top: 11px;
 
     &.sidebar-collapsed {
       margin-right: 70px;

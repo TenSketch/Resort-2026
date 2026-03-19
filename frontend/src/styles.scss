@@ -13,8 +13,8 @@ html {
 
 
 .main {
-  min-height: 100vh;
-  padding-top: 80px;
+  // min-height: 100vh;
+  // padding-top: 80px;
 }
 
 body {
@@ -31,7 +31,8 @@ body {
   //   "wdth" 100;
   // }
   overflow-x: hidden;
-  line-height: 1.6;
+  // line-height: 1.6;
+  padding-top: $navbar-height;
 
   &.dark-theme {
     background-color: $clr-dark;
@@ -77,6 +78,11 @@ h6 {
 
 .logo {
   width: min(65%, 200px);
+}
+
+.img-circle {
+  width: min(70px, 15vw) !important;
+  aspect-ratio: 1 / 1;
 }
 
 .fa-solid,
@@ -314,7 +320,7 @@ select {
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   z-index: 11000000 !important;
-  
+
   .mdc-snackbar__surface {
     min-width: unset !important;
     width: max-content !important;
@@ -489,8 +495,8 @@ mat-hint {
     left: 0 !important;
 
     // Adjust top position to be below navbar (approx 10vh)
-    top: 10vh !important;
-    height: 90vh !important;
+    // top: 10vh !important;
+    // height: 90vh !important;
     position: fixed !important;
   }
 

@@ -357,8 +357,8 @@ export class RoomsComponent implements OnInit {
     );
     this.roomIds =
       this.authService.getBookingRooms(this.bookingTypeResort) != null &&
-      this.authService.getBookingRooms(this.bookingTypeResort) != '' &&
-      this.authService.getBookingRooms(this.bookingTypeResort).length > 0
+        this.authService.getBookingRooms(this.bookingTypeResort) != '' &&
+        this.authService.getBookingRooms(this.bookingTypeResort).length > 0
         ? this.authService.getBookingRooms(this.bookingTypeResort)
         : [];
 
@@ -389,7 +389,7 @@ export class RoomsComponent implements OnInit {
             }
           });
         }
-      } catch (_) {}
+      } catch (_) { }
 
       // ── Restore extra guest selections ───────────────────────────────────
       const storedExtraGuests = this.authService.getExtraGuests(this.extraGuestsType);
@@ -447,7 +447,7 @@ export class RoomsComponent implements OnInit {
       if (
         this.cardContainer.nativeElement.scrollLeft <
         this.cardContainer.nativeElement.scrollWidth -
-          this.cardContainer.nativeElement.clientWidth
+        this.cardContainer.nativeElement.clientWidth
       ) {
         this.scrollRightIcon.nativeElement.style.opacity = '1';
         this.rightTooltip.nativeElement.style.opacity = '1';
@@ -950,7 +950,7 @@ export class RoomsComponent implements OnInit {
               roomName = match.Room_Name;
             }
           }
-        } catch (_) {}
+        } catch (_) { }
 
         this.unavailableStoredRooms.push({ roomId: storedRoomId, roomName });
       }
@@ -986,6 +986,7 @@ export class RoomsComponent implements OnInit {
   showErrorAlert(msg = '') {
     this.snackBar.open(msg, 'Close', {
       duration: 3000,
+      panelClass: ['snackbar-center'],
     });
   }
 
@@ -1010,7 +1011,7 @@ export class RoomsComponent implements OnInit {
     this.selectedChildrenValues[room.Room_Id] = 0;
 
     this.authService.setBookingRooms(this.bookingTypeResort, this.roomIds);
-    this.showSnackBarAlert('Room added successfully', false);
+    this.showSnackBarAlert(`${room.Room_Name} room added successfully`, false);
 
     this.isRoomAdded(room.Room_Id);
   }
@@ -1045,7 +1046,7 @@ export class RoomsComponent implements OnInit {
     }
 
     this.authService.setBookingRooms(this.bookingTypeResort, this.roomIds);
-    this.showSnackBarAlert('Room removed successfully', false);
+    this.showSnackBarAlert(`${room?.Room_Name || 'Room'} room removed successfully`, false);
   }
 
   calculateTotalPrice(): number {
@@ -1283,9 +1284,8 @@ export class RoomsComponent implements OnInit {
 
   showSnackBarAlert(msg = '', redirect = true) {
     var snackBar = this.snackBar.open(msg, 'Close', {
-      duration: 5000,
-      verticalPosition: 'top',
-      horizontalPosition: 'center',
+      duration: 3000,
+      panelClass: ['snackbar-center'],
     });
     if (redirect) {
       snackBar.afterDismissed().subscribe(() => {

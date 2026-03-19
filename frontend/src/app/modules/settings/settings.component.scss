@@ -36,7 +36,7 @@ $theme-light-bg: #f0f7f2;
   lottie-player {
     display: block;
     margin: 0 auto;
-    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
   }
 
   .lottie-title {
@@ -48,7 +48,7 @@ $theme-light-bg: #f0f7f2;
   }
 
   .lottie-subtitle {
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.95rem;
     line-height: 1.6;
     margin-top: 0.5rem;
@@ -72,18 +72,23 @@ $theme-light-bg: #f0f7f2;
     border-radius: 50%;
 
     &.outer {
-      width: 260px; height: 260px;
-      background: rgba(255,255,255,0.06);
+      width: 260px;
+      height: 260px;
+      background: rgba(255, 255, 255, 0.06);
       animation: pulse 3s ease-in-out infinite;
     }
+
     &.middle {
-      width: 200px; height: 200px;
-      background: rgba(255,255,255,0.10);
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.10);
       animation: pulse 3s ease-in-out 0.5s infinite;
     }
+
     &.inner {
-      width: 130px; height: 130px;
-      background: rgba(255,255,255,0.18);
+      width: 130px;
+      height: 130px;
+      background: rgba(255, 255, 255, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -94,7 +99,7 @@ $theme-light-bg: #f0f7f2;
   .anim-icon {
     font-size: 4.5rem;
     color: #fff;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
   }
 
   // Floating leaves
@@ -105,22 +110,64 @@ $theme-light-bg: #f0f7f2;
     pointer-events: none;
     user-select: none;
 
-    &.leaf-1 { top: 10%; left: 5%;  animation-delay: 0s; }
-    &.leaf-2 { top: 75%; left: 5%;  animation-delay: 0.8s; }
-    &.leaf-3 { top: 10%; right: 5%; animation-delay: 1.4s; }
-    &.leaf-4 { top: 80%; right: 5%; animation-delay: 2s; }
-    &.leaf-5 { top: 45%; left: 0%;  animation-delay: 2.8s; }
+    &.leaf-1 {
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    &.leaf-2 {
+      top: 75%;
+      left: 5%;
+      animation-delay: 0.8s;
+    }
+
+    &.leaf-3 {
+      top: 10%;
+      right: 5%;
+      animation-delay: 1.4s;
+    }
+
+    &.leaf-4 {
+      top: 80%;
+      right: 5%;
+      animation-delay: 2s;
+    }
+
+    &.leaf-5 {
+      top: 45%;
+      left: 0%;
+      animation-delay: 2.8s;
+    }
   }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1);    opacity: 1; }
-  50%       { transform: scale(1.06); opacity: 0.7; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 0.7;
+  }
 }
 
 @keyframes float-leaf {
-  0%, 100% { transform: translateY(0) rotate(0deg);   opacity: 0.8; }
-  50%       { transform: translateY(-14px) rotate(20deg); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-14px) rotate(20deg);
+    opacity: 1;
+  }
 }
 
 // ─────────────────────────────────
@@ -138,10 +185,10 @@ $theme-light-bg: #f0f7f2;
 
 .settings-form-card {
   width: 100%;
-  
+
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   padding: 2rem 2.5rem;
 }
 
@@ -231,13 +278,88 @@ $theme-light-bg: #f0f7f2;
 ::ng-deep .success-snackbar {
   background-color: #2e7d32 !important;
   color: #fff !important;
-  .mat-simple-snackbar-action { color: #fff !important; }
+
+  .mat-simple-snackbar-action {
+    color: #fff !important;
+  }
 }
 
 ::ng-deep .error-snackbar {
   background-color: #c62828 !important;
   color: #fff !important;
-  .mat-simple-snackbar-action { color: #fff !important; }
+
+  .mat-simple-snackbar-action {
+    color: #fff !important;
+  }
+}
+
+
+// ─────────────────────────────────
+// CONFIRMATION / REVIEW BOX
+// ─────────────────────────────────
+.confirmation-box {
+  animation: fadeInReview 0.4s ease-out;
+
+  .confirmation-header {
+    h4 {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .review-details-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    padding: 1rem 0;
+  }
+
+  .review-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    background: #fdfdfd;
+    border: 1px solid #f0f7f2;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #d4e8db;
+      background: #f8faf9;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .review-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #7a8b81;
+      margin-bottom: 0.25rem;
+    }
+
+    .review-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #2c3e35;
+      word-break: break-word;
+    }
+  }
+
+  .confirmation-footer {
+     border-color: #e8f2ec !important;
+  }
+}
+
+@keyframes fadeInReview {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ─────────────────────────────────
@@ -257,4 +379,5 @@ $theme-light-bg: #f0f7f2;
     padding: 1.25rem 1rem;
     border-radius: 12px;
   }
+  .confirmation-box .review-details-list { grid-template-columns: 1fr !important; }
 }

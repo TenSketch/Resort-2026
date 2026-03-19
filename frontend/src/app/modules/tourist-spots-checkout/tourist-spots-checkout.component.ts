@@ -384,10 +384,8 @@ export class TouristSpotsCheckoutComponent implements OnInit, OnDestroy {
 
   showSnackBarAlert(message: string) {
     this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      verticalPosition: 'top',
-      horizontalPosition: 'center',
-      panelClass: ['error-snackbar'] // Ensure this class exists or use default
+      duration: 3000,
+      panelClass: ['snackbar-center']
     });
   }
 

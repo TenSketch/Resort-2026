@@ -1,4 +1,5 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -121,7 +122,8 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private touristSpotService: TouristSpotService,
-    private userService: UserService
+    private userService: UserService,
+    private snackBar: MatSnackBar
   ) {
     // Flatten local spots
     this.localSpots = TOURIST_SPOT_CATEGORIES.flatMap(c => c.spots);
@@ -661,17 +663,10 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   // ...
 
   private showAddedToBookingFeedback(spotName: string) {
-    const feedback = document.createElement('div');
-    // Removed top-0 and mt-5, using explicit top style to clear navbar
-    feedback.className = 'alert alert-success position-fixed start-50 translate-middle-x';
-    feedback.style.zIndex = '9999';
-    feedback.style.top = '100px'; // Position below the 80px navbar
-    feedback.innerHTML = `<i class="fa-solid fa-check-circle me-2"></i>${spotName} added to booking!`;
-    document.body.appendChild(feedback);
-
-    setTimeout(() => {
-      feedback.remove();
-    }, 2000);
+    this.snackBar.open(`${spotName} added to booking!`, 'Close', {
+      duration: 3000,
+      panelClass: ['snackbar-center']
+    });
   }
 
   proceedToCheckout() {

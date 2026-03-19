@@ -9,9 +9,8 @@ html {
     font-size: 14px;
   }
 }
-.mat-mdc-snack-bar-container {
- margin-top: 100px !important;
-}
+
+
 
 .main {
   min-height: 100vh;
@@ -104,8 +103,10 @@ h6 {
 }
 
 .breadcrumb-item {
+
   // The separator between breadcrumbs (by default, a forward-slash: "/")
-  + .breadcrumb-item {
+  +.breadcrumb-item {
+
     //   padding-left: var(--#{$prefix}breadcrumb-item-padding-x);
     &::before {
       // float: left; // Suppress inline spacings and underlining of the separator
@@ -144,6 +145,7 @@ h6 {
   @media (max-width: 991px) {
     height: 40vh;
   }
+
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -190,6 +192,7 @@ h6 {
 }
 
 .custom-form-no-stretch {
+
   // background-color: transparent !important;
   @media (min-width: 600px) {
     width: unset !important;
@@ -263,10 +266,7 @@ select {
   background-color: #4d9900;
 }
 
-.custom-dropdown
-  .mat-mdc-form-field
-  .mat-mdc-text-field-wrapper.mdc-text-field--outlined
-  .mat-mdc-form-field-infix {
+.custom-dropdown .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
   padding: 5px !important;
 }
 
@@ -306,6 +306,20 @@ select {
   top: 50%;
   width: 10%;
   transform: translate(-50%, -50%);
+}
+
+.snackbar-center {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 11000000 !important;
+  
+  .mdc-snackbar__surface {
+    min-width: unset !important;
+    width: max-content !important;
+    max-width: 90vw !important;
+  }
 }
 
 // masonry layout
@@ -356,9 +370,11 @@ mat-hint {
 .modal {
   z-index: 15050 !important;
 }
+
 .modal-dialog {
   z-index: 1000 !important;
 }
+
 // .modal-dialog {
 //   z-index: 1000 !important;
 //   margin: 0 auto !important;
@@ -419,6 +435,7 @@ mat-hint {
 }
 
 .dropdown-item {
+
   &.active,
   &:active {
     background-color: $clr-primary-lighter !important;
@@ -458,14 +475,13 @@ mat-hint {
 
 /* When the button is expanded (no `.collapsed` class) show the arrow pointing down */
 
-// Fix snackbar being hidden behind sticky/fixed elements on mobile
-// (aside has z-index:1000, #filterCottage.active has z-index:1000000)
 .mat-mdc-snack-bar-container {
   z-index: 1100000 !important;
 }
 
 /* Fix for gallery/overlays being covered by fixed sidebar */
 .cdk-global-overlay-wrapper {
+
   // Desktop Sidebar (>= 1200px) - Sidebar width 260px
   @media (min-width: 1200px) {
     width: calc(100% - 260px) !important;

@@ -2,40 +2,12 @@
   <div class="main">
     <app-loader *ngIf="showLoader"> </app-loader>
 
-    <section id="roomsCarousel" class="carousel slide carousel-fade" *ngIf="selectedResortInfo">
-      <div class="carousel-inner">
-        <div class="carousel-item" *ngFor="let image of selectedResortInfo.carouselImages; let i = index"
-          [class.active]="i === currentSlideIndex">
-          <img [src]="image.url" class="d-block w-100" [alt]="selectedResortInfo.title + ' View ' + (i + 1)" />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0">
-            <h1 class="display-3">{{ selectedResortInfo.title }}</h1>
-            <p class="h4">{{ image.description }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Custom Slide Counter -->
-      <div class="carousel-indicators-counter" *ngIf="selectedResortInfo.carouselImages?.length > 1">
-        <span class="current">{{
-          (currentSlideIndex + 1).toString().padStart(2, "0")
-          }}</span>
-        <span class="divider">/</span>
-        <span class="total">{{
-          selectedResortInfo.carouselImages.length.toString().padStart(2, "0")
-          }}</span>
-      </div>
-
-      <button class="carousel-control-prev" type="button" (click)="prevSlide()">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-
-      <button class="carousel-control-next" type="button" (click)="nextSlide()">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </section>
+    <app-shared-hero-carousel 
+      *ngIf="selectedResortInfo && roomsHeroSlides"
+      [slides]="roomsHeroSlides" 
+      [isRoomsCarousel]="true"
+      carouselId="roomsCarousel">
+    </app-shared-hero-carousel>
 
     <div class="container-fluid">
       <nav aria-label="breadcrumb">

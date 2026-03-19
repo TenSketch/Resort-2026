@@ -3,7 +3,7 @@
     <app-loader *ngIf="showLoader"></app-loader>
 
     <!-- Mobile Hero Carousel -->
-    <section id="mobileHeroCarousel" class="carousel slide d-block d-md-none" data-bs-ride="carousel"
+    <!-- <section id="mobileHeroCarousel" class="carousel slide d-block d-md-none" data-bs-ride="carousel"
       data-bs-interval="5000">
       <div class="carousel-indicators">
         <button *ngFor="let slide of heroSlides; let i = index" type="button" data-bs-target="#mobileHeroCarousel"
@@ -17,25 +17,31 @@
           <img [src]="slide.image" class="d-block w-100 h-100 object-fit-cover" [alt]="slide.title" />
           <div class="carousel-overlay"></div>
           <div class="carousel-caption mobile-caption text-start">
-            <div class="container">
-              <h5 class="fw-bold mb-1">{{ slide.title }}</h5>
-              <p class="small mb-1" *ngIf="slide.location">
-                <i class="fa-solid fa-location-dot me-1"></i>
-                {{ slide.location }}
-              </p>
-              <p class="small mb-1" *ngIf="slide.subtitle">
-                {{ slide.subtitle }}
-              </p>
-              <p class="fst-italic mb-2 smaller-text">"{{ slide.tagline }}"</p>
-              <p class="fw-bold mb-2 small" *ngIf="slide.price">
-                {{ slide.price }}
-              </p>
-              <div *ngIf="slide.startText" class="mb-2 small fw-bold text-white-50">
-                {{ slide.startText }}
+            <div class="container d-flex flex-column justify-content-center h-100">
+              <h5 class="fw-bold mb-1 text-white">{{ slide.title }}</h5>
+              <div style="min-height: 20px;">
+                <p class="small m-0 text-light" *ngIf="slide.location">
+                  <i class="fa-solid fa-location-dot me-1"></i>
+                  {{ slide.location }}
+                </p>
+                <p class="small m-0 text-light" *ngIf="slide.subtitle">
+                  {{ slide.subtitle }}
+                </p>
               </div>
-              <button class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
-                {{ slide.cta }} »
-              </button>
+              <p class="fst-italic mt-1 mb-2 smaller-text text-light">"{{ slide.tagline }}"</p>
+              <div style="min-height: 20px;">
+                <p class="fw-bold m-0 small text-warning" *ngIf="slide.price">
+                  {{ slide.price }}
+                </p>
+                <div *ngIf="slide.startText" class="fw-bold small m-0 text-light">
+                  {{ slide.startText }}
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold mt-2" (click)="handleSlideAction(slide.action)">
+                  {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -49,50 +55,11 @@
         <span class="carousel-control-next-icon small-control" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
-    </section>
+    </section> -->
 
-    <section id="carouselExampleFade" class="carousel slide carousel-fade d-none d-md-block">
-      <!-- Indicators / Counter -->
-      <div class="carousel-indicators-counter text-white fw-bold">
-        <span>{{ (currentSlideIndex + 1).toString().padStart(2, "0") }}</span>
-        <span class="mx-1">/</span>
-        <span>{{ heroSlides.length.toString().padStart(2, "0") }}</span>
-      </div>
-
-      <div class="carousel-inner">
-        <div *ngFor="let slide of heroSlides; let i = index" class="carousel-item"
-          [class.active]="i === currentSlideIndex">
-          <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
-          <div class="carousel-overlay"></div>
-          <div class="carousel-caption p-0 text-start" style="bottom: 15%; left: 10%; right: 10%">
-            <div class="container">
-              <h1 class="display-4 fw-bold text-white">{{ slide.title }}</h1>
-              <p class="h4 text-light mt-3" *ngIf="slide.location">
-                <i class="fa-solid fa-location-dot me-2"></i>
-                {{ slide.location }}
-              </p>
-              <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
-
-              <p class="h5 fw-bold text-warning mt-3" *ngIf="slide.price">
-                {{ slide.price }}
-              </p>
-
-              <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4" (click)="handleSlideAction(slide.action)">
-                {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="carousel-control-prev" type="button" (click)="prevSlide()">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" (click)="nextSlide()">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </section>
+    <app-shared-hero-carousel [slides]="heroSlides" carouselId="carouselExampleFade"
+      (actionClicked)="handleSlideAction($event)">
+    </app-shared-hero-carousel>
     <section class="hero-search-section">
       <div class="container">
         <!-- <h2 class="text-center mb-4">Search room availability</h2> -->

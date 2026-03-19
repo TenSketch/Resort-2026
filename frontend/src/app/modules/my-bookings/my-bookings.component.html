@@ -24,7 +24,7 @@
         <h1 class="text-center mb-4 mt-4 fw-bold">My Bookings</h1>
 
         <!-- Filter Tabs -->
-        <ul class="nav nav-pills justify-content-center mb-5 gap-2">
+        <ul class="nav nav-pills justify-content-center mb-4 gap-2 sticky-filter">
           <li class="nav-item">
             <button class="nav-link rounded-pill px-4" [class.active]="currentFilter === 'all'"
               (click)="setFilter('all')">
@@ -176,6 +176,25 @@
                         <a class="text-decoration-none fw-medium text-primary" href="/#/food-menu" target="_blank">
                           <i class="fa-solid fa-utensils me-1"></i> View Food Menu
                         </a>
+                      </div>
+
+                      <div class="mb-3 w-100 text-start text-md-end">
+                        <div class="text-muted small d-block">
+                          <span class="fw-semibold">Booking Status:</span>
+                          <span [ngClass]="{
+                            'text-success': item.status === 'Reserved' || item.status === 'Confirmed',
+                            'text-danger': item.status === 'Canceled',
+                            'text-warning text-dark': item.status === 'Pending'
+                          }" class="fw-bold ms-1">{{ item.status }}</span>
+                        </div>
+                        <div class="text-muted small d-block mt-1">
+                          <span class="fw-semibold">Payment Status:</span>
+                          <span [ngClass]="{
+                            'text-success': item.pay_status === 'Paid',
+                            'text-danger': item.pay_status === 'failed',
+                            'text-warning text-dark': item.pay_status === 'Pending' || item.pay_status === 'Not Paid'
+                          }" class="fw-bold ms-1">{{ item.pay_status }}</span>
+                        </div>
                       </div>
 
                       <div class="dropdown w-100 text-start text-md-end mt-auto">

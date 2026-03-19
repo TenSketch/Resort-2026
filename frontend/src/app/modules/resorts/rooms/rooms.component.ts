@@ -156,6 +156,7 @@ export class RoomsComponent implements OnInit {
   };
 
   selectedResortInfo: any = {};
+  roomsHeroSlides: any[] = [];
   private subscription: Subscription;
   selectedSortOption: string;
   panelOpenState = false;
@@ -630,6 +631,13 @@ export class RoomsComponent implements OnInit {
     this.selectedResort = this.authService.getSearchData('resort');
     if (this.selectedResort) {
       this.selectedResortInfo = this.resorts[this.selectedResort];
+      if (this.selectedResortInfo && this.selectedResortInfo.carouselImages) {
+        this.roomsHeroSlides = this.selectedResortInfo.carouselImages.map((img: any) => ({
+          image: img.url,
+          title: this.selectedResortInfo.title,
+          tagline: img.description
+        }));
+      }
     }
   }
 

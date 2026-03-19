@@ -35,6 +35,16 @@ export class TouristSpotSelectionComponent implements OnChanges {
   @Input() name = '';
   @Input() location = '';
   @Input() type?: string;
+  @Input() badge?: string;
+
+  get badgeClass(): string {
+    if (!this.badge) return 'default';
+    const b = this.badge.toLowerCase();
+    if (b.includes('soft')) return 'soft';
+    if (b.includes('medium') || (b.includes('hard') && !b.includes('very hard'))) return 'medium';
+    if (b.includes('very hard')) return 'hard';
+    return 'default';
+  }
   @Input() images: string[] = [];
   @Input() mapUrl?: string; // New Input for dynamic map URL
 

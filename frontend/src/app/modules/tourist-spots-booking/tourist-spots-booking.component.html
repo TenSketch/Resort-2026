@@ -2,77 +2,11 @@
   <div class="main">
     <!-- Hero Carousel -->
 
-    <section
-      id="carouselExampleFade"
-      class="carousel slide carousel-fade"
-      data-bs-ride="carousel"
-      data-bs-interval="3000"
-    >
-      <div class="carousel-inner">
-        <div
-          *ngFor="let slide of heroSlides; let i = index"
-          class="carousel-item"
-          [class.active]="i === 0"
-        >
-          <img
-            [src]="slide.image"
-            class="d-block w-100"
-            style="height: 100%; object-fit: cover"
-            [alt]="slide.title"
-          />
-          <div class="carousel-overlay"></div>
-          <div
-            class="carousel-caption p-0 text-start"
-            style="bottom: 15%; left: 10%; right: 10%"
-          >
-            <div class="container">
-              <h1 class="global-page-title text-white">{{ slide.title }}</h1>
-              <p class="h4 text-light mt-3" *ngIf="slide.location">
-                <i class="fa-solid fa-location-dot me-2"></i>
-                {{ slide.location }}
-              </p>
-              <p class="h5 text-light mt-2 fst-italic">"{{ slide.tagline }}"</p>
-
-              <button
-                class="btn btn-lg btn-primary mt-4 rounded-pill px-4"
-                (click)="handleSlideAction(slide.action)"
-              >
-                {{ slide.cta }} <i class="fa-solid fa-arrow-right ms-2"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide Counter -->
-      <div class="slide-counter">
-        {{ currentSlideIndex + 1 }} / {{ heroSlides.length }}
-      </div>
-
-      <button
-        class="carousel-control-prev custom-nav-btn"
-        type="button"
-        data-bs-target="#carouselExampleFade"
-        data-bs-slide="prev"
-      >
-        <span class="nav-icon-wrapper">
-          <i class="fa-solid fa-chevron-left"></i>
-        </span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-
-      <button
-        class="carousel-control-next custom-nav-btn"
-        type="button"
-        data-bs-target="#carouselExampleFade"
-        data-bs-slide="next"
-      >
-        <span class="nav-icon-wrapper">
-          <i class="fa-solid fa-chevron-right"></i>
-        </span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </section>
+    <app-shared-hero-carousel 
+      [slides]="heroSlides" 
+      carouselId="carouselExampleFade" 
+      (actionClicked)="handleSlideAction($event)">
+    </app-shared-hero-carousel>
 
     <div class="container my-5">
       <!-- Key info: About / Guidelines / Amenities shown in a single horizontal row -->
@@ -505,6 +439,7 @@
                     [openInNewTab]="true"
                     [ticketsLeftToday]="spot.ticketsLeftToday"
                     [difficulty]="spot.difficulty"
+                    [badge]="spot.badge"
                     [distance]="spot.distanceKm"
                     [elevationGain]="spot.elevationGainM"
                     [capacity]="spot.capacity"

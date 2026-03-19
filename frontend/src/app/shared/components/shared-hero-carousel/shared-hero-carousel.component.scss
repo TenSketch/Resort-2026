@@ -1,0 +1,37 @@
+@use "/src/scss/base/" as *;
+
+.carousel {
+  @include hero-carousel-base;
+
+  // Home style pill counter indicator
+  .carousel-indicators-counter {
+    position: absolute;
+    bottom: 30px;
+    right: 10%;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Room specific overrides inside counter
+    .current {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: $clr-primary; 
+    }
+    .divider {
+      margin: 0 0.5rem;
+      opacity: 0.6;
+    }
+    .total {
+      opacity: 0.8;
+    }
+  }
+}

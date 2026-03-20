@@ -1,4 +1,4 @@
-<section [id]="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1800">
+<section [id]="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
 
   <!-- Indicators / Counter (Home Style) -->
   <div class="carousel-indicators-counter" *ngIf="!isRoomsCarousel && slides && slides.length > 0">
@@ -16,12 +16,11 @@
 
   <div class="carousel-inner" *ngIf="slides && slides.length > 0">
     <div *ngFor="let slide of slides; let i = index" class="carousel-item" [class.active]="i === currentSlideIndex">
-      <img [src]="slide.image" class="d-block w-100" style="height: 100%; object-fit: cover" [alt]="slide.title" />
+      <img [src]="slide.image" class="d-block w-100 carousel-item-img" [alt]="slide.title" />
       <div class="carousel-overlay"></div>
 
       <!-- Normal (Tourist/Home) Caption -->
-      <div *ngIf="!isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center"
-        style="top: 0; bottom: 0; left: 10%; right: 10%">
+      <div *ngIf="!isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center carousel-caption-hero">
         <div class="container">
           <h1 class="display-52222 fw-bold text-white">{{ slide.title }}</h1>
 
@@ -54,8 +53,7 @@
       </div>
 
       <!-- Rooms Carousel Caption -->
-      <div *ngIf="isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center"
-        style="top: 0; bottom: 0; left: 10%; right: 10%">
+      <div *ngIf="isRoomsCarousel" class="carousel-caption p-0 text-start d-flex flex-column justify-content-center carousel-caption-hero">
         <div class="container text-center">
           <h1 class="display-3">{{ slide.title }}</h1>
           <p class="h4">{{ slide.tagline }}</p>

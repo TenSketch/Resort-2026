@@ -52,4 +52,70 @@
       letter-spacing: -0.3px; // Slight narrowing to help fit
     }
   }
+
+  .carousel-caption-hero {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+  }
+
+  .carousel-item-img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // parallax + smooth zoom effect
+  .carousel-inner {
+    overflow: hidden;
+    perspective: 1200px;
+  }
+
+  .carousel-item {
+    transition: transform 1.2s cubic-bezier(0.37, 0.75, 0.35, 1), opacity 1.2s ease;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+
+    img {
+      transition: transform 1.5s ease, opacity 1.5s ease;
+      transform: scale(1.08) translateY(0);
+      transform-origin: center center;
+      will-change: transform;
+    }
+  }
+
+  .carousel-item.active {
+    transform: translateZ(0);
+
+    img {
+      transform: scale(1.18) translateY(-3%);
+    }
+  }
+
+  .carousel-item-next,
+  .carousel-item-prev,
+  .carousel-item.carousel-item-start,
+  .carousel-item.carousel-item-end {
+    img {
+      transform: scale(1.08) translateY(2%);
+      opacity: 0.95;
+    }
+  }
+
+  .carousel-item.active .carousel-caption,
+  .carousel-item.carousel-item-next .carousel-caption,
+  .carousel-item.carousel-item-prev .carousel-caption {
+    transition: transform 1s ease, opacity 1s ease;
+  }
+
+  .carousel-item.active .carousel-caption {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .carousel-item:not(.active) .carousel-caption {
+    transform: translateY(20px);
+    opacity: 0;
+  }
 }

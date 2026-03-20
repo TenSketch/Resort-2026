@@ -48,12 +48,12 @@ export default function AddTentBookings() {
     checkOut: "",
     guests: "",
     children: "",
-    status: "Reserved",
+    status: "reserved",
     bookingId: "",
     reservationDate: format(new Date(), "yyyy-MM-dd"),
     numberOfTents: "",
     totalPayable: 0,
-    paymentStatus: "Paid",
+    paymentStatus: "paid",
     refundPercentage: "",
     existingGuest: "",
     fullName: "",
@@ -352,12 +352,12 @@ export default function AddTentBookings() {
       checkOut: "",
       guests: "",
       children: "",
-      status: "Reserved",
+      status: "reserved",
       bookingId: "",
       reservationDate: format(new Date(), "yyyy-MM-dd"),
       numberOfTents: "",
       totalPayable: 0,
-      paymentStatus: "Paid",
+      paymentStatus: "paid",
       refundPercentage: "",
       existingGuest: "",
       fullName: "",
@@ -624,10 +624,10 @@ export default function AddTentBookings() {
                     <SelectValue placeholder="Choose Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Reserved">Reserved</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Not-Reserved">Not Reserved</SelectItem>
-                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    <SelectItem value="reserved">Reserved</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -705,9 +705,9 @@ export default function AddTentBookings() {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Paid">Paid</SelectItem>
-                    <SelectItem value="Unpaid">Unpaid</SelectItem>
-                    <SelectItem value="Refunded">Refunded</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                    <SelectItem value="refunded">Refunded</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

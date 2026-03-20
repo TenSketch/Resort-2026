@@ -243,7 +243,7 @@ const ApprovalDetailPage = () => {
           body: JSON.stringify({
             ...payload,
             approval_status: "APPROVED",
-            status: "Reserved",
+            status: "reserved",
           }),
         });
       }
@@ -298,7 +298,7 @@ const ApprovalDetailPage = () => {
           body: JSON.stringify({
             ...payload,
             approval_status: "REJECTED",
-            status: "Not-Reserved",
+            status: "not-reserved",
           }),
         });
       }

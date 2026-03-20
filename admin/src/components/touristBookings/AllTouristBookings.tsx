@@ -174,8 +174,8 @@ export default function AllTouristBookings() {
         email: r.user?.email || "N/A",
         touristSpots: r.touristSpots || [],
         totalPayable: r.totalPayable || 0,
-        status: r.status || "Pending",
-        paymentStatus: r.paymentStatus || "Unpaid",
+        status: r.status || "pending",
+        paymentStatus: r.paymentStatus || "unpaid",
         reservationDate: r.reservationDate || r.createdAt,
         reservedFrom: r.reservedFrom || "Online",
         user: r.user || {},
@@ -283,7 +283,7 @@ export default function AllTouristBookings() {
           Reserved: "bg-green-100 text-green-800",
           Pending: "bg-yellow-100 text-yellow-800",
           Cancelled: "bg-red-100 text-red-800",
-          "Not-Reserved": "bg-gray-100 text-gray-800",
+          "not-reserved": "bg-gray-100 text-gray-800",
         };
         const color = colors[d] || "bg-gray-100 text-gray-800";
         return `<span class="px-2 py-1 rounded text-xs font-medium ${color}">${d}</span>`;
@@ -970,10 +970,10 @@ export default function AllTouristBookings() {
                               }))
                             }
                           >
-                            <option value="Reserved">Reserved</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Not-Reserved">Not Reserved</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="reserved">Reserved</option>
+                            <option value="pending">Pending</option>
+                            <option value="not-reserved">Not Reserved</option>
+                            <option value="cancelled">Cancelled</option>
                           </select>
                         </div>
                         <div>
@@ -988,10 +988,10 @@ export default function AllTouristBookings() {
                               }))
                             }
                           >
-                            <option value="Paid">Paid</option>
-                            <option value="Unpaid">Unpaid</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                            <option value="cancelled">Cancelled</option>
                           </select>
                         </div>
                         <div>

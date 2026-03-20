@@ -31,8 +31,8 @@ export const createReservation = async (req, res) => {
         expiryTime.setMinutes(expiryTime.getMinutes() + 15);
         payload.expiresAt = expiryTime;
         
-        payload.status = 'Pending';
-        payload.paymentStatus = 'Unpaid';
+        payload.status = 'pending';
+        payload.paymentStatus = 'unpaid';
 
         // Map frontend customer data to user field
         if (payload.customer) {
@@ -244,8 +244,8 @@ export const createAdminReservation = async (req, res) => {
             bookingId: payload.bookingId,
             touristSpots: touristSpots,
             totalPayable: totalPayable,
-            status: payload.status || 'Reserved',
-            paymentStatus: payload.paymentStatus || 'Paid',
+            status: payload.status || 'reserved',
+            paymentStatus: payload.paymentStatus || 'paid',
             paymentTransactionId: payload.paymentTransactionId || '',
             user: user,
             reservationDate: payload.reservationDate ? new Date(payload.reservationDate) : new Date(),
@@ -256,7 +256,7 @@ export const createAdminReservation = async (req, res) => {
 
         // Don't set expiry for admin bookings
         // Only set expiry for pending online bookings
-        if (reservationData.status === 'Pending' && reservationData.reservedFrom === 'Online') {
+        if (reservationData.status === 'pending' && reservationData.reservedFrom === 'Online') {
             const expiryTime = new Date();
             expiryTime.setMinutes(expiryTime.getMinutes() + 15);
             reservationData.expiresAt = expiryTime;

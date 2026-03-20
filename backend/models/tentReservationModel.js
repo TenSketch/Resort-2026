@@ -35,7 +35,7 @@ const tentReservationSchema = new mongoose.Schema({
     type: Number,
     default: 1
   },
-  status: { type: String, default: 'Pending', enum: ['Pending', 'Reserved', 'Cancelled', 'Not-Reserved'] },
+  status: { type: String, default: 'pending', enum: ['pending', 'reserved', 'cancelled', 'not-reserved'] },
   bookingId: {
     type: String,
     unique: true,
@@ -55,8 +55,8 @@ const tentReservationSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    default: 'Unpaid',
-    enum: ['Unpaid', 'Paid', 'Refunded']
+    default: 'unpaid',
+    enum: ['unpaid', 'paid', 'refunded']
   },
   refundPercentage: Number,
 

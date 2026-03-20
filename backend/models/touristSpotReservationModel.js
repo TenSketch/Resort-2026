@@ -31,14 +31,14 @@ const touristSpotReservationSchema = new mongoose.Schema({
   totalPayable: { type: Number, required: true },
   status: {
     type: String,
-    default: 'Pending',
-    enum: ['Pending', 'Reserved', 'Not-Reserved', 'Cancelled', 'Failed']
+    default: 'pending',
+    enum: ['pending', 'reserved', 'not-reserved', 'cancelled', 'Failed']
   },
 
   paymentStatus: {
     type: String,
-    default: 'Unpaid',
-    enum: ['Unpaid', 'Paid', 'Failed', 'Pending', 'Refunded', 'Cancelled']
+    default: 'unpaid',
+    enum: ['unpaid', 'paid', 'Failed', 'pending', 'refunded', 'cancelled']
   },
 
   paymentTransactionId: String, // Link to PaymentTransaction model

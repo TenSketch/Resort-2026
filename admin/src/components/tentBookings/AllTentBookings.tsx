@@ -937,9 +937,9 @@ export default function AllTentBookings() {
                               }))
                             }
                           >
-                            <option value="Pending">Pending</option>
+                            <option value="pending">Pending</option>
                             <option value="confirmed">Confirmed</option>
-                            <option value="Cancelled">Cancelled</option>
+                            <option value="cancelled">Cancelled</option>
                             <option value="completed">Completed</option>
                           </select>
                         </div>
@@ -955,10 +955,10 @@ export default function AllTentBookings() {
                               }))
                             }
                           >
-                            <option value="Unpaid">Unpaid</option>
-                            <option value="Paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="paid">Paid</option>
                             <option value="Failed">Failed</option>
-                            <option value="Refunded">Refunded</option>
+                            <option value="refunded">Refunded</option>
                           </select>
                         </div>
                         <div>

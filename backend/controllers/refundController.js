@@ -57,13 +57,13 @@ export const processRefund = async (req, res) => {
       refund_ref_no: uniqueKey || ("RF" + Date.now().toString().slice(-10))
     };
 
-    reservation.status = 'Cancelled';
+    reservation.status = 'cancelled';
     reservation.cancelBookingReason = cancel_reason;
     reservation.cancellationMessage = more_details;
     reservation.refundRequestedDateTime = new Date();
     reservation.refundableAmount = refundAmountNum;
     reservation.refundPercentage = refund_percent;
-    reservation.paymentStatus = 'Refunded';
+    reservation.paymentStatus = 'refunded';
 
     if (refundAmountNum > 0) {
       console.log(`Initiating BillDesk Refund for ${booking_id1}`);

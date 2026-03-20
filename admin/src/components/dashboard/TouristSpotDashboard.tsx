@@ -304,7 +304,7 @@ export default function TouristSpotDashboard() {
                   <TableCell className="text-right">\u20B9{b.amount.toLocaleString()}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={b.status === 'Reserved' ? 'secondary' : b.status === 'Pending' ? 'outline' : 'destructive'}
+                      variant={b.status === 'reserved' ? 'secondary' : b.status === 'pending' ? 'outline' : 'destructive'}
                     >
                       {b.status}
                     </Badge>

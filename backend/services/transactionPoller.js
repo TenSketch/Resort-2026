@@ -98,7 +98,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
     }
 
     // If status is already resolved (not pending), stop polling
-    if (reservation.status !== 'Pending') {
+    if (reservation.status !== 'pending') {
       console.log(`✅ Reservation already resolved with status: ${reservation.status}`);
       console.log(`   No need to poll further. Stopping poller.`);
       stopTransactionPolling(bookingId);
@@ -132,8 +132,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Reserved',
-          paymentStatus: 'Paid',
+          status: 'reserved',
+          paymentStatus: 'paid',
           expiresAt: null,
           $set: {
             'rawSource.transactionId': transactionId,
@@ -212,8 +212,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Not-Reserved',
-          paymentStatus: 'Unpaid',
+          status: 'not-reserved',
+          paymentStatus: 'unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
             'rawSource.authStatus': authStatus,
@@ -245,8 +245,8 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await ReservationModel.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Not-Reserved',
-          paymentStatus: 'Unpaid',
+          status: 'not-reserved',
+          paymentStatus: 'unpaid',
           $set: {
             'rawSource.transactionId': transactionId,
             'rawSource.authStatus': authStatus
@@ -257,7 +257,7 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       await PaymentTransaction.findOneAndUpdate(
         { bookingId },
         {
-          status: 'Cancelled',
+          status: 'cancelled',
           transactionId: transactionId,
           authStatus: authStatus,
           decryptedResponse: result.data

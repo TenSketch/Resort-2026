@@ -27,7 +27,7 @@ export const initiatePayment = async (req, res) => {
     }
 
     // Check if reservation is pending and not expired
-    if (reservation.status !== 'Pending') {
+    if (reservation.status !== 'pending') {
       return res.status(400).json({ success: false, error: 'Reservation is not in pre-reserved state' });
     }
 
@@ -371,7 +371,7 @@ export const handleWebhookCallback = async (req, res) => {
     // Update payment transaction
     if (paymentTransaction) {
       // Only process if it's not already a final state, or if this is a success override
-      if (['Initiated', 'Pending'].includes(paymentTransaction.status) || auth_status === '0300') {
+      if (['Initiated', 'pending'].includes(paymentTransaction.status) || auth_status === '0300') {
         paymentTransaction.transactionId = transactionid;
         paymentTransaction.authStatus = auth_status;
         paymentTransaction.decryptedResponse = decryptedResponse;
@@ -381,8 +381,8 @@ export const handleWebhookCallback = async (req, res) => {
         if (auth_status === '0300') {
           // Success
           paymentTransaction.status = 'Success';
-          reservation.status = 'Reserved';
-          reservation.paymentStatus = 'Paid';
+          reservation.status = 'reserved';
+          reservation.paymentStatus = 'paid';
           reservation.expiresAt = null; // Clear expiry
           if (!reservation.rawSource) reservation.rawSource = {};
           reservation.rawSource.transactionId = transactionid;
@@ -393,19 +393,19 @@ export const handleWebhookCallback = async (req, res) => {
           // Failed
           paymentTransaction.status = 'Failed';
           paymentTransaction.errorMessage = transaction_error_desc;
-          reservation.status = 'Not-Reserved';
-          reservation.paymentStatus = 'Unpaid';
+          reservation.status = 'not-reserved';
+          reservation.paymentStatus = 'unpaid';
           if (!reservation.rawSource) reservation.rawSource = {};
           reservation.rawSource.paymentError = transaction_error_desc;
         } else if (auth_status === '0002') {
           // Pending
-          paymentTransaction.status = 'Pending';
-          reservation.paymentStatus = 'Unpaid';
+          paymentTransaction.status = 'pending';
+          reservation.paymentStatus = 'unpaid';
         } else if (auth_status === '0398') {
           // User cancelled
-          paymentTransaction.status = 'Cancelled';
-          reservation.status = 'Not-Reserved';
-          reservation.paymentStatus = 'Unpaid';
+          paymentTransaction.status = 'cancelled';
+          reservation.status = 'not-reserved';
+          reservation.paymentStatus = 'unpaid';
         }
 
         await paymentTransaction.save();

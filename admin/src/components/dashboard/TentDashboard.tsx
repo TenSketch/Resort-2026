@@ -223,7 +223,7 @@ export default function TentDashboard() {
                       <TableCell>{b.tentSpot}</TableCell>
                       <TableCell>{b.tent}</TableCell>
                       <TableCell>
-                        <Badge variant={b.status === "Paid" ? "secondary" : b.status === "Pending" ? "outline" : "destructive"}>
+                        <Badge variant={b.status === "paid" ? "secondary" : b.status === "pending" ? "outline" : "destructive"}>
                           {b.status}
                         </Badge>
                       </TableCell>

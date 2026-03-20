@@ -98,11 +98,11 @@
 
                       <!-- Status Badge -->
                       <span class="badge rounded-pill px-3 py-1 mt-1 small shadow-sm" [ngClass]="{
-                           'bg-success-subtle border-success border text-success': item.status === 'Reserved' && item.pay_status === 'Paid',
+                           'bg-success-subtle border-success border text-success': item.status === 'reserved' && item.pay_status === 'paid',
                            'bg-danger-subtle border-danger border text-danger': item.status === 'Canceled' || item.pay_status === 'failed',
-                           'bg-warning-subtle border-warning border text-dark': item.pay_status === 'Pending' || item.pay_status === 'Not Paid' || item.status === 'Pending'
+                           'bg-warning-subtle border-warning border text-dark': item.pay_status === 'pending' || item.pay_status === 'Not Paid' || item.status === 'pending'
                         }">
-                        {{ item.pay_status === 'Not Paid' ? 'Pending Payment' : (item.status === 'Reserved' ?
+                        {{ item.pay_status === 'Not Paid' ? 'Pending Payment' : (item.status === 'reserved' ?
                         'Confirmed' : item.status) }}
                       </span>
                     </div>
@@ -182,17 +182,17 @@
                         <div class="text-muted small d-block">
                           <span class="fw-semibold">Booking Status:</span>
                           <span [ngClass]="{
-                            'text-success': item.status === 'Reserved' || item.status === 'Confirmed',
+                            'text-success': item.status === 'reserved' || item.status === 'Confirmed',
                             'text-danger': item.status === 'Canceled',
-                            'text-warning text-dark': item.status === 'Pending'
+                            'text-warning text-dark': item.status === 'pending'
                           }" class="fw-bold ms-1">{{ item.status }}</span>
                         </div>
                         <div class="text-muted small d-block mt-1">
                           <span class="fw-semibold">Payment Status:</span>
                           <span [ngClass]="{
-                            'text-success': item.pay_status === 'Paid',
+                            'text-success': item.pay_status === 'paid',
                             'text-danger': item.pay_status === 'failed',
-                            'text-warning text-dark': item.pay_status === 'Pending' || item.pay_status === 'Not Paid'
+                            'text-warning text-dark': item.pay_status === 'pending' || item.pay_status === 'Not Paid'
                           }" class="fw-bold ms-1">{{ item.pay_status }}</span>
                         </div>
                       </div>
@@ -234,7 +234,7 @@
 
                           <li>
                             <button class="dropdown-item text-danger py-2 fw-medium"
-                              *ngIf="item.pay_status == 'Paid' && item.status != 'Canceled'"
+                              *ngIf="item.pay_status == 'paid' && item.status != 'Canceled'"
                               (click)="InitiateCancel(item)">
                               <i class="fas fa-ban me-2"></i> Cancel Booking
                             </button>

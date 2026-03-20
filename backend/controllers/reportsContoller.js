@@ -18,7 +18,7 @@ export const getDailyOccupancyReport = async (req, res) => {
     // Get all active reservations for today (checkIn <= today < checkOut)
     const reservations = await Reservation.find({
       resort: resortId,
-      status: 'Reserved',
+      status: 'reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -102,7 +102,7 @@ export const getDailyOccupancyReportBySlug = async (req, res) => {
     // Get all active reservations for today
     const reservations = await Reservation.find({
       resort: resort._id.toString(),
-      status: 'Reserved',
+      status: 'reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -188,7 +188,7 @@ export const getDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await Reservation.find({
       ...resortFilter,
-      status: 'Reserved',
+      status: 'reserved',
       checkIn: { $lte: tomorrow },
       checkOut: { $gt: today }
     }).lean()
@@ -200,7 +200,7 @@ export const getDashboardStats = async (req, res) => {
     // Expected checkouts today
     const expectedCheckouts = await Reservation.countDocuments({
       ...resortFilter,
-      status: 'Reserved',
+      status: 'reserved',
       checkOut: { $gte: today, $lt: tomorrow }
     })
 
@@ -230,11 +230,11 @@ export const getDashboardStats = async (req, res) => {
 
     const totalPayments = recentReservations.length || 1
     const paymentBreakdown = [
-      { name: 'Paid', value: Math.round(((paymentStats.paid || 0) / totalPayments) * 100) },
-      { name: 'Pending', value: Math.round(((paymentStats.pending || 0) / totalPayments) * 100) },
-      { name: 'Unpaid', value: Math.round(((paymentStats.unpaid || 0) / totalPayments) * 100) },
+      { name: 'paid', value: Math.round(((paymentStats.paid || 0) / totalPayments) * 100) },
+      { name: 'pending', value: Math.round(((paymentStats.pending || 0) / totalPayments) * 100) },
+      { name: 'unpaid', value: Math.round(((paymentStats.unpaid || 0) / totalPayments) * 100) },
       { name: 'Failed', value: Math.round(((paymentStats.failed || 0) / totalPayments) * 100) },
-      { name: 'Refunded', value: Math.round(((paymentStats.refunded || 0) / totalPayments) * 100) }
+      { name: 'refunded', value: Math.round(((paymentStats.refunded || 0) / totalPayments) * 100) }
     ].filter(item => item.value > 0)
 
     // Last 5 bookings
@@ -266,7 +266,7 @@ export const getDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           resort: resortName,
           room: roomName,
-          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'paid' ? 'paid' : booking.paymentStatus === 'pending' ? 'pending' : 'unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -282,7 +282,7 @@ export const getDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await Reservation.countDocuments({
         ...resortFilter,
-        status: 'Reserved',
+        status: 'reserved',
         checkIn: { $lte: nextDate },
         checkOut: { $gt: date }
       })
@@ -303,7 +303,7 @@ export const getDashboardStats = async (req, res) => {
       const resortRooms = await Room.find({ resort: resort._id, status: 'available' }).lean()
       const resortActiveReservations = await Reservation.find({
         resort: resort._id.toString(),
-        status: 'Reserved',
+        status: 'reserved',
         checkIn: { $lte: tomorrow },
         checkOut: { $gt: today }
       }).lean()
@@ -376,7 +376,7 @@ export const getTentDashboardStats = async (req, res) => {
     // Total guests today (currently checked in)
     const activeReservations = await TentReservation.find({
       ...tentSpotFilter,
-      status: 'Reserved',
+      status: 'reserved',
       checkinDate: { $lte: tomorrow },
       checkoutDate: { $gt: today }
     }).lean()
@@ -388,7 +388,7 @@ export const getTentDashboardStats = async (req, res) => {
     // Expected checkouts today
     const expectedCheckouts = await TentReservation.countDocuments({
       ...tentSpotFilter,
-      status: 'Reserved',
+      status: 'reserved',
       checkoutDate: { $gte: today, $lt: tomorrow }
     })
 
@@ -420,11 +420,11 @@ export const getTentDashboardStats = async (req, res) => {
 
     const totalPayments = recentReservations.length || 1
     const paymentBreakdown = [
-      { name: 'Paid', value: Math.round(((paymentStats.paid || 0) / totalPayments) * 100) },
-      { name: 'Pending', value: Math.round(((paymentStats.pending || 0) / totalPayments) * 100) },
-      { name: 'Unpaid', value: Math.round(((paymentStats.unpaid || 0) / totalPayments) * 100) },
+      { name: 'paid', value: Math.round(((paymentStats.paid || 0) / totalPayments) * 100) },
+      { name: 'pending', value: Math.round(((paymentStats.pending || 0) / totalPayments) * 100) },
+      { name: 'unpaid', value: Math.round(((paymentStats.unpaid || 0) / totalPayments) * 100) },
       { name: 'Failed', value: Math.round(((paymentStats.failed || 0) / totalPayments) * 100) },
-      { name: 'Refunded', value: Math.round(((paymentStats.refunded || 0) / totalPayments) * 100) }
+      { name: 'refunded', value: Math.round(((paymentStats.refunded || 0) / totalPayments) * 100) }
     ].filter(item => item.value > 0)
 
     // Last 5 bookings
@@ -456,7 +456,7 @@ export const getTentDashboardStats = async (req, res) => {
           guest: booking.fullName || 'Guest',
           tentSpot: tentSpotName,
           tent: tentName,
-          status: booking.paymentStatus === 'Paid' ? 'Paid' : booking.paymentStatus === 'Pending' ? 'Pending' : 'Unpaid',
+          status: booking.paymentStatus === 'paid' ? 'paid' : booking.paymentStatus === 'pending' ? 'pending' : 'unpaid',
           amount: booking.totalPayable || 0
         }
       })
@@ -472,7 +472,7 @@ export const getTentDashboardStats = async (req, res) => {
 
       const reservationsOnDate = await TentReservation.countDocuments({
         ...tentSpotFilter,
-        status: 'Reserved',
+        status: 'reserved',
         checkinDate: { $lte: nextDate },
         checkoutDate: { $gt: date }
       })
@@ -495,7 +495,7 @@ export const getTentDashboardStats = async (req, res) => {
 
       const spotActiveReservations = await TentReservation.find({
         tentSpot: tentSpot._id.toString(),
-        status: 'Reserved',
+        status: 'reserved',
         checkinDate: { $lte: tomorrow },
         checkoutDate: { $gt: today }
       }).lean()
@@ -571,14 +571,14 @@ export const getTouristDashboardStats = async (req, res) => {
 
     const todayBookings = todaysReservations.length
     const todayRevenue = todaysReservations
-      .filter(r => r.paymentStatus === 'Paid')
+      .filter(r => r.paymentStatus === 'paid')
       .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
-    const todayCancellations = todaysReservations.filter(r => r.status === 'Cancelled' || r.paymentStatus === 'Failed').length
+    const todayCancellations = todaysReservations.filter(r => r.status === 'cancelled' || r.paymentStatus === 'Failed').length
     
     // Total Guests Today calculation (touristSpots.visitDate is today)
     const activeReservationsToday = await TouristSpotReservation.find({
       ...spotFilter,
-      status: 'Reserved',
+      status: 'reserved',
       'touristSpots.visitDate': { $gte: today, $lt: tomorrow }
     }).lean()
 
@@ -600,7 +600,7 @@ export const getTouristDashboardStats = async (req, res) => {
     
     const upcomingCount = await TouristSpotReservation.countDocuments({
       ...spotFilter,
-      status: 'Reserved',
+      status: 'reserved',
       'touristSpots.visitDate': { $gte: tomorrow, $lt: next7Days }
     })
 
@@ -609,7 +609,7 @@ export const getTouristDashboardStats = async (req, res) => {
       cancellations: todayCancellations,
       revenueToday: todayRevenue,
       revenueYesterday: yesterdaysReservations
-        .filter(r => r.paymentStatus === 'Paid')
+        .filter(r => r.paymentStatus === 'paid')
         .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
     }
 
@@ -623,7 +623,7 @@ export const getTouristDashboardStats = async (req, res) => {
       totalBookings: thisMonthReservations.length,
       totalGuests: 0,
       totalRevenue: thisMonthReservations
-        .filter(r => r.paymentStatus === 'Paid')
+        .filter(r => r.paymentStatus === 'paid')
         .reduce((sum, r) => sum + (r.totalPayable || 0), 0)
     }
 
@@ -647,7 +647,7 @@ export const getTouristDashboardStats = async (req, res) => {
            spotStats[sId].bookings += 1
            spotStats[sId].guests += g
            // Pro-rate revenue if multiple spots, or just add amounts.total if available
-           if (r.paymentStatus === 'Paid') {
+           if (r.paymentStatus === 'paid') {
              spotStats[sId].revenue += (ts.amounts?.total || r.totalPayable || 0)
            }
         }
@@ -682,7 +682,7 @@ export const getTouristDashboardStats = async (req, res) => {
     // 4. UPCOMING BOOKINGS (Next 7 Days)
     const upcomingReservations = await TouristSpotReservation.find({
       ...spotFilter,
-      status: 'Reserved',
+      status: 'reserved',
       'touristSpots.visitDate': { $gte: tomorrow, $lt: next7Days }
     }).sort({ 'touristSpots.visitDate': 1 }).limit(10).lean()
 

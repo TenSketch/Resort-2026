@@ -118,7 +118,7 @@ export const initiatePayment = async (req, res) => {
     }
 
     // Check if reservation is pending and not expired
-    if (reservation.status !== 'Pending') {
+    if (reservation.status !== 'pending') {
       return res.status(400).json({ success: false, error: 'Reservation is not in pre-reserved state' });
     }
 
@@ -420,8 +420,8 @@ export const handlePaymentCallback = async (req, res) => {
       if (auth_status === '0300') {
         // Success
         paymentTransaction.status = 'Success';
-        reservation.status = 'Reserved';
-        reservation.paymentStatus = 'Paid';
+        reservation.status = 'reserved';
+        reservation.paymentStatus = 'paid';
         reservation.expiresAt = null; // Clear expiry
         // Store transaction ID in rawSource for easy access
         if (!reservation.rawSource) reservation.rawSource = {};
@@ -434,16 +434,16 @@ export const handlePaymentCallback = async (req, res) => {
         // Failed
         paymentTransaction.status = 'Failed';
         paymentTransaction.errorMessage = transaction_error_desc;
-        reservation.status = 'Not-Reserved';
-        reservation.paymentStatus = 'Unpaid';
+        reservation.status = 'not-reserved';
+        reservation.paymentStatus = 'unpaid';
         // Store error info
         if (!reservation.rawSource) reservation.rawSource = {};
         reservation.rawSource.paymentError = transaction_error_desc;
       } else if (auth_status === '0002') {
         // Pending - but check if it's actually successful (BillDesk UAT quirk)
         console.log('⏳ Payment pending, but checking if actually successful...');
-        paymentTransaction.status = 'Pending';
-        reservation.paymentStatus = 'Unpaid';
+        paymentTransaction.status = 'pending';
+        reservation.paymentStatus = 'unpaid';
 
         // If transaction_error_desc says "successful", immediately retrieve real status
         if (transaction_error_desc && transaction_error_desc.toLowerCase().includes('successful')) {
@@ -462,8 +462,8 @@ export const handlePaymentCallback = async (req, res) => {
                 await Reservation.findOneAndUpdate(
                   { bookingId },
                   {
-                    status: 'Reserved',
-                    paymentStatus: 'Paid',
+                    status: 'reserved',
+                    paymentStatus: 'paid',
                     expiresAt: null,
                     $set: {
                       'rawSource.transactionId': result.data.transactionid,
@@ -502,13 +502,13 @@ export const handlePaymentCallback = async (req, res) => {
         }
       } else if (auth_status === '0398') {
         // User cancelled
-        paymentTransaction.status = 'Cancelled';
-        reservation.status = 'Not-Reserved';
-        reservation.paymentStatus = 'Unpaid';
+        paymentTransaction.status = 'cancelled';
+        reservation.status = 'not-reserved';
+        reservation.paymentStatus = 'unpaid';
       } else {
         // Unknown status - keep as unpaid
-        paymentTransaction.status = 'Pending';
-        reservation.paymentStatus = 'Unpaid';
+        paymentTransaction.status = 'pending';
+        reservation.paymentStatus = 'unpaid';
       }
 
       await paymentTransaction.save();
@@ -537,7 +537,7 @@ export const handlePaymentCallback = async (req, res) => {
       // Redirect based on status (Angular uses hash routing)
       if (paymentTransaction.status === 'Success') {
         return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}`);
-      } else if (paymentTransaction.status === 'Pending') {
+      } else if (paymentTransaction.status === 'pending') {
         return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&status=pending`);
       } else {
         // URL encode the error message to handle special characters

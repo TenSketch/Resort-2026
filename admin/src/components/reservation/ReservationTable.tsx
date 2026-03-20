@@ -2714,12 +2714,12 @@ export default function ReservationTable() {
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Reserved">Reserved</SelectItem>
-                              <SelectItem value="Pending">Pending</SelectItem>
-                              <SelectItem value="Not-Reserved">
+                              <SelectItem value="reserved">Reserved</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="not-reserved">
                                 Not Reserved
                               </SelectItem>
-                              <SelectItem value="Cancelled">
+                              <SelectItem value="cancelled">
                                 Cancelled
                               </SelectItem>
                             </SelectContent>
@@ -2748,9 +2748,9 @@ export default function ReservationTable() {
                               <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Paid">Paid</SelectItem>
-                              <SelectItem value="Unpaid">Unpaid</SelectItem>
-                              <SelectItem value="Refunded">Refunded</SelectItem>
+                              <SelectItem value="paid">Paid</SelectItem>
+                              <SelectItem value="unpaid">Unpaid</SelectItem>
+                              <SelectItem value="refunded">Refunded</SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
@@ -2762,7 +2762,7 @@ export default function ReservationTable() {
                         )}
                       </div>
 
-                      {selectedReservation.status === "Cancelled" && (
+                      {selectedReservation.status === "cancelled" && (
                         <div>
                           <Label className="text-sm font-medium text-gray-700">
                             Refund Percentage

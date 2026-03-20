@@ -8,7 +8,7 @@ const paymentTransactionSchema = new mongoose.Schema({
   currency: { type: String, default: '356' }, // INR
   status: {
     type: String,
-    enum: ['Initiated', 'Success', 'Failed', 'Pending', 'Cancelled'],
+    enum: ['Initiated', 'Success', 'Failed', 'pending', 'cancelled'],
     default: 'Initiated'
   },
   transactionId: String, // BillDesk transaction ID

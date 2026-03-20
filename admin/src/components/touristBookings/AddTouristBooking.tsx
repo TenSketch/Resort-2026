@@ -73,8 +73,8 @@ const AddTouristBooking = () => {
     guests: "1",
     cameras: "0",
     reservationDate: new Date().toISOString().slice(0, 10),
-    status: "Pending",
-    paymentStatus: "Unpaid",
+    status: "pending",
+    paymentStatus: "unpaid",
     bookingId: "",
     existingUser: "",
     fullName: "",
@@ -251,8 +251,8 @@ const AddTouristBooking = () => {
       guests: "1",
       cameras: "0",
       reservationDate: new Date().toISOString().slice(0, 10),
-      status: "Pending",
-      paymentStatus: "Unpaid",
+      status: "pending",
+      paymentStatus: "unpaid",
       bookingId: "",
       existingUser: "",
       fullName: "",
@@ -475,10 +475,10 @@ const AddTouristBooking = () => {
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Reserved">Reserved</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Not-Reserved">Not Reserved</SelectItem>
-                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    <SelectItem value="reserved">Reserved</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="not-reserved">Not Reserved</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -497,9 +497,9 @@ const AddTouristBooking = () => {
                     <SelectValue placeholder="Select Payment Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Paid">Paid</SelectItem>
-                    <SelectItem value="Unpaid">Unpaid</SelectItem>
-                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

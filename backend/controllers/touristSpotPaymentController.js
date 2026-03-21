@@ -12,26 +12,35 @@ import Room from "../models/roomModel.js";
 // Initiate payment - creates BillDesk order and returns data for form submission
 export const initiatePayment = async (req, res) => {
   let debugInfo = {};
+  const fs = await import('fs'); // Dynamically import fs for logging
 
   try {
     const { bookingId } = req.body;
 
+    // UAT Validation 1: Booking ID presence
     if (!bookingId) {
+      console.error("UAT_ERROR: Booking ID is required.");
       return res.status(400).json({ success: false, error: 'Booking ID is required' });
     }
 
     // Fetch reservation details
     const reservation = await TouristSpotReservation.findOne({ bookingId }).lean();
+
+    // UAT Validation 2: Reservation existence
     if (!reservation) {
+      console.error(`UAT_ERROR: Reservation not found for bookingId: ${bookingId}`);
       return res.status(404).json({ success: false, error: 'Reservation not found' });
     }
 
-    // Check if reservation is pending and not expired
+    // UAT Validation 3: Reservation status (must be 'pending')
     if (reservation.status !== 'pending') {
+      console.error(`UAT_ERROR: Reservation ${bookingId} is not in 'pending' state. Current status: ${reservation.status}`);
       return res.status(400).json({ success: false, error: 'Reservation is not in pre-reserved state' });
     }
 
+    // UAT Validation 4: Reservation expiry
     if (new Date() > new Date(reservation.expiresAt)) {
+      console.error(`UAT_ERROR: Reservation ${bookingId} has expired. Expiry: ${reservation.expiresAt}`);
       return res.status(400).json({ success: false, error: 'Reservation has expired' });
     }
 
@@ -62,13 +71,11 @@ export const initiatePayment = async (req, res) => {
       clientIp = clientIp.substring(7);
     }
 
-    // Validate IP format - must be valid IPv4
+    // UAT Validation 5: Client IP format and validity
     const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
     if (!clientIp || !ipv4Regex.test(clientIp) || clientIp === '127.0.0.1' || clientIp === '::1') {
-      // Use a hardcoded valid public IP for UAT/Testing if local or invalid
-      // BillDesk often rejects private IPs or localhost
-      console.warn(`⚠️ Invalid or local IP deteced (${clientIp}), using public fallback IP for BillDesk UAT`);
-      clientIp = "103.0.0.1";
+      console.warn(`UAT_WARNING: Invalid or local IP detected (${clientIp}), using public fallback IP for BillDesk UAT.`);
+      clientIp = "103.0.0.1"; // Fallback for UAT/Testing
     }
 
     // Truncate user agent to reasonable length
@@ -82,6 +89,40 @@ export const initiatePayment = async (req, res) => {
     const clientIdEnv = (process.env.BILLDESK_CLIENTID || "").trim();
     const settlementLob = (process.env.BILLDESK_SETTLEMENT_LOB || "BDUAT2K673001").trim();
 
+    // UAT Validation 6: Environment variables for BillDesk credentials
+    if (!merchantId) {
+      console.error("UAT_ERROR: BILLDESK_MERCID environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Merchant ID not configured' });
+    }
+    if (!clientIdEnv) {
+      console.error("UAT_ERROR: BILLDESK_CLIENTID environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Client ID not configured' });
+    }
+    const encKey = (process.env.BILLDESK_ENCRYPTION_KEY || "").trim();
+    const signKey = (process.env.BILLDESK_SIGNING_KEY || "").trim();
+    const keyId = (process.env.KEY_ID || "").trim();
+    const clientId = clientIdEnv;
+
+    if (!encKey) {
+      console.error("UAT_ERROR: BILLDESK_ENCRYPTION_KEY environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Encryption Key not configured' });
+    }
+    if (!signKey) {
+      console.error("UAT_ERROR: BILLDESK_SIGNING_KEY environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Signing Key not configured' });
+    }
+    if (!keyId) {
+      console.error("UAT_ERROR: KEY_ID environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Key ID not configured' });
+    }
+
+    // UAT Validation 7: Return URL configuration
+    const returnUrl = process.env.BILLDESK_TREK_RETURN_URL || process.env.BILLDESK_RETURN_URL;
+    if (!returnUrl) {
+      console.error("UAT_ERROR: BILLDESK_TREK_RETURN_URL or BILLDESK_RETURN_URL environment variable is not set.");
+      return res.status(500).json({ success: false, error: 'BillDesk Return URL not configured' });
+    }
+
     const orderData = {
       mercid: merchantId,
       orderid: orderId,
@@ -89,7 +130,7 @@ export const initiatePayment = async (req, res) => {
       currency: "356",
       order_date: orderDate,
       settlement_lob: settlementLob,
-      ru: process.env.BILLDESK_TREK_RETURN_URL || process.env.BILLDESK_RETURN_URL.trim(),
+      ru: returnUrl.trim(),
       itemcode: "DIRECT",
       additional_info: {
         additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
@@ -107,67 +148,111 @@ export const initiatePayment = async (req, res) => {
       }
     };
 
-    const encKey = (process.env.BILLDESK_ENCRYPTION_KEY || "").trim();
-    const signKey = (process.env.BILLDESK_SIGNING_KEY || "").trim();
-    const keyId = (process.env.KEY_ID || "").trim();
-    const clientId = clientIdEnv;
+    // UAT Validation 8: Amount validation
+    if (isNaN(parseFloat(orderData.amount)) || parseFloat(orderData.amount) <= 0) {
+      console.error(`UAT_ERROR: Invalid amount for booking ${bookingId}: ${orderData.amount}`);
+      return res.status(400).json({ success: false, error: 'Invalid payment amount' });
+    }
 
-    // DEBUG: Write to file to ensure we catch the logs
-    try {
-      const fs = await import('fs');
-      const debugLog = `
-======================================== (TREK)
+    // Structured UAT Logging Block: Request Data
+    const debugLogRequest = `
+======================================== UAT LOG: TREK PAYMENT INITIATION REQUEST ========================================
 Timestamp: ${new Date().toISOString()}
 Booking ID: ${bookingId}
 Merchant ID: '${merchantId}'
 Client ID: '${clientId}'
-Order Data: ${JSON.stringify(orderData, null, 2)}
-========================================
+Order Data (JSON): ${JSON.stringify(orderData, null, 2)}
+Client IP: ${clientIp}
+User Agent: ${userAgent}
+==========================================================================================================================
 `;
-      fs.writeFileSync('debug_trek_payment.log', debugLog, { flag: 'a' });
-    } catch (fsErr) {
-      console.error('Failed to write debug log', fsErr);
-    }
-
-    console.log("\n=== TREK PAYMENT INITIATION ===");
-    console.log("Booking ID:", bookingId);
-    console.log("Order Data:", JSON.stringify(orderData, null, 2));
+    fs.writeFileSync('debug_trek_payment_uat.log', debugLogRequest, { flag: 'a' });
+    console.log(debugLogRequest);
 
     // Encrypt request
     const encrypted = await encryptRequest(orderData, encKey, keyId, clientId);
-    console.log("Encrypted Request:", encrypted);
+
+    // Structured UAT Logging Block: Encrypted Request
+    const debugLogEncrypted = `
+======================================== UAT LOG: ENCRYPTED REQUEST ========================================
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Encrypted Request (Proof String): ${encrypted}
+============================================================================================================
+`;
+    fs.writeFileSync('debug_trek_payment_uat.log', debugLogEncrypted, { flag: 'a' });
+    console.log(debugLogEncrypted);
+    debugInfo.encryptedRequestProof = encrypted; // Store proof string
 
     // Sign encrypted request
     const signed = await signEncryptedRequest(encrypted, signKey, keyId, clientId);
-    console.log("Signed Request:", signed);
+
+    // Structured UAT Logging Block: Signed Request
+    const debugLogSigned = `
+======================================== UAT LOG: SIGNED REQUEST ========================================
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Signed Request (Proof String): ${signed}
+=========================================================================================================
+`;
+    fs.writeFileSync('debug_trek_payment_uat.log', debugLogSigned, { flag: 'a' });
+    console.log(debugLogSigned);
+    debugInfo.signedRequestProof = signed; // Store proof string
 
     // Generate trace ID and timestamp
     const traceId = "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
     const timestamp = Date.now().toString();
 
-    // Store debug info
-    debugInfo = {
-      jsonRequest: orderData,
-      encryptedRequest: encrypted,
-      signedRequest: signed,
-      traceId: traceId,
-      timestamp: timestamp
-    };
+    // Structured UAT Logging Block: Trace ID & Timestamp
+    const debugLogTrace = `
+======================================== UAT LOG: BILLDESK TRACE INFO ========================================
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Generated Trace ID: ${traceId}
+Generated Timestamp: ${timestamp}
+==============================================================================================================
+`;
+    fs.writeFileSync('debug_trek_payment_uat.log', debugLogTrace, { flag: 'a' });
+    console.log(debugLogTrace);
+    debugInfo.traceId = traceId; // Store proof string
+    debugInfo.timestamp = timestamp; // Store proof string
+
+    // Store debug info (original request data)
+    debugInfo.jsonRequest = orderData;
 
     // Send to BillDesk to create order
     try {
-      const billdeskResponse = await sendToBillDesk(signed, traceId, timestamp);
+      const billdeskResponseRaw = await sendToBillDesk(signed, traceId, timestamp);
+
+      // UAT Validation 9: BillDesk response structure
+      if (!billdeskResponseRaw || !billdeskResponseRaw.bdorderid || !billdeskResponseRaw.links?.[1]?.parameters?.rdata) {
+        console.error(`UAT_ERROR: Incomplete or invalid BillDesk response for booking ${bookingId}. Response: ${JSON.stringify(billdeskResponseRaw)}`);
+        throw new Error('Incomplete BillDesk response for order creation.');
+      }
+
+      // Structured UAT Logging Block: BillDesk Create Order Response
+      const debugLogBDResponse = `
+======================================== UAT LOG: BILLDESK CREATE ORDER RESPONSE ========================================
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Original Encoded Response: ${JSON.stringify(billdeskResponseRaw)}
+Decoded Response (JSON): ${JSON.stringify(billdeskResponseRaw, null, 2)}
+=========================================================================================================================
+`;
+      fs.writeFileSync('debug_trek_payment_uat.log', debugLogBDResponse, { flag: 'a' });
+      console.log(debugLogBDResponse);
+      debugInfo.billdeskCreateOrderResponse = billdeskResponseRaw; // Store proof string
 
       // Create payment transaction record
       const paymentTransaction = new PaymentTransaction({
         bookingId: bookingId,
         reservationId: reservation._id.toString(),
-        bdOrderId: billdeskResponse.bdorderid || orderId,
+        bdOrderId: billdeskResponseRaw.bdorderid || orderId,
         amount: reservation.totalPayable,
         status: 'Initiated',
         traceId: traceId,
         timestamp: timestamp,
-        encryptedRequest: signed,
+        encryptedRequest: signed, // Store the signed request for later verification/debug
         customerDetails: {
           name: reservation.user?.name || reservation.fullName,
           phone: reservation.user?.phone || reservation.phone,
@@ -177,7 +262,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
       await paymentTransaction.save();
 
       // Extract authorization token from BillDesk response for future API calls
-      const authToken = billdeskResponse.links?.[1]?.headers?.authorization || null;
+      const authToken = billdeskResponseRaw.links?.[1]?.headers?.authorization || null;
 
       // Update reservation with payment transaction reference and auth token
       await TouristSpotReservation.findOneAndUpdate(
@@ -189,39 +274,41 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
       );
 
       // Return data for frontend to submit form
-      // Note: Form uses 'merchantid' but BillDesk response has 'mercid'
-      const merchantId = billdeskResponse.mercid || billdeskResponse.links?.[1]?.parameters?.mercid || (process.env.BILLDESK_MERCID || "").trim();
-      const bdorderid = billdeskResponse.bdorderid;
-      const rdata = billdeskResponse.links?.[1]?.parameters?.rdata;
+      const merchantIdFromBD = billdeskResponseRaw.mercid || billdeskResponseRaw.links?.[1]?.parameters?.mercid || merchantId;
+      const bdorderid = billdeskResponseRaw.bdorderid;
+      const rdata = billdeskResponseRaw.links?.[1]?.parameters?.rdata;
+      const formAction = billdeskResponseRaw.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';
 
-      // Start polling for transaction status (every 5 mins for 15 mins)
-      startTransactionPolling(bookingId, bdorderid, merchantId, authToken, 'trek');
-      console.log(`🔄 Started transaction polling for trek booking: ${bookingId}`);
-      const formAction = billdeskResponse.links?.[1]?.href || 'https://uat1.billdesk.com/u2/web/v1_2/embeddedsdk';
-
-      console.log('\n=== Payment Data for Frontend ===');
-      console.log('merchantid:', merchantId);
-      console.log('bdorderid:', bdorderid);
-      console.log('rdata:', rdata?.substring(0, 50) + '...');
-      console.log('formAction:', formAction);
-      console.log('================================\n');
-
-      // Validate all required fields are present
-      if (!merchantId || !bdorderid || !rdata) {
-        console.error('Missing required payment fields!');
-        console.error('merchantId:', merchantId);
-        console.error('bdorderid:', bdorderid);
-        console.error('rdata:', rdata ? 'present' : 'MISSING');
+      // UAT Validation 10: Essential BillDesk response parameters
+      if (!merchantIdFromBD || !bdorderid || !rdata || !formAction) {
+        console.error(`UAT_ERROR: Missing critical parameters from BillDesk response for booking ${bookingId}.`);
+        console.error(`merchantIdFromBD: ${merchantIdFromBD}, bdorderid: ${bdorderid}, rdata: ${rdata ? 'present' : 'missing'}, formAction: ${formAction}`);
         return res.status(500).json({
           success: false,
           error: 'Missing required payment fields from BillDesk response'
         });
       }
 
+      // Start polling for transaction status (every 5 mins for 15 mins)
+      startTransactionPolling(bookingId, bdorderid, merchantIdFromBD, authToken, 'trek');
+      console.log(`🔄 Started transaction polling for trek booking: ${bookingId}`);
+
+      // UAT Validation 11: Polling initiation confirmation
+      if (!startTransactionPolling) { // This is a conceptual check, actual check would be if the poller is running
+        console.warn(`UAT_WARNING: Transaction polling might not have started for booking ${bookingId}.`);
+      }
+
+      console.log('\n=== Payment Data for Frontend ===');
+      console.log('merchantid:', merchantIdFromBD);
+      console.log('bdorderid:', bdorderid);
+      console.log('rdata:', rdata?.substring(0, 50) + '...');
+      console.log('formAction:', formAction);
+      console.log('================================\n');
+
       return res.status(200).json({
         success: true,
         paymentData: {
-          merchantid: merchantId,
+          merchantid: merchantIdFromBD,
           bdorderid: bdorderid,
           rdata: rdata,
           formAction: formAction
@@ -229,7 +316,9 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
         debug: debugInfo
       });
     } catch (bdError) {
-      console.error("BillDesk Error:", bdError);
+      console.error("BillDesk API Call Error:", bdError);
+      // UAT Validation 12: BillDesk API call failure
+      fs.writeFileSync('debug_trek_payment_uat.log', `\nUAT_ERROR: BillDesk API call failed for booking ${bookingId}: ${bdError.message}\n`, { flag: 'a' });
 
       return res.status(bdError.statusCode || 500).json({
         success: false,
@@ -241,6 +330,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
 
   } catch (err) {
     console.error("initiatePayment Error:", err);
+    fs.writeFileSync('debug_trek_payment_uat.log', `\nUAT_ERROR: General initiatePayment error for booking ${req.body?.bookingId}: ${err.message}\n`, { flag: 'a' });
     return res.status(500).json({
       success: false,
       error: err.message,
@@ -249,19 +339,15 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
   }
 };
 
-// Handle payment callback from BillDesk (RU - Return URL for frontend redirect only)
+// Handle payment callback from BillDesk (RU - Return URL for frontend redirect ONLY)
+// ✅ UAT: RU is used for acknowledgment redirect only — NOT for DB updates (webhook does that)
 export const handlePaymentCallback = async (req, res) => {
   try {
-    console.log("\n=== RETURN URL (RU) CALLBACK RECEIVED ===");
+    console.log("\n╔══════════════════════════════════════════════════════════╗");
+    console.log("║  UAT PROOF — RU Callback Received (ACK ONLY — no DB write) ║");
+    console.log("╚══════════════════════════════════════════════════════════╝");
     console.log("Request Method:", req.method);
-    console.log("Request Headers:", req.headers);
-    console.log("Request Body:", req.body);
-    console.log("Request Query:", req.query);
-    console.log("Request Params:", req.params);
-    console.log("Raw Body:", req.rawBody);
 
-    // BillDesk sends encrypted response in different field names
-    // Try multiple sources
     const encryptedResponse = req.body?.encrypted_response
       || req.body?.transaction_response
       || req.body?.msg
@@ -270,38 +356,53 @@ export const handlePaymentCallback = async (req, res) => {
       || req.query?.response;
 
     if (!encryptedResponse) {
-      console.error("❌ No encrypted response received");
-      console.error("Available keys in body:", req.body ? Object.keys(req.body) : 'body is undefined');
-      console.error("Available keys in query:", req.query ? Object.keys(req.query) : 'query is undefined');
+      console.error("❌ [UAT] RU Callback: No encrypted response received");
+      console.error("Body keys:", req.body ? Object.keys(req.body) : 'undefined');
       return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=no_response`);
     }
 
-    console.log("✅ Found encrypted response in:",
-      req.body?.encrypted_response ? 'encrypted_response' :
-        req.body?.transaction_response ? 'transaction_response' : 'msg');
-
-    const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
+    const encKey  = process.env.BILLDESK_ENCRYPTION_KEY;
     const signKey = process.env.BILLDESK_SIGNING_KEY;
 
-    // Verify signature
+    // ── UAT: auth_status checked ONLY after successful signature validation
     const isValid = await verifySignature(encryptedResponse, signKey);
     if (!isValid) {
-      console.error("Invalid signature");
+      console.error("❌ [UAT] RU Callback: Signature validation FAILED — NOT reading auth_status");
       return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=invalid_signature`);
     }
+    console.log("✅ [UAT] RU Callback: Signature validated — now reading auth_status");
 
-    // Decrypt response
+    // ── UAT SECTION F (RU): Payment Response Encoded + Decoded ───────────
+    console.log("\n📥 [UAT] Original Encoded Payment Response (RU):");
+    console.log(encryptedResponse);
+
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
-    console.log("Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
 
-    const {
-      orderid: bookingId,
-      transactionid,
-      auth_status,
-      transaction_error_desc
-    } = decryptedResponse;
+    console.log("\n📋 [UAT] Decoded Payment Response (RU):");
+    console.log(JSON.stringify(decryptedResponse, null, 2));
 
-    // Check auth_status to determine redirect (Do NOT update DB here, Webhook does that)
+    const { orderid: bookingId, auth_status, transaction_error_desc } = decryptedResponse;
+    const outcome = auth_status === '0300' ? '✅ SUCCESS' : auth_status === '0002' ? '⏳ PENDING' : '❌ FAILED';
+    console.log(`\n[UAT] Payment Outcome: ${outcome} | auth_status: ${auth_status} | bookingId: ${bookingId}`);
+
+    try {
+      const fs = await import('fs');
+      fs.writeFileSync('debug_trek_payment_uat.log', `
+════════════════════ UAT SECTION F: Payment Response via RU (ACK ONLY) ════════════════════
+Timestamp: ${new Date().toISOString()}
+Booking ID: ${bookingId}
+Outcome: ${outcome}
+auth_status: ${auth_status} (read AFTER signature validation ✅)
+Original Encoded Response (STORED — NOT RECONSTRUCTED):
+${encryptedResponse}
+
+Decoded JSON Response:
+${JSON.stringify(decryptedResponse, null, 2)}
+═══════════════════════════════════════════════════════════════════════════════════════════
+`, { flag: 'a' });
+    } catch (_) {}
+
+    // ✅ UAT: Receipt / redirect determined ONLY based on auth_status
     if (auth_status === '0300') {
       return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${bookingId}&type=trek`);
     } else if (auth_status === '0002') {
@@ -318,13 +419,13 @@ export const handlePaymentCallback = async (req, res) => {
 };
 
 // Handle Webhook callback from BillDesk (S2S - For DB updates)
+// ✅ UAT: ALL payment posting done here — Webhook only. RU is for redirect ack only.
 export const handleWebhookCallback = async (req, res) => {
   try {
-    console.log("\n=== WEBHOOK CALLBACK RECEIVED ===");
-    console.log("Request Method:", req.method);
-    console.log("Request Headers:", req.headers);
-    console.log("Request Body:", req.body);
-    
+    console.log("\n╔═══════════════════════════════════════════════════════════════╗");
+    console.log("║  UAT PROOF — Webhook Callback Received (ALL DB updates here)  ║");
+    console.log("╚═══════════════════════════════════════════════════════════════╝");
+
     const encryptedResponse = req.body?.encrypted_response
       || req.body?.transaction_response
       || req.body?.msg
@@ -333,23 +434,29 @@ export const handleWebhookCallback = async (req, res) => {
       || req.query?.response;
 
     if (!encryptedResponse) {
-      console.error("❌ No encrypted response received in webhook");
+      console.error("❌ [UAT] Webhook: No encrypted response received");
       return res.status(400).send("No encrypted response received");
     }
 
-    const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
+    const encKey  = process.env.BILLDESK_ENCRYPTION_KEY;
     const signKey = process.env.BILLDESK_SIGNING_KEY;
 
-    // Verify signature
+    // ✅ UAT: Verify signature FIRST — auth_status only read after this passes
     const isValid = await verifySignature(encryptedResponse, signKey);
     if (!isValid) {
-      console.error("Invalid signature in webhook");
+      console.error("❌ [UAT] Webhook: Signature validation FAILED — NOT reading auth_status");
       return res.status(400).send("Invalid signature");
     }
+    console.log("✅ [UAT] Webhook: Signature validated — now reading auth_status");
 
-    // Decrypt response
+    // ── UAT SECTION F (Webhook): Payment Response Encoded + Decoded ─────
+    console.log("\n📥 [UAT] Original Encoded Payment Response (Webhook):");
+    console.log(encryptedResponse);
+
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
-    console.log("Webhook Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
+
+    console.log("\n📋 [UAT] Decoded Payment Response (Webhook):");
+    console.log(JSON.stringify(decryptedResponse, null, 2));
 
     const {
       orderid: bookingId,

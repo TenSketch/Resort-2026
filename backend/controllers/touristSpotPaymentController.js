@@ -347,7 +347,64 @@ export const handlePaymentCallback = async (req, res) => {
     console.log("║  UAT PROOF — RU Callback Received (ACK ONLY — no DB write) ║");
     console.log("╚══════════════════════════════════════════════════════════╝");
     console.log("Request Method:", req.method);
+    console.log("Request Body:", JSON.stringify(req.body));
 
+    // ── BillDesk sends terminal_state for CANCELLATIONS (not a JWS token) ─
+    // Format: { terminal_state: '111', orderid: 'TS-...', txnResponse: {...} }
+    // This must be checked BEFORE looking for encrypted JWS response
+    const terminalState = req.body?.terminal_state;
+    const cancelledOrderId = req.body?.orderid;
+
+    if (terminalState) {
+      console.log("\n⚠️  [UAT] BillDesk terminal_state received — CANCELLATION (plain form-data, no JWS)");
+      console.log("terminal_state:", terminalState, "| orderid:", cancelledOrderId);
+      console.log("Full body:", JSON.stringify(req.body, null, 2));
+
+      // ── UAT SECTION F: Failure/Cancellation proof log ──────────────────
+      try {
+        const fs = await import('fs');
+        fs.writeFileSync('debug_trek_payment_uat.log', `
+════════════════════ UAT SECTION F: Payment Response - FAILURE/CANCELLED ════════════════════
+Timestamp       : ${new Date().toISOString()}
+Booking ID      : ${cancelledOrderId}
+Outcome         : ❌ CANCELLED
+terminal_state  : ${terminalState}  (111 = user cancelled / session expired)
+Response Format : Plain form-data — BillDesk does NOT send JWS for cancellations
+
+Raw Body Received from BillDesk (NOT encrypted — plain cancel notification):
+${JSON.stringify(req.body, null, 2)}
+
+NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (user cancelled)
+      Signature validation not applicable — no JWS token present.
+══════════════════════════════════════════════════════════════════════════════════════════════
+`, { flag: 'a' });
+      } catch (_) {}
+
+      // Update DB to cancelled
+      try {
+        const paymentTransaction = await PaymentTransaction.findOne({ bookingId: cancelledOrderId });
+        if (paymentTransaction && paymentTransaction.status === 'Initiated') {
+          paymentTransaction.status = 'cancelled';
+          paymentTransaction.authStatus = '0398';
+          paymentTransaction.errorMessage = `BillDesk terminal_state: ${terminalState} (user cancelled)`;
+          await paymentTransaction.save();
+          console.log(`✅ DB updated to cancelled for booking: ${cancelledOrderId}`);
+        }
+        const reservation = await TouristSpotReservation.findOne({ bookingId: cancelledOrderId });
+        if (reservation) {
+          reservation.status = 'not-reserved';
+          reservation.paymentStatus = 'unpaid';
+          await reservation.save();
+        }
+      } catch (dbErr) {
+        console.error("DB update error for cancellation:", dbErr.message);
+      }
+
+      const errorMsg = encodeURIComponent('Payment cancelled');
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?bookingId=${cancelledOrderId}&status=failed&error=${errorMsg}&type=trek`);
+    }
+
+    // ── Standard JWS encrypted response path ─────────────────────────────
     const encryptedResponse = req.body?.encrypted_response
       || req.body?.transaction_response
       || req.body?.msg
@@ -356,7 +413,7 @@ export const handlePaymentCallback = async (req, res) => {
       || req.query?.response;
 
     if (!encryptedResponse) {
-      console.error("❌ [UAT] RU Callback: No encrypted response received");
+      console.error("❌ [UAT] RU Callback: No encrypted response and no terminal_state");
       console.error("Body keys:", req.body ? Object.keys(req.body) : 'undefined');
       return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=no_response`);
     }

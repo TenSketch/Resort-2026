@@ -1,22 +1,11 @@
 <app-layout>
   <div class="main">
     <!-- Hero Section -->
-    <!-- Hero Section -->
-    <!-- Hero Section -->
-    <section class="page-banner" style="background-image: url('assets/img/tribal/1.jpg');">
-      <div class="container text-center text-white">
-        <span class="d-inline-block py-1 px-3 rounded-pill bg-white text-dark fw-bold small mb-3 shadow-sm">
-          <i class="fas fa-users me-2"></i>Heritage & Culture
-        </span>
-        <h1 class="global-page-title mb-3">
-          Tribal Communities
-        </h1>
-        <p class="lead mb-4 mx-auto fw-bold" style="max-width: 700px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-          Discover the rich traditions and timeless lifestyle of the indigenous
-          tribes of the Eastern Ghats.
-        </p>
-      </div>
-    </section>
+    <!-- Hero Carousel -->
+    <app-shared-hero-carousel 
+      [slides]="heroSlides" 
+      carouselId="tribalCarousel">
+    </app-shared-hero-carousel>
 
     <!-- 1. KONDA REDDI -->
     <section class="destination-section py-5 bg-white">

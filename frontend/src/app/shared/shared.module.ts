@@ -20,7 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 
 // Import ng-gallery modules
 import { GalleryModule } from 'ng-gallery';
@@ -58,4 +58,4 @@ import { SafePipe } from './pipes/safe.pipe';
   ],
   exports: [GalleryComponent, SearchResortComponent, SearchResortOnlyComponent, SearchTentComponent, SearchTouristSpotComponent, TouristSpotSelectionComponent, GalleryModule, LightboxModule, SafePipe, SharedHeroCarouselComponent],
 })
-export class SharedModule {}
+export class SharedModule { }

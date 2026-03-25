@@ -2,54 +2,8 @@
 
 .main {
   min-height: 100vh;
-  padding-top: 80px;
   background-color: #f9f9f9; // Light background for modular look
 }
-
-// Hero Section
-.hero-section {
-  position: relative;
-  height: 55vh; // Standardized height
-  min-height: 400px;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed; // Parallax effect
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  margin-bottom: 2rem;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4); // Dark overlay
-    z-index: 1;
-  }
-
-  .container {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-  }
-
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-
-  p {
-    font-size: 1.25rem;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
-
 // Modern Tabs
 .category-nav {
   display: inline-flex;
@@ -138,11 +92,6 @@ app-loader {
 }
 
 @media (max-width: 576px) {
-  .hero-section {
-    height: 40vh;
-    h1 { font-size: 2.5rem; }
-  }
-
   .category-nav {
     flex-wrap: wrap;
     border-radius: 12px;

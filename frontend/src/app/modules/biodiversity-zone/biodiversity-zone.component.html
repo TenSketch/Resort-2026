@@ -2,18 +2,16 @@
   <div class="main">
     <app-loader *ngIf="showLoader"></app-loader>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <h1 class="global-page-title">Biodiversity Zone</h1>
-        <p>Explore the rich flora and fauna of our sanctuary. From vibrant birds to majestic trees, discover nature in
-          its purest form.</p>
-      </div>
-    </section>
+    <!-- Hero Carousel -->
+    <app-shared-hero-carousel 
+      [slides]="heroSlides" 
+      carouselId="biodiversityCarousel"
+      (actionClicked)="handleSlideAction($event)">
+    </app-shared-hero-carousel>
 
     <!-- Content Section -->
-    <section class="mb-5">
-      <div class="container">
+    <section class="mb-5" id="gallery-section">
+      <div class="container mt-4">
 
         <!-- Navigation Tabs -->
         <div class="text-center">

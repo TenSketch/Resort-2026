@@ -31,63 +31,147 @@ $accent-color: #f59e0b; // Amber
 
 
 .destination-section {
-    position: relative;
-    overflow: hidden; // Prevent blobs from causing horizontal scroll
-    
-    // Blob background for images
-    .blob-bg {
-        position: absolute;
-        width: 120%;
-        height: 120%;
-        background-color: rgba($primary-color, 0.05);
-        border-radius: 50%;
-        z-index: 0;
-        filter: blur(40px);
-        
-        &.blob-left {
-            top: -10%;
-            left: -10%;
-        }
-        &.blob-right {
-            bottom: -10%;
-            right: -10%;
-        }
+  position: relative;
+  overflow: hidden; // Prevent blobs from causing horizontal scroll
+
+  // Blob background for images
+  .blob-bg {
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    background-color: rgba($primary-color, 0.05);
+    border-radius: 50%;
+    z-index: 0;
+    filter: blur(40px);
+
+    &.blob-left {
+      top: -10%;
+      left: -10%;
     }
 
-    h2 {
-        font-family: 'Playfair Display', serif;
+    &.blob-right {
+      bottom: -10%;
+      right: -10%;
     }
+  }
 
-    .quick-facts-grid {
-        background: #f8f9fa;
-        
-        .fact-item {
-            padding: 0.5rem;
-            
-            i {
-                opacity: 0.8;
-            }
-        }
+  h2 {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .quick-facts-grid {
+    background: #f8f9fa;
+
+    .fact-item {
+      padding: 0.5rem;
+
+      i {
+        opacity: 0.8;
+      }
     }
+  }
 }
 
 // Typography adjustments
 .text-dark-green {
-    color: #1a421b;
+  color: #1a421b;
+}
+
+// Card Carousel Styles (from Trek page)
+.containerg {
+  position: relative;
+  margin-bottom: 2rem;
+
+  .card-containerg {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    align-items: center;
+    position: relative;
+    gap: 1rem;
+    padding: 0.5rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      flex: 0 0 auto;
+      border: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      margin-bottom: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 250px;
+      height: 250px;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .scroll-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 10;
+    color: #ffd700; // Gold/Yellow as seen in trek cards
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    background: rgba(0,0,0,0.1);
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    &:hover {
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+    }
+
+    &.left {
+      left: -15px;
+    }
+
+    &.right {
+      right: -15px;
+    }
+  }
 }
 
 // Responsive adjustments
 @media (max-width: 768px) {
-    .page-banner {
-        height: 50vh;
-        min-height: 400px;
+  .page-banner {
+    height: 50vh;
+    min-height: 400px;
+  }
+
+  .destination-section {
+    text-align: center;
+
+    .quick-facts-grid {
+      text-align: center !important;
     }
-    
-    .destination-section {
-        text-align: center;
-        
-        .quick-facts-grid {
-            text-align: center !important;
-        }
+  }
+
+  .containerg {
+    .scroll-icon {
+      &.left { left: 0; }
+      &.right { right: 0; }
     }
+  }
 }

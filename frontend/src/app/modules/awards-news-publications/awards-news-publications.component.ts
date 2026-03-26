@@ -24,6 +24,18 @@ export class AwardsNewsPublicationsComponent {
   resortTypeId: String;
   items: GalleryItem[] = [];
 
+  heroSlides = [
+    {
+      id: 1,
+      image: 'assets/img/Awards and news.jpg',
+      title: 'Awards',
+      location: 'Explore our proud achievements and discover the latest news and publications.',
+      tagline: 'Our Achievements',
+      cta: 'Explore',
+      action: 'explore'
+    }
+  ];
+
   constructor(
     private renderer: Renderer2,
     public gallery: Gallery,
@@ -32,9 +44,11 @@ export class AwardsNewsPublicationsComponent {
     this.showLoader = true;
     if (this.showAwards) {
       this.title = 'Awards';
+      this.heroSlides[0].title = 'Awards';
     }
     if (this.showNews) {
       this.title = 'News articles';
+      this.heroSlides[0].title = 'News articles';
     }
 
     this.imageFilenames = [
@@ -120,9 +134,18 @@ export class AwardsNewsPublicationsComponent {
   switchTitle() {
     if (this.showAwards) {
       this.title = 'Awards';
+      this.heroSlides[0].title = 'Awards';
     }
     if (this.showNews) {
       this.title = 'News articles';
+      this.heroSlides[0].title = 'News articles';
+    }
+  }
+
+  handleSlideAction(action: string) {
+    if (action === 'explore') {
+      const scrollPosition = window.innerWidth > 768 ? window.innerHeight * 0.5 : window.innerHeight * 0.7;
+      window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
     }
   }
 }

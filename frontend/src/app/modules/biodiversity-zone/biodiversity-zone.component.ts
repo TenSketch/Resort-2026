@@ -23,6 +23,34 @@ export class BiodiversityZoneComponent {
   birdsFilenames: any[];
   treesFilenames: any[];
 
+  heroSlides = [
+    {
+      id: 1,
+      image: 'assets/images/Bio Diversity Zone/animals/vana_animals_big_1.jpg',
+      title: 'Biodiversity Zone',
+      location: 'Explore the rich flora and fauna of our sanctuary. From vibrant birds to majestic trees, discover nature in its purest form.',
+      tagline: 'Nature & Wildlife',
+      cta: 'Explore Animals',
+      action: 'animals'
+    }
+  ];
+
+  handleSlideAction(action: string) {
+    if (action === 'animals') {
+      this.showAnimals = true; this.showBirds = false; this.showTrees = false;
+    } else if (action === 'birds') {
+      this.showAnimals = false; this.showBirds = true; this.showTrees = false;
+    } else if (action === 'trees') {
+      this.showAnimals = false; this.showBirds = false; this.showTrees = true;
+    }
+    
+    // Smooth scroll down to the content section
+    const element = document.getElementById('gallery-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   awards: any[] = [];
   showLoader = false;
   resortTypeId: String;

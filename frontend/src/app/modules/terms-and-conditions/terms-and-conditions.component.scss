@@ -1,5 +1,4 @@
 
-
 .nav-pills {
   .nav-link {
     color: #495057;
@@ -23,8 +22,50 @@
   }
 }
 
+.custom-accordion {
+  .accordion-item {
+    border: none;
+    background-color: transparent;
+    margin-bottom: 1.5rem; // Increased gap between items
+  }
+
+  .accordion-button {
+    background-color: #fff;
+    color: #198754; // Brand green color
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px !important;
+    padding: 1.25rem;
+
+    &.collapsed {
+      background-color: #fff;
+      color: #198754;
+    }
+
+    &:not(.collapsed) {
+      background-color: #198754;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(25, 135, 84, 0.2);
+
+      &::after {
+        filter: brightness(0) invert(1);
+      }
+    }
+
+    &:focus {
+      border-color: rgba(25, 135, 84, 0.25);
+      box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+    }
+  }
+
+  .accordion-body {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
 .text-forest {
-  color: #198754; // Matches the active state
+  color: #198754;
 }
 
 .tab-content {

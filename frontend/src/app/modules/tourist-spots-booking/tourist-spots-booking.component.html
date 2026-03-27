@@ -295,7 +295,10 @@
           </ng-template>
 
           <div *ngIf="!isMobile" class="booking-summary-bar text-dark rounded-3">
-            <h4 class="m-0 pb-1 font-weight-bold">Booking Summary</h4>
+            <h4 class="m-0 pb-1 font-weight-bold">
+              Booking Summary
+              <i class="fa fa-bell ms-2" style="color: #0b5a2b; font-size: 18px;" *ngIf="bookedSpots.length > 0"></i>
+            </h4>
             <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
           </div>
 
@@ -304,7 +307,10 @@
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <h5 class="m-0 font-weight-bold">Booking Summary</h5>
+                    <h5 class="m-0 font-weight-bold">
+                      Booking Summary
+                      <i class="fa fa-bell ms-2" style="color: #0b5a2b;" *ngIf="bookedSpots.length > 0"></i>
+                    </h5>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <div [ngClass]="{ 'accordion-body': bookedSpots.length > 0 }">

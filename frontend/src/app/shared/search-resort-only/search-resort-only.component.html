@@ -4,15 +4,8 @@
       <div class="col-md-3 col-12">
         <mat-form-field appearance="outline">
           <mat-label>Select Resort</mat-label>
-          <mat-select
-            formControlName="selectedResort"
-            (selectionChange)="onResortChange()"
-            required
-          >
-            <mat-option
-              *ngFor="let location of resortLocations"
-              [value]="location"
-            >
+          <mat-select formControlName="selectedResort" (selectionChange)="onResortChange()" required>
+            <mat-option *ngFor="let location of resortLocations" [value]="location">
               {{ location }}
             </mat-option>
           </mat-select>
@@ -25,20 +18,9 @@
       <div class="col-md-3 col-6">
         <mat-form-field appearance="outline">
           <mat-label>Check-in date</mat-label>
-          <input
-            matInput
-            [min]="minDate"
-            [max]="maxDate"
-            [matDatepicker]="picker"
-            (click)="picker.open()"
-            placeholder="Check-in date"
-            formControlName="checkinDate"
-            required
-          />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
+          <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" (click)="picker.open()"
+            placeholder="Check-in date" formControlName="checkinDate" required />
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkinDate')?.invalid">
             Check-in date is required
@@ -49,20 +31,9 @@
       <div class="col-md-3 col-6">
         <mat-form-field appearance="outline">
           <mat-label>Check-out date</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker1"
-            (click)="picker1.open()"
-            placeholder="Check-out date"
-            formControlName="checkoutDate"
-            [min]="minCheckoutDate"
-            [max]="maxDate"
-            required
-          />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker1"
-          ></mat-datepicker-toggle>
+          <input matInput [matDatepicker]="picker1" (click)="picker1.open()" placeholder="Check-out date"
+            formControlName="checkoutDate" [min]="minCheckoutDate" [max]="maxDate" required />
+          <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkoutDate')?.invalid">
             Check-out date is required
@@ -71,16 +42,14 @@
       </div>
 
       <div class="col-md-3 col-12 mt-2 mt-md-0">
-        <button
-          mat-raised-button
-          color="primary"
-          class="w-100"
-          [disabled]="searchForm.invalid"
-          (click)="submitSearch()"
-        >
+        <button mat-raised-button color="primary" class="w-100" [disabled]="searchForm.invalid"
+          (click)="submitSearch()">
           Search
         </button>
       </div>
+    </div>
+    <div class="search-helper-text text-center">
+      select check-in, check-out dates and click "Search" to check availability
     </div>
   </form>
 </section>

@@ -231,73 +231,83 @@
 </main>
 <footer id="footer" class="footer py-4" [class.sidebar-collapsed]="isSidebarCollapsed">
   <div class="container pt-5">
-    <div class="row w-100">
-      <div class="col-md-3">
-        <h3>Policies</h3>
+    <div class="row w-100 gy-4">
+      <div class="col-md-2">
+        <h5 class="footer-main-title">Policies</h5>
         <ul class="list-unstyled">
           <li class="mt-2">
-            <a class="" (click)="goToPrivacy()">Privacy Policy</a>
+            <a class="text-decoration-none" (click)="goToPrivacy()">Privacy Policy</a>
           </li>
           <li class="mt-2">
-            <a class="" (click)="goToPaymentPolicy()">Payment Policy</a>
+            <a class="text-decoration-none" (click)="goToPaymentPolicy()">Payment Policy</a>
           </li>
           <li class="mt-2">
-            <a class="" (click)="goToTerms()">Terms and Conditions</a>
+            <a class="text-decoration-none" (click)="goToTerms()">Terms and Conditions</a>
           </li>
         </ul>
       </div>
-      <div class="col-md-9">
-        <h3 class=" ">Contact Info</h3>
-        <div class="row">
-          <div class="col-lg-6">
+      <div class="col-md-4">
+        <h5 class="footer-main-title">Cancellation Policy</h5>
+        <div class="cancellation-policy mt-3">
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2 d-flex align-items-baseline">
+              <strong class="me-2" style="min-width: 95px; color: #198754;">90% Refund</strong>
+              <span>More than 48 hours from check-in date and time</span>
+            </li>
+            <li class="mb-2 d-flex align-items-baseline">
+              <strong class="me-2" style="min-width: 95px; color: #198754;">80% Refund</strong>
+              <span>24-48 hours from check-in date and time</span>
+            </li>
+            <li class="d-flex align-items-baseline">
+              <strong class="me-2" style="min-width: 95px; color: #198754;">No Refund</strong>
+              <span>Within 24 hours from check-in date and time</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h5 class="footer-main-title">Contact Info</h5>
+        <div class="row gx-2">
+          <div class="col-sm-6">
             <ul class="list-unstyled">
-              <h5>Vanavihari</h5>
-              <li class="mt-2">
+              <h5 class="mb-2">Vanavihari</h5>
+              <li class="mb-1 d-flex align-items-center">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
-                  title="click to send email">info@vanavihari.com</a>
+                <a class="text-decoration-none" href="mailto:info@vanavihari.com">info@vanavihari.com</a>
               </li>
-              <li class="mt-2">
-                <!-- font awesome email -->
+              <li class="mb-1 d-flex align-items-center">
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a class="text-decoration-none" href="tel:+919494151617" title="call">+919494151617</a>
+                <a class="text-decoration-none" href="tel:+919494151617">+91 94941 51617</a>
               </li>
-              <li class="mt-2 d-flex justify-content-start align-items-start">
-                <!-- font awesome email -->
+              <li class="d-flex align-items-start">
                 <i class="fa fa-address-card me-2 mt-1" aria-hidden="true"></i>
-                <address>
-                  Vanavihari Eco-tourism Complex,<br />Maredumilli, Andhra
-                  Pradesh 533295
+                <address class="mb-0">
+                  Vanavihari Eco-tourism Complex,<br />Maredumilli, Andhra Pradesh 533295
                 </address>
               </li>
             </ul>
           </div>
-          <div class="col-lg-6">
+          <div class="col-sm-6">
             <ul class="list-unstyled">
-              <h5>Jungle Star</h5>
-              <li class="mt-2">
+              <h5 class="mb-2">Jungle Star</h5>
+              <li class="mb-1 d-flex align-items-center">
                 <i class="fa fa-envelope me-2" aria-hidden="true"></i>
-                <a class="text-decoration-none" href="mailto:info@vanavihari.com"
-                  title="click to send email">junglestarecocamp@gmail.com</a>
+                <a class="text-decoration-none" href="mailto:junglestarecocamp@gmail.com">junglestarecocamp@gmail.com</a>
               </li>
-              <li class="mt-2">
-                <!-- font awesome email -->
+              <li class="mb-1 d-flex align-items-center">
                 <i class="fa fa-mobile-screen me-2" aria-hidden="true"></i>
-                <a class="text-decoration-none" href="tel:+919494151617" title="call">+9173821 51617</a>
+                <a class="text-decoration-none" href="tel:+917382151617">+91 73821 51617</a>
               </li>
-              <li class="mt-2 d-flex justify-content-start align-items-start">
-                <!-- font awesome email -->
+              <li class="d-flex align-items-start">
                 <i class="fa fa-address-card me-2 mt-1" aria-hidden="true"></i>
-                <address>
+                <address class="mb-0">
                   Jungle Star Eco Camp site<br />Valamuru, Andhra Pradesh 533295
                 </address>
               </li>
             </ul>
-            <!-- Payment Methods -->
-            <div class="">
-              <img src="assets/images/payment-methods.svg" alt="Payment Methods" class="img-fluid"
-                style="max-height: 40px" />
-            </div>
+          </div>
+          <div class="col-12 mt-2">
+            <img src="assets/images/payment-methods.svg" alt="Payment Methods" class="img-fluid" style="max-height: 25px" />
           </div>
         </div>
       </div>

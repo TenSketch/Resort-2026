@@ -1008,3 +1008,31 @@ main {
     }
   }
 }
+
+// Global Footer Enhancements
+.footer {
+  h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #4D1300; // Brand brown color (from $clr-secondary)
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-main-title {
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .cancellation-policy {
+    font-size: 0.95rem;
+    
+    strong {
+      display: inline-block;
+    }
+  }
+
+  address {
+    font-style: normal;
+    margin-bottom: 0;
+  }
+}

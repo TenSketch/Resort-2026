@@ -2,11 +2,8 @@
   <div class="main">
     <app-loader *ngIf="showLoader"> </app-loader>
 
-    <app-shared-hero-carousel 
-      *ngIf="selectedResortInfo && roomsHeroSlides"
-      [slides]="roomsHeroSlides" 
-      [isRoomsCarousel]="true"
-      carouselId="roomsCarousel">
+    <app-shared-hero-carousel *ngIf="selectedResortInfo && roomsHeroSlides" [slides]="roomsHeroSlides"
+      [isRoomsCarousel]="true" carouselId="roomsCarousel">
     </app-shared-hero-carousel>
 
     <div class="container-fluid">
@@ -316,7 +313,10 @@
           </ng-template>
           <!-- Desktop Layout -->
           <div *ngIf="!isMobile" class="booking-summary-bar text-dark rounded-3">
-            <h4 class="mt-2 mb-0 pb-1 font-weight-bold">Booking Summary</h4>
+            <h4 class="mt-2 mb-0 pb-1 font-weight-bold">
+              Booking Summary
+              <i class="fa fa-bell ms-2" style="color: #4b6b1a; font-size: 18px;" *ngIf="isRoomAvailable()"></i>
+            </h4>
             <ng-container *ngTemplateOutlet="bookingSummaryContent"></ng-container>
           </div>
           <!-- Mobile Layout -->
@@ -326,8 +326,9 @@
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <div class="booking-summary-bar text-dark rounded-3">
-                      <h5 class="m-0 font-weight-bold" [class.booking-summary-bar--title]="isRoomAvailable()">
+                      <h5 class="m-0 font-weight-bold">
                         Booking Summary
+                        <i class="fa fa-bell ms-2" style="color: #4d9900;" *ngIf="isRoomAvailable()"></i>
                       </h5>
                     </div>
                   </mat-panel-title>
@@ -447,23 +448,27 @@
                         <p class="text-primary-dark m-0">
                           <i class="fa fa-user"></i> One extra guest
                         </p>
-
-                        <p class="text-primary-dark m-0" *ngIf="resortData?.foodProviding === 'yes'">
-                          <i class="fa-solid fa-utensils"></i> Room price includes food
-                        </p>
                       </div>
 
-                      <button class="btn btn-primary rounded-pill px-3 py-2 d-md-none"
-                        [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
-                        Add room
-                      </button>
+                      <span style="display: inline-block"
+                        matTooltip="select check-in, check-out dates and click 'Search' to check availability"
+                        matTooltipPosition="left">
+                        <button class="btn btn-primary rounded-pill px-3 py-2 d-md-none"
+                          [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
+                          Add room
+                        </button>
+                      </span>
 
                     </div>
                     <div class="col my-2 pe-0 d-md-flex justify-content-center justify-content-md-end d-none">
-                      <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 float-end float-md-start"
-                        [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
-                        Add room
-                      </button>
+                      <span style="display: inline-block"
+                        matTooltip="select check-in, check-out dates and click 'Search' to check availability"
+                        matTooltipPosition="left">
+                        <button class="btn btn-lg btn-primary mt-4 rounded-pill px-4 float-end float-md-start"
+                          [disabled]="isRoomAdded(room.Room_Id) || !room.canBook" (click)="addRoom(room)">
+                          Add room
+                        </button>
+                      </span>
                     </div>
                   </div>
                 </div>

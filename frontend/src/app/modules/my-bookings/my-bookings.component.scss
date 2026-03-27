@@ -3,6 +3,13 @@
   &:hover {
     transform: translateY(-2px);
   }
+
+  .booking-title {
+    font-size: 1rem !important;
+    @media (min-width: 768px) {
+      font-size: 1.5rem !important;
+    }
+  }
 }
 
 .nav-pills {

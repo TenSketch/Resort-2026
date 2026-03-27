@@ -864,10 +864,30 @@ export default function ReservationTable() {
           row.children,
           row.totalGuests,
           typeof foodsBilled === "string" ? `"${foodsBilled}"` : foodsBilled,
-          `"${row.foodPreference || "NA"}"`,
-          `"${row.status}"`,
+          // Format food preference for export
+          (()=>{
+            if (!row.foodPreference || row.foodPreference === "NA" || row.foodPreference === "na") return '"NA"';
+            const v = row.foodPreference.toLowerCase();
+            if (v === "nonvegetarian" || v === "non-vegetarian") return '"Non-Vegetarian"';
+            if (v === "vegetarian") return '"Vegetarian"';
+            return `"${row.foodPreference.charAt(0).toUpperCase() + row.foodPreference.slice(1).toLowerCase()}"`;
+          })(),
+          // Format booking status for export
+          (()=>{
+            let st = row.status || '';
+            if (st.toLowerCase() === 'not-reserved' || st.toLowerCase() === 'not reserved') return '"Not-Reserved"';
+            if (st) return `"${st.charAt(0).toUpperCase() + st.slice(1).toLowerCase()}"`;
+            return '""';
+          })(),
           row.totalPayable,
-          `"${row.paymentStatus}"`,
+          // Format payment status for export
+          (()=>{
+            if (!row.paymentStatus || row.paymentStatus === "NA") return '"NA"';
+            const v = row.paymentStatus.toLowerCase();
+            if (v === "not paid" || v === "unpaid") return '"Unpaid"';
+            if (v === "paid") return '"Paid"';
+            return `"${row.paymentStatus.charAt(0).toUpperCase() + row.paymentStatus.slice(1).toLowerCase()}"`;
+          })(),
           row.totalPayable,
           `"${row.paymentTransactionId || "NA"}"`,
           `"'${row.paymentTransactionDateTime ? formatDateTimeForDisplay(row.paymentTransactionDateTime) : "NA"}"`,
@@ -1671,7 +1691,13 @@ export default function ReservationTable() {
     {
       data: "foodPreference",
       title: "Food Preference",
-      render: (data: string) => data || "NA",
+      render: (data: string) => {
+        if (!data || data === "NA" || data === "na") return "NA";
+        const v = data.toLowerCase();
+        if (v === "nonvegetarian" || v === "non-vegetarian") return "Non-Vegetarian";
+        if (v === "vegetarian") return "Vegetarian";
+        return data.charAt(0).toUpperCase() + data.slice(1).toLowerCase();
+      },
     },
     {
       data: null,
@@ -1684,7 +1710,15 @@ export default function ReservationTable() {
             : row.approval_status === 'REJECTED'
               ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
               : '';
-        return `<div style="display:flex;flex-direction:column;gap:2px;">${row.status || ''}${approvalBadge}</div>`;
+        
+        let fmtStatus = row.status || '';
+        if (fmtStatus.toLowerCase() === 'not-reserved' || fmtStatus.toLowerCase() === 'not reserved') {
+          fmtStatus = 'Not-Reserved';
+        } else if (fmtStatus) {
+          fmtStatus = fmtStatus.charAt(0).toUpperCase() + fmtStatus.slice(1).toLowerCase();
+        }
+        
+        return `<div style="display:flex;flex-direction:column;gap:2px;">${fmtStatus}${approvalBadge}</div>`;
       },
     },
     {
@@ -1692,7 +1726,17 @@ export default function ReservationTable() {
       title: "Amount Payable",
       render: (data: number) => `₹${data}`,
     },
-    { data: "paymentStatus", title: "Payment Status" },
+    {
+      data: "paymentStatus",
+      title: "Payment Status",
+      render: (data: string) => {
+        if (!data || data === "NA") return "NA";
+        const v = data.toLowerCase();
+        if (v === "not paid" || v === "unpaid") return "Unpaid";
+        if (v === "paid") return "Paid";
+        return data.charAt(0).toUpperCase() + data.slice(1).toLowerCase();
+      },
+    },
     {
       data: "totalPayable",
       title: "Amount Paid",

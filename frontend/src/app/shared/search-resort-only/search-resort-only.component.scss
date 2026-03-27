@@ -437,3 +437,16 @@ $clr-neutral--700: #374151;
 ::ng-deep .mat-mdc-select-arrow-wrapper {
   padding-right: 12px !important;
 }
+
+.search-helper-text {
+  color: $clr-secondary;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  animation: fadeInSlide 0.4s ease forwards;
+  
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+}

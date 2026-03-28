@@ -241,9 +241,9 @@
     <!-- 3. KARTHIKAVANAM PICNIC SPOT -->
     <section id="karthikavanam-picnic-spot" class="destination-section py-5">
       <div class="container">
-        <div class="row align-items-center gx-lg-5">
-          <!-- Image Column -->
-          <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="row gx-lg-5">
+          <!-- Image Column - Moved to top -->
+          <div class="col-12 mb-5">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
               <div class="containerg">
@@ -268,7 +268,7 @@
           </div>
 
           <!-- Content Column -->
-          <div class="col-lg-6">
+          <div class="col-12">
             <span
               class="badge bg-light text-success mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-success border-opacity-10">
               Picnic Spot
@@ -345,9 +345,34 @@
     <!-- 4. MEDICINAL PLANTS CONSERVATION AREA (MPCA) -->
     <section id="medicinal-plants-conservation-area-mpca-picnic-spot" class="destination-section py-5 bg-white">
       <div class="container">
-        <div class="row align-items-center gx-lg-5">
-          <!-- Content Column (Order 1 on Desktop) -->
-          <div class="col-lg-6 order-2 order-lg-1">
+        <div class="row gx-lg-5">
+          <!-- Image Column - Moved to top -->
+          <div class="col-12 mb-5">
+            <div class="position-relative">
+              <div class="blob-bg blob-right"></div>
+              <div class="containerg">
+                <div class="card-containerg" #mpcaContainer>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/MPCA.jpg" alt="MPCA"
+                      (click)="openLightbox(0, 'mpca')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/MPCA-01.jpg" alt="MPCA 2"
+                      (click)="openLightbox(1, 'mpca')" />
+                  </div>
+                </div>
+                <div class="scroll-icon left" (click)="scrollLeft(mpcaContainer)">
+                  <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="scroll-icon right" (click)="scrollRight(mpcaContainer)">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Column -->
+          <div class="col-12">
             <span
               class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Botanical Tour
@@ -410,29 +435,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Image Column (Order 2 on Desktop) -->
-          <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
-            <div class="position-relative">
-              <div class="blob-bg blob-right"></div>
-            <div class="containerg">
-              <div class="card-containerg" #mpcaContainer>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/MPCA.jpg" alt="MPCA" (click)="openLightbox(0, 'mpca')" />
-                </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/MPCA-01.jpg" alt="MPCA 2" (click)="openLightbox(1, 'mpca')" />
-                </div>
-              </div>
-              <div class="scroll-icon left" (click)="scrollLeft(mpcaContainer)">
-                <i class="fas fa-chevron-left"></i>
-              </div>
-              <div class="scroll-icon right" (click)="scrollRight(mpcaContainer)">
-                <i class="fas fa-chevron-right"></i>
-              </div>
-            </div>
-            </div>
-          </div>
         </div>
         <hr class="my-5 opacity-10" />
       </div>
@@ -441,35 +443,38 @@
     <!-- 5. SOFT TREK -->
     <section id="soft-trek-jalatarangi-to-gmvalasa" class="destination-section py-5">
       <div class="container">
-        <div class="row align-items-center gx-lg-5">
-          <!-- Image Column -->
-          <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="row gx-lg-5">
+          <!-- Image Column - Moved to top -->
+          <div class="col-12 mb-5">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-            <div class="containerg">
-              <div class="card-containerg" #softTrekContainer>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Soft Trek" (click)="openLightbox(0, 'softTrek')" />
+              <div class="containerg">
+                <div class="card-containerg" #softTrekContainer>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-trek.jpg" alt="Soft Trek"
+                      (click)="openLightbox(0, 'softTrek')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg"
+                      alt="Trek Entrance" (click)="openLightbox(1, 'softTrek')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg"
+                      alt="Soft Trek 2" (click)="openLightbox(2, 'softTrek')" />
+                  </div>
                 </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-entrance.jpg" alt="Trek Entrance" (click)="openLightbox(1, 'softTrek')" />
+                <div class="scroll-icon left" (click)="scrollLeft(softTrekContainer)">
+                  <i class="fas fa-chevron-left"></i>
                 </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/Jalatharangani-trek-01.jpg" alt="Soft Trek 2" (click)="openLightbox(2, 'softTrek')" />
+                <div class="scroll-icon right" (click)="scrollRight(softTrekContainer)">
+                  <i class="fas fa-chevron-right"></i>
                 </div>
               </div>
-              <div class="scroll-icon left" (click)="scrollLeft(softTrekContainer)">
-                <i class="fas fa-chevron-left"></i>
-              </div>
-              <div class="scroll-icon right" (click)="scrollRight(softTrekContainer)">
-                <i class="fas fa-chevron-right"></i>
-              </div>
-            </div>
             </div>
           </div>
 
           <!-- Content Column -->
-          <div class="col-lg-6">
+          <div class="col-12">
             <span
               class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               Soft Trek
@@ -563,9 +568,38 @@
     <section id="very-hard-trek-jungle-star-eco-camp-to-nellore-tribal-village"
       class="destination-section py-5 bg-white">
       <div class="container">
-        <div class="row align-items-center gx-lg-5">
-          <!-- Content Column (Order 1 on Desktop) -->
-          <div class="col-lg-6 order-2 order-lg-1">
+        <div class="row gx-lg-5">
+          <!-- Image Column - Moved to top -->
+          <div class="col-12 mb-5">
+            <div class="position-relative">
+              <div class="blob-bg blob-right"></div>
+              <div class="containerg">
+                <div class="card-containerg" #hardTrekContainer>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg"
+                      alt="Jungle Star Trek" (click)="openLightbox(0, 'hardTrek')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg"
+                      alt="Jungle Star Trek 2" (click)="openLightbox(1, 'hardTrek')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg"
+                      alt="Jungle Star Trek 3" (click)="openLightbox(2, 'hardTrek')" />
+                  </div>
+                </div>
+                <div class="scroll-icon left" (click)="scrollLeft(hardTrekContainer)">
+                  <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="scroll-icon right" (click)="scrollRight(hardTrekContainer)">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Column -->
+          <div class="col-12">
             <span
               class="badge bg-light text-danger mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-danger border-opacity-10">
               Hard Trek
@@ -648,32 +682,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Image Column (Order 2 on Desktop) -->
-          <div class="col-lg-6 mb-4 mb-lg-0 order-1 order-lg-2">
-            <div class="position-relative">
-              <div class="blob-bg blob-right"></div>
-            <div class="containerg">
-              <div class="card-containerg" #hardTrekContainer>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-01.jpg" alt="Jungle Star Trek" (click)="openLightbox(0, 'hardTrek')" />
-                </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-02.jpg" alt="Jungle Star Trek 2" (click)="openLightbox(1, 'hardTrek')" />
-                </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/junglestar-trek-03.jpg" alt="Jungle Star Trek 3" (click)="openLightbox(2, 'hardTrek')" />
-                </div>
-              </div>
-              <div class="scroll-icon left" (click)="scrollLeft(hardTrekContainer)">
-                <i class="fas fa-chevron-left"></i>
-              </div>
-              <div class="scroll-icon right" (click)="scrollRight(hardTrekContainer)">
-                <i class="fas fa-chevron-right"></i>
-              </div>
-            </div>
-            </div>
-          </div>
         </div>
         <hr class="my-5 opacity-10" />
       </div>
@@ -682,35 +690,38 @@
     <!-- 7. GUDISA VIEW POINT -->
     <section id="gudisa-view-point" class="destination-section py-5">
       <div class="container">
-        <div class="row align-items-center gx-lg-5">
-          <!-- Image Column -->
-          <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="row gx-lg-5">
+          <!-- Image Column - Moved to top -->
+          <div class="col-12 mb-5">
             <div class="position-relative">
               <div class="blob-bg blob-left"></div>
-            <div class="containerg">
-              <div class="card-containerg" #gudisaContainer>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" alt="Gudisa" (click)="openLightbox(0, 'gudisa')" />
+              <div class="containerg">
+                <div class="card-containerg" #gudisaContainer>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-1.jpg" alt="Gudisa"
+                      (click)="openLightbox(0, 'gudisa')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg" alt="Gudisa 2"
+                      (click)="openLightbox(1, 'gudisa')" />
+                  </div>
+                  <div class="card py-0">
+                    <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg" alt="Gudisa 3"
+                      (click)="openLightbox(2, 'gudisa')" />
+                  </div>
                 </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-2.jpg" alt="Gudisa 2" (click)="openLightbox(1, 'gudisa')" />
+                <div class="scroll-icon left" (click)="scrollLeft(gudisaContainer)">
+                  <i class="fas fa-chevron-left"></i>
                 </div>
-                <div class="card py-0">
-                  <img class="img-responsive" src="assets/img/TOURIST-PLACES/gudisa-hills-3.jpg" alt="Gudisa 3" (click)="openLightbox(2, 'gudisa')" />
+                <div class="scroll-icon right" (click)="scrollRight(gudisaContainer)">
+                  <i class="fas fa-chevron-right"></i>
                 </div>
               </div>
-              <div class="scroll-icon left" (click)="scrollLeft(gudisaContainer)">
-                <i class="fas fa-chevron-left"></i>
-              </div>
-              <div class="scroll-icon right" (click)="scrollRight(gudisaContainer)">
-                <i class="fas fa-chevron-right"></i>
-              </div>
-            </div>
             </div>
           </div>
 
           <!-- Content Column -->
-          <div class="col-lg-6">
+          <div class="col-12">
             <span
               class="badge bg-light text-primary mb-2 rounded-pill px-3 py-2 fw-bold text-uppercase tracking-wide small border border-primary border-opacity-10">
               View Point

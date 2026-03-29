@@ -93,18 +93,25 @@
                         <div class="d-none d-md-block fs-5 text-secondary">
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Booking ID:</span><span
-                              class="font-monospace text-secondary ms-1">{{ item.booking_id }}</span>
+                              class="font-monospace text-dark ms-1">{{ item.booking_id }}</span>
                             <span class="mx-2 text-secondary">|</span>
                             <span class="fw-semibold text-secondary">Reserved On:</span><span
-                              class="text-secondary ms-1">{{ item.reservation_date }}</span>
+                              class="text-dark ms-1">{{ item.reservation_date }}</span>
                           </div>
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Booking Status:</span><span
-                              class="fw-bold text-secondary ms-1">{{ item.status | titlecase }}</span>
+                              class="ms-1" [ngClass]="{
+                                'text-success': item.status?.toLowerCase() === 'reserved',
+                                'text-warning': item.status?.toLowerCase() === 'pending',
+                                'text-danger': item.status?.toLowerCase() !== 'reserved' && item.status?.toLowerCase() !== 'pending'
+                              }">{{ item.status | titlecase }}</span>
                             <span class="mx-2 text-secondary">|</span>
                             <span class="fw-semibold text-secondary">Payment Status:</span><span
-                              class="fw-bold text-secondary ms-1">{{ (item.pay_status === 'Not Paid' ? 'Unpaid' :
-                              item.pay_status) | titlecase }}</span>
+                              class="ms-1" [ngClass]="{
+                                'text-success': item.pay_status?.toLowerCase() === 'paid',
+                                'text-warning': item.pay_status?.toLowerCase() === 'pending',
+                                'text-danger': item.pay_status?.toLowerCase() !== 'paid' && item.pay_status?.toLowerCase() !== 'pending'
+                              }">{{ (item.pay_status === 'Not Paid' ? 'Unpaid' : item.pay_status) | titlecase }}</span>
                           </div>
                         </div>
 
@@ -112,20 +119,27 @@
                         <div class="d-md-none small text-secondary">
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Booking ID:</span><span
-                              class="font-monospace text-secondary ms-1">{{ item.booking_id }}</span>
+                              class="font-monospace text-dark ms-1">{{ item.booking_id }}</span>
                           </div>
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Reserved On:</span><span
-                              class="text-secondary ms-1">{{ item.reservation_date }}</span>
+                              class="text-dark ms-1">{{ item.reservation_date }}</span>
                           </div>
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Booking Status:</span><span
-                              class="fw-bold text-secondary ms-1">{{ item.status | titlecase }}</span>
+                              class="ms-1" [ngClass]="{
+                                'text-success': item.status?.toLowerCase() === 'reserved',
+                                'text-warning': item.status?.toLowerCase() === 'pending',
+                                'text-danger': item.status?.toLowerCase() !== 'reserved' && item.status?.toLowerCase() !== 'pending'
+                              }">{{ item.status | titlecase }}</span>
                           </div>
                           <div class="mb-1 text-secondary">
                             <span class="fw-semibold text-secondary">Payment Status:</span><span
-                              class="fw-bold text-secondary ms-1">{{ (item.pay_status === 'Not Paid' ? 'Unpaid' :
-                              item.pay_status) | titlecase }}</span>
+                              class="ms-1" [ngClass]="{
+                                'text-success': item.pay_status?.toLowerCase() === 'paid',
+                                'text-warning': item.pay_status?.toLowerCase() === 'pending',
+                                'text-danger': item.pay_status?.toLowerCase() !== 'paid' && item.pay_status?.toLowerCase() !== 'pending'
+                              }">{{ (item.pay_status === 'Not Paid' ? 'Unpaid' : item.pay_status) | titlecase }}</span>
                           </div>
                         </div>
                       </div>
@@ -152,7 +166,7 @@
                           <span class="text-muted small text-uppercase fw-semibold d-block">Guests Overview</span>
                           <span class="fw-medium text-dark"><i class="fas fa-users text-primary me-2"></i>Total guest:
                             {{
-                            item.noof_guest }} guests<span *ngIf="item.noof_cameras > 0">, {{ item.noof_cameras }}
+                            item.noof_guest }}<span *ngIf="item.noof_cameras > 0">, {{ item.noof_cameras }}
                               camera<span *ngIf="item.noof_cameras > 1">s</span></span></span>
                         </div>
                       </div>
@@ -165,14 +179,16 @@
                             <div class="fw-medium text-dark mb-1 small" style="white-space: nowrap;"><i
                                 class="fas fa-calendar-plus text-primary me-2"></i>{{ formatDate(item.checkin).day }} {{
                               formatDate(item.checkin).month }} {{ formatDate(item.checkin).year }}</div>
-                            <div class="fw-medium text-dark small"><i class="far fa-clock text-primary me-2"></i>10:00 AM IST</div>
+                            <div class="fw-medium text-dark small"><i class="far fa-clock text-primary me-2"></i>10:00
+                              AM IST</div>
                           </div>
                           <div class="flex-fill">
                             <span class="text-muted small text-uppercase fw-semibold d-block">Check Out</span>
                             <div class="fw-medium text-dark mb-1 small" style="white-space: nowrap;"><i
                                 class="fas fa-calendar-minus text-primary me-2"></i>{{ formatDate(item.checkout).day }}
                               {{ formatDate(item.checkout).month }} {{ formatDate(item.checkout).year }}</div>
-                            <div class="fw-medium text-dark small"><i class="far fa-clock text-primary me-2"></i>9:00 AM IST</div>
+                            <div class="fw-medium text-dark small"><i class="far fa-clock text-primary me-2"></i>9:00 AM
+                              IST</div>
                           </div>
                         </div>
 
@@ -186,9 +202,7 @@
                         <div>
                           <span class="text-muted small text-uppercase fw-semibold d-block">Guests Overview</span>
                           <span class="fw-medium text-dark"><i class="fas fa-users text-primary me-2"></i>Total guest:
-                            {{
-                            item.noof_guest }} adults, {{ item.noof_children }} children<span
-                              *ngIf="item.noof_extra_guest > 0">, {{ item.noof_extra_guest }} extra</span></span>
+                            {{ (item.noof_guest || 0)*1 + (item.noof_children || 0)*1 + (item.noof_extra_guest || 0)*1 }} ({{ item.noof_guest || 0 }} adults, {{ item.noof_children || 0 }} children, {{ item.noof_extra_guest || 0 }} extra guest)</span>
                         </div>
                       </div>
 

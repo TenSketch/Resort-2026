@@ -1,8 +1,9 @@
+//updated
 @use "/src/scss/base/" as *;
 
 .main {
   min-height: 100vh;
-  padding-top: 80px;
+  padding-top: 0;
 }
 
 // Desktop Fade Carousel
@@ -18,7 +19,8 @@
   flex-wrap: nowrap;
 
   @media (max-width: 767.98px) {
-    flex-wrap: wrap; /* stack on small screens */
+    flex-wrap: wrap;
+    /* stack on small screens */
   }
 
   .info-card {
@@ -47,13 +49,27 @@
       place-items: center;
       font-size: 18px;
       flex-shrink: 0;
-      box-shadow: inset 0 -4px 8px rgba(0,0,0,0.04);
+      box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.04);
     }
 
     .info-content {
-      h4 { margin: 0 0 0.25rem 0; font-size: 1.02rem; font-weight: 700; color: $clr-secondary; }
-      p, ul { margin: 0; color: #4b4b4b; font-size: .95rem; }
-      ul li { margin-bottom: .25rem; }
+      h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: $clr-secondary;
+      }
+
+      p,
+      ul {
+        margin: 0;
+        color: #4b4b4b;
+        font-size: .95rem;
+      }
+
+      ul li {
+        margin-bottom: .25rem;
+      }
     }
   }
 }
@@ -159,7 +175,7 @@
     border-bottom: 2px solid #e0e0e0;
     padding-bottom: 0.5rem;
     margin-bottom: 1.5rem;
-    
+
     .category-title {
       color: #0b5a2b;
       font-weight: 700;
@@ -293,8 +309,9 @@ aside {
   background-color: $clr-brown-light-bg;
   color: $clr-secondary; // Dark brown text
   border-color: rgba($clr-secondary, 0.2);
-  
-  .fas, .fa-info-circle {
+
+  .fas,
+  .fa-info-circle {
     color: $clr-secondary;
   }
 }
@@ -319,4 +336,5 @@ aside {
       border-color: $clr-secondary !important;
     }
   }
-}
+}/* UI Polish */
+/* UI Fixes */

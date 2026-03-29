@@ -1,0 +1,62 @@
+name: Auto PR + Merge
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  auto-pr-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v6
+        id: cpr
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          base: main
+          branch: dev
+          title: "Auto PR: dev → main"
+
+      - name: Wait for checks
+        run: sleep 20
+
+      - name: Merge PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              base: "main",
+              head: `${context.repo.owner}:dev`
+            });
+
+            if (prs.length === 0) return;
+
+            const pr = prs[0];
+
+            // Re-fetch to check mergeable
+            const { data: prDetails } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+
+            if (prDetails.mergeable === false) {
+              console.log("Conflict detected");
+              return;
+            }
+
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: "squash"
+            });

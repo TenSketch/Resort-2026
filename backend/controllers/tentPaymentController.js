@@ -109,6 +109,7 @@ export const initiateTentPayment = async (req, res) => {
 
     console.log("\n=== TENT PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being used:", process.env.BILLDESK_TENT_RETURN_URL || process.env.BILLDESK_RETURN_URL);
     console.log("Order Data:", JSON.stringify(orderData, null, 2));
 
     // Encrypt request

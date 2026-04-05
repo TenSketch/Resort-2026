@@ -357,6 +357,11 @@ export const handlePaymentCallback = async (req, res) => {
 
     if (terminalState) {
       console.log("\n⚠️  [UAT] BillDesk terminal_state received — CANCELLATION (plain form-data, no JWS)");
+      console.log("\n=== TOURIST PAYMENT INITIATION ===");
+    console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being used:", returnUrl);
+    console.log("Order Data:", JSON.stringify(orderData, null, 2));
+
       console.log("terminal_state:", terminalState, "| orderid:", cancelledOrderId);
       console.log("Full body:", JSON.stringify(req.body, null, 2));
 

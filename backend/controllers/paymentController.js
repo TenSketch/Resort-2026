@@ -225,6 +225,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
 
     console.log("\n=== PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being sent:", process.env.BILLDESK_RETURN_URL);
     console.log("Order Data:", JSON.stringify(orderData, null, 2));
 
     // Encrypt request

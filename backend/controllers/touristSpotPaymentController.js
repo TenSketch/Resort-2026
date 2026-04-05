@@ -438,7 +438,15 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     console.log("\n📋 [UAT] Decoded Payment Response (RU):");
     console.log(JSON.stringify(decryptedResponse, null, 2));
 
-    const { orderid: bookingId, auth_status, transaction_error_desc } = decryptedResponse;
+    const bookingId = decryptedResponse.orderid;
+    const { auth_status, transaction_error_desc } = decryptedResponse;
+
+    if (!bookingId) {
+      console.error("❌ [UAT] BillDesk Response missing orderid (likely an error response):", decryptedResponse.message || "Unknown error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_error&code=${errorCode}`);
+    }
+
     const outcome = auth_status === '0300' ? '✅ SUCCESS' : auth_status === '0002' ? '⏳ PENDING' : '❌ FAILED';
     console.log(`\n[UAT] Payment Outcome: ${outcome} | auth_status: ${auth_status} | bookingId: ${bookingId}`);
 

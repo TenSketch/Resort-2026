@@ -260,12 +260,18 @@ export const handleTentPaymentCallback = async (req, res) => {
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
     console.log("Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
 
+    const bookingId = decryptedResponse.orderid;
     const {
-      orderid: bookingId,
       transactionid,
       auth_status,
       transaction_error_desc
     } = decryptedResponse;
+
+    if (!bookingId) {
+      console.error("❌ [TENT] BillDesk Response missing orderid (likely an error response):", decryptedResponse.message || "Unknown error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/#/tent-booking-failed?error=billdesk_error&code=${errorCode}`);
+    }
 
     console.log(`📋 Processing tent booking: ${bookingId}`);
     console.log(`📋 Transaction ID: ${transactionid}`);

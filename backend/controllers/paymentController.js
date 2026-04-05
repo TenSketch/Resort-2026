@@ -391,14 +391,20 @@ export const handlePaymentCallback = async (req, res) => {
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
     console.log("Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
 
+    const bookingId = decryptedResponse.orderid;
     const {
-      orderid: bookingId,
       transactionid,
       auth_status,
       amount,
       transaction_error_type,
       transaction_error_desc
     } = decryptedResponse;
+
+    if (!bookingId) {
+      console.error("❌ BillDesk Response missing orderid (likely an API error):", decryptedResponse.message || "Internal Server Error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=billdesk_api_error&code=${errorCode}`);
+    }
 
     // Find reservation
     const reservation = await Reservation.findOne({ bookingId });

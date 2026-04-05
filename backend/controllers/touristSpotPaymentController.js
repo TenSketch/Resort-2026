@@ -420,7 +420,7 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     if (!encryptedResponse) {
       console.error("❌ [UAT] RU Callback: No encrypted response and no terminal_state");
       console.error("Body keys:", req.body ? Object.keys(req.body) : 'undefined');
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=no_response`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=no_response&type=trek`);
     }
 
     const encKey  = process.env.BILLDESK_ENCRYPTION_KEY;
@@ -430,7 +430,7 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     const isValid = await verifySignature(encryptedResponse, signKey);
     if (!isValid) {
       console.error("❌ [UAT] RU Callback: Signature validation FAILED — NOT reading auth_status");
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=invalid_signature`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=invalid_signature&type=trek`);
     }
     console.log("✅ [UAT] RU Callback: Signature validated — now reading auth_status");
 
@@ -449,7 +449,7 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     if (!bookingId) {
       console.error("❌ [UAT] BillDesk Response missing orderid (likely an error response):", decryptedResponse.message || "Unknown error");
       const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
-      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_error&code=${errorCode}`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_error&code=${errorCode}&type=trek`);
     }
 
     const outcome = auth_status === '0300' ? '✅ SUCCESS' : auth_status === '0002' ? '⏳ PENDING' : '❌ FAILED';

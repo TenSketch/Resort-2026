@@ -404,14 +404,14 @@ export const handlePaymentCallback = async (req, res) => {
     if (!bookingId) {
       console.error("❌ BillDesk Response missing orderid (likely an API error):", decryptedResponse.message || "Internal Server Error");
       const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=billdesk_api_error&code=${errorCode}`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_api_error&code=${errorCode}`);
     }
 
     // Find reservation
     const reservation = await Reservation.findOne({ bookingId });
     if (!reservation) {
       console.error("Reservation not found:", bookingId);
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=reservation_not_found`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=reservation_not_found`);
     }
 
     // Find payment transaction

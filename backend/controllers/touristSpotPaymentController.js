@@ -133,9 +133,9 @@ export const initiatePayment = async (req, res) => {
       ru: returnUrl.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
-        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 20) || 'NA',
-        additional_info3: (reservation.user?.email || reservation.email || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
+        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z\s]/g, '').substring(0, 30).trim() || 'NA',
+        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').replace(/[^0-9]/g, '').substring(0, 15) || 'NA',
+        additional_info3: (reservation.user?.email || reservation.email || 'NA').replace(/[^a-zA-Z0-9@._-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",

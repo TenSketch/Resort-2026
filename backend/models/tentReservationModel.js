@@ -93,7 +93,7 @@ const tentReservationSchema = new mongoose.Schema({
 
 // Index for efficient queries
 tentReservationSchema.index({ tentSpot: 1, checkinDate: 1, checkoutDate: 1 });
-tentReservationSchema.index({ bookingId: 1 });
+// tentReservationSchema.index({ bookingId: 1 }); // Already unique: true in schema definition
 tentReservationSchema.index({ status: 1 });
 tentReservationSchema.index({ expiresAt: 1 });
 

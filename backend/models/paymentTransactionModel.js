@@ -28,7 +28,17 @@ const paymentTransactionSchema = new mongoose.Schema({
     type: String,
     enum: ['room', 'tent', 'tourist'],
     default: 'room'
-  }
+  },
+  refundId: String, // BillDesk refund reference ID
+  refundAmount: Number,
+  refundStatus: {
+    type: String,
+    enum: ['NotInitiated', 'Initiated', 'Success', 'Failed'],
+    default: 'NotInitiated'
+  },
+  refundTraceId: String,
+  refundDateTime: Date,
+  refundRawResponse: mongoose.Schema.Types.Mixed
 }, { timestamps: true })
 
 const PaymentTransaction = mongoose.models.PaymentTransaction || mongoose.model('PaymentTransaction', paymentTransactionSchema)

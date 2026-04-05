@@ -183,7 +183,7 @@ export const initiatePayment = async (req, res) => {
       ru: process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.fullName || 'NA').replace(/[^a-zA-Z\s]/g, '').substring(0, 30).trim() || 'NA',
+        additional_info1: (reservation.fullName || 'NA').replace(/[^a-zA-Z]/g, '').substring(0, 30) || 'NA',
         additional_info2: (reservation.phone || 'NA').replace(/[^0-9]/g, '').substring(0, 15) || 'NA',
         additional_info3: (reservation.email || 'NA').replace(/[^a-zA-Z0-9@._-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",

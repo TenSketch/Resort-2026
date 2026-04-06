@@ -3,7 +3,7 @@ import userModel from '../models/userModel.js'
 
 const auth = async (req, res, next) => {
   try {
-    const { token } = req.headers
+    const token = req.headers.token || req.body.token
     
     if (!token) {
       return res.status(401).json({ 

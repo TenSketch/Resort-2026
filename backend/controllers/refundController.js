@@ -23,12 +23,18 @@ export const processRefund = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Reservation not found' });
     }
 
-    const paymentTransaction = await PaymentTransaction.findOne({ 
+    let transactionQuery = { 
       $or: [
-        { transactionId: Payment_Transaction_Id },
-        { _id: Payment_Transaction_Id }
+        { transactionId: Payment_Transaction_Id }
       ]
-    });
+    };
+    
+    // Only check _id if the provided string is a valid MongoDB ObjectId
+    if (Payment_Transaction_Id.length === 24 && /^[0-9a-fA-F]{24}$/.test(Payment_Transaction_Id)) {
+      transactionQuery.$or.push({ _id: Payment_Transaction_Id });
+    }
+
+    const paymentTransaction = await PaymentTransaction.findOne(transactionQuery);
 
     if (!paymentTransaction) {
       return res.status(404).json({ success: false, error: 'Payment transaction not found' });

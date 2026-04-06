@@ -75,14 +75,17 @@ export const processRefund = async (req, res) => {
     reservation.paymentStatus = 'refunded';
 
     if (refundAmountNum > 0) {
-      console.log(`Initiating BillDesk Refund for ${booking_id1}`);
+      console.log(`💳 [BillDesk] Initiating Refund for ${booking_id1} | Amount: ₹${refundAmountNum}`);
       const refundResponse = await initiateBilldeskRefund(refundRequestData, encKey, signKey, keyId, clientId);
       reservation.amountRefunded = refundAmountNum;
       reservation.dateOfRefund = new Date();
       if (!reservation.rawSource) reservation.rawSource = {};
       reservation.rawSource.refundResponse = refundResponse.data;
+      console.log(`✅ [BillDesk] Refund SUCCESS for ${booking_id1}`);
     } else {
+      console.log(`ℹ️ [Policy] Refund amount is 0 for ${booking_id1}. Skipping BillDesk API call.`);
       reservation.amountRefunded = 0;
+      reservation.dateOfRefund = new Date(); // Record the cancellation completion date
     }
 
 

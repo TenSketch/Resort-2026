@@ -1,7 +1,7 @@
 import Resort from '../models/resortModel.js';
 import Room from '../models/roomModel.js';
 import transporter from '../config/nodemailer.js';
-import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE } from '../config/emailTemplates.js';
+import { RESERVATION_SUCCESS_EMAIL_TEMPLATE, RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE, RESERVATION_REFUND_EMAIL_TEMPLATE } from '../config/emailTemplates.js';
 
 /**
  * Send reservation success emails to user and admin (for room bookings only)
@@ -97,6 +97,76 @@ export async function sendReservationSuccessEmails(reservation, paymentTransacti
   } catch (error) {
     console.error('❌ Error sending reservation emails:', error);
     // Don't throw error - email failure shouldn't break the payment flow
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Send cancellation and refund email to guest
+ * @param {Object} reservation - Updated reservation document
+ * @param {number} refundAmount - Calculated refund amount
+ */
+export async function sendCancellationEmail(reservation, refundAmount = 0) {
+  try {
+    // Fetch resort details for the email context
+    let resortData = null;
+    if (reservation.resort) {
+      resortData = await Resort.findById(reservation.resort).lean();
+    }
+
+    // Fetch room details
+    let roomsData = [];
+    if (reservation.rooms && Array.isArray(reservation.rooms)) {
+      roomsData = await Room.find({ _id: { $in: reservation.rooms } }).lean();
+    }
+
+    const resortName = resortData?.resortName || reservation.rawSource?.resortName || 'VANAVIHARI';
+    const roomList = roomsData.map(r => r.roomName || r.roomNumber).join(', ') || 'N/A';
+    const cottageList = Array.isArray(reservation.cottageTypeNames) ? reservation.cottageTypeNames.join(', ') : 'N/A';
+
+    // Format dates
+    const formatDate = (date) => date ? new Date(date).toLocaleDateString('en-IN', { 
+      day: '2-digit', month: 'short', year: 'numeric'
+    }) : 'N/A';
+
+    const formatDateTime = (date) => date ? new Date(date).toLocaleString('en-IN', { 
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    }) : 'N/A';
+
+    // Prepare email data placeholders
+    const emailData = {
+      Full_Name: reservation.fullName || 'Guest',
+      Booking_Id: reservation.bookingId || 'N/A',
+      Resort_Name: resortName,
+      Cottage_Names: cottageList,
+      Room_Names: roomList,
+      Reservation_Date: formatDate(reservation.reservationDate),
+      Cancellation_Request_Date: formatDateTime(reservation.refundRequestedDateTime || new Date()),
+      Refund_Amount: refundAmount.toFixed(2),
+      Refund_Percentage: reservation.refundPercentage || 0,
+      Payment_Amount: reservation.totalPayable?.toFixed(2) || '0.00'
+    };
+
+    // Replace placeholders in template
+    let htmlContent = RESERVATION_REFUND_EMAIL_TEMPLATE;
+    Object.keys(emailData).forEach(key => {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      htmlContent = htmlContent.replace(regex, emailData[key]);
+    });
+
+    // Send email
+    await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to: reservation.email,
+      subject: `Booking Cancellation Confirmation - ${reservation.bookingId}`,
+      html: htmlContent
+    });
+
+    console.log(`✅ Cancellation email sent to user: ${reservation.email}`);
+    return { success: true };
+
+  } catch (error) {
+    console.error('❌ Error sending cancellation email:', error);
     return { success: false, error: error.message };
   }
 }

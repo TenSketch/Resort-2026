@@ -16,7 +16,7 @@ export async function retrieveTransaction(orderid, mercid, authToken = null) {
     };
 
     const BASE_URL = process.env.BILLDESK_API_ENDPOINT;
-    const url = `${BASE_URL}payments/ve1_2/transactions/get`;  // ✅ fixed: was ve1_2
+    const url = `${BASE_URL.replace(/\/$/, '')}/payments/v1_2/transactions/get`; // ✅ Use v1_2 for GET status
 
     const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
     const signKey = process.env.BILLDESK_SIGNING_KEY;

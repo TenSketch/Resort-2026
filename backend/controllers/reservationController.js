@@ -10,6 +10,7 @@ import { sendCancellationSMS } from '../services/reservationSmsService.js'
 import { calculateRefundAmount } from '../utils/refundCalculator.js'
 import PaymentTransaction from '../models/paymentTransactionModel.js'
 import { initiateBilldeskRefund } from '../services/refundBillDesk.js'
+import { sendCancellationEmail } from '../services/reservationEmailService.js'
 
 
 
@@ -408,6 +409,7 @@ export const updateReservation = async (req, res) => {
             console.log(`ℹ️ Booking ${updated.bookingId} is either unpaid or offline. Skipping BillDesk refund.`);
           }
 
+
           // 4. Derive human-readable resort name
           let resortName = 'VANAVIHARI';
           if (updated.resort) {
@@ -417,10 +419,26 @@ export const updateReservation = async (req, res) => {
             } catch (_) { /* ignore */ }
           }
 
-          // 5. Send guest + admin cancellation SMS (non-blocking)
-          sendCancellationSMS(updated, refundAmount, resortName)
-            .then(r => console.log(`📱 Cancellation SMS: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
-            .catch(err => console.error('❌ Cancellation SMS error:', err.message));
+          // 5. Re-fetch the final reservation to ensure all refund fields are present for notifications & UI response
+          const finalReservation = await Reservation.findById(id).lean();
+
+          // 6. Send guest + admin notifications (non-blocking)
+          if (finalReservation) {
+            console.log(`📡 Triggering notifications for booking ${finalReservation.bookingId}...`);
+            
+            // SMS
+            sendCancellationSMS(finalReservation, refundAmount, resortName)
+              .then(r => console.log(`📱 Cancellation SMS for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+              .catch(err => console.error(`❌ Cancellation SMS error for ${finalReservation.bookingId}:`, err.message));
+
+            // Email
+            sendCancellationEmail(finalReservation, refundAmount)
+              .then(r => console.log(`📧 Cancellation Email for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+              .catch(err => console.error(`❌ Cancellation Email error for ${finalReservation.bookingId}:`, err.message));
+            
+            // Update the 'updated' response object so Admin UI sees all changes immediately
+            Object.assign(updated, finalReservation);
+          }
         }
       } catch (notifErr) {
         console.error('Failed to create notification for reservation update', notifErr);

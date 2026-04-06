@@ -3,6 +3,7 @@ import { sendCancellationSMS } from "../services/reservationSmsService.js";
 import { sendCancellationEmail } from "../services/reservationEmailService.js";
 import Resort from "../models/resortModel.js";
 import Reservation from "../models/reservationModel.js";
+import PaymentTransaction from "../models/paymentTransactionModel.js";
 
 export const processRefund = async (req, res) => {
   try {

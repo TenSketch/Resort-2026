@@ -1,6 +1,8 @@
-import Reservation from "../models/reservationModel.js";
-import PaymentTransaction from "../models/paymentTransactionModel.js";
 import { initiateBilldeskRefund } from "../services/refundBillDesk.js";
+import { sendCancellationSMS } from "../services/reservationSmsService.js";
+import { sendCancellationEmail } from "../services/reservationEmailService.js";
+import Resort from "../models/resortModel.js";
+import Reservation from "../models/reservationModel.js";
 
 export const processRefund = async (req, res) => {
   try {
@@ -82,9 +84,42 @@ export const processRefund = async (req, res) => {
       reservation.amountRefunded = 0;
     }
 
+
+    // 6. Save final changes
     await reservation.save();
 
-    res.json({ success: true, message: 'Reservation cancelled and refund initiated successfully' });
+    // 7. Derive human-readable resort name for notifications
+    let resortName = 'VANAVIHARI';
+    if (reservation.resort) {
+      try {
+        const resortDoc = await Resort.findById(reservation.resort).lean();
+        if (resortDoc?.resortName) resortName = resortDoc.resortName.toUpperCase();
+      } catch (_) { /* ignore */ }
+    }
+
+    // 8. Re-fetch the final state for notifications
+    const finalReservation = await Reservation.findById(reservation._id).lean();
+
+    // 9. Send Guest Notifications (Non-blocking)
+    if (finalReservation) {
+      console.log(`📡 Triggering cancellation notifications for ${finalReservation.bookingId}...`);
+      
+      // SMS
+      sendCancellationSMS(finalReservation, refundAmountNum, resortName)
+        .then(r => console.log(`📱 Cancellation SMS for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed'}`))
+        .catch(err => console.error(`❌ Cancellation SMS error:`, err.message));
+
+      // Email
+      sendCancellationEmail(finalReservation, refundAmountNum)
+        .then(r => console.log(`📧 Cancellation Email for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed'}`))
+        .catch(err => console.error(`❌ Cancellation Email error:`, err.message));
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Reservation cancelled and refund initiated successfully',
+      reservation: finalReservation
+    });
 
   } catch (err) {
     console.error("Refund processing error:", err);

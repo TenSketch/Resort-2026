@@ -7,30 +7,30 @@ import { encryptRequest, signEncryptedRequest, verifyAndDecryptResponse } from '
  */
 export async function retrieveTransaction(orderid, mercid, authToken = null) {
   try {
-    const traceId   = "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
+    const traceId = "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
     const timestamp = Date.now().toString();
 
     const requestBody = {
-      mercid:  mercid || process.env.BILLDESK_MERCID,
+      mercid: mercid || process.env.BILLDESK_MERCID,
       orderid: orderid   // BillDesk wants our bookingId here, not the bdorderid
     };
 
     const BASE_URL = process.env.BILLDESK_API_ENDPOINT;
-    const url      = `${BASE_URL}payments/v1_2/transactions/get`;  // ✅ fixed: was ve1_2
+    const url = `${BASE_URL.replace(/\/$/, '')}/payments/v1_2/transactions/get`; // ✅ Use v1_2 for GET status
 
-    const encKey  = process.env.BILLDESK_ENCRYPTION_KEY;
+    const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
     const signKey = process.env.BILLDESK_SIGNING_KEY;
-    const keyId   = process.env.KEY_ID;
+    const keyId = process.env.KEY_ID;
     const clientId = process.env.BILLDESK_CLIENTID;
 
     // Encrypt and sign exactly like Create Order
     const encrypted = await encryptRequest(requestBody, encKey, keyId, clientId);
-    const signed    = await signEncryptedRequest(encrypted, signKey, keyId, clientId);
+    const signed = await signEncryptedRequest(encrypted, signKey, keyId, clientId);
 
     const headers = {
       'Content-Type': 'application/jose',
-      'Accept':       'application/jose',
-      'BD-Traceid':   traceId,
+      'Accept': 'application/jose',
+      'BD-Traceid': traceId,
       'BD-Timestamp': timestamp
     };
 
@@ -58,7 +58,7 @@ Encrypted JWE: ${encrypted}
 Signed JWS   : ${signed}
 ═════════════════════════════════════════════════════════════════════════════════════
 `, { flag: 'a' });
-    } catch (_) {}
+    } catch (_) { }
 
     const response = await axios.post(url, signed, { headers, timeout: 30000 });
 
@@ -92,7 +92,7 @@ ${JSON.stringify(decryptedData, null, 2)}
 auth_status: ${decryptedData.auth_status} (read AFTER signature validation ✅)
 ══════════════════════════════════════════════════════════════════════════════════════
 `, { flag: 'a' });
-    } catch (_) {}
+    } catch (_) { }
 
     return { success: true, data: decryptedData, traceId, timestamp };
 

@@ -183,9 +183,9 @@ export const initiatePayment = async (req, res) => {
       ru: process.env.BILLDESK_RETURN_URL.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.fullName || 'NA').replace(/[^a-zA-Z0-9@.\-\s]/g, '').substring(0, 50),
-        additional_info2: (reservation.phone || 'NA').replace(/[^a-zA-Z0-9@.\-\s]/g, '').substring(0, 20),
-        additional_info3: (reservation.email || 'NA').replace(/[^a-zA-Z0-9@.\-\s]/g, '').substring(0, 50),
+        additional_info1: (reservation.fullName || 'NA').replace(/[^a-zA-Z]/g, '').substring(0, 30) || 'NA',
+        additional_info2: (reservation.phone || 'NA').replace(/[^0-9]/g, '').substring(0, 15) || 'NA',
+        additional_info3: (reservation.email || 'NA').replace(/[^a-zA-Z0-9@._-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",
@@ -225,6 +225,7 @@ Order Data: ${JSON.stringify(orderData, null, 2)}
 
     console.log("\n=== PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being sent:", process.env.BILLDESK_RETURN_URL);
     console.log("Order Data:", JSON.stringify(orderData, null, 2));
 
     // Encrypt request
@@ -391,8 +392,8 @@ export const handlePaymentCallback = async (req, res) => {
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
     console.log("Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
 
+    const bookingId = decryptedResponse.orderid;
     const {
-      orderid: bookingId,
       transactionid,
       auth_status,
       amount,
@@ -400,11 +401,17 @@ export const handlePaymentCallback = async (req, res) => {
       transaction_error_desc
     } = decryptedResponse;
 
+    if (!bookingId) {
+      console.error("❌ BillDesk Response missing orderid (likely an API error):", decryptedResponse.message || "Internal Server Error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_api_error&code=${errorCode}`);
+    }
+
     // Find reservation
     const reservation = await Reservation.findOne({ bookingId });
     if (!reservation) {
       console.error("Reservation not found:", bookingId);
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=reservation_not_found`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=reservation_not_found`);
     }
 
     // Find payment transaction

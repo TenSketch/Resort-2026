@@ -2,16 +2,16 @@ import axios from "axios";
 import { verifyAndDecryptResponse } from "./billdeskCrypto.js";
 
 export async function sendToBillDesk(signedPayload, traceId, timestamp) {
-  traceId   = traceId   || "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
+  traceId = traceId || "TID" + Math.random().toString(36).slice(2, 14).toUpperCase();
   timestamp = timestamp || Date.now().toString();
 
   const BASE_URL = process.env.BILLDESK_API_ENDPOINT;
-  const url      = BASE_URL + "payments/v1_2/orders/create";  // ✅ fixed: was ve1_2
+  const url = BASE_URL + "payments/ve1_2/orders/create";  // ✅ fixed: was ve1_2
 
   const headers = {
     "Content-Type": "application/jose",
-    "Accept":       "application/jose",
-    "BD-Traceid":   traceId,
+    "Accept": "application/jose",
+    "BD-Traceid": traceId,
     "BD-Timestamp": timestamp
   };
 
@@ -60,7 +60,7 @@ Decoded JSON Response:
 ${JSON.stringify(decryptedResponse, null, 2)}
 ══════════════════════════════════════════════════════════════════════════════
 `, { flag: "a" });
-    } catch (_) {}
+    } catch (_) { }
 
     return decryptedResponse;
 
@@ -74,9 +74,9 @@ ${JSON.stringify(decryptedResponse, null, 2)}
           process.env.BILLDESK_ENCRYPTION_KEY
         );
         console.log("📋 Decrypted Error Response:", JSON.stringify(decryptedError, null, 2));
-        const bdError      = new Error(decryptedError.message || "BillDesk Error");
+        const bdError = new Error(decryptedError.message || "BillDesk Error");
         bdError.billdeskError = decryptedError;
-        bdError.statusCode    = error.response.status;
+        bdError.statusCode = error.response.status;
         bdError.isBillDeskError = true;
         throw bdError;
       } catch (decryptError) {

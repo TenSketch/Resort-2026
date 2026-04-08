@@ -7,6 +7,10 @@ import mongoose from 'mongoose'
 import transporter from '../config/nodemailer.js'
 import { checkRoomAvailability } from '../utils/roomAvailability.js'
 import { sendCancellationSMS } from '../services/reservationSmsService.js'
+import { calculateRefundAmount } from '../utils/refundCalculator.js'
+import PaymentTransaction from '../models/paymentTransactionModel.js'
+import { initiateBilldeskRefund } from '../services/refundBillDesk.js'
+import { sendCancellationEmail } from '../services/reservationEmailService.js'
 
 
 
@@ -333,12 +337,80 @@ export const updateReservation = async (req, res) => {
             link: `/reservation/all`
           });
 
-          // Determine refund amount
-          const refundAmount = updated.refundAmount ?? (updated.refundPercentage > 0
-            ? ((updated.refundPercentage / 100) * (updated.totalPayable || 0))
-            : 0);
+          // 1. Calculate refund according to policy (Automated)
+          const { refundPercentage, refundAmount, diffInHours } = calculateRefundAmount(updated.checkIn, updated.totalPayable || 0);
+          console.log(`💰 Refund Logic: ${diffInHours}h before check-in. Percentage: ${refundPercentage}%. Amount: ${refundAmount}`);
 
-          // Derive human-readable resort name
+          // 2. Update Reservation record with calculated values
+          await Reservation.findByIdAndUpdate(id, {
+            refundPercentage,
+            refundableAmount: refundAmount,
+            refundRequestedDateTime: new Date()
+          });
+
+          // 3. If online payment exists, initiate BillDesk Refund
+          let refundSuccess = false;
+          if (updated.paymentStatus === 'paid' && updated.paymentTransactionId) {
+            try {
+              const paymentTx = await PaymentTransaction.findById(updated.paymentTransactionId);
+              if (paymentTx && paymentTx.transactionId && refundAmount > 0) {
+                const refundRefNo = "REF" + Math.random().toString(36).slice(2, 10).toUpperCase();
+                
+                const refundPayload = {
+                  mercid: process.env.BILLDESK_MERCID,
+                  transactionid: paymentTx.transactionId,
+                  amount: refundAmount.toFixed(2),
+                  orderid: updated.bookingId,
+                  refund_ref_no: refundRefNo
+                };
+
+                const billdeskResult = await initiateBilldeskRefund(
+                  refundPayload,
+                  process.env.BILLDESK_ENCRYPTION_KEY,
+                  process.env.BILLDESK_SIGNING_KEY,
+                  process.env.KEY_ID,
+                  process.env.BILLDESK_CLIENTID
+                );
+
+                if (billdeskResult.success) {
+                  refundSuccess = true;
+                  // Update PaymentTransaction with refund proof
+                  await PaymentTransaction.findByIdAndUpdate(paymentTx._id, {
+                    refundId: billdeskResult.data.refundid || refundRefNo,
+                    refundAmount: refundAmount,
+                    refundStatus: 'Success',
+                    refundTraceId: billdeskResult.traceId,
+                    refundDateTime: new Date(),
+                    refundRawResponse: billdeskResult.data
+                  });
+
+                  // Update Reservation with amount refunded
+                  await Reservation.findByIdAndUpdate(id, {
+                    amountRefunded: refundAmount,
+                    dateOfRefund: new Date()
+                  });
+                  console.log(`✅ BillDesk Refund Successful: ${refundAmount} for ${updated.bookingId}`);
+                } else {
+                  console.error(`❌ BillDesk Refund Failed for ${updated.bookingId}:`, billdeskResult.error);
+                  await PaymentTransaction.findByIdAndUpdate(paymentTx._id, {
+                    refundStatus: 'Failed',
+                    refundRawResponse: billdeskResult.data
+                  });
+                }
+              } else if (!paymentTx) {
+                console.warn(`⚠️ Payment transaction not found for refund: ${updated.paymentTransactionId}`);
+              } else if (refundAmount === 0) {
+                console.log(`ℹ️ Refund amount is 0 according to policy. No BillDesk call made.`);
+              }
+            } catch (refundErr) {
+              console.error(`❌ Automated Refund Error for ${updated.bookingId}:`, refundErr.message);
+            }
+          } else {
+            console.log(`ℹ️ Booking ${updated.bookingId} is either unpaid or offline. Skipping BillDesk refund.`);
+          }
+
+
+          // 4. Derive human-readable resort name
           let resortName = 'VANAVIHARI';
           if (updated.resort) {
             try {
@@ -347,10 +419,26 @@ export const updateReservation = async (req, res) => {
             } catch (_) { /* ignore */ }
           }
 
-          // Send guest + admin cancellation SMS (non-blocking)
-          sendCancellationSMS(updated, refundAmount, resortName)
-            .then(r => console.log(`📱 Cancellation SMS: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
-            .catch(err => console.error('❌ Cancellation SMS error:', err.message));
+          // 5. Re-fetch the final reservation to ensure all refund fields are present for notifications & UI response
+          const finalReservation = await Reservation.findById(id).lean();
+
+          // 6. Send guest + admin notifications (non-blocking)
+          if (finalReservation) {
+            console.log(`📡 Triggering notifications for booking ${finalReservation.bookingId}...`);
+            
+            // SMS
+            sendCancellationSMS(finalReservation, refundAmount, resortName)
+              .then(r => console.log(`📱 Cancellation SMS for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+              .catch(err => console.error(`❌ Cancellation SMS error for ${finalReservation.bookingId}:`, err.message));
+
+            // Email
+            sendCancellationEmail(finalReservation, refundAmount)
+              .then(r => console.log(`📧 Cancellation Email for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+              .catch(err => console.error(`❌ Cancellation Email error for ${finalReservation.bookingId}:`, err.message));
+            
+            // Update the 'updated' response object so Admin UI sees all changes immediately
+            Object.assign(updated, finalReservation);
+          }
         }
       } catch (notifErr) {
         console.error('Failed to create notification for reservation update', notifErr);

@@ -87,9 +87,9 @@ export const initiateTentPayment = async (req, res) => {
       ru: process.env.BILLDESK_TENT_RETURN_URL || process.env.BILLDESK_RETURN_URL,
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.fullName || 'NA').substring(0, 50),
-        additional_info2: (reservation.phone || 'NA').substring(0, 20),
-        additional_info3: (reservation.email || 'NA').substring(0, 50),
+        additional_info1: (reservation.fullName || 'NA').replace(/[^a-zA-Z\s]/g, '').substring(0, 30).trim() || 'NA',
+        additional_info2: (reservation.phone || 'NA').replace(/[^0-9]/g, '').substring(0, 15) || 'NA',
+        additional_info3: (reservation.email || 'NA').replace(/[^a-zA-Z0-9@._-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",
@@ -109,6 +109,7 @@ export const initiateTentPayment = async (req, res) => {
 
     console.log("\n=== TENT PAYMENT INITIATION ===");
     console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being used:", process.env.BILLDESK_TENT_RETURN_URL || process.env.BILLDESK_RETURN_URL);
     console.log("Order Data:", JSON.stringify(orderData, null, 2));
 
     // Encrypt request
@@ -243,7 +244,7 @@ export const handleTentPaymentCallback = async (req, res) => {
 
     if (!encryptedResponse) {
       console.error("❌ No encrypted response received");
-      return res.redirect(`${process.env.FRONTEND_URL}/#/tent-booking-failed?error=no_response`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=no_response&type=tent`);
     }
 
     const encKey = process.env.BILLDESK_ENCRYPTION_KEY;
@@ -260,12 +261,18 @@ export const handleTentPaymentCallback = async (req, res) => {
     const decryptedResponse = await decryptResponse(encryptedResponse, encKey);
     console.log("Decrypted Response:", JSON.stringify(decryptedResponse, null, 2));
 
+    const bookingId = decryptedResponse.orderid;
     const {
-      orderid: bookingId,
       transactionid,
       auth_status,
       transaction_error_desc
     } = decryptedResponse;
+
+    if (!bookingId) {
+      console.error("❌ [TENT] BillDesk Response missing orderid (likely an error response):", decryptedResponse.message || "Unknown error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_error&code=${errorCode}&type=tent`);
+    }
 
     console.log(`📋 Processing tent booking: ${bookingId}`);
     console.log(`📋 Transaction ID: ${transactionid}`);
@@ -275,7 +282,7 @@ export const handleTentPaymentCallback = async (req, res) => {
     const reservation = await TentReservation.findOne({ bookingId });
     if (!reservation) {
       console.error("❌ Tent reservation not found:", bookingId);
-      return res.redirect(`${process.env.FRONTEND_URL}/#/tent-booking-failed?error=reservation_not_found`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=reservation_not_found&type=tent`);
     }
 
     console.log(`✅ Found tent reservation: ${reservation._id}`);

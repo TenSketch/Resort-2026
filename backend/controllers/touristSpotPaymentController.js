@@ -133,9 +133,9 @@ export const initiatePayment = async (req, res) => {
       ru: returnUrl.trim(),
       itemcode: "DIRECT",
       additional_info: {
-        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
-        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 20) || 'NA',
-        additional_info3: (reservation.user?.email || reservation.email || 'NA').replace(/[^a-zA-Z0-9\s@.,-]/g, '').substring(0, 50) || 'NA',
+        additional_info1: (reservation.user?.name || reservation.fullName || 'NA').replace(/[^a-zA-Z\s]/g, '').substring(0, 30).trim() || 'NA',
+        additional_info2: (reservation.user?.phone || reservation.phone || 'NA').replace(/[^0-9]/g, '').substring(0, 15) || 'NA',
+        additional_info3: (reservation.user?.email || reservation.email || 'NA').replace(/[^a-zA-Z0-9@._-]/g, '').substring(0, 50) || 'NA',
         additional_info4: "NA",
         additional_info5: "NA",
         additional_info6: "NA",
@@ -357,6 +357,11 @@ export const handlePaymentCallback = async (req, res) => {
 
     if (terminalState) {
       console.log("\n⚠️  [UAT] BillDesk terminal_state received — CANCELLATION (plain form-data, no JWS)");
+      console.log("\n=== TOURIST PAYMENT INITIATION ===");
+    console.log("Booking ID:", bookingId);
+    console.log("Return URL (RU) being used:", returnUrl);
+    console.log("Order Data:", JSON.stringify(orderData, null, 2));
+
       console.log("terminal_state:", terminalState, "| orderid:", cancelledOrderId);
       console.log("Full body:", JSON.stringify(req.body, null, 2));
 
@@ -415,7 +420,7 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     if (!encryptedResponse) {
       console.error("❌ [UAT] RU Callback: No encrypted response and no terminal_state");
       console.error("Body keys:", req.body ? Object.keys(req.body) : 'undefined');
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=no_response`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=no_response&type=trek`);
     }
 
     const encKey  = process.env.BILLDESK_ENCRYPTION_KEY;
@@ -425,7 +430,7 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     const isValid = await verifySignature(encryptedResponse, signKey);
     if (!isValid) {
       console.error("❌ [UAT] RU Callback: Signature validation FAILED — NOT reading auth_status");
-      return res.redirect(`${process.env.FRONTEND_URL}/booking-failed?error=invalid_signature`);
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=invalid_signature&type=trek`);
     }
     console.log("✅ [UAT] RU Callback: Signature validated — now reading auth_status");
 
@@ -438,7 +443,15 @@ NOTE: No auth_status in cancellation response. Equivalent auth_status = 0398 (us
     console.log("\n📋 [UAT] Decoded Payment Response (RU):");
     console.log(JSON.stringify(decryptedResponse, null, 2));
 
-    const { orderid: bookingId, auth_status, transaction_error_desc } = decryptedResponse;
+    const bookingId = decryptedResponse.orderid;
+    const { auth_status, transaction_error_desc } = decryptedResponse;
+
+    if (!bookingId) {
+      console.error("❌ [UAT] BillDesk Response missing orderid (likely an error response):", decryptedResponse.message || "Unknown error");
+      const errorCode = decryptedResponse.error_code || decryptedResponse.status || "500";
+      return res.redirect(`${process.env.FRONTEND_URL}/#/booking-status?status=failed&error=billdesk_error&code=${errorCode}&type=trek`);
+    }
+
     const outcome = auth_status === '0300' ? '✅ SUCCESS' : auth_status === '0002' ? '⏳ PENDING' : '❌ FAILED';
     console.log(`\n[UAT] Payment Outcome: ${outcome} | auth_status: ${auth_status} | bookingId: ${bookingId}`);
 

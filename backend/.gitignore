@@ -1,3 +1,5 @@
 .env
 node_modules
 tmp/
+debug_payment.log
+debug_trek_payment_uat.log

@@ -1,18 +1,18 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
-
+// import DataTable from "datatables.net-react";
+// import DT from "datatables.net-dt";
+import DataTable from "../dataTable/DataTable";
 // Required plugins
 import "datatables.net-buttons";
 import "datatables.net-buttons/js/buttons.colVis.js";
 import "datatables.net-columncontrol";
 
 // Styles
-import "datatables.net-dt/css/dataTables.dataTables.css";
-import "datatables.net-buttons-dt/css/buttons.dataTables.css";
-import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
+// import "datatables.net-dt/css/dataTables.dataTables.css";
+// import "datatables.net-buttons-dt/css/buttons.dataTables.css";
+// import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
-import "datatables.net-fixedcolumns";
-import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
+// import "datatables.net-fixedcolumns";
+// import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
 
 // Using backend data instead of local JSON
 import { useEffect, useRef, useState } from "react";
@@ -46,8 +46,8 @@ import { Label } from "@/components/ui/label";
 import PageLoader from "@/components/shared/PageLoader";
 import { DatePickerField } from "@/components/ui/date-picker";
 
-DataTable.use(DT);
-(DT.ext.pager as any).numbers_length = 3;
+// DataTable.use(DT);
+// (DT.ext.pager as any).numbers_length = 3;
 
 interface Reservation {
   id: string;
@@ -340,24 +340,24 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                0,
-                Math.round(
-                  (new Date(server.checkOut).getTime() -
-                    new Date(server.checkIn).getTime()) /
-                  (1000 * 60 * 60 * 24),
-                ),
-              ) + 1
+                  0,
+                  Math.round(
+                    (new Date(server.checkOut).getTime() -
+                      new Date(server.checkIn).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                ) + 1
               : updatedLocal.noOfDays,
           noOfNights:
             server.checkIn && server.checkOut
               ? Math.max(
-                0,
-                Math.round(
-                  (new Date(server.checkOut).getTime() -
-                    new Date(server.checkIn).getTime()) /
-                  (1000 * 60 * 60 * 24),
-                ),
-              )
+                  0,
+                  Math.round(
+                    (new Date(server.checkOut).getTime() -
+                      new Date(server.checkIn).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  ),
+                )
               : updatedLocal.noOfNights || 0,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -438,7 +438,17 @@ export default function ReservationTable() {
   // Download single reservation as PDF
   const downloadPDF = (reservation: Reservation) => {
     const fmt = formatDateForDisplay;
-    const address = [reservation.address1, reservation.address2, reservation.city, reservation.state, reservation.postalCode, reservation.country].filter(Boolean).join(", ") || "N/A";
+    const address =
+      [
+        reservation.address1,
+        reservation.address2,
+        reservation.city,
+        reservation.state,
+        reservation.postalCode,
+        reservation.country,
+      ]
+        .filter(Boolean)
+        .join(", ") || "N/A";
     const fileName = `${reservation.bookingId || "N/A"}-${reservation.fullName || "Guest"}`;
 
     const html = `<!DOCTYPE html>
@@ -625,7 +635,7 @@ export default function ReservationTable() {
     </div>
   </div>
 
-  <p class="print-date">Date Issued: ${new Date().toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+  <p class="print-date">Date Issued: ${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
 
   <div class="voucher-title">Official Booking Confirmation Receipt</div>
 
@@ -865,23 +875,34 @@ export default function ReservationTable() {
           row.totalGuests,
           typeof foodsBilled === "string" ? `"${foodsBilled}"` : foodsBilled,
           // Format food preference for export
-          (()=>{
-            if (!row.foodPreference || row.foodPreference === "NA" || row.foodPreference === "na") return '"NA"';
+          (() => {
+            if (
+              !row.foodPreference ||
+              row.foodPreference === "NA" ||
+              row.foodPreference === "na"
+            )
+              return '"NA"';
             const v = row.foodPreference.toLowerCase();
-            if (v === "nonvegetarian" || v === "non-vegetarian") return '"Non-Vegetarian"';
+            if (v === "nonvegetarian" || v === "non-vegetarian")
+              return '"Non-Vegetarian"';
             if (v === "vegetarian") return '"Vegetarian"';
             return `"${row.foodPreference.charAt(0).toUpperCase() + row.foodPreference.slice(1).toLowerCase()}"`;
           })(),
           // Format booking status for export
-          (()=>{
-            let st = row.status || '';
-            if (st.toLowerCase() === 'not-reserved' || st.toLowerCase() === 'not reserved') return '"Not-Reserved"';
-            if (st) return `"${st.charAt(0).toUpperCase() + st.slice(1).toLowerCase()}"`;
+          (() => {
+            let st = row.status || "";
+            if (
+              st.toLowerCase() === "not-reserved" ||
+              st.toLowerCase() === "not reserved"
+            )
+              return '"Not-Reserved"';
+            if (st)
+              return `"${st.charAt(0).toUpperCase() + st.slice(1).toLowerCase()}"`;
             return '""';
           })(),
           row.totalPayable,
           // Format payment status for export
-          (()=>{
+          (() => {
             if (!row.paymentStatus || row.paymentStatus === "NA") return '"NA"';
             const v = row.paymentStatus.toLowerCase();
             if (v === "not paid" || v === "unpaid") return '"Unpaid"';
@@ -1129,7 +1150,9 @@ export default function ReservationTable() {
         });
 
         // Deduplicate reservations by booking ID (or ID as fallback) to prevent cloned duplicate data rendering
-        const uniqueMapped = Array.from(new Map(mapped.map((m) => [m.bookingId || m.id, m])).values());
+        const uniqueMapped = Array.from(
+          new Map(mapped.map((m) => [m.bookingId || m.id, m])).values(),
+        );
         setReservations(uniqueMapped);
       } catch (err) {
         console.error("Failed to load reservations", err);
@@ -1140,401 +1163,401 @@ export default function ReservationTable() {
 
     fetchReservations();
     const style = document.createElement("style");
-    style.innerHTML = `
-      .dt-button-collection {
-        position: fixed !important;
-        z-index: 9999 !important;
-        background: white !important;
-        border: 1px solid #ddd !important;
-        border-radius: 4px !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
-      }
-      .dataTables_wrapper .dataTables_filter {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 0;
-      }
-      .dataTables_wrapper .dataTables_length {
-        margin-bottom: 0;
-      }
-      .dataTables_wrapper {
-        width: 100%;
-        overflow: visible;
-      }
-      /* Fixed header + scrollable body */
-      .dataTables_wrapper .dataTables_scrollBody {
-        overflow-y: auto !important;
-        overflow-x: auto !important;
-        border: 1px solid #ddd;
-        border-radius: 0.5rem;
-      }
-      .dataTables_wrapper table {
-        width: max-content !important;
-        min-width: 100%;
-        margin: 0 !important;
-      }
-      .dataTables_wrapper .dataTables_scrollHead {
-        border-radius: 0.5rem 0.5rem 0 0;
-        position: sticky;
-        top: 0;
-        z-index: 5;
-      }
-      .dataTables_wrapper .dataTables_scrollHeadInner {
-        width: 100% !important;
-      }
-      table.dataTable thead tr th,
-      table.dataTable thead tr td {
-        font-weight: 700 !important;
-      }
-      /* Disabled row styling - subtle fade */
-      table.dataTable tbody tr.disabled-row {
-        background-color: #fbfbfb !important;
-        opacity: 0.55 !important;
-        filter: grayscale(0.08) brightness(0.98) !important;
-        transition: background-color 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
-      }
-      table.dataTable tbody tr.disabled-row td {
-        color: rgba(0,0,0,0.65) !important;
-      }
-      table.dataTable tbody tr.disabled-row:hover {
-        background-color: #f6f6f6 !important;
-        opacity: 0.65 !important;
-        filter: grayscale(0.03) brightness(1) !important;
-      }
-      /* Action button styling */
-      .edit-btn:active {
-        transform: translateY(0) !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-      }
-      .disable-btn:active:not([disabled]) {
-        transform: translateY(0) !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-      }
-      .reset-filters-btn {
-        height: 38px !important;
-        padding: 6px 16px !important;
-        border-radius: 6px !important;
-        border: 1px solid #D5DCE5 !important;
-        background: #EEF2F6 !important;
-        color: #475467 !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        cursor: pointer !important;
-        transition: all .15s ease !important;
-      }
-      .reset-filters-btn:hover {
-        background: #e2e8f0 !important;
-      }
-      /* Clickable row styling */
-      table.dataTable tbody tr {
-        cursor: pointer !important;
-        transition: background-color 0.2s ease !important;
-      }
-      table.dataTable tbody tr:hover:not(.disabled-row) {
-        background-color: #f8fafc !important;
-      }
-      table.dataTable tbody tr:hover.disabled-row {
-        background-color: #eeeeee !important;
-      }
-      /* Pagination styling - Clear & Professional */
-      .dt-paging {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
-        margin-top: 0 !important;
-        margin-left: auto !important;
-        justify-content: flex-end !important;
-      }
-      .dt-paging-button {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 2rem !important;
-        height: 2rem !important;
-        padding: 0 0.5rem !important;
-        margin: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        color: #64748b !important;
-        font-size: 1.1rem !important;
-        font-weight: normal !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        border-radius: 9999px !important;
-      }
-      .dt-paging-button:hover:not(.disabled):not(.current) {
-        background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
-        color: white !important;
-        border: 1px solid #111111 !important;
-      }
-      .dt-paging-button.current {
-        background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
-        color: #333333 !important;
-        font-weight: normal !important;
-        border: 1px solid #979797 !important;
-        box-shadow: none !important;
-      }
-      .dt-paging-button.disabled {
-        color: #cbd5e1 !important;
-        cursor: not-allowed !important;
-        opacity: 0.5 !important;
-      }
-      /* Pagination styling - Final Refined Look */
-      .dt-paging {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.25rem !important;
-        margin-top: 0 !important;
-        margin-left: auto !important;
-        justify-content: flex-end !important;
-      }
-      .dt-paging .dt-paging-button {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0.25rem 0.5rem !important;
-        margin: 0 !important;
-        border: 1px solid transparent !important;
-        background: transparent !important;
-        color: #333333 !important;
-        font-size: 1.1rem !important;
-        font-weight: normal !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-        border-radius: 2px !important;
-      }
-      /* Specific sizing for symbols to make them 'medium' and 'clear' */
-      .dt-paging .dt-paging-button.first,
-      .dt-paging .dt-paging-button.last,
-      .dt-paging .dt-paging-button.previous,
-      .dt-paging .dt-paging-button.next {
-        font-size: 1.4rem !important;
-        font-weight: normal !important;
-      }
-      .dt-paging .dt-paging-button:hover:not(.disabled):not(.current) {
-        background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
-        color: white !important;
-        border: 1px solid #111111 !important;
-      }
-      .dt-paging .dt-paging-button.current {
-        background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
-        color: #333333 !important;
-        font-weight: normal !important;
-        border: 1px solid #979797 !important;
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
-      }
-      .dt-paging .dt-paging-button.disabled {
-        color: #666666 !important;
-        cursor: not-allowed !important;
-        opacity: 0.7 !important; /* Keep it clear but indicate disabled */
-      }
-      /* --- UNIFIED TOP CONTROLS STYLING (Column Visibility, Reset Filters, Search) --- */
-      .dt-buttons .dt-button,
-      .dt-length select {
-        height: 38px !important;
-        padding: 0 16px !important;
-        border-radius: 6px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #ffffff !important;
-        color: #334155 !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        transition: all 0.2s ease !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-      }
+    // style.innerHTML = `
+    //   .dt-button-collection {
+    //     position: fixed !important;
+    //     z-index: 9999 !important;
+    //     background: white !important;
+    //     border: 1px solid #ddd !important;
+    //     border-radius: 4px !important;
+    //     box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    //   }
+    //   .dataTables_wrapper .dataTables_filter {
+    //     display: inline-flex;
+    //     align-items: center;
+    //     gap: 8px;
+    //     margin-bottom: 0;
+    //   }
+    //   .dataTables_wrapper .dataTables_length {
+    //     margin-bottom: 0;
+    //   }
+    //   .dataTables_wrapper {
+    //     width: 100%;
+    //     overflow: visible;
+    //   }
+    //   /* Fixed header + scrollable body */
+    //   .dataTables_wrapper .dataTables_scrollBody {
+    //     overflow-y: auto !important;
+    //     overflow-x: auto !important;
+    //     border: 1px solid #ddd;
+    //     border-radius: 0.5rem;
+    //   }
+    //   .dataTables_wrapper table {
+    //     width: max-content !important;
+    //     min-width: 100%;
+    //     margin: 0 !important;
+    //   }
+    //   .dataTables_wrapper .dataTables_scrollHead {
+    //     border-radius: 0.5rem 0.5rem 0 0;
+    //     position: sticky;
+    //     top: 0;
+    //     z-index: 5;
+    //   }
+    //   .dataTables_wrapper .dataTables_scrollHeadInner {
+    //     width: 100% !important;
+    //   }
+    //   table.dataTable thead tr th,
+    //   table.dataTable thead tr td {
+    //     font-weight: 700 !important;
+    //   }
+    //   /* Disabled row styling - subtle fade */
+    //   table.dataTable tbody tr.disabled-row {
+    //     background-color: #fbfbfb !important;
+    //     opacity: 0.55 !important;
+    //     filter: grayscale(0.08) brightness(0.98) !important;
+    //     transition: background-color 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+    //   }
+    //   table.dataTable tbody tr.disabled-row td {
+    //     color: rgba(0,0,0,0.65) !important;
+    //   }
+    //   table.dataTable tbody tr.disabled-row:hover {
+    //     background-color: #f6f6f6 !important;
+    //     opacity: 0.65 !important;
+    //     filter: grayscale(0.03) brightness(1) !important;
+    //   }
+    //   /* Action button styling */
+    //   .edit-btn:active {
+    //     transform: translateY(0) !important;
+    //     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    //   }
+    //   .disable-btn:active:not([disabled]) {
+    //     transform: translateY(0) !important;
+    //     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    //   }
+    //   .reset-filters-btn {
+    //     height: 38px !important;
+    //     padding: 6px 16px !important;
+    //     border-radius: 6px !important;
+    //     border: 1px solid #D5DCE5 !important;
+    //     background: #EEF2F6 !important;
+    //     color: #475467 !important;
+    //     font-size: 13px !important;
+    //     font-weight: 500 !important;
+    //     cursor: pointer !important;
+    //     transition: all .15s ease !important;
+    //   }
+    //   .reset-filters-btn:hover {
+    //     background: #e2e8f0 !important;
+    //   }
+    //   /* Clickable row styling */
+    //   table.dataTable tbody tr {
+    //     cursor: pointer !important;
+    //     transition: background-color 0.2s ease !important;
+    //   }
+    //   table.dataTable tbody tr:hover:not(.disabled-row) {
+    //     background-color: #f8fafc !important;
+    //   }
+    //   table.dataTable tbody tr:hover.disabled-row {
+    //     background-color: #eeeeee !important;
+    //   }
+    //   /* Pagination styling - Clear & Professional */
+    //   .dt-paging {
+    //     display: flex !important;
+    //     align-items: center !important;
+    //     gap: 0.5rem !important;
+    //     margin-top: 0 !important;
+    //     margin-left: auto !important;
+    //     justify-content: flex-end !important;
+    //   }
+    //   .dt-paging-button {
+    //     display: inline-flex !important;
+    //     align-items: center !important;
+    //     justify-content: center !important;
+    //     min-width: 2rem !important;
+    //     height: 2rem !important;
+    //     padding: 0 0.5rem !important;
+    //     margin: 0 !important;
+    //     border: none !important;
+    //     background: transparent !important;
+    //     color: #64748b !important;
+    //     font-size: 1.1rem !important;
+    //     font-weight: normal !important;
+    //     cursor: pointer !important;
+    //     transition: all 0.2s ease !important;
+    //     border-radius: 9999px !important;
+    //   }
+    //   .dt-paging-button:hover:not(.disabled):not(.current) {
+    //     background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
+    //     color: white !important;
+    //     border: 1px solid #111111 !important;
+    //   }
+    //   .dt-paging-button.current {
+    //     background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
+    //     color: #333333 !important;
+    //     font-weight: normal !important;
+    //     border: 1px solid #979797 !important;
+    //     box-shadow: none !important;
+    //   }
+    //   .dt-paging-button.disabled {
+    //     color: #cbd5e1 !important;
+    //     cursor: not-allowed !important;
+    //     opacity: 0.5 !important;
+    //   }
+    //   /* Pagination styling - Final Refined Look */
+    //   .dt-paging {
+    //     display: flex !important;
+    //     align-items: center !important;
+    //     gap: 0.25rem !important;
+    //     margin-top: 0 !important;
+    //     margin-left: auto !important;
+    //     justify-content: flex-end !important;
+    //   }
+    //   .dt-paging .dt-paging-button {
+    //     display: inline-flex !important;
+    //     align-items: center !important;
+    //     justify-content: center !important;
+    //     padding: 0.25rem 0.5rem !important;
+    //     margin: 0 !important;
+    //     border: 1px solid transparent !important;
+    //     background: transparent !important;
+    //     color: #333333 !important;
+    //     font-size: 1.1rem !important;
+    //     font-weight: normal !important;
+    //     cursor: pointer !important;
+    //     transition: all 0.2s ease !important;
+    //     border-radius: 2px !important;
+    //   }
+    //   /* Specific sizing for symbols to make them 'medium' and 'clear' */
+    //   .dt-paging .dt-paging-button.first,
+    //   .dt-paging .dt-paging-button.last,
+    //   .dt-paging .dt-paging-button.previous,
+    //   .dt-paging .dt-paging-button.next {
+    //     font-size: 1.4rem !important;
+    //     font-weight: normal !important;
+    //   }
+    //   .dt-paging .dt-paging-button:hover:not(.disabled):not(.current) {
+    //     background: linear-gradient(to bottom, #585858 0%, #111111 100%) !important;
+    //     color: white !important;
+    //     border: 1px solid #111111 !important;
+    //   }
+    //   .dt-paging .dt-paging-button.current {
+    //     background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 100%) !important;
+    //     color: #333333 !important;
+    //     font-weight: normal !important;
+    //     border: 1px solid #979797 !important;
+    //     padding-left: 0.75rem !important;
+    //     padding-right: 0.75rem !important;
+    //   }
+    //   .dt-paging .dt-paging-button.disabled {
+    //     color: #666666 !important;
+    //     cursor: not-allowed !important;
+    //     opacity: 0.7 !important; /* Keep it clear but indicate disabled */
+    //   }
+    //   /* --- UNIFIED TOP CONTROLS STYLING (Column Visibility, Reset Filters, Search) --- */
+    //   .dt-buttons .dt-button,
+    //   .dt-length select {
+    //     height: 38px !important;
+    //     padding: 0 16px !important;
+    //     border-radius: 6px !important;
+    //     border: 1px solid #cbd5e1 !important;
+    //     background: #ffffff !important;
+    //     color: #334155 !important;
+    //     font-size: 13px !important;
+    //     font-weight: 500 !important;
+    //     display: inline-flex !important;
+    //     align-items: center !important;
+    //     box-sizing: border-box !important;
+    //     margin: 0 !important;
+    //     transition: all 0.2s ease !important;
+    //     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    //   }
 
-      .dt-search input {
-        height: 38px !important;
-        padding: 0 16px !important;
-        border-radius: 6px !important;
-        border: 1px solid #cbd5e1 !important;
-        background: #ffffff !important;
-        color: #334155 !important;
-        font-size: 15px !important;
-        font-weight: 500 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
-        transition: all 0.2s ease !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-      }
+    //   .dt-search input {
+    //     height: 38px !important;
+    //     padding: 0 16px !important;
+    //     border-radius: 6px !important;
+    //     border: 1px solid #cbd5e1 !important;
+    //     background: #ffffff !important;
+    //     color: #334155 !important;
+    //     font-size: 15px !important;
+    //     font-weight: 500 !important;
+    //     display: inline-flex !important;
+    //     align-items: center !important;
+    //     box-sizing: border-box !important;
+    //     margin: 0 !important;
+    //     transition: all 0.2s ease !important;
+    //     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    //   }
 
-      .dt-buttons .dt-button:hover,
-      .reset-filters-btn:hover {
-        background: #f1f5f9 !important;
-        border-color: #94a3b8 !important;
-        color: #1e293b !important;
-      }
+    //   .dt-buttons .dt-button:hover,
+    //   .reset-filters-btn:hover {
+    //     background: #f1f5f9 !important;
+    //     border-color: #94a3b8 !important;
+    //     color: #1e293b !important;
+    //   }
 
-      .dt-search input:focus {
-        outline: none !important;
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-      }
+    //   .dt-search input:focus {
+    //     outline: none !important;
+    //     border-color: #3b82f6 !important;
+    //     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    //   }
 
-      /* Desktop Alignment */
-      @media (min-width: 1024px) {
-        .dt-layout-row:first-child .dt-layout-start {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          gap: 1.5rem !important;
-        }
-        .dt-layout-row:first-child .dt-layout-start {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          gap: 1.5rem !important;
-        }
-        .dt-layout-row:first-child .dt-layout-end {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          gap: 1.5rem !important;
-        }
-        .dt-buttons {
-          margin: 0 !important;
-          display: flex !important;
-          align-items: center !important;
-          gap: 8px !important;
-        }
-        .dt-search {
-          margin: 0 !important;
-          display: flex !important;
-          align-items: center !important;
-          gap: 8px !important;
-        }
-        .dt-search label {
-          display: flex !important;
-          align-items: center !important;
-          gap: 12px !important;
-          font-weight: 600 !important;
-          color: #64748b !important;
-          margin: 0 !important;
-          font-size: 15px !important;
-        }
-        .dt-search input {
-          width: 200px !important;
-        }
-        .dt-layout-row:last-child {
-          display: flex !important;
-          justify-content: space-between !important;
-          align-items: center !important;
-          width: 100% !important;
-          margin-top: 20px !important;
-        }
-        .dt-layout-row:last-child .dt-layout-end {
-          display: flex !important;
-          justify-content: flex-end !important;
-          flex-grow: 1 !important;
-        }
-      }
+    //   /* Desktop Alignment */
+    //   @media (min-width: 1024px) {
+    //     .dt-layout-row:first-child .dt-layout-start {
+    //       display: flex !important;
+    //       flex-direction: row !important;
+    //       align-items: center !important;
+    //       gap: 1.5rem !important;
+    //     }
+    //     .dt-layout-row:first-child .dt-layout-start {
+    //       display: flex !important;
+    //       flex-direction: row !important;
+    //       align-items: center !important;
+    //       gap: 1.5rem !important;
+    //     }
+    //     .dt-layout-row:first-child .dt-layout-end {
+    //       display: flex !important;
+    //       flex-direction: row !important;
+    //       align-items: center !important;
+    //       gap: 1.5rem !important;
+    //     }
+    //     .dt-buttons {
+    //       margin: 0 !important;
+    //       display: flex !important;
+    //       align-items: center !important;
+    //       gap: 8px !important;
+    //     }
+    //     .dt-search {
+    //       margin: 0 !important;
+    //       display: flex !important;
+    //       align-items: center !important;
+    //       gap: 8px !important;
+    //     }
+    //     .dt-search label {
+    //       display: flex !important;
+    //       align-items: center !important;
+    //       gap: 12px !important;
+    //       font-weight: 600 !important;
+    //       color: #64748b !important;
+    //       margin: 0 !important;
+    //       font-size: 15px !important;
+    //     }
+    //     .dt-search input {
+    //       width: 200px !important;
+    //     }
+    //     .dt-layout-row:last-child {
+    //       display: flex !important;
+    //       justify-content: space-between !important;
+    //       align-items: center !important;
+    //       width: 100% !important;
+    //       margin-top: 20px !important;
+    //     }
+    //     .dt-layout-row:last-child .dt-layout-end {
+    //       display: flex !important;
+    //       justify-content: flex-end !important;
+    //       flex-grow: 1 !important;
+    //     }
+    //   }
 
-      /* Mobile Sizing & Scaling */
-      @media (max-width: 768px) {
-        .dt-table-container .dt-layout-row {
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: center !important;
-          gap: 12px !important;
-          margin: 12px 0 !important;
-        }
-        .dt-layout-row .dt-layout-start,
-        .dt-layout-row .dt-layout-end {
-          display: contents !important;
-        }
-        .dt-info {
-          order: 1 !important;
-          width: 100% !important;
-          text-align: center !important;
-          display: flex !important;
-          justify-content: center !important;
-          margin-bottom: 4px !important;
-        }
-        .dt-length {
-          order: 2 !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-          margin-bottom: 4px !important;
-        }
-        .dt-search {
-          order: 3 !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-        }
-        .dt-search label {
-          display: flex !important;
-          align-items: center !important;
-          gap: 12px !important;
-          font-size: 15px !important;
-          width: auto !important;
-        }
-        .dt-search input {
-          width: 200px !important;
-          flex: 0 0 auto !important;
-        }
-        .dt-buttons {
-          order: 4 !important;
-          display: flex !important;
-          flex-wrap: nowrap !important; /* Ensure buttons stay in single row */
-          justify-content: center !important;
-          gap: 8px !important;
-          width: 100% !important;
-        }
-        .dt-paging {
-          order: 5 !important;
-          width: 100% !important;
-          display: flex !important;
-          justify-content: center !important;
-          margin-left: 0 !important;
-          margin-top: 8px !important;
-        }
-        .dt-buttons .dt-button,
-        .reset-filters-btn {
-          height: 38px !important;
-          padding: 0 12px !important; /* Adjust padding for better fit */
-          font-size: 13px !important;
-          width: auto !important;
-          flex: 0 0 auto !important;
-          white-space: nowrap !important; /* Prevent text wrapping inside buttons */
-        }
-      }
+    //   /* Mobile Sizing & Scaling */
+    //   @media (max-width: 768px) {
+    //     .dt-table-container .dt-layout-row {
+    //       display: flex !important;
+    //       flex-direction: column !important;
+    //       align-items: center !important;
+    //       gap: 12px !important;
+    //       margin: 12px 0 !important;
+    //     }
+    //     .dt-layout-row .dt-layout-start,
+    //     .dt-layout-row .dt-layout-end {
+    //       display: contents !important;
+    //     }
+    //     .dt-info {
+    //       order: 1 !important;
+    //       width: 100% !important;
+    //       text-align: center !important;
+    //       display: flex !important;
+    //       justify-content: center !important;
+    //       margin-bottom: 4px !important;
+    //     }
+    //     .dt-length {
+    //       order: 2 !important;
+    //       width: 100% !important;
+    //       display: flex !important;
+    //       justify-content: center !important;
+    //       margin-bottom: 4px !important;
+    //     }
+    //     .dt-search {
+    //       order: 3 !important;
+    //       width: 100% !important;
+    //       display: flex !important;
+    //       justify-content: center !important;
+    //     }
+    //     .dt-search label {
+    //       display: flex !important;
+    //       align-items: center !important;
+    //       gap: 12px !important;
+    //       font-size: 15px !important;
+    //       width: auto !important;
+    //     }
+    //     .dt-search input {
+    //       width: 200px !important;
+    //       flex: 0 0 auto !important;
+    //     }
+    //     .dt-buttons {
+    //       order: 4 !important;
+    //       display: flex !important;
+    //       flex-wrap: nowrap !important; /* Ensure buttons stay in single row */
+    //       justify-content: center !important;
+    //       gap: 8px !important;
+    //       width: 100% !important;
+    //     }
+    //     .dt-paging {
+    //       order: 5 !important;
+    //       width: 100% !important;
+    //       display: flex !important;
+    //       justify-content: center !important;
+    //       margin-left: 0 !important;
+    //       margin-top: 8px !important;
+    //     }
+    //     .dt-buttons .dt-button,
+    //     .reset-filters-btn {
+    //       height: 38px !important;
+    //       padding: 0 12px !important; /* Adjust padding for better fit */
+    //       font-size: 13px !important;
+    //       width: auto !important;
+    //       flex: 0 0 auto !important;
+    //       white-space: nowrap !important; /* Prevent text wrapping inside buttons */
+    //     }
+    //   }
 
-      /* Sheet Close Button Styling - Enlarged for better visibility */
-      [data-slot="sheet-content"] > button {
-        width: 36px !important;
-        height: 36px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        top: 1rem !important;
-        right: 1rem !important;
-        background: #f1f5f9 !important;
-        border-radius: 8px !important;
-        transition: all 0.2s ease !important;
-        opacity: 0.8 !important;
-      }
-      [data-slot="sheet-content"] > button:hover {
-        opacity: 1 !important;
-        background: #e2e8f0 !important;
-        transform: scale(1.05);
-      }
-      [data-slot="sheet-content"] > button svg {
-        width: 24px !important;
-        height: 24px !important;
-        stroke-width: 2.5 !important;
-      }
+    //   /* Sheet Close Button Styling - Enlarged for better visibility */
+    //   [data-slot="sheet-content"] > button {
+    //     width: 36px !important;
+    //     height: 36px !important;
+    //     display: flex !important;
+    //     align-items: center !important;
+    //     justify-content: center !important;
+    //     top: 1rem !important;
+    //     right: 1rem !important;
+    //     background: #f1f5f9 !important;
+    //     border-radius: 8px !important;
+    //     transition: all 0.2s ease !important;
+    //     opacity: 0.8 !important;
+    //   }
+    //   [data-slot="sheet-content"] > button:hover {
+    //     opacity: 1 !important;
+    //     background: #e2e8f0 !important;
+    //     transform: scale(1.05);
+    //   }
+    //   [data-slot="sheet-content"] > button svg {
+    //     width: 24px !important;
+    //     height: 24px !important;
+    //     stroke-width: 2.5 !important;
+    //   }
 
-    `;
+    // `;
     document.head.appendChild(style);
 
     const handleButtonClick = (event: Event) => {
@@ -1603,7 +1626,7 @@ export default function ReservationTable() {
 
   const columns = [
     {
-      title: "S No",
+      title: "S.No",
       data: null,
       render: (_data: any, _type: any, _row: any, meta: any) => {
         return meta.row + 1 + meta.settings._iDisplayStart;
@@ -1694,7 +1717,8 @@ export default function ReservationTable() {
       render: (data: string) => {
         if (!data || data === "NA" || data === "na") return "NA";
         const v = data.toLowerCase();
-        if (v === "nonvegetarian" || v === "non-vegetarian") return "Non-Vegetarian";
+        if (v === "nonvegetarian" || v === "non-vegetarian")
+          return "Non-Vegetarian";
         if (v === "vegetarian") return "Vegetarian";
         return data.charAt(0).toUpperCase() + data.slice(1).toLowerCase();
       },
@@ -1703,21 +1727,27 @@ export default function ReservationTable() {
       data: null,
       title: "Status",
       render: (_data: any, _type: any, row: Reservation) => {
-        const approvalBadge = row.approval_status === 'PENDING_DFO_APPROVAL'
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">⏳ Awaiting DFO</span>`
-          : row.approval_status === 'APPROVED'
-            ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
-            : row.approval_status === 'REJECTED'
-              ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
-              : '';
-        
-        let fmtStatus = row.status || '';
-        if (fmtStatus.toLowerCase() === 'not-reserved' || fmtStatus.toLowerCase() === 'not reserved') {
-          fmtStatus = 'Not-Reserved';
+        const approvalBadge =
+          row.approval_status === "PENDING_DFO_APPROVAL"
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fef3c7;color:#92400e;border:1px solid #fde68a;">⏳ Awaiting DFO</span>`
+            : row.approval_status === "APPROVED"
+              ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;">✓ DFO Approved</span>`
+              : row.approval_status === "REJECTED"
+                ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">✗ DFO Rejected</span>`
+                : "";
+
+        let fmtStatus = row.status || "";
+        if (
+          fmtStatus.toLowerCase() === "not-reserved" ||
+          fmtStatus.toLowerCase() === "not reserved"
+        ) {
+          fmtStatus = "Not-Reserved";
         } else if (fmtStatus) {
-          fmtStatus = fmtStatus.charAt(0).toUpperCase() + fmtStatus.slice(1).toLowerCase();
+          fmtStatus =
+            fmtStatus.charAt(0).toUpperCase() +
+            fmtStatus.slice(1).toLowerCase();
         }
-        
+
         return `<div style="display:flex;flex-direction:column;gap:2px;">${fmtStatus}${approvalBadge}</div>`;
       },
     },
@@ -1823,8 +1853,9 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${perms.canEdit
-            ? `
+            ${
+              perms.canEdit
+                ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1847,8 +1878,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-            : ""
-          }
+                : ""
+            }
           </div>
         `;
       },
@@ -1892,115 +1923,7 @@ export default function ReservationTable() {
         </div>
 
         <div ref={tableRef} className="w-full">
-          <DataTable
-            ref={dtRef}
-            data={reservations}
-            columns={columns}
-            className="display nowrap w-full border border-gray-400"
-            options={{
-              pageLength: 10,
-              lengthMenu: [5, 10, 25, 50, 100],
-              order: [[0, "asc"]],
-              searching: true,
-              paging: true,
-              info: true,
-              scrollX: true,
-              scrollCollapse: true,
-              scrollY: "400px",
-              language: {
-                paginate: {
-                  first: "«",
-                  last: "»",
-                  next: "›",
-                  previous: "‹",
-                },
-              } as any,
-              layout: {
-                topStart: ["info", "buttons"],
-                topEnd: "search",
-                bottomStart: "pageLength",
-                bottomEnd: "paging",
-              },
-              buttons: [
-                {
-                  extend: "colvis",
-                  text: "Column Visibility",
-                  collectionLayout: "fixed two-column",
-                },
-              ],
-              columnControl: [
-                "order",
-                ["orderAsc", "orderDesc", "spacer", "search"],
-              ],
-              initComplete: function () {
-                const api = (this as any).api();
-                const wrapper = api.table().container();
-                const moveResetButton = () => {
-                  const btn = wrapper.querySelector(".reset-filters-btn") as HTMLElement;
-                  if (!btn) return;
-
-                  const isMobile = window.innerWidth < 1024;
-                  const buttonsContainer = wrapper.querySelector(".dt-buttons");
-                  const searchContainer = wrapper.querySelector(".dt-search");
-
-                  if (isMobile && buttonsContainer) {
-                    if (btn.parentElement !== buttonsContainer) {
-                      buttonsContainer.appendChild(btn);
-                    }
-                  } else if (!isMobile && searchContainer) {
-                    if (btn.parentElement !== searchContainer) {
-                      searchContainer.appendChild(btn);
-                    }
-                  }
-                };
-
-                if (!wrapper.querySelector(".reset-filters-btn")) {
-                  const btn = document.createElement("button");
-                  btn.className = "reset-filters-btn";
-                  btn.textContent = "Reset Filters";
-
-                  btn.onclick = () => {
-                    api.search("").columns().search("");
-                    if (api.columns().ccSearchClear) {
-                      (api.columns() as any).ccSearchClear();
-                    }
-
-                    wrapper.querySelectorAll("input").forEach((input: any) => {
-                      input.value = "";
-                      input.dispatchEvent(new Event("input", { bubbles: true }));
-                      input.dispatchEvent(new Event("change", { bubbles: true }));
-                    });
-
-                    wrapper.querySelectorAll("select").forEach((select: any) => {
-                      if (select.options.length > 0) {
-                        select.selectedIndex = 0;
-                        select.dispatchEvent(new Event("change", { bubbles: true }));
-                      }
-                    });
-
-                    wrapper.querySelectorAll(".dtcc-button_active").forEach((btn: any) => {
-                      btn.classList.remove("dtcc-button_active");
-                    });
-
-                    api.draw();
-                  };
-
-                  // Initial placement
-                  const initialTarget = window.innerWidth < 1024
-                    ? wrapper.querySelector(".dt-buttons")
-                    : wrapper.querySelector(".dt-search");
-
-                  if (initialTarget) {
-                    initialTarget.appendChild(btn);
-                  } else {
-                    wrapper.appendChild(btn);
-                  }
-
-                  window.addEventListener("resize", moveResetButton);
-                }
-              },
-            }}
-          />
+          <DataTable data={reservations} columns={columns} />
         </div>
 
         {/* Removed edit & confirmation dialogs */}
@@ -2066,20 +1989,40 @@ export default function ReservationTable() {
                           onClick={() => downloadPDF(selectedReservation)}
                           className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200"
                           style={{
-                            background: 'linear-gradient(135deg, #334155 0%, #1e293b 100%)',
-                            outline: 'none',
+                            background:
+                              "linear-gradient(135deg, #334155 0%, #1e293b 100%)",
+                            outline: "none",
                           }}
-                          onMouseOver={e => {
-                            (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
-                            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                          onMouseOver={(e) => {
+                            (
+                              e.currentTarget as HTMLButtonElement
+                            ).style.background =
+                              "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)";
+                            (
+                              e.currentTarget as HTMLButtonElement
+                            ).style.transform = "translateY(-1px)";
                           }}
-                          onMouseOut={e => {
-                            (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, #334155 0%, #1e293b 100%)';
-                            (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                          onMouseOut={(e) => {
+                            (
+                              e.currentTarget as HTMLButtonElement
+                            ).style.background =
+                              "linear-gradient(135deg, #334155 0%, #1e293b 100%)";
+                            (
+                              e.currentTarget as HTMLButtonElement
+                            ).style.transform = "translateY(0)";
                           }}
                           title="Download reservation as PDF"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-4 h-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
                             <line x1="12" y1="18" x2="12" y2="12" />
@@ -2324,7 +2267,9 @@ export default function ReservationTable() {
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(selectedReservation.checkIn)}
+                              {formatDateForDisplay(
+                                selectedReservation.checkIn,
+                              )}
                             </span>
                           </div>
                         )}
@@ -2338,12 +2283,16 @@ export default function ReservationTable() {
                           <DatePickerField
                             className="w-full mt-auto"
                             value={editForm?.checkOut || ""}
-                            onChange={(val) => handleEditChange("checkOut", val)}
+                            onChange={(val) =>
+                              handleEditChange("checkOut", val)
+                            }
                           />
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(selectedReservation.checkOut)}
+                              {formatDateForDisplay(
+                                selectedReservation.checkOut,
+                              )}
                             </span>
                           </div>
                         )}
@@ -2358,7 +2307,8 @@ export default function ReservationTable() {
                             </Label>
                             <div className="p-3 bg-gray-100 rounded-md border border-gray-300 w-20 flex items-center justify-center">
                               <span className="text-sm text-gray-600 font-medium">
-                                {editForm?.noOfDays ?? selectedReservation.noOfDays}
+                                {editForm?.noOfDays ??
+                                  selectedReservation.noOfDays}
                               </span>
                             </div>
                           </div>
@@ -2369,7 +2319,8 @@ export default function ReservationTable() {
                             </Label>
                             <div className="p-3 bg-gray-100 rounded-md border border-gray-300 w-20 flex items-center justify-center">
                               <span className="text-sm text-gray-600 font-medium">
-                                {editForm?.noOfNights ?? selectedReservation.noOfNights}
+                                {editForm?.noOfNights ??
+                                  selectedReservation.noOfNights}
                               </span>
                             </div>
                           </div>
@@ -2384,13 +2335,15 @@ export default function ReservationTable() {
                           <DatePickerField
                             className="w-full bg-gray-100 cursor-not-allowed mt-auto"
                             value={editForm?.reservationDate || ""}
-                            onChange={() => { }}
+                            onChange={() => {}}
                             disabled
                           />
                         ) : (
                           <div className="p-3 bg-gray-50 rounded-md border flex-1 flex items-center">
                             <span className="text-sm text-gray-900">
-                              {formatDateForDisplay(selectedReservation.reservationDate)}
+                              {formatDateForDisplay(
+                                selectedReservation.reservationDate,
+                              )}
                             </span>
                           </div>
                         )}
@@ -2444,7 +2397,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="col-span-1 md:col-span-1 flex flex-col">
-                        <Label className="text-sm font-medium text-gray-700 mb-2 block truncate" title="No. of Rooms">
+                        <Label
+                          className="text-sm font-medium text-gray-700 mb-2 block truncate"
+                          title="No. of Rooms"
+                        >
                           No. of Rooms
                         </Label>
                         {sheetMode === "edit" ? (
@@ -2477,7 +2433,10 @@ export default function ReservationTable() {
                     </h3>
                     <div className="grid grid-cols-4 gap-2 sm:gap-4">
                       <div className="flex flex-col h-full">
-                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Guests">
+                        <Label
+                          className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block"
+                          title="Guests"
+                        >
                           Guests
                         </Label>
                         {sheetMode === "edit" ? (
@@ -2502,7 +2461,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col h-full">
-                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Children">
+                        <Label
+                          className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block"
+                          title="Children"
+                        >
                           Children
                         </Label>
                         {sheetMode === "edit" ? (
@@ -2519,7 +2481,14 @@ export default function ReservationTable() {
                               }
                             />
                             <span className="text-[8px] text-gray-400 leading-none font-medium">
-                              Max: {parseInt(String(editForm?.numberOfRooms ?? selectedReservation?.numberOfRooms ?? 0)) * 2}
+                              Max:{" "}
+                              {parseInt(
+                                String(
+                                  editForm?.numberOfRooms ??
+                                    selectedReservation?.numberOfRooms ??
+                                    0,
+                                ),
+                              ) * 2}
                             </span>
                           </div>
                         ) : (
@@ -2532,7 +2501,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col h-full">
-                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Extra Guests">
+                        <Label
+                          className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block"
+                          title="Extra Guests"
+                        >
                           Extra Guests
                         </Label>
                         {sheetMode === "edit" ? (
@@ -2557,7 +2529,10 @@ export default function ReservationTable() {
                       </div>
 
                       <div className="flex flex-col h-full">
-                        <Label className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block" title="Total Guests">
+                        <Label
+                          className="text-xs md:text-sm font-semibold text-gray-700 mb-1 truncate block"
+                          title="Total Guests"
+                        >
                           Total Guests
                         </Label>
                         <div className="p-2 bg-blue-50 rounded-md border border-blue-200 h-11 flex items-center justify-center">
@@ -2570,8 +2545,6 @@ export default function ReservationTable() {
                       </div>
                     </div>
                   </div>
-
-
 
                   {/* Pricing Information */}
                   <div className="border-b pb-6">
@@ -2681,59 +2654,59 @@ export default function ReservationTable() {
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                              Food Preference
-                            </Label>
-                            {sheetMode === "edit" ? (
-                              <Select
-                                value={editForm?.foodPreference || ""}
-                                onValueChange={(value) =>
-                                  handleEditChange("foodPreference", value)
-                                }
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select preference" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Vegetarian">
-                                    Vegetarian
-                                  </SelectItem>
-                                  <SelectItem value="Non-Vegetarian">
-                                    Non-Vegetarian
-                                  </SelectItem>
-                                  <SelectItem value="Vegan">Vegan</SelectItem>
-                                  <SelectItem value="Jain">Jain</SelectItem>
-                                  <SelectItem value="No Preference">
-                                    No Preference
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <div className="p-3 bg-gray-50 rounded-md border">
-                                <span className="text-sm text-gray-900">
-                                  {selectedReservation.foodPreference || "N/A"}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                            Food Preference
+                          </Label>
+                          {sheetMode === "edit" ? (
+                            <Select
+                              value={editForm?.foodPreference || ""}
+                              onValueChange={(value) =>
+                                handleEditChange("foodPreference", value)
+                              }
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select preference" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Vegetarian">
+                                  Vegetarian
+                                </SelectItem>
+                                <SelectItem value="Non-Vegetarian">
+                                  Non-Vegetarian
+                                </SelectItem>
+                                <SelectItem value="Vegan">Vegan</SelectItem>
+                                <SelectItem value="Jain">Jain</SelectItem>
+                                <SelectItem value="No Preference">
+                                  No Preference
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <div className="p-3 bg-gray-50 rounded-md border">
+                              <span className="text-sm text-gray-900">
+                                {selectedReservation.foodPreference || "N/A"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                              Foods Billed
-                            </Label>
-                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                              <span className="text-sm text-gray-600">
-                                {(Number(selectedReservation.guests) || 0) +
-                                  (Number(selectedReservation.extraGuests) || 0)}
-                              </span>
-                            </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                            Foods Billed
+                          </Label>
+                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                            <span className="text-sm text-gray-600">
+                              {(Number(selectedReservation.guests) || 0) +
+                                (Number(selectedReservation.extraGuests) || 0)}
+                            </span>
                           </div>
-                        )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2835,7 +2808,6 @@ export default function ReservationTable() {
                         </div>
                       )}
                     </div>
-
                   </div>
 
                   {/* DFO Approval Status — shown only if approval flow applies */}
@@ -2844,29 +2816,41 @@ export default function ReservationTable() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         DFO Approval Status
                       </h3>
-                      {selectedReservation.approval_status === 'PENDING_DFO_APPROVAL' && (
+                      {selectedReservation.approval_status ===
+                        "PENDING_DFO_APPROVAL" && (
                         <div className="flex items-center gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-md">
                           <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
                           <div>
-                            <span className="text-sm font-semibold text-amber-800">Awaiting DFO Approval</span>
-                            <p className="text-xs text-amber-600 mt-0.5">Room is blocked. Rooms will be auto-released if not approved within 1 hour.</p>
+                            <span className="text-sm font-semibold text-amber-800">
+                              Awaiting DFO Approval
+                            </span>
+                            <p className="text-xs text-amber-600 mt-0.5">
+                              Room is blocked. Rooms will be auto-released if
+                              not approved within 1 hour.
+                            </p>
                           </div>
                         </div>
                       )}
-                      {selectedReservation.approval_status === 'APPROVED' && (
+                      {selectedReservation.approval_status === "APPROVED" && (
                         <div className="flex items-center gap-2.5 p-3 bg-green-50 border border-green-200 rounded-md">
                           <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
-                          <span className="text-sm font-semibold text-green-800">Approved by DFO</span>
+                          <span className="text-sm font-semibold text-green-800">
+                            Approved by DFO
+                          </span>
                         </div>
                       )}
-                      {selectedReservation.approval_status === 'REJECTED' && (
+                      {selectedReservation.approval_status === "REJECTED" && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                           <div className="flex items-center gap-2.5 mb-1">
                             <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0" />
-                            <span className="text-sm font-semibold text-red-800">Rejected / Auto-Released by DFO</span>
+                            <span className="text-sm font-semibold text-red-800">
+                              Rejected / Auto-Released by DFO
+                            </span>
                           </div>
                           {selectedReservation.approval_remarks && (
-                            <p className="text-xs text-red-600 mt-1 pl-5">{selectedReservation.approval_remarks}</p>
+                            <p className="text-xs text-red-600 mt-1 pl-5">
+                              {selectedReservation.approval_remarks}
+                            </p>
                           )}
                         </div>
                       )}
@@ -2959,9 +2943,9 @@ export default function ReservationTable() {
                             value={
                               editForm?.paymentTransactionDateTime
                                 ? editForm.paymentTransactionDateTime.slice(
-                                  0,
-                                  10,
-                                )
+                                    0,
+                                    10,
+                                  )
                                 : ""
                             }
                             onChange={(val) =>
@@ -2976,8 +2960,8 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
                                 ? formatDateTimeForDisplay(
-                                  selectedReservation.paymentTransactionDateTime,
-                                )
+                                    selectedReservation.paymentTransactionDateTime,
+                                  )
                                 : "N/A"}
                             </span>
                           </div>
@@ -3075,11 +3059,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.refundRequestedDateTime
                                 ? formatDateForDisplay(
-                                  selectedReservation.refundRequestedDateTime.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                    selectedReservation.refundRequestedDateTime.slice(
+                                      0,
+                                      10,
+                                    ),
+                                  )
                                 : "N/A"}
                             </span>
                           </div>
@@ -3110,11 +3094,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.dateOfRefund
                                 ? formatDateForDisplay(
-                                  selectedReservation.dateOfRefund.slice(
-                                    0,
-                                    10,
-                                  ),
-                                )
+                                    selectedReservation.dateOfRefund.slice(
+                                      0,
+                                      10,
+                                    ),
+                                  )
                                 : "N/A"}
                             </span>
                           </div>

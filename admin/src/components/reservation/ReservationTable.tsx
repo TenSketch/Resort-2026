@@ -6,13 +6,8 @@ import "datatables.net-buttons";
 import "datatables.net-buttons/js/buttons.colVis.js";
 import "datatables.net-columncontrol";
 
-// Styles
-// import "datatables.net-dt/css/dataTables.dataTables.css";
-// import "datatables.net-buttons-dt/css/buttons.dataTables.css";
-// import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
-// import "datatables.net-fixedcolumns";
-// import "datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.css";
+
 
 // Using backend data instead of local JSON
 import { useEffect, useRef, useState } from "react";
@@ -1893,8 +1888,8 @@ export default function ReservationTable() {
   return (
     <>
       <div className="w-full max-w-full overflow-hidden dt-table-container">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-slate-800">Reservations</h2>
+        <div className="flex justify-between items-center mt-4">
+          <h2 className="text-xl font-semibold text-slate-800"> Resort Reservations</h2>
           <button
             onClick={() => (perms.canExport ? exportToExcel() : null)}
             className={`inline-flex items-center h-[38px] px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}

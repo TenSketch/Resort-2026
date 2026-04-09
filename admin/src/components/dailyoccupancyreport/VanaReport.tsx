@@ -1,5 +1,3 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 import "datatables.net-buttons-dt/css/buttons.dataTables.css";
 import "datatables.net-buttons";
@@ -7,11 +5,11 @@ import "datatables.net-buttons/js/buttons.colVis.js";
 import "datatables.net-columncontrol-dt";
 import "datatables.net-columncontrol-dt/css/columnControl.dataTables.css";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePermissions } from "@/lib/AdminProvider";
 import PageLoader from "@/components/shared/PageLoader";
+import DataTable from "../dataTable/DataTable";
 
-DataTable.use(DT);
 
 interface Reservation {
   roomName: string;
@@ -182,24 +180,24 @@ export default function DailyOccupancyReport() {
     };
   }, []);
 
-  const totals = useMemo(() => {
-    const sum = (field: keyof Reservation) =>
-      reservationData.reduce((acc, row) => {
-        if (row.status) return acc;
-        const value = row[field];
-        return acc + (typeof value === "number" ? value : 0);
-      }, 0);
+  // const totals = useMemo(() => {
+  //   const sum = (field: keyof Reservation) =>
+  //     reservationData.reduce((acc, row) => {
+  //       if (row.status) return acc;
+  //       const value = row[field];
+  //       return acc + (typeof value === "number" ? value : 0);
+  //     }, 0);
 
-    return {
-      paidAmount: sum("paidAmount"),
-      guests: sum("guests"),
-      extraGuests: sum("extraGuests"),
-      children: sum("children"),
-      totalGuests: sum("totalGuests"),
-      noOfDays: sum("noOfDays"),
-      remainingDays: sum("remainingDays"),
-    };
-  }, [reservationData]);
+  //   return {
+  //     paidAmount: sum("paidAmount"),
+  //     guests: sum("guests"),
+  //     extraGuests: sum("extraGuests"),
+  //     children: sum("children"),
+  //     totalGuests: sum("totalGuests"),
+  //     noOfDays: sum("noOfDays"),
+  //     remainingDays: sum("remainingDays"),
+  //   };
+  // }, [reservationData]);
 
   const columns: any[] = [
     { title: "Room Name", data: "roomName" },
@@ -221,6 +219,7 @@ export default function DailyOccupancyReport() {
   if (isLoading) {
     return <PageLoader message="Loading report data..." />;
   }
+
 
   return (
     <div className="p-6 w-full">
@@ -261,33 +260,32 @@ export default function DailyOccupancyReport() {
       <div className="overflow-auto" style={{ position: "relative" }}>
         <div
           ref={tableRef}
-          style={{ position: "relative", minWidth: "max-content" }}
+          className="w-full"
         >
           <DataTable
-            ref={dtRef}
             data={reservationData}
             columns={columns}
-            className="display nowrap"
-            options={{
-              destroy: true,
-              pageLength: 25,
-              lengthMenu: [5, 10, 25, 50, 100],
-              order: [[0, "asc"]],
-              searching: true,
-              paging: true,
-              info: true,
-              dom: "Bfrtip",
-              buttons: [
-                {
-                  extend: "colvis",
-                  className:
-                    "px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm",
-                  text: "Column Visibility",
-                },
-              ],
-            }}
+            // className="display nowrap"
+            // options={{
+            //   destroy: true,
+            //   pageLength: 25,
+            //   lengthMenu: [5, 10, 25, 50, 100],
+            //   order: [[0, "asc"]],
+            //   searching: true,
+            //   paging: true,
+            //   info: true,
+            //   dom: "Bfrtip",
+            //   buttons: [
+            //     {
+            //       extend: "colvis",
+            //       className:
+            //         "px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm",
+            //       text: "Column Visibility",
+            //     },
+            //   ],
+            // }}
           >
-            <thead>
+            {/* <thead>
               <tr>
                 <th>Room Name</th>
                 <th>Booking ID</th>
@@ -300,8 +298,8 @@ export default function DailyOccupancyReport() {
                 <th>No. of Days</th>
                 <th>Remaining Days</th>
               </tr>
-            </thead>
-            <tfoot>
+            </thead> */}
+            {/* <tfoot>
               <tr>
                 <th>Total</th>
                 <th>—</th>
@@ -314,7 +312,7 @@ export default function DailyOccupancyReport() {
                 <th>{totals.noOfDays}</th>
                 <th>{totals.remainingDays}</th>
               </tr>
-            </tfoot>
+            </tfoot> */}
           </DataTable>
         </div>
       </div>

@@ -11,7 +11,7 @@ const notificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['NEW_RESERVATION', 'RESERVATION_APPROVED', 'RESERVATION_REJECTED', 'RESERVATION_CANCELLED', 'SYSTEM', 'OTHER'],
+        enum: ['NEW_RESERVATION', 'RESERVATION_APPROVED', 'RESERVATION_REJECTED', 'RESERVATION_CANCELLED', 'PAYMENT_SUCCESS', 'AUTO_RELEASED', 'SYSTEM', 'OTHER'],
         default: 'OTHER'
     },
     // Which roles should see this notification (e.g. ['superadmin', 'dfo'])

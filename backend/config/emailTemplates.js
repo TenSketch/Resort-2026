@@ -815,3 +815,114 @@ export const TREK_RESERVATION_SUCCESS_EMAIL_ADMIN_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const APPROVAL_REQUEST_EMAIL_TEMPLATE = `
+<div style="font-family: Arial, sans-serif; color: #000000; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px;">
+    <h2 style="color: #4d9900; text-align: center;">New Reservation Pending Approval</h2>
+    
+    <p style="font-size: 16px;">Dear <strong>DFO</strong>,</p>
+    
+    <p style="font-size: 16px;">A new reservation has been created that requires your review and approval. Here are the booking details:</p>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border-left: 4px solid #4d9900; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Booking ID:</strong> {{BOOKING_ID}}</p>
+        <p style="margin: 5px 0;"><strong>Guest Name:</strong> {{GUEST_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Resort:</strong> {{RESORT_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Check-in:</strong> {{CHECK_IN}}</p>
+        <p style="margin: 5px 0;"><strong>Total Amount:</strong> INR {{AMOUNT}}</p>
+    </div>
+    
+    <p style="font-size: 16px;">Please log in to the admin panel to review and process this request. You can click the button below to go directly to the approval page.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{APPROVAL_LINK}}" 
+           style="background-color: #4d9900; color: #ffffff; text-decoration: none; display: inline-block; padding: 15px 30px; font-size: 18px; border-radius: 8px; font-weight: bold;">
+            REVIEW & APPROVE
+        </a>
+    </div>
+    
+    <p style="font-size: 16px; margin-top: 30px;">
+        Best regards,<br>
+        <strong>Vanavihari Booking System</strong>
+    </p>
+</div>
+`;
+
+export const APPROVAL_RESULT_EMAIL_TEMPLATE = `
+<div style="font-family: Arial, sans-serif; color: #000000; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+    <div style="background-color: {{STATUS_COLOR}}; color: #fff; padding: 15px; text-align: center; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;">
+        <h2 style="margin: 0;">Reservation {{STATUS}}</h2>
+    </div>
+    
+    <p style="font-size: 16px;">Dear <strong>{{CREATOR_NAME}}</strong>,</p>
+    
+    <p style="font-size: 16px;">{{STATUS_MESSAGE}}</p>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border-left: 4px solid {{STATUS_COLOR}}; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Booking ID:</strong> {{BOOKING_ID}}</p>
+        <p style="margin: 5px 0;"><strong>Guest Name:</strong> {{GUEST_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Resort:</strong> {{RESORT_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Check-in:</strong> {{CHECK_IN}}</p>
+        <p style="margin: 5px 0;"><strong>Check-out:</strong> {{CHECK_OUT}}</p>
+        <p style="margin: 5px 0;"><strong>Total Amount:</strong> INR {{AMOUNT}}</p>
+        <p style="margin: 5px 0;"><strong>Decision By:</strong> {{APPROVED_BY}}</p>
+        <p style="margin: 5px 0;"><strong>Remarks:</strong> {{REMARKS}}</p>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{DASHBOARD_LINK}}" 
+           style="background-color: #4d9900; color: #ffffff; text-decoration: none; display: inline-block; padding: 15px 30px; font-size: 16px; border-radius: 8px; font-weight: bold;">
+            VIEW IN DASHBOARD
+        </a>
+    </div>
+    
+    <p style="font-size: 16px; margin-top: 30px;">
+        Best regards,<br>
+        <strong>Vanavihari Booking System</strong><br>
+        <a href="http://www.vanavihari.com" style="color: #4d9900;">www.vanavihari.com</a>
+    </p>
+</div>
+`;
+
+export const AUTO_RELEASE_EMAIL_TEMPLATE = `
+<div style="font-family: Arial, sans-serif; color: #000000; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+    <div style="background-color: #dc3545; color: #fff; padding: 15px; text-align: center; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;">
+        <h2 style="margin: 0;">⏰ Reservation Auto-Released</h2>
+    </div>
+    
+    <p style="font-size: 16px;">Dear <strong>{{CREATOR_NAME}}</strong>,</p>
+    
+    <p style="font-size: 16px;">The following reservation has been <strong>automatically released</strong> because it was not approved by DFO within the 12-hour approval window.</p>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Booking ID:</strong> {{BOOKING_ID}}</p>
+        <p style="margin: 5px 0;"><strong>Guest Name:</strong> {{GUEST_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Resort:</strong> {{RESORT_NAME}}</p>
+        <p style="margin: 5px 0;"><strong>Check-in:</strong> {{CHECK_IN}}</p>
+        <p style="margin: 5px 0;"><strong>Check-out:</strong> {{CHECK_OUT}}</p>
+        <p style="margin: 5px 0;"><strong>Total Amount:</strong> INR {{AMOUNT}}</p>
+        <p style="margin: 5px 0;"><strong>Created At:</strong> {{CREATED_AT}}</p>
+        <p style="margin: 5px 0;"><strong>Expired At:</strong> {{EXPIRED_AT}}</p>
+    </div>
+    
+    <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0; font-size: 14px; color: #856404;">
+            <strong>⚠️ Action Required:</strong> The rooms for this booking are now available again. If the guest still needs the reservation, please create a new booking from the admin panel.
+        </p>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{DASHBOARD_LINK}}" 
+           style="background-color: #4d9900; color: #ffffff; text-decoration: none; display: inline-block; padding: 15px 30px; font-size: 16px; border-radius: 8px; font-weight: bold;">
+            GO TO DASHBOARD
+        </a>
+    </div>
+    
+    <p style="font-size: 16px; margin-top: 30px;">
+        Best regards,<br>
+        <strong>Vanavihari Booking System</strong><br>
+        <a href="http://www.vanavihari.com" style="color: #4d9900;">www.vanavihari.com</a>
+    </p>
+</div>
+`;
+

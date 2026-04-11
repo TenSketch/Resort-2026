@@ -19,7 +19,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Check-in date</mat-label>
           <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" (click)="picker.open()"
-            placeholder="Check-in date" formControlName="checkinDate" required />
+            placeholder="Check-in date" formControlName="checkinDate" (dateChange)="onDateSelectionChange()" required />
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkinDate')?.invalid">
@@ -32,7 +32,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Check-out date</mat-label>
           <input matInput [matDatepicker]="picker1" (click)="picker1.open()" placeholder="Check-out date"
-            formControlName="checkoutDate" [min]="minCheckoutDate" [max]="maxDate" required />
+            formControlName="checkoutDate" [min]="minCheckoutDate" [max]="maxDate" (dateChange)="onDateSelectionChange()" required />
           <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
           <mat-error *ngIf="searchForm.get('checkoutDate')?.invalid">
@@ -49,7 +49,7 @@
       </div>
     </div>
     <div class="search-helper-text text-center">
-      select check-in, check-out dates and click "Search" to check availability
+      Select your dates to auto-check availability instantly
     </div>
   </form>
 </section>

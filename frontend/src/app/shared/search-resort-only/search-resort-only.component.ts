@@ -27,6 +27,7 @@ export class SearchResortOnlyComponent implements OnInit {
   // State
   selectionChanged = false;
   isModalVisible = false;
+  private lastAutoSearchKey: string = '';
 
   constructor(
     private searchService: SearchService,
@@ -208,6 +209,24 @@ export class SearchResortOnlyComponent implements OnInit {
     } else {
       this.proceedWithSearch();
     }
+  }
+
+  onDateSelectionChange(): void {
+    if (this.searchForm.invalid) {
+      return;
+    }
+
+    const selectedResort = this.searchForm.get('selectedResort')?.value;
+    const checkinDate = this.searchForm.get('checkinDate')?.value;
+    const checkoutDate = this.searchForm.get('checkoutDate')?.value;
+    const autoSearchKey = `${selectedResort}|${checkinDate}|${checkoutDate}`;
+
+    if (this.lastAutoSearchKey === autoSearchKey) {
+      return;
+    }
+
+    this.lastAutoSearchKey = autoSearchKey;
+    this.submitSearch();
   }
 
   triggerModal(): void {

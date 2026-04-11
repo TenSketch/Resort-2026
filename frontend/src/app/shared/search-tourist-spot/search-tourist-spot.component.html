@@ -12,6 +12,7 @@
             (click)="picker.open()" 
             placeholder="Visit date"
             formControlName="visitDate"
+            (dateChange)="onVisitDateChange()"
             required />
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>

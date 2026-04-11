@@ -13,6 +13,7 @@ export class SearchTentComponent implements OnInit, OnChanges {
   tentSpots: any[] = [];
   minDate: Date;
   maxDate: Date;
+  private lastAutoSearchKey: string = '';
 
   @Input() preselectedTentSpotId: string = '';
   @Output() searchSubmitted = new EventEmitter<{
@@ -121,5 +122,21 @@ export class SearchTentComponent implements OnInit, OnChanges {
         checkoutDate: checkoutDate.toISOString()
       });
     }
+  }
+
+  onDateSelectionChange(): void {
+    if (this.searchForm.invalid) {
+      return;
+    }
+
+    const formValues = this.searchForm.value;
+    const autoSearchKey = `${formValues.selectedTentSpot}|${formValues.checkinDate}|${formValues.checkoutDate}`;
+
+    if (this.lastAutoSearchKey === autoSearchKey) {
+      return;
+    }
+
+    this.lastAutoSearchKey = autoSearchKey;
+    this.submitSearch();
   }
 }

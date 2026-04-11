@@ -10,6 +10,7 @@ export class SearchTouristSpotComponent implements OnInit {
   searchForm!: FormGroup;
   minDate!: Date;
   maxDate!: Date;
+  private lastAutoSearchKey: string = '';
 
   @Output() searchSubmitted = new EventEmitter<{
     visitDate: string;
@@ -44,5 +45,20 @@ export class SearchTouristSpotComponent implements OnInit {
         visitDate: visitDate.toISOString()
       });
     }
+  }
+
+  onVisitDateChange(): void {
+    if (this.searchForm.invalid) {
+      return;
+    }
+
+    const visitDate = this.searchForm.get('visitDate')?.value;
+    const autoSearchKey = `${visitDate}`;
+    if (this.lastAutoSearchKey === autoSearchKey) {
+      return;
+    }
+
+    this.lastAutoSearchKey = autoSearchKey;
+    this.submitSearch();
   }
 }

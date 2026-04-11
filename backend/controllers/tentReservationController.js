@@ -1,8 +1,19 @@
 import TentReservation from '../models/tentReservationModel.js';
 import Tent from '../models/tentModel.js';
 import TentSpot from '../models/tentSpotModel.js';
+import Counter from '../models/counterModel.js';
 
-// Generate unique booking ID
+// Helper for atomic serial number generation
+const getNextSequenceValue = async (sequenceName) => {
+  const sequenceDocument = await Counter.findOneAndUpdate(
+    { id: sequenceName },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  )
+  return sequenceDocument.seq
+}
+
+// Generate unique booking ID safely
 const generateBookingId = async () => {
   // Get current date/time
   const now = new Date();
@@ -12,17 +23,12 @@ const generateBookingId = async () => {
   const year = String(now.getFullYear()).slice(-2);
   const month = String(now.getMonth() + 1).padStart(2, '0');
 
-  // Get today's serial
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const count = await TentReservation.countDocuments({
-    createdAt: { $gte: today, $lt: tomorrow }
-  });
-  const serial = String(count + 1).padStart(3, '0');
+  // Use atomic counter for daily serial
+  const sequenceName = `tent_booking_${year}${month}${day}`;
+  const serialNum = await getNextSequenceValue(sequenceName);
+  const serial = String(serialNum).padStart(3, '0');
 
-  // Generate booking ID: TENT-VM3015072512001 (TENT- + DateTime + Serial)
+  // Generate booking ID: TENT-VM + DateTime + Serial
   return `TENT-VM${day}${hour}${minute}${year}${month}${serial}`;
 };
 

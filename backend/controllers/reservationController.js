@@ -10,7 +10,19 @@ import { sendCancellationSMS } from '../services/reservationSmsService.js'
 import { calculateRefundAmount } from '../utils/refundCalculator.js'
 import PaymentTransaction from '../models/paymentTransactionModel.js'
 import { initiateBilldeskRefund } from '../services/refundBillDesk.js'
-import { sendCancellationEmail } from '../services/reservationEmailService.js'
+import { sendCancellationEmail, sendApprovalRequestEmail, sendApprovalResultEmail, sendAutoReleaseEmail } from '../services/reservationEmailService.js'
+import { lockRooms, releaseLocks } from '../utils/bookingLock.js'
+import Counter from '../models/counterModel.js'
+
+// Helper for atomic serial number generation
+const getNextSequenceValue = async (sequenceName) => {
+  const sequenceDocument = await Counter.findOneAndUpdate(
+    { id: sequenceName },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  )
+  return sequenceDocument.seq
+}
 
 
 
@@ -37,6 +49,16 @@ export const expirePendingReservations = async () => {
 
     if (expiredUserReservations.modifiedCount > 0) {
       console.log(`Expired ${expiredUserReservations.modifiedCount} user pending reservations`)
+      
+      // Release locks for expired reservations
+      const expiredDocs = await Reservation.find({
+        status: 'not-reserved',
+        expiresAt: { $lte: now } // Rough filter for ones just expired
+      }).select('_id').lean()
+      
+      for (const doc of expiredDocs) {
+        await releaseLocks(doc._id)
+      }
     }
 
     // 2. Auto-release 12-hour DFO-pending bookings that were never approved/rejected
@@ -60,18 +82,31 @@ export const expirePendingReservations = async () => {
         }
       )
 
-      // Send a notification to each booking creator
+      // Release locks for DFO expired reservations
+      for (const id of ids) {
+        await releaseLocks(id)
+      }
+
+      // Send a notification + email to each booking creator
       const notifPromises = dfoExpired.map(r => {
         if (!r.createdBy) return Promise.resolve()
         return Notification.create({
           title: 'Reservation Auto-Released',
           message: `Booking ${r.bookingId || r._id} was not approved by DFO within 12 hours and has been automatically released.`,
-          type: 'RESERVATION_CANCELLED',
+          type: 'AUTO_RELEASED',
           targetUser: r.createdBy,
           link: `/reservation/all`
         }).catch(e => console.error('Notification error for auto-release', e))
       })
       await Promise.all(notifPromises)
+
+      // Send auto-release emails (non-blocking)
+      for (const r of dfoExpired) {
+        if (!r.createdBy) continue
+        sendAutoReleaseEmail(r)
+          .then(result => console.log(`📧 Auto-release email for ${r.bookingId || r._id}: ${result.success ? '✅ sent' : '❌ failed - ' + result.error}`))
+          .catch(err => console.error(`❌ Auto-release email error for ${r.bookingId || r._id}:`, err.message))
+      }
 
       console.log(`Auto-released ${dfoExpired.length} DFO-pending reservations (12-hour timeout)`)
     }
@@ -146,6 +181,26 @@ export const createReservation = async (req, res) => {
     }
 
     const reservation = new Reservation(payload)
+
+    // ATOMIC LOCKING: Claim the rooms before saving
+    if (payload.rooms && payload.rooms.length > 0) {
+      const expiryDate = payload.expiresAt || new Date(Date.now() + 24 * 60 * 60 * 1000) // Default 24h for admin
+      const lockResult = await lockRooms(
+        payload.rooms,
+        payload.checkIn,
+        payload.checkOut,
+        reservation._id.toString(),
+        expiryDate
+      )
+
+      if (!lockResult.success) {
+        return res.status(409).json({
+          success: false,
+          error: lockResult.error
+        })
+      }
+    }
+
     await reservation.save()
 
     // DFO auto-confirm: save was pending/unpaid, now immediately set to reserved+paid
@@ -168,8 +223,11 @@ export const createReservation = async (req, res) => {
           targetRoles: ['superadmin', 'dfo'],
           link: `/approvals/${reservation._id}`
         });
+
+        // Send Email notification to DFOs
+        await sendApprovalRequestEmail(reservation);
       } catch (notifErr) {
-        console.error('Failed to create notification for new reservation', notifErr);
+        console.error('Failed to create notification or email for new reservation', notifErr);
       }
     }
 
@@ -300,6 +358,42 @@ export const updateReservation = async (req, res) => {
 
     // Check pre-update status
     const previousReservation = await Reservation.findById(id).lean()
+    if (!previousReservation) return res.status(404).json({ success: false, error: 'Reservation not found' })
+
+    // If rooms or dates are changing, check availability
+    const roomsChanged = payload.rooms && JSON.stringify(payload.rooms) !== JSON.stringify(previousReservation.rooms)
+    const datesChanged = (payload.checkIn && new Date(payload.checkIn).getTime() !== new Date(previousReservation.checkIn).getTime()) ||
+                        (payload.checkOut && new Date(payload.checkOut).getTime() !== new Date(previousReservation.checkOut).getTime())
+
+    if (roomsChanged || datesChanged) {
+      const roomIds = payload.rooms || previousReservation.rooms
+      const checkIn = payload.checkIn || previousReservation.checkIn
+      const checkOut = payload.checkOut || previousReservation.checkOut
+
+      // Check availability (excluding current reservation)
+      const availabilityCheck = await checkRoomAvailability(roomIds, checkIn, checkOut, id)
+      if (!availabilityCheck.available) {
+        return res.status(409).json({
+          success: false,
+          error: 'The new rooms or dates are not available.',
+          conflictingRooms: availabilityCheck.conflictingRooms
+        })
+      }
+
+      // Re-lock rooms
+      await releaseLocks(id)
+      const lockResult = await lockRooms(
+        roomIds,
+        new Date(checkIn),
+        new Date(checkOut),
+        id,
+        previousReservation.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      )
+
+      if (!lockResult.success) {
+        return res.status(409).json({ success: false, error: lockResult.error })
+      }
+    }
 
     const updated = await Reservation.findByIdAndUpdate(id, payload, { new: true }).lean()
     if (!updated) return res.status(404).json({ success: false, error: 'Reservation not found' })
@@ -316,6 +410,11 @@ export const updateReservation = async (req, res) => {
             targetUser: updated.createdBy,
             link: `/reservation/all`
           });
+
+          // Send approval email to the booking creator (non-blocking)
+          sendApprovalResultEmail(updated, 'APPROVED')
+            .then(r => console.log(`📧 Approval email for ${updated.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+            .catch(err => console.error(`❌ Approval email error for ${updated.bookingId}:`, err.message));
         }
         // Rejection
         else if (previousReservation.approval_status !== 'REJECTED' && updated.approval_status === 'REJECTED') {
@@ -326,6 +425,11 @@ export const updateReservation = async (req, res) => {
             targetUser: updated.createdBy,
             link: `/reservation/all`
           });
+
+          // Send rejection email to the booking creator (non-blocking)
+          sendApprovalResultEmail(updated, 'REJECTED')
+            .then(r => console.log(`📧 Rejection email for ${updated.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
+            .catch(err => console.error(`❌ Rejection email error for ${updated.bookingId}:`, err.message));
         }
         // Cancellation
         else if (previousReservation.status !== 'cancelled' && updated.status === 'cancelled') {
@@ -347,6 +451,9 @@ export const updateReservation = async (req, res) => {
             refundableAmount: refundAmount,
             refundRequestedDateTime: new Date()
           });
+
+          // Release locks upon cancellation
+          await releaseLocks(id);
 
           // 3. If online payment exists, initiate BillDesk Refund
           let refundSuccess = false;
@@ -538,12 +645,33 @@ export const createPublicBooking = async (req, res) => {
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     payload.expiresAt = expiryTime
 
-    // Auto-generate booking ID if not provided
+    // Create reservation object to get ID
+    const reservation = new Reservation(payload)
+
+    // ATOMIC LOCKING: Claim the rooms before saving
+    if (payload.rooms && payload.rooms.length > 0) {
+      const lockResult = await lockRooms(
+        payload.rooms,
+        payload.checkIn,
+        payload.checkOut,
+        reservation._id.toString(),
+        expiryTime // Lock expires with the reservation
+      )
+
+      if (!lockResult.success) {
+        return res.status(409).json({
+          success: false,
+          error: lockResult.error,
+          message: 'Room was just taken by another user. Please try again.'
+        })
+      }
+    }
+
+    // ATOMIC SERIAL: Generate booking ID safely
     if (!payload.bookingId) {
       // Get resort first letter
-      let resortLetter = 'X'; // Default if no resort
+      let resortLetter = 'X'; 
       if (payload.resort) {
-        // If resort name is provided in rawSource, use first letter
         const resortName = payload.rawSource?.resortName || '';
         if (resortName && resortName.length > 0) {
           resortLetter = resortName.charAt(0).toUpperCase();
@@ -558,21 +686,15 @@ export const createPublicBooking = async (req, res) => {
       const year = String(now.getFullYear()).slice(-2);
       const month = String(now.getMonth() + 1).padStart(2, '0');
 
-      // Get today's serial
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const count = await Reservation.countDocuments({
-        createdAt: { $gte: today, $lt: tomorrow }
-      });
-      const serial = String(count + 1).padStart(3, '0');
+      // Use atomic counter for daily serial
+      const sequenceName = `booking_${year}${month}${day}`;
+      const serialNum = await getNextSequenceValue(sequenceName);
+      const serial = String(serialNum).padStart(3, '0');
 
-      // Generate booking ID: BV1606402512001 (B + Resort First Letter + DateTime + Serial)
-      payload.bookingId = `B${resortLetter}${day}${hour}${minute}${year}${month}${serial}`;
+      // Generate booking ID: B + Resort Letter + DateTime + Serial
+      reservation.bookingId = `B${resortLetter}${day}${hour}${minute}${year}${month}${serial}`;
     }
 
-    const reservation = new Reservation(payload)
     await reservation.save()
 
     // Return reservation without populated fields (just IDs)

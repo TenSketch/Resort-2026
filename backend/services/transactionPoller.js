@@ -4,6 +4,7 @@ import { sendRoomReservationSMS, sendTentReservationSMS, sendTrekReservationSMS 
 import Reservation from '../models/reservationModel.js';
 import TentReservation from '../models/tentReservationModel.js';
 import PaymentTransaction from '../models/paymentTransactionModel.js';
+import Notification from '../models/notificationModel.js';
 import TentSpot from '../models/tentSpotModel.js';
 import Tent from '../models/tentModel.js';
 import transporter from '../config/nodemailer.js';
@@ -160,10 +161,17 @@ async function pollTransaction(bookingId, orderid, mercid, authToken, checkNumbe
       // Stop polling since payment is confirmed
       stopTransactionPolling(bookingId);
 
-      // Send confirmation emails and SMS based on booking type
-      console.log(`📧 Sending confirmation emails and SMS...`);
+      // Create in-app notification for admins/DFOs
       const updatedReservation = await ReservationModel.findOne({ bookingId }).lean();
       const updatedPaymentTransaction = await PaymentTransaction.findOne({ bookingId }).lean();
+
+      Notification.create({
+        title: 'Payment Received',
+        message: `Payment of INR ${updatedReservation?.totalPayable?.toFixed(2) || '0.00'} received for ${bookingType} Booking ${bookingId}. Guest: ${updatedReservation?.fullName || updatedReservation?.user?.name || 'N/A'}.`,
+        type: 'PAYMENT_SUCCESS',
+        targetRoles: ['superadmin', 'dfo'],
+        link: `/reservation/all`
+      }).catch(err => console.error('❌ Poller payment notification error:', err.message));
 
       if (bookingType === 'tent') {
         // Send tent booking emails

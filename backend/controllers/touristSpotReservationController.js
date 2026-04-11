@@ -1,19 +1,34 @@
 import TouristSpotReservation from '../models/touristSpotReservationModel.js'
 import TouristSpot from '../models/touristSpotModel.js'
 import mongoose from 'mongoose'
+import Counter from '../models/counterModel.js'
 
-// Utility to generate Booking ID
+// Helper for atomic serial number generation
+const getNextSequenceValue = async (sequenceName) => {
+  const sequenceDocument = await Counter.findOneAndUpdate(
+    { id: sequenceName },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  )
+  return sequenceDocument.seq
+}
+
+// Utility to generate Booking ID safely
 const generateBookingId = async () => {
     const today = new Date();
     const dateStr = today.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD
-    const count = await TouristSpotReservation.countDocuments({
-        createdAt: {
-            $gte: new Date(today.setHours(0, 0, 0, 0)),
-            $lt: new Date(today.setHours(23, 59, 59, 999))
-        }
-    });
+    
+    // Get current date for the counter ID
+    const year = String(today.getFullYear()).slice(-2);
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    // Use atomic counter for daily serial
+    const sequenceName = `tourist_booking_${year}${month}${day}`;
+    const serialNum = await getNextSequenceValue(sequenceName);
+    const seq = String(serialNum).padStart(3, '0');
+    
     // Format: TS-YYMMDD-SEQ (e.g., TS-231215-001)
-    const seq = String(count + 1).padStart(3, '0');
     return `TS-${dateStr}-${seq}`;
 };
 

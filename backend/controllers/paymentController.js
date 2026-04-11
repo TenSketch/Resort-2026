@@ -6,6 +6,7 @@ import { sendReservationSuccessEmails } from "../services/reservationEmailServic
 import { sendRoomReservationSMS } from "../services/reservationSmsService.js";
 import Reservation from "../models/reservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
+import Notification from "../models/notificationModel.js";
 import Resort from "../models/resortModel.js";
 import Room from "../models/roomModel.js";
 
@@ -501,6 +502,15 @@ export const handlePaymentCallback = async (req, res) => {
                   .catch(err => console.error('Email error:', err.message));
                 sendRoomReservationSMS(updatedReservation, updatedPaymentTransaction)
                   .catch(err => console.error('SMS error:', err.message));
+
+                // In-app notification for deferred payment confirmation
+                Notification.create({
+                  title: 'Payment Received',
+                  message: `Payment of INR ${updatedReservation.totalPayable?.toFixed(2) || '0.00'} received for Booking ${bookingId}. Guest: ${updatedReservation.fullName || 'N/A'}.`,
+                  type: 'PAYMENT_SUCCESS',
+                  targetRoles: ['superadmin', 'dfo'],
+                  link: `/reservation/all`
+                }).catch(err => console.error('❌ Deferred payment notification error:', err.message));
               }
             } catch (err) {
               console.error('Immediate check error:', err.message);
@@ -530,6 +540,16 @@ export const handlePaymentCallback = async (req, res) => {
         console.log(`📧 Sending confirmation emails to ${reservation.email}...`);
         // Stop polling since payment is confirmed
         stopTransactionPolling(bookingId);
+
+        // Create in-app notification for admins/DFOs
+        Notification.create({
+          title: 'Payment Received',
+          message: `Payment of INR ${reservation.totalPayable?.toFixed(2) || '0.00'} received for Booking ${bookingId}. Guest: ${reservation.fullName || 'N/A'}.`,
+          type: 'PAYMENT_SUCCESS',
+          targetRoles: ['superadmin', 'dfo'],
+          link: `/reservation/all`
+        }).catch(err => console.error('❌ Payment notification error:', err.message));
+
         // Send emails asynchronously (don't wait for completion)
         sendReservationSuccessEmails(reservation, paymentTransaction)
           .then(() => console.log('✅ Emails sent successfully'))

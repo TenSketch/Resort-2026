@@ -4,7 +4,6 @@ import { AuthService } from '../../auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { SearchService } from 'src/app/search.service';
-import * as e from 'cors';
 
 @Component({
   selector: 'app-search-resort',
@@ -181,6 +180,43 @@ export class SearchResortComponent implements OnInit {
   }
 
   showCheckoutError: boolean = false;
+  private lastAutoSearchKey: string = '';
+
+  private formatDateForInput(value: Date | string): string {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  onCheckinDateChange(value: Date | string | null) {
+    this.checkinDate = value ? this.formatDateForInput(value) : '';
+    this.showCheckoutError = false;
+
+    if (this.selectedType === 'trek' && this.checkinDate) {
+      this.triggerAutoSearch();
+    }
+  }
+
+  onCheckoutDateChange(value: Date | string | null) {
+    this.checkoutDate = value ? this.formatDateForInput(value) : '';
+    this.showCheckoutError = false;
+
+    if (this.selectedType !== 'trek' && this.checkinDate && this.checkoutDate) {
+      this.triggerAutoSearch();
+    }
+  }
+
+  triggerAutoSearch() {
+    const autoSearchKey = `${this.selectedType}|${this.selectedResort}|${this.checkinDate}|${this.checkoutDate}`;
+    if (this.lastAutoSearchKey === autoSearchKey) {
+      return;
+    }
+
+    this.lastAutoSearchKey = autoSearchKey;
+    this.submitSearch();
+  }
 
   submitSearch() {
     // If step 3 (Dates), proceed. For Treks, we might just proceed.
@@ -214,7 +250,7 @@ export class SearchResortComponent implements OnInit {
 
     if (this.checkinDate && this.checkoutDate) {
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-      date2.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      date2.setMinutes(date2.getMinutes() - date2.getTimezoneOffset());
       checkinDateString = date.toISOString();
       checkoutDateString = date2.toISOString();
     }

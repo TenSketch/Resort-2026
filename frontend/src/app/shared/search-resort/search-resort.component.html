@@ -103,6 +103,7 @@
             <div class="input-display">
               <i class="fa-regular fa-calendar"></i>
               <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker" [(ngModel)]="checkinDate"
+                (dateChange)="onCheckinDateChange($event.value)"
                 readonly placeholder="Add Date" />
               <mat-datepicker #picker></mat-datepicker>
             </div>
@@ -113,6 +114,7 @@
             <div class="input-display" [class.error-border]="showCheckoutError">
               <i class="fa-regular fa-calendar"></i>
               <input matInput [matDatepicker]="picker1" [(ngModel)]="checkoutDate" [min]="setMinCheckoutDate()" readonly
+                (dateChange)="onCheckoutDateChange($event.value)"
                 placeholder="Add Date" />
               <mat-datepicker #picker1></mat-datepicker>
             </div>
@@ -128,6 +130,7 @@
             <div class="input-display">
               <i class="fa-regular fa-calendar"></i>
               <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="pickerTrek" [(ngModel)]="checkinDate"
+                (dateChange)="onCheckinDateChange($event.value)"
                 readonly placeholder="Select Date" />
               <mat-datepicker #pickerTrek></mat-datepicker>
             </div>

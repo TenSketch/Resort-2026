@@ -29,6 +29,7 @@
             (click)="picker.open()" 
             placeholder="Check-in date"
             formControlName="checkinDate"
+            (dateChange)="onDateSelectionChange()"
             [disabled]="!searchForm.get('selectedTentSpot')?.value"
             required />
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -48,6 +49,7 @@
             (click)="picker1.open()" 
             placeholder="Check-out date"
             formControlName="checkoutDate"
+            (dateChange)="onDateSelectionChange()"
             [min]="setMinCheckoutDate()"
             [disabled]="!searchForm.get('selectedTentSpot')?.value || !searchForm.get('checkinDate')?.value"
             required />

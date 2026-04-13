@@ -198,7 +198,6 @@ export default function GuestTable() {
         if (response.ok) {
           const result = await response.json();
           if (result.success || result.code === 3000) {
-            console.log("User deleted:", deletingGuest.id);
             // Remove user from local state
             setGuestsState((prev) =>
               prev.filter((g) => g.id !== deletingGuest.id),

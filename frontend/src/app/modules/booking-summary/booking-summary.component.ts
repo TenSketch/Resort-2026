@@ -751,7 +751,6 @@ export class BookingSummaryComponent {
       .subscribe({
         next: (response) => {
           if (response.success && response.paymentData) {
-            console.log('Payment initiated:', response);
 
             // Clear booking rooms from local storage
             this.authService.clearBookingRooms(this.bookingTypeResort);
@@ -830,7 +829,6 @@ export class BookingSummaryComponent {
       }
     };
 
-    console.log('Redirecting to payment page with data:', paymentRedirectData);
 
     // Encode data and redirect to payment-redirect.html
     const encodedData = encodeURIComponent(JSON.stringify(paymentRedirectData));

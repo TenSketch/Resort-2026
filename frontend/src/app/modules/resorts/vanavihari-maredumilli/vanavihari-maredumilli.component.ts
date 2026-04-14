@@ -66,7 +66,6 @@ export class VanavihariMaredumilliComponent {
     this.breakpointObserver
       .observe([Breakpoints.HandsetPortrait, Breakpoints.HandsetLandscape])
       .subscribe((result) => {
-        console.log('result====', result);
         this.isMobile = result.matches;
       });
     this.selectedSortOption = 'lowToHigh';
@@ -491,7 +490,6 @@ export class VanavihariMaredumilliComponent {
                 );
 
               this.roomCards = this.mapRoomData(jsonArray, this.roomIds);
-              console.log("fetchRoomListthis.roomCards-",this.roomCards)
 
             } else {
               this.showErrorAlert(

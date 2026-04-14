@@ -27,7 +27,6 @@ export class CancelStatusComponent {
       let myObject = JSON.parse(myObjectString);
       this.refundData = myObject
       // Use the object, including the date and time
-      console.log(myObject);
     }
     this.userName = userService.getFullUser()
   }

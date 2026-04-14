@@ -361,7 +361,6 @@ export class TentCheckoutComponent implements OnInit, OnDestroy {
     this.http.post<any>(`${this.api_url}/api/tent-payment/initiate`, { bookingId }, { headers }).subscribe({
       next: (response) => {
         if (response.success && response.paymentData) {
-          console.log('Payment initiated:', response);
           localStorage.removeItem('tentsBooking');
           this.submitPaymentForm(response.paymentData);
         } else {
@@ -419,7 +418,6 @@ export class TentCheckoutComponent implements OnInit, OnDestroy {
       }
     };
 
-    console.log('Redirecting to payment page with data:', paymentRedirectData);
 
     const encodedData = encodeURIComponent(JSON.stringify(paymentRedirectData));
     const redirectUrl = `/payment-redirect.html?data=${encodedData}`;

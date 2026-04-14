@@ -96,8 +96,7 @@ export class TestBookingsComponent {
   }
 
   sendEmail(item: any) {
-    console.log(item)
-    console.log(item.rooms.restort)
+  
     let email;
     if (item.rooms.restort == 'Jungle Star, Valamuru') {
       
@@ -123,7 +122,6 @@ export class TestBookingsComponent {
   }
 
   sendWhatsApp(item: any): void {
-    console.log(item)
     let phoneNumber;
     if (item.rooms.restort == 'Jungle Star, Valamuru') {
       phoneNumber = '7382151617'

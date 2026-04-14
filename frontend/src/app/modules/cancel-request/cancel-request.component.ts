@@ -159,13 +159,10 @@ export class CancelRequestComponent {
       currentDate.getMinutes(),
       currentDate.getSeconds()
     );
-    console.log('fcheckinDate', fcheckinDate);
-    console.log('current time', currentDateWithTime);
     // Calculate the time difference in milliseconds
     const timeDifference =
       fcheckinDate.getTime() - currentDateWithTime.getTime();
     const dayDifference = timeDifference / (1000 * 60 * 60 * 24);
-    console.log('day-difference', dayDifference);
 
     let refundableAmount = 0;
 
@@ -247,7 +244,6 @@ export class CancelRequestComponent {
 
       // Format the date in YYYYMMDD format
       // const formattedDate = `${year}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
-      // console.log(formattedDate)
 
       return paymentTransactionDateStr;
     }

@@ -31,7 +31,6 @@ export class ForgotPasswordComponent {
     // Get token from route params
     this.route.params.subscribe((params) => {
       this.token = params['token'];
-      console.log('Reset token:', this.token);
     });
   }
 

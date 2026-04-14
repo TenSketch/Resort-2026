@@ -823,7 +823,6 @@ export class TouristSpotsBookingComponent implements AfterViewInit, OnDestroy {
   }
 
   hasAnySpots(): boolean {
-    console.log(this.filteredCategories)
     return this.filteredCategories.some(cat => cat.spots.length > 0);
   }
 

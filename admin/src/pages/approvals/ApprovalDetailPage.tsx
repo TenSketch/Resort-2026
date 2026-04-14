@@ -322,7 +322,7 @@ const ApprovalDetailPage = () => {
   };
 
   const isPending = reservation?.approval_status === "PENDING_DFO_APPROVAL";
-  const canAct = (isDFO ) && isPending;
+  const canAct = isDFO && isPending;
 
   if (loading) {
     return (
@@ -408,7 +408,10 @@ const ApprovalDetailPage = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <InfoField label="Full Name" value={reservation.fullName} />
-            <InfoField label="Phone" value={reservation.phone} />
+            <InfoField
+              label="Phone"
+              value={reservation.phone.replace(/^\+91/, "")}
+            />
             <InfoField label="Email" value={reservation.email} />
             <InfoField label="City" value={reservation.city || "—"} />
             <InfoField label="State" value={reservation.state || "—"} />

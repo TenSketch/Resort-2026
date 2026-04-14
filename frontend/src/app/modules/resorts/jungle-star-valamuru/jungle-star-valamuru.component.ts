@@ -66,7 +66,6 @@ export class JungleStarValamuruComponent {
       this.breakpointObserver
         .observe([Breakpoints.HandsetPortrait, Breakpoints.HandsetLandscape])
         .subscribe((result) => {
-          console.log('result====', result);
           this.isMobile = result.matches;
         });
       this.selectedSortOption = 'lowToHigh';

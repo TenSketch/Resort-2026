@@ -3,6 +3,7 @@ import Tent from '../models/tentModel.js';
 import TentSpot from '../models/tentSpotModel.js';
 import Counter from '../models/counterModel.js';
 import { sendPushNotification } from './pushController.js';
+import CancellationLog from '../models/cancellationLogModel.js';
 
 // Helper for atomic serial number generation
 const getNextSequenceValue = async (sequenceName) => {
@@ -392,6 +393,21 @@ export const cancelTentReservation = async (req, res) => {
 
     // Send Push Notification for cancellation
     sendPushNotification(['superadmin', 'admin', 'dfo'], 'Tent Reservation Cancelled', `Tent booking ${reservation.bookingId} was cancelled.`);
+
+    // Log Cancellation
+    try {
+      const refundAmt = ((reservation.totalPayable || 0) * (reservation.refundPercentage || 0)) / 100;
+      await CancellationLog.create({
+        bookingId: reservation.bookingId,
+        userId: reservation.existingGuest || null,
+        refundAmount: refundAmt,
+        refundStatus: refundAmt > 0 ? 'Pending' : 'Success',
+        timestamp: new Date()
+      });
+      //console.log(`📝 Tent Cancellation logged for ${reservation.bookingId}`);
+    } catch (logErr) {
+      console.error(`❌ Failed to log tent cancellation for ${reservation.bookingId}:`, logErr.message);
+    }
 
     res.status(200).json({
       success: true,

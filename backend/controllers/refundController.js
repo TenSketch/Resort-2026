@@ -4,6 +4,7 @@ import { sendCancellationEmail } from "../services/reservationEmailService.js";
 import Resort from "../models/resortModel.js";
 import Reservation from "../models/reservationModel.js";
 import PaymentTransaction from "../models/paymentTransactionModel.js";
+import CancellationLog from "../models/cancellationLogModel.js";
 
 export const processRefund = async (req, res) => {
   try {
@@ -117,6 +118,20 @@ export const processRefund = async (req, res) => {
       sendCancellationEmail(finalReservation, refundAmountNum)
         .then(r => console.log(`📧 Cancellation Email for ${finalReservation.bookingId}: ${r.success ? '✅ sent' : '❌ failed'}`))
         .catch(err => console.error(`❌ Cancellation Email error:`, err.message));
+
+      // Log Cancellation
+      try {
+        await CancellationLog.create({
+          bookingId: finalReservation.bookingId,
+          userId: finalReservation.existingGuest || null,
+          refundAmount: refundAmountNum,
+          refundStatus: refundAmountNum > 0 ? 'Success' : 'Success', // If it reached here, it's successful or skipped
+          timestamp: new Date()
+        });
+        //console.log(`📝 Refund Cancellation logged for ${finalReservation.bookingId}`);
+      } catch (logErr) {
+        console.error(`❌ Failed to log refund cancellation for ${finalReservation.bookingId}:`, logErr.message);
+      }
     }
 
     res.json({ 

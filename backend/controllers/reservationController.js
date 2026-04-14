@@ -14,6 +14,7 @@ import { sendCancellationEmail, sendApprovalRequestEmail, sendApprovalResultEmai
 import { lockRooms, releaseLocks } from '../utils/bookingLock.js'
 import Counter from '../models/counterModel.js'
 import { sendPushNotification } from './pushController.js'
+import CancellationLog from '../models/cancellationLogModel.js'
 
 // Helper for atomic serial number generation
 const getNextSequenceValue = async (sequenceName) => {
@@ -561,6 +562,20 @@ export const updateReservation = async (req, res) => {
             
             // Update the 'updated' response object so Admin UI sees all changes immediately
             Object.assign(updated, finalReservation);
+
+            // 7. Log Cancellation
+            try {
+              await CancellationLog.create({
+                bookingId: finalReservation.bookingId,
+                userId: finalReservation.existingGuest || null,
+                refundAmount: refundAmount,
+                refundStatus: refundSuccess ? 'Success' : (refundAmount > 0 ? 'Failed' : 'Success'),
+                timestamp: new Date()
+              });
+              //console.log(`📝 Cancellation logged for ${finalReservation.bookingId}`);
+            } catch (logErr) {
+              console.error(`❌ Failed to log cancellation for ${finalReservation.bookingId}:`, logErr.message);
+            }
           }
         }
       } catch (notifErr) {

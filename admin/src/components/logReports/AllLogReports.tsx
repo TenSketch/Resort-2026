@@ -96,7 +96,6 @@ export default function LogsTable() {
 
   const confirmDisable = () => {
     if (disablingLog) {
-      console.log("Disabling log:", disablingLog.bookingId);
       setDisabledLogs((prev) => new Set([...prev, disablingLog.bookingId]));
       setIsConfirmDisableOpen(false);
       setDisablingLog(null);
@@ -110,7 +109,6 @@ export default function LogsTable() {
 
   const handleUpdate = () => {
     if (editingLog && formData) {
-      console.log("Updating log:", formData);
       const payload: any = { ...formData };
       if (payload.logEntryDate && typeof payload.logEntryDate === "string") {
         payload.logEntryDate = new Date(payload.logEntryDate);

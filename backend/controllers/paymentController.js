@@ -9,6 +9,7 @@ import PaymentTransaction from "../models/paymentTransactionModel.js";
 import Notification from "../models/notificationModel.js";
 import Resort from "../models/resortModel.js";
 import Room from "../models/roomModel.js";
+import { sendPushNotification } from "./pushController.js";
 
 // Email function moved to backend/services/emailService.js for reusability
 
@@ -549,6 +550,9 @@ export const handlePaymentCallback = async (req, res) => {
           targetRoles: ['superadmin', 'dfo'],
           link: `/reservation/all`
         }).catch(err => console.error('❌ Payment notification error:', err.message));
+
+        // Send Push Notification
+        sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Payment Received', `Payment of INR ${reservation.totalPayable?.toFixed(2) || '0.00'} received for Booking ${bookingId}. Guest: ${reservation.fullName || 'N/A'}.`);
 
         // Send emails asynchronously (don't wait for completion)
         sendReservationSuccessEmails(reservation, paymentTransaction)

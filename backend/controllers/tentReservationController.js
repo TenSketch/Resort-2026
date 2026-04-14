@@ -2,6 +2,7 @@ import TentReservation from '../models/tentReservationModel.js';
 import Tent from '../models/tentModel.js';
 import TentSpot from '../models/tentSpotModel.js';
 import Counter from '../models/counterModel.js';
+import { sendPushNotification } from './pushController.js';
 
 // Helper for atomic serial number generation
 const getNextSequenceValue = async (sequenceName) => {
@@ -180,6 +181,9 @@ export const createTentReservation = async (req, res) => {
     // Populate references
     await reservation.populate('tentSpot tents');
 
+    // Send Push Notification to Admins/Staff
+    sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'New Tent Reservation', `New tent booking ${reservation.bookingId} by ${reservation.fullName}.`);
+
     res.status(201).json({
       success: true,
       message: 'Tent reservation created successfully',
@@ -345,6 +349,11 @@ export const updatePaymentStatus = async (req, res) => {
       });
     }
 
+    // Send Push Notification for payment success
+    if (paymentStatus === 'paid') {
+      sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Tent Payment Received', `Payment of INR ${reservation.totalPayable?.toFixed(2)} received for Tent Booking ${reservation.bookingId}.`);
+    }
+
     res.status(200).json({
       success: true,
       message: 'Payment status updated successfully',
@@ -380,6 +389,9 @@ export const cancelTentReservation = async (req, res) => {
     }
 
     await reservation.save();
+
+    // Send Push Notification for cancellation
+    sendPushNotification(['superadmin', 'admin', 'dfo'], 'Tent Reservation Cancelled', `Tent booking ${reservation.bookingId} was cancelled.`);
 
     res.status(200).json({
       success: true,

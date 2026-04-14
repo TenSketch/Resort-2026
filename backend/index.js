@@ -28,6 +28,7 @@ import touristPaymentRouter from './routes/touristSpotPaymentRoutes.js'
 import webhookRouter from './routes/webhookRoutes.js'
 import adminRouter from './routes/adminRoutes.js'
 import notificationRouter from './routes/notificationRoutes.js'
+import pushRouter from './routes/pushRoutes.js'
 
 import adminAuth from './middlewares/adminAuth.js'
 import {
@@ -83,6 +84,7 @@ app.use('/api/trek-payment', touristPaymentRouter)
 app.use('/api/webhook', webhookRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/notifications', notificationRouter)
+app.use('/api/push', pushRouter)
 
 // ---------------- STATIC TMP FOLDER ----------------
 app.use('/tmp', express.static(path.join(process.cwd(), 'tmp')))

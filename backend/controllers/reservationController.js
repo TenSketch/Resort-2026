@@ -13,6 +13,7 @@ import { initiateBilldeskRefund } from '../services/refundBillDesk.js'
 import { sendCancellationEmail, sendApprovalRequestEmail, sendApprovalResultEmail, sendAutoReleaseEmail } from '../services/reservationEmailService.js'
 import { lockRooms, releaseLocks } from '../utils/bookingLock.js'
 import Counter from '../models/counterModel.js'
+import { sendPushNotification } from './pushController.js'
 
 // Helper for atomic serial number generation
 const getNextSequenceValue = async (sequenceName) => {
@@ -224,11 +225,17 @@ export const createReservation = async (req, res) => {
           link: `/approvals/${reservation._id}`
         });
 
+        // Send Push Notification to All Admin/Staff
+        sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'New Reservation Pending Approval', `Booking ${reservation.bookingId || '(Pending)'} requires DFO approval.`);
+
         // Send Email notification to DFOs
         await sendApprovalRequestEmail(reservation);
       } catch (notifErr) {
         console.error('Failed to create notification or email for new reservation', notifErr);
       }
+    } else {
+      // Regular admin booking - notify other staff
+      sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'New Admin Reservation', `Booking ${reservation.bookingId} was created by ${reservation.fullName}.Status: ${reservation.status}`);
     }
 
     // Return the final saved state
@@ -411,6 +418,9 @@ export const updateReservation = async (req, res) => {
             link: `/reservation/all`
           });
 
+          // Send Push Notification
+          sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Reservation Approved', `Booking ${updated.bookingId || ''} was approved by DFO.`);
+
           // Send approval email to the booking creator (non-blocking)
           sendApprovalResultEmail(updated, 'APPROVED')
             .then(r => console.log(`📧 Approval email for ${updated.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
@@ -426,6 +436,9 @@ export const updateReservation = async (req, res) => {
             link: `/reservation/all`
           });
 
+          // Send Push Notification
+          sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Reservation Rejected', `Booking ${updated.bookingId || ''} was rejected by DFO.`);
+
           // Send rejection email to the booking creator (non-blocking)
           sendApprovalResultEmail(updated, 'REJECTED')
             .then(r => console.log(`📧 Rejection email for ${updated.bookingId}: ${r.success ? '✅ sent' : '❌ failed - ' + r.error}`))
@@ -440,6 +453,9 @@ export const updateReservation = async (req, res) => {
             targetRoles: ['superadmin', 'dfo'],
             link: `/reservation/all`
           });
+
+          // Send Push Notification
+          sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Reservation Cancelled', `Booking ${updated.bookingId || ''} was cancelled.`);
 
           // 1. Calculate refund according to policy (Automated)
           const { refundPercentage, refundAmount, diffInHours } = calculateRefundAmount(updated.checkIn, updated.totalPayable || 0);
@@ -696,6 +712,9 @@ export const createPublicBooking = async (req, res) => {
     }
 
     await reservation.save()
+
+    // Send Push Notification for new online booking
+    sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'New Online Booking (Pending)', `Booking ${reservation.bookingId} created by ${reservation.fullName}. Payment pending.`);
 
     // Return reservation without populated fields (just IDs)
     const savedReservation = await Reservation.findById(reservation._id).lean()

@@ -2,6 +2,7 @@ import TouristSpotReservation from '../models/touristSpotReservationModel.js'
 import TouristSpot from '../models/touristSpotModel.js'
 import mongoose from 'mongoose'
 import Counter from '../models/counterModel.js'
+import { sendPushNotification } from './pushController.js'
 
 // Helper for atomic serial number generation
 const getNextSequenceValue = async (sequenceName) => {
@@ -101,6 +102,9 @@ export const createReservation = async (req, res) => {
         const reservation = new TouristSpotReservation(payload);
         await reservation.save();
 
+        // Send Push Notification
+        sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'New Trek Booking', `New trek booking ${reservation.bookingId} by ${reservation.user?.name}.`);
+
         res.status(201).json({ success: true, bookingId: reservation.bookingId, reservation });
 
     } catch (err) {
@@ -138,6 +142,32 @@ export const getReservations = async (req, res) => {
         res.json({ success: true, bookings: reservations });
     } catch (err) {
         console.error('Get Tourist Bookings Error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+export const updatePaymentStatus = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const { paymentStatus } = req.body;
+
+        const reservation = await TouristSpotReservation.findOneAndUpdate(
+            { bookingId },
+            { paymentStatus, status: paymentStatus === 'paid' ? 'reserved' : 'pending' },
+            { new: true }
+        );
+
+        if (!reservation) {
+            return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        if (paymentStatus === 'paid') {
+            sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Trek Payment Received', `Payment received for Trek Booking ${bookingId}.`);
+        }
+
+        res.json({ success: true, reservation });
+    } catch (err) {
+        console.error('Update Payment Status Error:', err);
         res.status(500).json({ success: false, error: err.message });
     }
 };
@@ -279,6 +309,9 @@ export const createAdminReservation = async (req, res) => {
 
         const reservation = new TouristSpotReservation(reservationData);
         await reservation.save();
+
+        // Send Push Notification
+        sendPushNotification(['superadmin', 'admin', 'dfo', 'staff'], 'Admin Trek Booking', `Staff created a trek booking ${reservation.bookingId}.`);
 
         res.status(201).json({ 
             success: true, 

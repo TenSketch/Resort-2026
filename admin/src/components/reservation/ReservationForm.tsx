@@ -26,6 +26,7 @@ import { useAdmin } from "@/lib/AdminProvider";
 import { format } from "date-fns";
 import { Loader2, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import AlertModal from "@/components/shared/AlertModal";
 
 interface Resort {
   _id: string;
@@ -58,7 +59,7 @@ export default function AddReservationForm() {
     rooms: [] as string[],
     checkIn: "",
     checkOut: "",
-    guests: "",
+    guests: "2",
     extraGuests: "",
     children: "",
     status: "pending",
@@ -103,6 +104,19 @@ export default function AddReservationForm() {
 
   const [guestNameOpen, setGuestNameOpen] = useState(false);
   const [guestPhoneOpen, setGuestPhoneOpen] = useState(false);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "success" | "error";
+    onAction?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "success"
+  });
 
   const apiUrl =
     (import.meta.env && import.meta.env.VITE_API_URL) ||
@@ -520,7 +534,7 @@ export default function AddReservationForm() {
         ...formData,
         cottageTypes: values,
         rooms: updatedRooms,
-        guests: updatedRooms.length === 0 ? "" : formData.guests,
+        guests: updatedRooms.length === 0 ? "2" : formData.guests,
         extraGuests: updatedRooms.length === 0 ? "" : formData.extraGuests,
         children: updatedRooms.length === 0 ? "" : formData.children,
       });
@@ -589,7 +603,12 @@ export default function AddReservationForm() {
       !formData.fullName ||
       !formData.phone
     ) {
-      alert("Please fill all required fields");
+      setModalConfig({
+        isOpen: true,
+        title: "Missing Information",
+        message: "Please fill all required fields before submitting the reservation.",
+        type: "error"
+      });
       return;
     }
     // send to backend
@@ -632,54 +651,29 @@ export default function AddReservationForm() {
           throw new Error(data?.error || "Failed to save reservation");
         // Success message differs by role
         if (isDFO || isSuperAdmin) {
-          alert(
-            "Booking created & confirmed! Status: " +
-            payload.status +
-            ", Payment: " +
-            payload.paymentStatus,
-          );
+          setModalConfig({
+            isOpen: true,
+            title: "Reservation Confirmed!",
+            message: `Booking created successfully. Status: ${payload.status}, Payment: ${payload.paymentStatus}`,
+            type: "success",
+            onAction: () => {
+              setModalConfig(prev => ({ ...prev, isOpen: false }));
+              handleReset();
+            }
+          });
         } else {
+          handleReset();
           setShowDFOModal(true);
         }
-        // reset form
-        setFormData({
-          resort: "",
-          cottageTypes: [],
-          rooms: [],
-          checkIn: "",
-          checkOut: "",
-          guests: "",
-          extraGuests: "",
-          children: "",
-          status: "pending",
-          paymentStatus: "unpaid",
-          bookingId: "",
-          reservationDate: format(new Date(), "yyyy-MM-dd"),
-          numberOfRooms: "",
-          totalPayable: 0,
-          refundPercentage: "",
-          existingGuest: "",
-          fullName: "",
-          phone: "",
-          email: "",
-          address1: "",
-          address2: "",
-          city: "",
-          state: "",
-          postalCode: "",
-          country: "",
-          roomPrice: 0,
-          extraBedCharges: 0,
-          referredBy: "",
-        });
-        setRooms([]);
-        setAvailableRooms([]);
-        setIsAvailabilitySearched(false);
-        setSelectedResortData(null);
       } catch (err) {
         console.error(err);
         const errorMessage = err instanceof Error ? err.message : String(err);
-        alert("Error saving reservation: " + errorMessage);
+        setModalConfig({
+          isOpen: true,
+          title: "Submission Failed",
+          message: `Error saving reservation: ${errorMessage}`,
+          type: "error"
+        });
       }
     })();
   };
@@ -1447,6 +1441,16 @@ export default function AddReservationForm() {
           </div>
         </div>
       )}
+
+      {/* ── Alert Modal ─────────────────────────────── */}
+      <AlertModal
+        isOpen={modalConfig.isOpen}
+        onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+        onAction={modalConfig.onAction}
+      />
     </div>
   );
 }

@@ -98,7 +98,6 @@ export class CancelRequestManualComponent {
       refund_percent1: this.form.value.refund_per,
     };
 
-    console.log('params', params);
 
     this.http
       .post<any>(`${this.api_url}?api_type=manual_cancel_init`, params)

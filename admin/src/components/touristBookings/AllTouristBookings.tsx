@@ -145,7 +145,6 @@ export default function AllTouristBookings() {
       });
       const data = await res.json();
 
-      console.log("API Response:", data); // Debug log
 
       // Handle different response formats
       let reservations = [];
@@ -163,7 +162,6 @@ export default function AllTouristBookings() {
         return;
       }
 
-      console.log("Found reservations:", reservations.length); // Debug log
 
       const mapped = reservations.map((r: any) => ({
         id: r._id,
@@ -181,7 +179,6 @@ export default function AllTouristBookings() {
         user: r.user || {},
       }));
 
-      console.log("Mapped bookings:", mapped); // Debug log
       setBookings(mapped);
     } catch (err) {
       console.error("Failed to fetch trek bookings:", err);

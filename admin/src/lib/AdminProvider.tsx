@@ -14,7 +14,7 @@ type Permissions = {
 type Admin = {
   _id?: string
   id?: string
-  username?: string
+  username: string
   name?: string
   role?: 'superadmin' | 'admin' | 'dfo' | 'staff' | string
   permissions?: Partial<Permissions>
@@ -78,7 +78,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         const data = await res.json()
-        setAdmin(data?.admin || { username: 'admin', role: 'superadmin' })
+        const adminData = data?.admin
+        setAdmin(adminData ? { ...adminData, username: adminData.username || 'admin' } : { username: 'admin', role: 'superadmin' })
       } catch (fetchError) {
         // If /api/admin/me doesn't exist, fall back to simple validation
         // Try a simple authenticated endpoint to verify token

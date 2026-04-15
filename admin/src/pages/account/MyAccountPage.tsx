@@ -1,20 +1,51 @@
 import { useEffect, useState } from "react";
-import { User, Shield, Eye, Lock, CheckCircle, XCircle } from "lucide-react";
+import { User, Shield, Eye, Lock, CheckCircle, XCircle, Bell, BellOff } from "lucide-react";
 import { useAdmin } from "@/lib/AdminProvider";
 import { PAGE_DEFINITIONS } from "@/lib/permissionConfig";
+import { PushService } from "@/services/pushService";
+import { useToast } from "@/components/ui/ToastProvider";
 import type { PageId } from "@/lib/permissionConfig";
 
 const MyAccountPage = () => {
   const { admin } = useAdmin();
+  const { showToast } = useToast();
   const [avatar, setAvatar] = useState<string | null>(() =>
     localStorage.getItem("admin_avatar"),
   );
 
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const onUpdated = () => setAvatar(localStorage.getItem("admin_avatar"));
     window.addEventListener("admin-avatar-updated", onUpdated);
+    
+    // Check push subscription status
+    PushService.getSubscriptionStatus().then(setIsSubscribed);
+
     return () => window.removeEventListener("admin-avatar-updated", onUpdated);
   }, []);
+
+  const handleToggleNotifications = async () => {
+    if (!admin) return;
+    setLoading(true);
+    try {
+      if (isSubscribed) {
+        await PushService.unregisterPush();
+        setIsSubscribed(false);
+        showToast("Push notifications disabled", "info");
+      } else {
+        await PushService.registerPush(admin.username, admin.role || 'admin');
+        setIsSubscribed(true);
+        showToast("Push notifications enabled!", "Success");
+      }
+    } catch (error) {
+      console.error("Failed to toggle notifications:", error);
+      showToast("Failed to enable notifications. Please check browser permissions.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!admin) {
     return (
@@ -114,6 +145,43 @@ const MyAccountPage = () => {
               enabled={permissions.canExport || false}
               icon={Eye}
             />
+          </div>
+        </div>
+
+        {/* Notification Settings */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            Notification Settings
+          </h2>
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <div>
+              <p className="font-medium text-slate-800">Browser Push Notifications</p>
+              <p className="text-sm text-slate-600">Receive real-time alerts for new reservations and payments.</p>
+            </div>
+            <button
+              onClick={handleToggleNotifications}
+              disabled={loading}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors ${
+                isSubscribed 
+                  ? "bg-red-50 text-red-600 hover:bg-red-100" 
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              } disabled:opacity-50`}
+            >
+              {loading ? (
+                "Processing..."
+              ) : isSubscribed ? (
+                <>
+                  <BellOff className="h-4 w-4" />
+                  Disable
+                </>
+              ) : (
+                <>
+                  <Bell className="h-4 w-4" />
+                  Enable
+                </>
+              )}
+            </button>
           </div>
         </div>
 

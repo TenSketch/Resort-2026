@@ -35,7 +35,7 @@ const MyAccountPage = () => {
         setIsSubscribed(false);
         showToast("Push notifications disabled", "info");
       } else {
-        await PushService.registerPush(admin.username, admin.role);
+        await PushService.registerPush(admin.username, admin.role || 'admin');
         setIsSubscribed(true);
         showToast("Push notifications enabled!", "Success");
       }

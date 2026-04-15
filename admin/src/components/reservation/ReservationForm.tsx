@@ -1,8 +1,20 @@
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
 import PermissionButton from "@/components/shared/PermissionButton";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem
+} from "@/components/ui/command";
+import { DatePickerField } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -10,10 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { DatePickerField } from "@/components/ui/date-picker";
-import { format } from "date-fns";
 import { useAdmin } from "@/lib/AdminProvider";
+import { format } from "date-fns";
+import { Loader2, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Resort {
   _id: string;
@@ -84,6 +96,13 @@ export default function AddReservationForm() {
     rooms: false,
     users: false,
   });
+
+  const [isAvailabilitySearched, setIsAvailabilitySearched] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
+
+  const [guestNameOpen, setGuestNameOpen] = useState(false);
+  const [guestPhoneOpen, setGuestPhoneOpen] = useState(false);
 
   const apiUrl =
     (import.meta.env && import.meta.env.VITE_API_URL) ||
@@ -234,67 +253,67 @@ export default function AddReservationForm() {
 
   const dateLimits = getDateLimits();
 
- 
+
 
   useEffect(() => {
-  if (formData.rooms.length === 0) {
+    if (formData.rooms.length === 0) {
+      setFormData((prev) => ({
+        ...prev,
+        roomPrice: 0,
+        extraBedCharges: 0,
+        totalPayable: 0,
+      }));
+      return;
+    }
+
+    const selectedRooms = rooms.filter((room) =>
+      formData.rooms.includes(room._id)
+    );
+
+
+    let nights = 0;
+    if (formData.checkIn && formData.checkOut) {
+      const checkInDate = new Date(formData.checkIn);
+      const checkOutDate = new Date(formData.checkOut);
+      const diffTime = checkOutDate.getTime() - checkInDate.getTime();
+      nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    if (nights <= 0) nights = 1;
+
+    // price per room per night
+    const roomPricePerNight = selectedRooms.reduce((sum, room) => {
+      return sum + (room.price || room.weekdayRate || 0);
+    }, 0);
+
+
+    //  Room Price = price × nights × rooms
+    const roomPrice = roomPricePerNight * nights;
+
+    //  Extra guest charges
+    const extraGuests = parseInt(formData.extraGuests) || 0;
+    const extraGuestCharges = selectedResortData?.extraGuestCharges || 0;
+
+    const extraBedCharges = extraGuests * extraGuestCharges * nights;
+
+    //  Final Total
+
+    const grandTotal = roomPrice + extraBedCharges;
+
     setFormData((prev) => ({
       ...prev,
-      roomPrice: 0,
-      extraBedCharges: 0,
-      totalPayable: 0,
+      roomPrice,
+      extraBedCharges,
+      totalPayable: grandTotal,
     }));
-    return;
-  }
-
-  const selectedRooms = rooms.filter((room) =>
-    formData.rooms.includes(room._id)
-  );
-
- 
-  let nights = 0;
-  if (formData.checkIn && formData.checkOut) {
-    const checkInDate = new Date(formData.checkIn);
-    const checkOutDate = new Date(formData.checkOut);
-    const diffTime = checkOutDate.getTime() - checkInDate.getTime();
-    nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  if (nights <= 0) nights = 1;
-
-  // price per room per night
- const roomPricePerNight = selectedRooms.reduce((sum, room) => {
-  return sum + (room.price || room.weekdayRate || 0);
-}, 0);
-
-
-  //  Room Price = price × nights × rooms
-const roomPrice = roomPricePerNight * nights;
-
-  //  Extra guest charges
-  const extraGuests = parseInt(formData.extraGuests) || 0;
-  const extraGuestCharges = selectedResortData?.extraGuestCharges || 0;
-
-const extraBedCharges = extraGuests * extraGuestCharges * nights;
-
-  //  Final Total
-
-const grandTotal = roomPrice + extraBedCharges;
-
-  setFormData((prev) => ({
-    ...prev,
-    roomPrice,
-    extraBedCharges,
-    totalPayable: grandTotal,
-  }));
-}, [
-  formData.rooms,
-  formData.extraGuests,
-  formData.checkIn,
-  formData.checkOut,
-  rooms,
-  selectedResortData,
-]);
+  }, [
+    formData.rooms,
+    formData.extraGuests,
+    formData.checkIn,
+    formData.checkOut,
+    rooms,
+    selectedResortData,
+  ]);
 
   // Fetch all resorts on mount
   useEffect(() => {
@@ -394,17 +413,18 @@ const grandTotal = roomPrice + extraBedCharges;
     fetchRooms();
   }, [apiUrl, formData.resort]);
 
-  // Filter rooms based on selected cottage types
+  // Filter available rooms based on selected cottage types
   const filteredRoomsList = useMemo(() => {
-    if (formData.cottageTypes.length === 0) return rooms;
-    return rooms.filter((room) => {
+    const listToFilter = isAvailabilitySearched ? availableRooms : [];
+    if (formData.cottageTypes.length === 0) return listToFilter;
+    return listToFilter.filter((room) => {
       const ctId =
         typeof room.cottageType === "string"
           ? room.cottageType
           : room.cottageType?._id;
       return formData.cottageTypes.includes(ctId || "");
     });
-  }, [rooms, formData.cottageTypes]);
+  }, [availableRooms, formData.cottageTypes, isAvailabilitySearched]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -435,6 +455,18 @@ const grandTotal = roomPrice + extraBedCharges;
       }
     }
 
+    // Auto-open autocomplete popover when typing in guest name/phone
+    if (name === "fullName" && value.length > 0) {
+      setGuestNameOpen(true);
+    } else if (name === "fullName" && value.length === 0) {
+      setGuestNameOpen(false);
+    }
+    if (name === "phone" && value.length > 0) {
+      setGuestPhoneOpen(true);
+    } else if (name === "phone" && value.length === 0) {
+      setGuestPhoneOpen(false);
+    }
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -442,6 +474,8 @@ const grandTotal = roomPrice + extraBedCharges;
     // Reset dependent fields when parent selection changes
     if (name === "resort") {
       setFormData({ ...formData, resort: value, cottageTypes: [], rooms: [] });
+      setIsAvailabilitySearched(false);
+      setAvailableRooms([]);
     } else if (name === "existingGuest") {
       // When a user is selected, populate all their details
       const selectedUser = users.find((u) => u._id === value);
@@ -470,22 +504,40 @@ const grandTotal = roomPrice + extraBedCharges;
 
   const handleMultiSelect = (name: string, values: string[]) => {
     if (name === "cottageTypes") {
+      // If unchecking cottage type, remove all rooms belonging to that cottage type
+      const removedCottageTypes = formData.cottageTypes.filter(ct => !values.includes(ct));
+
+      let updatedRooms = [...formData.rooms];
+      if (removedCottageTypes.length > 0) {
+        updatedRooms = formData.rooms.filter(roomId => {
+          const room = availableRooms.find(r => r._id === roomId);
+          const ctId = typeof room?.cottageType === 'string' ? room?.cottageType : room?.cottageType?._id;
+          return !removedCottageTypes.includes(ctId || "");
+        });
+      }
+
       setFormData({
         ...formData,
         cottageTypes: values,
-        rooms: [],
-        guests: "",
-        extraGuests: "",
-        children: "",
+        rooms: updatedRooms,
+        guests: updatedRooms.length === 0 ? "" : formData.guests,
+        extraGuests: updatedRooms.length === 0 ? "" : formData.extraGuests,
+        children: updatedRooms.length === 0 ? "" : formData.children,
       });
     } else if (name === "rooms") {
-      // Clear guest counts when rooms change to avoid invalid values
+      // Find all cottage types for selected rooms
+      const selectedRoomData = availableRooms.filter(r => values.includes(r._id));
+      const newCottageTypes = Array.from(new Set(selectedRoomData.map(r => {
+        return typeof r.cottageType === 'string' ? r.cottageType : r.cottageType?._id;
+      }).filter(Boolean))) as string[];
+
       setFormData({
         ...formData,
         rooms: values,
-        guests: "",
-        extraGuests: "",
-        children: "",
+        cottageTypes: newCottageTypes,
+        guests: values.length === 0 ? "" : formData.guests,
+        extraGuests: values.length === 0 ? "" : formData.extraGuests,
+        children: values.length === 0 ? "" : formData.children,
       });
     }
   };
@@ -522,22 +574,24 @@ const grandTotal = roomPrice + extraBedCharges;
       referredBy: "",
     });
     setRooms([]);
+    setAvailableRooms([]);
+    setIsAvailabilitySearched(false);
     setSelectedResortData(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-     if (
-    !formData.resort ||
-    !formData.checkIn ||
-    !formData.checkOut ||
-    formData.rooms.length === 0 ||
-    !formData.fullName ||
-    !formData.phone
-  ) {
-    alert("Please fill all required fields");
-    return; 
-  }
+    if (
+      !formData.resort ||
+      !formData.checkIn ||
+      !formData.checkOut ||
+      formData.rooms.length === 0 ||
+      !formData.fullName ||
+      !formData.phone
+    ) {
+      alert("Please fill all required fields");
+      return;
+    }
     // send to backend
     (async () => {
       try {
@@ -580,9 +634,9 @@ const grandTotal = roomPrice + extraBedCharges;
         if (isDFO || isSuperAdmin) {
           alert(
             "Booking created & confirmed! Status: " +
-              payload.status +
-              ", Payment: " +
-              payload.paymentStatus,
+            payload.status +
+            ", Payment: " +
+            payload.paymentStatus,
           );
         } else {
           setShowDFOModal(true);
@@ -619,6 +673,8 @@ const grandTotal = roomPrice + extraBedCharges;
           referredBy: "",
         });
         setRooms([]);
+        setAvailableRooms([]);
+        setIsAvailabilitySearched(false);
         setSelectedResortData(null);
       } catch (err) {
         console.error(err);
@@ -628,8 +684,54 @@ const grandTotal = roomPrice + extraBedCharges;
     })();
   };
 
-  const handleSearchAvailability = (e: any) => {
+  const handleSearchAvailability = async (e: any) => {
     e.preventDefault();
+    if (!formData.resort || !formData.checkIn || !formData.checkOut) {
+      alert("Please select resort and dates first");
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const selectedResort = resorts.find((r) => r._id === formData.resort);
+      if (!selectedResort) return;
+
+      const res = await fetch(
+        `${apiUrl}/api/rooms/available?resortSlug=${selectedResort.slug}&checkin=${formData.checkIn}&checkout=${formData.checkOut}`,
+      );
+      const data = await res.json();
+
+      if (data.rooms) {
+        setAvailableRooms(data.rooms);
+        setIsAvailabilitySearched(true);
+        if (data.rooms.length === 0) {
+          alert("No rooms available for the selected dates.");
+        }
+      } else {
+        throw new Error(data.error || "Failed to fetch availability");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error searching availability");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const onUserSelect = (user: any) => {
+    setFormData({
+      ...formData,
+      existingGuest: user._id,
+      fullName: user.name || "",
+      phone: user.phone || "",
+      email: user.email || "",
+      address1: user.address1 || "",
+      address2: user.address2 || "",
+      city: user.city || "",
+      state: user.state || "",
+      postalCode: user.pincode || "",
+      country: user.country || "",
+    });
   };
 
   return (
@@ -718,10 +820,10 @@ const grandTotal = roomPrice + extraBedCharges;
                   minDate={
                     formData.checkIn
                       ? (() => {
-                          const d = new Date(formData.checkIn);
-                          d.setDate(d.getDate() + 1);
-                          return d.toISOString().split("T")[0];
-                        })()
+                        const d = new Date(formData.checkIn);
+                        d.setDate(d.getDate() + 1);
+                        return d.toISOString().split("T")[0];
+                      })()
                       : dateLimits.minDate
                   }
                   maxDate={dateLimits.maxDate}
@@ -732,13 +834,26 @@ const grandTotal = roomPrice + extraBedCharges;
 
               {/* Search Button */}
               <div className="md:col-span-3 flex mb-2">
-                <button
+                <Button
                   type="button"
                   onClick={handleSearchAvailability}
-                  className="w-full h-10 bg-slate-800 text-white rounded hover:bg-slate-700"
+                  disabled={
+                    searchLoading ||
+                    !formData.resort ||
+                    !formData.checkIn ||
+                    !formData.checkOut
+                  }
+                  className="w-full h-10 bg-slate-800 text-white rounded hover:bg-slate-700 disabled:opacity-50"
                 >
-                  Search Availability
-                </button>
+                  {searchLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Searching...
+                    </>
+                  ) : (
+                    "Search Availability"
+                  )}
+                </Button>
               </div>
             </div>
 
@@ -758,13 +873,13 @@ const grandTotal = roomPrice + extraBedCharges;
                   placeholder={
                     !formData.resort
                       ? "Select Resort First"
-                      : loading.rooms
-                        ? "Loading..."
-                        : rooms.length === 0
+                      : !isAvailabilitySearched
+                        ? "Click Search First"
+                        : filteredRoomsList.length === 0
                           ? "No Rooms Available"
                           : "Choose Rooms"
                   }
-                  disabled={!formData.resort}
+                  disabled={!isAvailabilitySearched}
                 />
               </div>
 
@@ -785,13 +900,13 @@ const grandTotal = roomPrice + extraBedCharges;
                   placeholder={
                     !formData.resort
                       ? "Select Resort First"
-                      : loading.cottageTypes
-                        ? "Loading..."
+                      : !isAvailabilitySearched
+                        ? "Click Search First"
                         : cottageTypesList.length === 0
                           ? "No Cottages Found"
                           : "Choose Cottages"
                   }
-                  disabled={!formData.resort}
+                  disabled={!isAvailabilitySearched}
                 />
               </div>
 
@@ -981,57 +1096,119 @@ const grandTotal = roomPrice + extraBedCharges;
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
-              User Details
+              Guest Info
             </h3>
+            <p className="text-xs text-slate-500 mt-1">Search using name or mobile number</p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
-              <div className="col-span-2 md:col-span-2 xl:col-span-2 space-y-2">
-                <Label className="text-sm font-medium text-slate-700">
-                  Select User
-                </Label>
-                <Select
-                  value={formData.existingGuest}
-                  onValueChange={(value) =>
-                    handleSelect("existingGuest", value)
-                  }
-                >
-                  <SelectTrigger className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50">
-                    <SelectValue
-                      placeholder={loading.users ? "Loading..." : "Select User"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user._id} value={user._id}>
-                        {user.name} ({user.email})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
               <div className="col-span-2 md:col-span-2 xl:col-span-2 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Guest Name <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
-                />
+                <Popover open={guestNameOpen} onOpenChange={setGuestNameOpen}>
+                  <PopoverTrigger asChild>
+                    <div className="relative">
+                      <Input
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="Search or type name"
+                        className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                      />
+                      <Search className="absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[300px] p-0"
+                    align="start"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                  >
+                    <Command>
+                      <CommandGroup className="max-h-64 overflow-auto">
+                        {users
+                          .filter((u) =>
+                            u.name
+                              ?.toLowerCase()
+                              .includes(formData.fullName.toLowerCase()),
+                          )
+                          .map((user) => (
+                            <CommandItem
+                              key={user._id}
+                              onSelect={() => {
+                                onUserSelect(user);
+                                setGuestNameOpen(false);
+                              }}
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium">{user.name}</span>
+                                <span className="text-xs text-slate-500">
+                                  {user.phone}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        {formData.fullName &&
+                          !users.some((u) =>
+                            u.name
+                              ?.toLowerCase()
+                              .includes(formData.fullName.toLowerCase()),
+                          ) && <CommandEmpty>No guest found.</CommandEmpty>}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="col-span-1 md:col-span-2 xl:col-span-2 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Phone <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
-                />
+                <Popover open={guestPhoneOpen} onOpenChange={setGuestPhoneOpen}>
+                  <PopoverTrigger asChild>
+                    <div className="relative">
+                      <Input
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="Search or type number"
+                        className="w-full h-10 px-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-slate-500 bg-slate-50"
+                      />
+                      <Search className="absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[300px] p-0"
+                    align="start"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                  >
+                    <Command>
+                      <CommandGroup className="max-h-64 overflow-auto">
+                        {users
+                          .filter((u) => u.phone?.includes(formData.phone))
+                          .map((user) => (
+                            <CommandItem
+                              key={user._id}
+                              onSelect={() => {
+                                onUserSelect(user);
+                                setGuestPhoneOpen(false);
+                              }}
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium">{user.phone}</span>
+                                <span className="text-xs text-slate-500">
+                                  {user.name}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        {formData.phone &&
+                          !users.some((u) => u.phone?.includes(formData.phone)) && (
+                            <CommandEmpty>No guest found.</CommandEmpty>
+                          )}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="col-span-1 md:col-span-2 xl:col-span-2 space-y-2">
@@ -1046,7 +1223,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-2 md:col-span-4 xl:col-span-4 space-y-2">
+              <div className="col-span-2 md:col-span-3 xl:col-span-3 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Address Line 1 <span className="text-red-500">*</span>
                 </Label>
@@ -1058,7 +1235,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-2 md:col-span-4 xl:col-span-4 space-y-2">
+              <div className="col-span-2 md:col-span-3 xl:col-span-3 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Address Line 2
                 </Label>
@@ -1070,7 +1247,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-1 xl:col-span-2 space-y-2">
+              <div className="col-span-1 md:col-span-1 xl:col-span-1 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   City <span className="text-red-500">*</span>
                 </Label>
@@ -1082,7 +1259,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-1 xl:col-span-2 space-y-2">
+              <div className="col-span-1 md:col-span-1 xl:col-span-1 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   State <span className="text-red-500">*</span>
                 </Label>
@@ -1094,7 +1271,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-1 xl:col-span-2 space-y-2">
+              <div className="col-span-1 md:col-span-1 xl:col-span-1 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Postal Code <span className="text-red-500">*</span>
                 </Label>
@@ -1106,7 +1283,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-1 xl:col-span-2 space-y-2">
+              <div className="col-span-1 md:col-span-1 xl:col-span-1 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Country <span className="text-red-500">*</span>
                 </Label>
@@ -1131,7 +1308,7 @@ const grandTotal = roomPrice + extraBedCharges;
                 </Select>
               </div>
 
-              <div className="col-span-2 md:col-span-4 xl:col-span-4 space-y-2">
+              <div className="col-span-2 md:col-span-4 xl:col-span-2 space-y-2">
                 <Label className="text-sm font-medium text-slate-700">
                   Referred By
                 </Label>

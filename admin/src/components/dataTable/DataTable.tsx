@@ -16,12 +16,14 @@ interface Props {
   data: any[];
   columns: any[];
   height?: string;
+  dtRef?: React.MutableRefObject<any>;
 }
 
 const DataTable: React.FC<Props> = ({
   data,
   columns,
   height = "400px",
+  dtRef,
 }) => {
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -134,10 +136,17 @@ const DataTable: React.FC<Props> = ({
     },
   } as any); 
 
+  if (dtRef) {
+    dtRef.current = table;
+  }
+
   return () => {
     table.destroy();
+    if (dtRef) {
+      dtRef.current = null;
+    }
   };
-}, [data, columns, height]);
+}, [data, columns, height, dtRef]);
 
   return (
     <div className="w-full">

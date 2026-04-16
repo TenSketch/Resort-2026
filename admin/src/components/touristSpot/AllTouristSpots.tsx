@@ -1,5 +1,3 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
 
 // Required plugins (kept minimal to match other tables)
 import "datatables.net-buttons";
@@ -16,8 +14,8 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TouristSpotDetailPanel from "@/components/touristSpot/TouristSpotDetailPanel";
 import PageLoader from "@/components/shared/PageLoader";
+import DataTable from "../dataTable/DataTable";
 
-DataTable.use(DT);
 
 interface TouristSpot {
   id: string;
@@ -324,11 +322,10 @@ export default function AllTouristSpots() {
         <h2 className="text-xl font-semibold text-slate-800">Trek Spots</h2>
         <Button
           onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${
-            perms.canViewDownload
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-gray-300 cursor-not-allowed"
-          }`}
+          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${perms.canViewDownload
+            ? "bg-green-600 hover:bg-green-700"
+            : "bg-gray-300 cursor-not-allowed"
+            }`}
           disabled={!perms.canViewDownload}
           title={
             perms.canViewDownload
@@ -344,84 +341,9 @@ export default function AllTouristSpots() {
       <div ref={tableRef} className="tourist-spots-table-container w-full">
         {loading && <PageLoader message="Loading Trek Spots..." />}
         <DataTable
-          ref={dtRef}
           data={spots}
           columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollCollapse: true,
-            scrollY: "420px",
-            layout: { topStart: "buttons", bottom1Start: "pageLength" },
-            buttons: [{ extend: "colvis", text: "Column Visibility" }],
-            initComplete: function () {
-              const wrapper = (this as any).api().table().container();
-              const topRow = wrapper.querySelector(
-                ".dt-layout-row:first-child",
-              );
-              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
-                const btn = document.createElement("button");
-                btn.className = "reset-filters-btn";
-                btn.textContent = "Reset Filters";
-                btn.style.cssText =
-                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                btn.onmouseenter = () => {
-                  btn.style.background = "#e2e8f0";
-                };
-                btn.onmouseleave = () => {
-                  btn.style.background = "#f8fafc";
-                };
-                btn.onclick = () => {
-                  const api = (this as any).api();
-                  const container = api.table().container();
 
-                  // 1. Clear global search and column searches
-                  api.search("").columns().search("");
-
-                  // 2. Clear Column Control plugin filters (API method)
-                  if (api.columns().ccSearchClear) {
-                    (api.columns() as any).ccSearchClear();
-                  }
-
-                  // 3. Clear all inputs and trigger events to sync UI
-                  container.querySelectorAll("input").forEach((input: any) => {
-                    input.value = "";
-                    input.dispatchEvent(new Event("input", { bubbles: true }));
-                    input.dispatchEvent(new Event("change", { bubbles: true }));
-                  });
-
-                  // 4. Clear all selects and trigger events
-                  container
-                    .querySelectorAll("select")
-                    .forEach((select: any) => {
-                      if (select.options.length > 0) {
-                        select.selectedIndex = 0;
-                        select.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      }
-                    });
-
-                  // 5. Force remove active state from column header buttons
-                  container
-                    .querySelectorAll(".dtcc-button_active")
-                    .forEach((btn: any) => {
-                      btn.classList.remove("dtcc-button_active");
-                    });
-
-                  // 6. Draw once to sync everything
-                  api.draw();
-                };
-                topRow.appendChild(btn);
-              }
-            },
-          }}
         />
       </div>
 

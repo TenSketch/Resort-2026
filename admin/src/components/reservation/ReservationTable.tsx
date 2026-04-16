@@ -40,6 +40,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PageLoader from "@/components/shared/PageLoader";
 import { DatePickerField } from "@/components/ui/date-picker";
+import ExportButton from "@/components/shared/ExportButton";
 
 // DataTable.use(DT);
 // (DT.ext.pager as any).numbers_length = 3;
@@ -335,24 +336,24 @@ export default function ReservationTable() {
           noOfDays:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                ) + 1
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              ) + 1
               : updatedLocal.noOfDays,
           noOfNights:
             server.checkIn && server.checkOut
               ? Math.max(
-                  0,
-                  Math.round(
-                    (new Date(server.checkOut).getTime() -
-                      new Date(server.checkIn).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  ),
-                )
+                0,
+                Math.round(
+                  (new Date(server.checkOut).getTime() -
+                    new Date(server.checkIn).getTime()) /
+                  (1000 * 60 * 60 * 24),
+                ),
+              )
               : updatedLocal.noOfNights || 0,
           resort: server.resort || updatedLocal.resort,
           resortName: updatedLocal.resortName,
@@ -746,187 +747,129 @@ export default function ReservationTable() {
     }
   };
 
-  // Export to CSV (uses current reservations)
-  const exportToExcel = () => {
-    // Format date to DD-MMM-YY (e.g. 07-Nov-25). If value is empty or invalid,
-    // return an empty string or the original value.
-    // Uses UTC methods to avoid timezone issues
-    const formatDateForExcel = (value: string) => {
-      if (!value) return "";
-      // Parse ISO date string (YYYY-MM-DD or full ISO timestamp)
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return value;
+  // Format date to DD-MMM-YY (e.g. 07-Nov-25). 
+  // Uses UTC methods to avoid timezone issues
+  const formatDateForExcel = (value: string) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
 
-      // Use UTC methods to avoid timezone shifts
-      const day = String(d.getUTCDate()).padStart(2, "0");
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      const mon = months[d.getUTCMonth()] || "";
-      const year = d.getUTCFullYear();
-      return `${day}/${mon}/${year}`;
-    };
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const mon = months[d.getUTCMonth()] || "";
+    const year = d.getUTCFullYear();
+    return `${day}/${mon}/${year}`;
+  };
 
-    const headers = [
-      "S No",
-      "Booking ID",
-      "Full Name",
-      "Phone",
-      "Email",
-      "Address",
-      "Resort",
-      "Cottage Type",
-      "Room name(s)",
-      "No. of rooms",
-      "Reservation Date",
-      "Reserved From",
-      "Check In",
-      "Occupied Dates",
-      "Check Out",
-      "No. of days",
-      "No. of Nights",
-      "Guests",
-      "Extra Guests",
-      "Children",
-      "Total guests",
-      "Foods billed",
-      "Food Preference",
-      "Status",
-      "Amount Payable",
-      "Payment Status",
-      "Amount Paid",
-      "Payment Transaction Id",
-      "Payment Transaction Date & Time",
-      "Payment Transaction SubBillerId",
-      "Verification Proof Type",
-      "Verification Proof Id",
-      "Cancel Booking Reason",
-      "Refund Requested Date & Time",
-      "Refundable Amount",
-      "Amount Refunded",
-      "Date of refund",
+  const exportHeaders = [
+    "S No",
+    "Booking ID",
+    "Full Name",
+    "Phone",
+    "Email",
+    "Address",
+    "Resort",
+    "Cottage Type",
+    "Room name(s)",
+    "No. of rooms",
+    "Reservation Date",
+    "Reserved From",
+    "Check In",
+    "Occupied Dates",
+    "Check Out",
+    "No. of days",
+    "No. of Nights",
+    "Guests",
+    "Extra Guests",
+    "Children",
+    "Total guests",
+    "Foods billed",
+    "Food Preference",
+    "Status",
+    "Amount Payable",
+    "Payment Status",
+    "Amount Paid",
+    "Payment Transaction Id",
+    "Payment Transaction Date & Time",
+    "Payment Transaction SubBillerId",
+    "Verification Proof Type",
+    "Verification Proof Id",
+    "Cancel Booking Reason",
+    "Refund Requested Date & Time",
+    "Refundable Amount",
+    "Amount Refunded",
+    "Date of refund",
+  ];
+
+  const mapRowExport = (row: Reservation, idx: number) => {
+    const address = [row.address1, row.address2, row.city, row.state, row.postalCode, row.country]
+      .filter(Boolean)
+      .join(", ");
+    const isVana = row.resort?.toLowerCase().includes("vana") || row.resortName?.toLowerCase().includes("vana");
+    const foodsBilled = isVana ? "NA" : (Number(row.guests) || 0) + (Number(row.extraGuests) || 0);
+
+    const foodPref = (() => {
+      if (!row.foodPreference || row.foodPreference.toLowerCase() === "na") return "NA";
+      const v = row.foodPreference.toLowerCase();
+      if (v.includes("non")) return "Non-Vegetarian";
+      if (v === "vegetarian") return "Vegetarian";
+      return row.foodPreference.charAt(0).toUpperCase() + row.foodPreference.slice(1).toLowerCase();
+    })();
+
+    const statusFmt = (() => {
+      let st = row.status || "";
+      if (st.toLowerCase() === "not-reserved" || st.toLowerCase() === "not reserved") return "Not-Reserved";
+      if (st) return st.charAt(0).toUpperCase() + st.slice(1).toLowerCase();
+      return "";
+    })();
+
+    const paymentStatusFmt = (() => {
+      if (!row.paymentStatus || row.paymentStatus === "NA") return "NA";
+      const v = row.paymentStatus.toLowerCase();
+      if (v === "not paid" || v === "unpaid") return "Unpaid";
+      if (v === "paid") return "Paid";
+      return row.paymentStatus.charAt(0).toUpperCase() + row.paymentStatus.slice(1).toLowerCase();
+    })();
+
+    return [
+      idx + 1,
+      row.bookingId || "NA",
+      row.fullName || "NA",
+      row.phone || "NA",
+      row.email || "NA",
+      address || "NA",
+      row.resortName || "NA",
+      (row.cottageTypeNames || []).join(", ") || "NA",
+      (row.roomNames || []).join(", ") || "NA",
+      row.numberOfRooms || 0,
+      `'${formatDateForExcel(row.reservationDate)}`,
+      row.reservedFrom || "NA",
+      `'${formatDateForExcel(row.checkIn)}`,
+      row.occupiedDates || "NA",
+      `'${formatDateForExcel(row.checkOut)}`,
+      row.noOfDays || 0,
+      row.noOfNights || 0,
+      row.guests || 0,
+      row.extraGuests || 0,
+      row.children || 0,
+      row.totalGuests || 0,
+      foodsBilled,
+      foodPref,
+      statusFmt,
+      row.totalPayable || 0,
+      paymentStatusFmt,
+      row.totalPayable || 0,
+      row.paymentTransactionId || "NA",
+      row.paymentTransactionDateTime ? `'${formatDateTimeForDisplay(row.paymentTransactionDateTime)}` : "NA",
+      "NA",
+      "NA",
+      "NA",
+      row.cancelBookingReason || "NA",
+      row.refundRequestedDateTime ? `'${formatDateForExcel(row.refundRequestedDateTime.slice(0, 10))}` : "NA",
+      row.refundableAmount || 0,
+      row.amountRefunded || 0,
+      row.dateOfRefund ? `'${formatDateForExcel(row.dateOfRefund.slice(0, 10))}` : "NA",
     ];
-
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: Reservation[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : reservationsRef.current;
-
-    const csvContent = [
-      headers.join(","),
-      ...dataToExport.map((row, idx) => {
-        const address = [
-          row.address1,
-          row.address2,
-          row.city,
-          row.state,
-          row.postalCode,
-          row.country,
-        ]
-          .filter(Boolean)
-          .join(", ");
-        const isVana =
-          row.resort?.toLowerCase().includes("vana") ||
-          row.resortName?.toLowerCase().includes("vana");
-        const foodsBilled = isVana
-          ? "NA"
-          : (Number(row.guests) || 0) + (Number(row.extraGuests) || 0);
-
-        return [
-          // Serial number as first column (starting at 1)
-          idx + 1,
-          `"${row.bookingId}"`,
-          `"${row.fullName}"`,
-          `"${row.phone}"`,
-          `"${row.email}"`,
-          `"${address || "NA"}"`,
-          `"${row.resortName}"`,
-          `"${(row.cottageTypeNames || []).join(", ") || "NA"}"`,
-          `"${(row.roomNames || []).join(", ") || "NA"}"`,
-          row.numberOfRooms,
-          `"'${formatDateForExcel(row.reservationDate)}"`,
-          `"${row.reservedFrom || "NA"}"`,
-          // Prefix formatted dates with an apostrophe so Excel treats them as text
-          // and doesn't auto-format/overflow them to '#######' when column is narrow
-          `"'${formatDateForExcel(row.checkIn)}"`,
-          `"${row.occupiedDates || "NA"}"`,
-          `"'${formatDateForExcel(row.checkOut)}"`,
-          row.noOfDays,
-          row.noOfNights,
-          row.guests,
-          row.extraGuests,
-          row.children,
-          row.totalGuests,
-          typeof foodsBilled === "string" ? `"${foodsBilled}"` : foodsBilled,
-          // Format food preference for export
-          (() => {
-            if (
-              !row.foodPreference ||
-              row.foodPreference === "NA" ||
-              row.foodPreference === "na"
-            )
-              return '"NA"';
-            const v = row.foodPreference.toLowerCase();
-            if (v === "nonvegetarian" || v === "non-vegetarian")
-              return '"Non-Vegetarian"';
-            if (v === "vegetarian") return '"Vegetarian"';
-            return `"${row.foodPreference.charAt(0).toUpperCase() + row.foodPreference.slice(1).toLowerCase()}"`;
-          })(),
-          // Format booking status for export
-          (() => {
-            let st = row.status || "";
-            if (
-              st.toLowerCase() === "not-reserved" ||
-              st.toLowerCase() === "not reserved"
-            )
-              return '"Not-Reserved"';
-            if (st)
-              return `"${st.charAt(0).toUpperCase() + st.slice(1).toLowerCase()}"`;
-            return '""';
-          })(),
-          row.totalPayable,
-          // Format payment status for export
-          (() => {
-            if (!row.paymentStatus || row.paymentStatus === "NA") return '"NA"';
-            const v = row.paymentStatus.toLowerCase();
-            if (v === "not paid" || v === "unpaid") return '"Unpaid"';
-            if (v === "paid") return '"Paid"';
-            return `"${row.paymentStatus.charAt(0).toUpperCase() + row.paymentStatus.slice(1).toLowerCase()}"`;
-          })(),
-          row.totalPayable,
-          `"${row.paymentTransactionId || "NA"}"`,
-          `"'${row.paymentTransactionDateTime ? formatDateTimeForDisplay(row.paymentTransactionDateTime) : "NA"}"`,
-          `"NA"`,
-          `"NA"`,
-          `"NA"`,
-          `"${row.cancelBookingReason || "NA"}"`,
-          `"'${row.refundRequestedDateTime ? formatDateForExcel(row.refundRequestedDateTime.slice(0, 10)) : "NA"}"`,
-          row.refundableAmount || 0,
-          row.amountRefunded || 0,
-          `"'${row.dateOfRefund ? formatDateForExcel(row.dateOfRefund.slice(0, 10)) : "NA"}"`,
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Guest_Reservations.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
   // Removed edit & disable confirmation logic; actions now happen directly
 
@@ -1848,9 +1791,8 @@ export default function ReservationTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}" 
@@ -1873,8 +1815,8 @@ export default function ReservationTable() {
               Edit
             </button>
             `
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -1890,35 +1832,19 @@ export default function ReservationTable() {
       <div className="w-full max-w-full overflow-hidden dt-table-container">
         <div className="flex justify-between items-center mt-4">
           <h2 className="text-xl font-semibold text-slate-800"> Resort Reservations</h2>
-          <button
-            onClick={() => (perms.canExport ? exportToExcel() : null)}
-            className={`inline-flex items-center h-[38px] px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          <ExportButton
+            data={reservations}
+            dtRef={dtRef}
+            headers={exportHeaders}
+            mapRow={mapRowExport}
+            filename="Guest_Reservations.csv"
             disabled={!perms.canExport}
-            title={
-              perms.canExport
-                ? "Export to Excel"
-                : "You do not have permission to export data"
-            }
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Export to Excel
-          </button>
+            title={perms.canExport ? "Export to Excel" : "You do not have permission"}
+          />
         </div>
 
         <div ref={tableRef} className="w-full">
-          <DataTable data={reservations} columns={columns} />
+          <DataTable data={reservations} columns={columns} dtRef={dtRef} />
         </div>
 
         {/* Removed edit & confirmation dialogs */}
@@ -2330,7 +2256,7 @@ export default function ReservationTable() {
                           <DatePickerField
                             className="w-full bg-gray-100 cursor-not-allowed mt-auto"
                             value={editForm?.reservationDate || ""}
-                            onChange={() => {}}
+                            onChange={() => { }}
                             disabled
                           />
                         ) : (
@@ -2480,8 +2406,8 @@ export default function ReservationTable() {
                               {parseInt(
                                 String(
                                   editForm?.numberOfRooms ??
-                                    selectedReservation?.numberOfRooms ??
-                                    0,
+                                  selectedReservation?.numberOfRooms ??
+                                  0,
                                 ),
                               ) * 2}
                             </span>
@@ -2649,59 +2575,59 @@ export default function ReservationTable() {
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Food Preference
-                          </Label>
-                          {sheetMode === "edit" ? (
-                            <Select
-                              value={editForm?.foodPreference || ""}
-                              onValueChange={(value) =>
-                                handleEditChange("foodPreference", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select preference" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Vegetarian">
-                                  Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Non-Vegetarian">
-                                  Non-Vegetarian
-                                </SelectItem>
-                                <SelectItem value="Vegan">Vegan</SelectItem>
-                                <SelectItem value="Jain">Jain</SelectItem>
-                                <SelectItem value="No Preference">
-                                  No Preference
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="p-3 bg-gray-50 rounded-md border">
-                              <span className="text-sm text-gray-900">
-                                {selectedReservation.foodPreference || "N/A"}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Food Preference
+                            </Label>
+                            {sheetMode === "edit" ? (
+                              <Select
+                                value={editForm?.foodPreference || ""}
+                                onValueChange={(value) =>
+                                  handleEditChange("foodPreference", value)
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select preference" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Vegetarian">
+                                    Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Non-Vegetarian">
+                                    Non-Vegetarian
+                                  </SelectItem>
+                                  <SelectItem value="Vegan">Vegan</SelectItem>
+                                  <SelectItem value="Jain">Jain</SelectItem>
+                                  <SelectItem value="No Preference">
+                                    No Preference
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <div className="p-3 bg-gray-50 rounded-md border">
+                                <span className="text-sm text-gray-900">
+                                  {selectedReservation.foodPreference || "N/A"}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       {!(selectedReservation.resortName || "")
                         .toLowerCase()
                         .includes("vanavihari") && (
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Foods Billed
-                          </Label>
-                          <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
-                            <span className="text-sm text-gray-600">
-                              {(Number(selectedReservation.guests) || 0) +
-                                (Number(selectedReservation.extraGuests) || 0)}
-                            </span>
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Foods Billed
+                            </Label>
+                            <div className="p-3 bg-gray-100 rounded-md border border-gray-300">
+                              <span className="text-sm text-gray-600">
+                                {(Number(selectedReservation.guests) || 0) +
+                                  (Number(selectedReservation.extraGuests) || 0)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
 
@@ -2813,19 +2739,19 @@ export default function ReservationTable() {
                       </h3>
                       {selectedReservation.approval_status ===
                         "PENDING_DFO_APPROVAL" && (
-                        <div className="flex items-center gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-md">
-                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
-                          <div>
-                            <span className="text-sm font-semibold text-amber-800">
-                              Awaiting DFO Approval
-                            </span>
-                            <p className="text-xs text-amber-600 mt-0.5">
-                              Room is blocked. Rooms will be auto-released if
-                              not approved within 1 hour.
-                            </p>
+                          <div className="flex items-center gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                            <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" />
+                            <div>
+                              <span className="text-sm font-semibold text-amber-800">
+                                Awaiting DFO Approval
+                              </span>
+                              <p className="text-xs text-amber-600 mt-0.5">
+                                Room is blocked. Rooms will be auto-released if
+                                not approved within 1 hour.
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                       {selectedReservation.approval_status === "APPROVED" && (
                         <div className="flex items-center gap-2.5 p-3 bg-green-50 border border-green-200 rounded-md">
                           <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
@@ -2938,9 +2864,9 @@ export default function ReservationTable() {
                             value={
                               editForm?.paymentTransactionDateTime
                                 ? editForm.paymentTransactionDateTime.slice(
-                                    0,
-                                    10,
-                                  )
+                                  0,
+                                  10,
+                                )
                                 : ""
                             }
                             onChange={(val) =>
@@ -2955,8 +2881,8 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.paymentTransactionDateTime
                                 ? formatDateTimeForDisplay(
-                                    selectedReservation.paymentTransactionDateTime,
-                                  )
+                                  selectedReservation.paymentTransactionDateTime,
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -3054,11 +2980,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.refundRequestedDateTime
                                 ? formatDateForDisplay(
-                                    selectedReservation.refundRequestedDateTime.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.refundRequestedDateTime.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>
@@ -3089,11 +3015,11 @@ export default function ReservationTable() {
                             <span className="text-sm text-gray-900">
                               {selectedReservation.dateOfRefund
                                 ? formatDateForDisplay(
-                                    selectedReservation.dateOfRefund.slice(
-                                      0,
-                                      10,
-                                    ),
-                                  )
+                                  selectedReservation.dateOfRefund.slice(
+                                    0,
+                                    10,
+                                  ),
+                                )
                                 : "N/A"}
                             </span>
                           </div>

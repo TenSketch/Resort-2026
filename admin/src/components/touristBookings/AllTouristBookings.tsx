@@ -1,5 +1,4 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
+
 import "datatables.net-buttons";
 import "datatables.net-buttons/js/buttons.colVis.js";
 import "datatables.net-columncontrol";
@@ -21,8 +20,8 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import PageLoader from "@/components/shared/PageLoader";
+import DataTable from "../dataTable/DataTable";
 
-DataTable.use(DT);
 
 interface TouristBooking {
   id: string;
@@ -333,9 +332,8 @@ export default function AllTouristBookings() {
         >
           View
         </button>
-        ${
-          perms.canEdit
-            ? `
+        ${perms.canEdit
+          ? `
         <button 
           class="edit-btn" 
           data-id="${row.id}" 
@@ -358,7 +356,7 @@ export default function AllTouristBookings() {
           Edit
         </button>
         `
-            : ""
+          : ""
         }
       </div>
     `,
@@ -638,102 +636,9 @@ export default function AllTouristBookings() {
       <div ref={tableRef} className="tourist-bookings-table-container w-full">
         {loading && <PageLoader message="Loading Trek Bookings..." />}
         <DataTable
-          ref={dtRef}
           data={bookings}
           columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollCollapse: true,
-            scrollY: "520px",
-            layout: {
-              topStart: "buttons",
-              topEnd: "search",
-              bottomStart: "pageLength",
-              bottomEnd: "paging",
-            },
-            buttons: [
-              {
-                extend: "colvis",
-                text: "Column Visibility",
-                collectionLayout: "fixed two-column",
-                collection: {
-                  appendTo: "body",
-                },
-              },
-            ],
-            columnControl: [
-              "order",
-              ["orderAsc", "orderDesc", "spacer", "search"],
-            ],
-            initComplete: function () {
-              const wrapper = (this as any).api().table().container();
-              const topRow = wrapper.querySelector(
-                ".dt-layout-row:first-child",
-              );
-              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
-                const btn = document.createElement("button");
-                btn.className = "reset-filters-btn";
-                btn.textContent = "Reset Filters";
-                btn.style.cssText =
-                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                btn.onmouseenter = () => {
-                  btn.style.background = "#e2e8f0";
-                };
-                btn.onmouseleave = () => {
-                  btn.style.background = "#f8fafc";
-                };
-                btn.onclick = () => {
-                  const api = (this as any).api();
-                  const container = api.table().container();
 
-                  // 1. Clear global search and column searches
-                  api.search("").columns().search("");
-
-                  // 2. Clear Column Control plugin filters (API method)
-                  if (api.columns().ccSearchClear) {
-                    (api.columns() as any).ccSearchClear();
-                  }
-
-                  // 3. Clear all inputs and trigger events to sync UI
-                  container.querySelectorAll("input").forEach((input: any) => {
-                    input.value = "";
-                    input.dispatchEvent(new Event("input", { bubbles: true }));
-                    input.dispatchEvent(new Event("change", { bubbles: true }));
-                  });
-
-                  // 4. Clear all selects and trigger events
-                  container
-                    .querySelectorAll("select")
-                    .forEach((select: any) => {
-                      if (select.options.length > 0) {
-                        select.selectedIndex = 0;
-                        select.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      }
-                    });
-
-                  // 5. Force remove active state from column header buttons
-                  container
-                    .querySelectorAll(".dtcc-button_active")
-                    .forEach((btn: any) => {
-                      btn.classList.remove("dtcc-button_active");
-                    });
-
-                  // 6. Draw once to sync everything
-                  api.draw();
-                };
-                topRow.appendChild(btn);
-              }
-            },
-          }}
         />
       </div>
 
@@ -822,7 +727,7 @@ export default function AllTouristBookings() {
                     <div className="border-b pb-4">
                       <h3 className="text-lg font-semibold mb-3">Trek Spots</h3>
                       {selected.touristSpots &&
-                      selected.touristSpots.length > 0 ? (
+                        selected.touristSpots.length > 0 ? (
                         selected.touristSpots.map((spot, idx) => (
                           <div
                             key={idx}

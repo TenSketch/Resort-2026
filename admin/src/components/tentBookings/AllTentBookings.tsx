@@ -1,5 +1,4 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
+
 
 // Required plugins
 import "datatables.net-buttons";
@@ -27,8 +26,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { DatePickerField } from "@/components/ui/date-picker";
 import PageLoader from "@/components/shared/PageLoader";
+import ExportButton from "@/components/shared/ExportButton";
+import DataTable from "../dataTable/DataTable";
 
-DataTable.use(DT);
+
 
 interface TentBooking {
   _id: string;
@@ -317,93 +318,7 @@ export default function AllTentBookings() {
     },
   ];
 
-  const exportToExcel = () => {
-    const formatDateForExcel = (value?: string) => {
-      if (!value) return "";
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return value;
-      const day = String(d.getUTCDate()).padStart(2, "0");
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      const mon = months[d.getUTCMonth()] || "";
-      const year = d.getUTCFullYear();
-      return `${day}/${mon}/${year}`;
-    };
 
-    const headers = [
-      "S. No",
-      "Booking ID",
-      "Full Name",
-      "Phone",
-      "Email",
-      "Address",
-      "Tent Spot",
-      "Tents",
-      "No. of Tents",
-      "Reservation Date",
-      "Check In",
-      "Check Out",
-      "No. of Days",
-      "Guests",
-      "Children",
-      "Status",
-      "Total Payable",
-      "Payment Status",
-      "Transaction ID",
-    ];
-
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TentBooking[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : bookingsRef.current;
-
-    const csv = [
-      headers.join(","),
-      ...dataToExport.map((r, i) =>
-        [
-          i + 1,
-          `"${r.bookingId}"`,
-          `"${r.fullName}"`,
-          `"${r.phone}"`,
-          `"${r.email}"`,
-          `"${formatAddress(r)}"`,
-          `"${getTentSpotName(r)}"`,
-          `"${getTentIds(r)}"`,
-          r.numberOfTents || r.tents?.length || 0,
-          `"'${formatDateForExcel(r.reservationDate)}"`,
-          `"'${formatDateForExcel(r.checkinDate)}"`,
-          `"'${formatDateForExcel(r.checkoutDate)}"`,
-          calculateDays(r.checkinDate, r.checkoutDate),
-          r.guests ?? 0,
-          r.children ?? 0,
-          `"${r.status || ""}"`,
-          r.totalPayable ?? 0,
-          `"${r.paymentStatus || ""}"`,
-          `"${r.paymentTransactionId || ""}"`,
-        ].join(","),
-      ),
-    ].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Tent_Bookings.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const saveChanges = async () => {
     if (!permsRef.current.canEdit) return;
@@ -528,132 +443,63 @@ export default function AllTentBookings() {
       `}</style>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Tent Bookings</h2>
-        <button
-          onClick={() => (perms.canExport ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+        <ExportButton
+          data={bookingsRef.current}
+          dtRef={dtRef}
+          headers={[
+            "S. No",
+            "Booking ID",
+            "Full Name",
+            "Phone",
+            "Email",
+            "Address",
+            "Tent Spot",
+            "Tents",
+            "No. of Tents",
+            "Reservation Date",
+            "Check In",
+            "Check Out",
+            "No. of Days",
+            "Guests",
+            "Children",
+            "Status",
+            "Total Payable",
+            "Payment Status",
+            "Transaction ID"
+          ]}
+          mapRow={(r: any, i: number) => [
+            i + 1,
+            r.bookingId,
+            r.fullName,
+            r.phone,
+            r.email,
+            formatAddress(r),
+            getTentSpotName(r),
+            getTentIds(r),
+            r.numberOfTents || r.tents?.length || 0,
+            formatDateForDisplay(r.reservationDate),
+            formatDateForDisplay(r.checkinDate),
+            formatDateForDisplay(r.checkoutDate),
+            calculateDays(r.checkinDate, r.checkoutDate),
+            r.guests ?? 0,
+            r.children ?? 0,
+            r.status || "",
+            r.totalPayable ?? 0,
+            r.paymentStatus || "",
+            r.paymentTransactionId || ""
+          ]}
+          filename="Tent_Bookings.csv"
           disabled={!perms.canExport}
-          title={
-            perms.canExport
-              ? "Export to Excel"
-              : "You do not have permission to export data"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
+        />
       </div>
 
       <div ref={tableRef} className="tent-bookings-table-container w-full">
         {isLoading && <PageLoader message="Loading tent bookings..." />}
         <DataTable
-          ref={dtRef}
+          dtRef={dtRef}
           data={bookings}
           columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollCollapse: true,
-            scrollY: "520px",
-            layout: {
-              topStart: "buttons",
-              topEnd: "search",
-              bottomStart: "pageLength",
-              bottomEnd: "paging",
-            },
-            buttons: [
-              {
-                extend: "colvis",
-                text: "Column Visibility",
-                collectionLayout: "fixed two-column",
-                collection: {
-                  appendTo: "body",
-                },
-              },
-            ],
-            columnControl: [
-              "order",
-              ["orderAsc", "orderDesc", "spacer", "search"],
-            ],
-            initComplete: function () {
-              const wrapper = (this as any).api().table().container();
-              const topRow = wrapper.querySelector(
-                ".dt-layout-row:first-child",
-              );
-              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
-                const btn = document.createElement("button");
-                btn.className = "reset-filters-btn";
-                btn.textContent = "Reset Filters";
-                btn.style.cssText =
-                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                btn.onmouseenter = () => {
-                  btn.style.background = "#e2e8f0";
-                };
-                btn.onmouseleave = () => {
-                  btn.style.background = "#f8fafc";
-                };
-                btn.onclick = () => {
-                  const api = (this as any).api();
-                  const container = api.table().container();
 
-                  // 1. Clear global search and column searches
-                  api.search("").columns().search("");
-
-                  // 2. Clear Column Control plugin filters (API method)
-                  if (api.columns().ccSearchClear) {
-                    (api.columns() as any).ccSearchClear();
-                  }
-
-                  // 3. Clear all inputs and trigger events to sync UI
-                  container.querySelectorAll("input").forEach((input: any) => {
-                    input.value = "";
-                    input.dispatchEvent(new Event("input", { bubbles: true }));
-                    input.dispatchEvent(new Event("change", { bubbles: true }));
-                  });
-
-                  // 4. Clear all selects and trigger events
-                  container
-                    .querySelectorAll("select")
-                    .forEach((select: any) => {
-                      if (select.options.length > 0) {
-                        select.selectedIndex = 0;
-                        select.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      }
-                    });
-
-                  // 5. Force remove active state from column header buttons
-                  container
-                    .querySelectorAll(".dtcc-button_active")
-                    .forEach((btn: any) => {
-                      btn.classList.remove("dtcc-button_active");
-                    });
-
-                  // 6. Draw once to sync everything
-                  api.draw();
-                };
-                topRow.appendChild(btn);
-              }
-            },
-          }}
         />
       </div>
 

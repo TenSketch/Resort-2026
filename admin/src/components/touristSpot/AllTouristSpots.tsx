@@ -10,10 +10,10 @@ import "datatables.net-buttons-dt/css/buttons.dataTables.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { usePermissions } from "@/lib/AdminProvider";
-import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import TouristSpotDetailPanel from "@/components/touristSpot/TouristSpotDetailPanel";
 import PageLoader from "@/components/shared/PageLoader";
+import ExportButton from "@/components/shared/ExportButton";
 import DataTable from "../dataTable/DataTable";
 
 
@@ -49,42 +49,7 @@ export default function AllTouristSpots() {
   const apiBase =
     (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
-  const exportToExcel = () => {
-    const headers = [
-      "S.No",
-      "Trek Spot Name",
-      "Category",
-      "Entry Fees (₹)",
-      "Camera Fees (₹)",
-    ];
 
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TouristSpot[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : spots;
-
-    const csvContent = [
-      headers.join(","),
-      ...dataToExport.map((spot, idx) => {
-        return [
-          idx + 1,
-          `"${spot.name.replace(/"/g, '""')}"`,
-          `"${(spot.category || "—").replace(/"/g, '""')}"`,
-          `₹${(spot.entryFees || 0).toLocaleString()}`,
-          spot.cameraFees ? `₹${spot.cameraFees.toLocaleString()}` : "—",
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Tourist_Spots_Records.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   useEffect(() => {
     (async () => {
@@ -320,22 +285,20 @@ export default function AllTouristSpots() {
       `}</style>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-slate-800">Trek Spots</h2>
-        <Button
-          onClick={() => (perms.canViewDownload ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg ${perms.canViewDownload
-            ? "bg-green-600 hover:bg-green-700"
-            : "bg-gray-300 cursor-not-allowed"
-            }`}
+        <ExportButton
+          data={spots}
+          dtRef={dtRef}
+          headers={["S.No", "Trek Spot Name", "Category", "Entry Fees (₹)", "Camera Fees (₹)"]}
+          mapRow={(spot: any, idx: number) => [
+            idx + 1,
+            spot.name,
+            spot.category || "—",
+            `₹${(spot.entryFees || 0).toLocaleString()}`,
+            spot.cameraFees ? `₹${spot.cameraFees.toLocaleString()}` : "—"
+          ]}
+          filename="Tourist_Spots_Records.csv"
           disabled={!perms.canViewDownload}
-          title={
-            perms.canViewDownload
-              ? "Export to Excel"
-              : "You do not have permission to download/export"
-          }
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export to Excel
-        </Button>
+        />
       </div>
 
       <div ref={tableRef} className="tourist-spots-table-container w-full">
@@ -343,6 +306,7 @@ export default function AllTouristSpots() {
         <DataTable
           data={spots}
           columns={columns}
+          dtRef={dtRef}
 
         />
       </div>

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sheet";
 // Removed Input import (no inline edit modal now)
 import PageLoader from "@/components/shared/PageLoader";
+import ExportButton from "@/components/shared/ExportButton";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import DataTable from "../dataTable/DataTable";
@@ -84,58 +85,7 @@ export default function RoomsTable() {
   const apiBase =
     (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
-  const exportToExcel = () => {
-    const headers = [
-      "S No",
-      "Resort",
-      "Cottage Type",
-      "Room ID",
-      "Room Name",
-      "Weekday Rate",
-      "Weekend Rate",
-      "Guests",
-      "Extra Guests",
-      "Children",
-      "Bed Charge (Weekday)",
-      "Bed Charge (Weekend)",
-      "Status",
-    ];
 
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: Room[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : roomsDataRef.current;
-
-    const csvContent = [
-      headers.join(","),
-      ...dataToExport.map((row, idx) => {
-        return [
-          idx + 1,
-          `"${row.resort}"`,
-          `"${row.cottageType}"`,
-          `"${row.roomId}"`,
-          `"${row.roomName}"`,
-          row.weekdayRate,
-          row.weekendRate,
-          row.guests,
-          row.extraGuests,
-          row.children || 0,
-          row.bedChargeWeekday,
-          row.bedChargeWeekend,
-          `"${disabledRooms.has(row.id) ? "Disabled" : "Available"}"`,
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Rooms.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleEdit = (room: Room) => {
     if (!permsRef.current.canEdit) return;
@@ -708,31 +658,28 @@ export default function RoomsTable() {
       <div className="w-full max-w-full overflow-hidden dt-table-container">
         <div className="flex justify-between items-center mt-4">
           <h2 className="text-xl font-semibold text-slate-800">Rooms Table</h2>
-          <button
-            onClick={() => (perms.canExport ? exportToExcel() : null)}
-            className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+          <ExportButton
+            data={roomsDataRef.current}
+            dtRef={dtRef}
+            headers={["S No", "Resort", "Cottage Type", "Room ID", "Room Name", "Weekday Rate", "Weekend Rate", "Guests", "Extra Guests", "Children", "Bed Charge (Weekday)", "Bed Charge (Weekend)", "Status"]}
+            mapRow={(row: any, idx: number) => [
+              idx + 1,
+              row.resort,
+              row.cottageType,
+              row.roomId,
+              row.roomName,
+              row.weekdayRate,
+              row.weekendRate,
+              row.guests,
+              row.extraGuests,
+              row.children || 0,
+              row.bedChargeWeekday,
+              row.bedChargeWeekend,
+              disabledRooms.has(row.id) ? "Disabled" : "Available"
+            ]}
+            filename="Rooms.csv"
             disabled={!perms.canExport}
-            title={
-              perms.canExport
-                ? "Export to Excel"
-                : "You do not have permission to export data"
-            }
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Export to Excel
-          </button>
+          />
         </div>
 
         <div ref={tableRef} className="w-full">
@@ -740,7 +687,8 @@ export default function RoomsTable() {
           <DataTable
             data={roomsData}
             columns={columns}
-          
+            dtRef={dtRef}
+
           />
         </div>
 

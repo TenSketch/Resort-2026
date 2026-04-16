@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import PageLoader from "@/components/shared/PageLoader";
+import ExportButton from "@/components/shared/ExportButton";
 import DataTable from "../dataTable/DataTable";
 
 
@@ -363,97 +364,7 @@ export default function AllTouristBookings() {
     },
   ];
 
-  const exportToExcel = () => {
-    const formatDateForExcel = (value?: string) => {
-      if (!value) return "";
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return value;
-      const day = String(d.getUTCDate()).padStart(2, "0");
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      const mon = months[d.getUTCMonth()] || "";
-      const year = d.getUTCFullYear();
-      return `${day}/${mon}/${year}`;
-    };
 
-    const headers = [
-      "S. No",
-      "Booking ID",
-      "Full Name",
-      "Phone",
-      "Email",
-      "Trek Spots",
-      "Visit Date",
-      "Guests",
-      "Cameras",
-      "Reserved From",
-      "Reservation Date",
-      "Status",
-      "Amount",
-      "Payment Status",
-    ];
-
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: TouristBooking[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : bookingsRef.current;
-
-    const csv = [
-      headers.join(","),
-      ...dataToExport.map((r, i) => {
-        const guests =
-          r.touristSpots?.reduce(
-            (sum, s) => sum + (s.counts?.guests || 0),
-            0,
-          ) || 0;
-        const cameras =
-          r.touristSpots?.reduce(
-            (sum, s) => sum + (s.counts?.cameras || 0),
-            0,
-          ) || 0;
-        const spotNames =
-          r.touristSpots?.map((s) => s.name).join("; ") || "N/A";
-        const visitDate = r.touristSpots?.[0]?.visitDate || "";
-
-        return [
-          i + 1,
-          `"${r.bookingId}"`,
-          `"${r.fullName}"`,
-          `"${r.phone}"`,
-          `"${r.email}"`,
-          `"${spotNames}"`,
-          `"${formatDateForExcel(visitDate)}"`,
-          guests,
-          cameras,
-          `"${r.reservedFrom || ""}"`,
-          `"${formatDateForExcel(r.reservationDate)}"`,
-          `"${r.status || ""}"`,
-          r.totalPayable || 0,
-          `"${r.paymentStatus || ""}"`,
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Trek_Spot_Bookings.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const saveChanges = async () => {
     if (!permsRef.current.canEdit) return;
@@ -606,31 +517,36 @@ export default function AllTouristBookings() {
         <h2 className="text-xl font-semibold text-slate-800">
           Trek Spot Bookings
         </h2>
-        <button
-          onClick={() => (perms.canExport ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${perms.canExport ? "bg-green-600 hover:bg-green-700 focus:ring-green-500" : "bg-gray-300 cursor-not-allowed"}`}
+        <ExportButton
+          data={bookingsRef.current}
+          dtRef={dtRef}
+          headers={["S. No", "Booking ID", "Full Name", "Phone", "Email", "Trek Spots", "Visit Date", "Guests", "Cameras", "Reserved From", "Reservation Date", "Status", "Amount", "Payment Status"]}
+          mapRow={(r: any, i: number) => {
+            const guests = r.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.guests || 0), 0) || 0;
+            const cameras = r.touristSpots?.reduce((sum: number, s: any) => sum + (s.counts?.cameras || 0), 0) || 0;
+            const spotNames = r.touristSpots?.map((s: any) => s.name).join("; ") || "N/A";
+            const visitDate = r.touristSpots?.[0]?.visitDate || "";
+
+            return [
+              i + 1,
+              r.bookingId,
+              r.fullName,
+              r.phone,
+              r.email,
+              spotNames,
+              formatDateForDisplay(visitDate),
+              guests,
+              cameras,
+              r.reservedFrom || "",
+              formatDateForDisplay(r.reservationDate),
+              r.status || "",
+              r.totalPayable || 0,
+              r.paymentStatus || ""
+            ];
+          }}
+          filename="Trek_Spot_Bookings.csv"
           disabled={!perms.canExport}
-          title={
-            perms.canExport
-              ? "Export to Excel"
-              : "You do not have permission to export data"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
+        />
       </div>
 
       <div ref={tableRef} className="tourist-bookings-table-container w-full">
@@ -638,6 +554,7 @@ export default function AllTouristBookings() {
         <DataTable
           data={bookings}
           columns={columns}
+          dtRef={dtRef}
 
         />
       </div>

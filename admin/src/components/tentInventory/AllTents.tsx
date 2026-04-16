@@ -1,5 +1,4 @@
-import DataTable from "datatables.net-react";
-import DT from "datatables.net-dt";
+
 import "datatables.net-dt/css/dataTables.dataTables.css";
 import "datatables.net-buttons-dt/css/buttons.dataTables.css";
 import "datatables.net-buttons";
@@ -22,8 +21,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import PageLoader from "@/components/shared/PageLoader";
+import ExportButton from "@/components/shared/ExportButton";
+import DataTable from "../dataTable/DataTable";
 
-DataTable.use(DT);
 
 interface Tent {
   id: string;
@@ -115,52 +115,7 @@ export default function AllTentsTable() {
     permsRef.current = perms;
   }, [perms]);
 
-  const exportToExcel = () => {
-    const headers = [
-      "S.No",
-      "Tent Spot",
-      "Tent Type",
-      "No. of Guests",
-      "No. of Children",
-      "Tent ID",
-      "Rate (₹)",
-      "Tent Count",
-      "Images",
-      "Status",
-    ];
 
-    const dtApi = (dtRef.current as any)?.dt?.();
-    const dataToExport: Tent[] = dtApi
-      ? dtApi.rows({ search: "applied" }).data().toArray()
-      : tents;
-
-    const csvContent = [
-      headers.join(","),
-      ...dataToExport.map((tent) => {
-        return [
-          tent.sno,
-          `"${tent.tentSpotName}"`,
-          `"${tent.tentTypeName}"`,
-          tent.noOfGuests,
-          tent.noOfChildren,
-          `"${tent.tentId}"`,
-          tent.rate,
-          tent.tentCount,
-          tent.images.length,
-          `"${tent.isActive ? "Active" : "Inactive"}"`,
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Tents_Records.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const openForView = (tent: Tent) => {
     setSelectedTent(tent);
@@ -225,9 +180,8 @@ export default function AllTentsTable() {
             >
               View
             </button>
-            ${
-              perms.canEdit
-                ? `
+            ${perms.canEdit
+            ? `
             <button 
               class="edit-btn" 
               data-id="${row.id}"
@@ -237,8 +191,8 @@ export default function AllTentsTable() {
             >
               Edit
             </button>`
-                : ""
-            }
+            : ""
+          }
           </div>
         `;
       },
@@ -382,26 +336,26 @@ export default function AllTentsTable() {
           setSelectedTent((prev) =>
             prev
               ? {
-                  ...prev,
-                  images: updatedImages,
-                  noOfGuests: editNoOfGuests,
-                  noOfChildren: editNoOfChildren,
-                  rate: editRate,
-                  tentCount: editTentCount,
-                }
+                ...prev,
+                images: updatedImages,
+                noOfGuests: editNoOfGuests,
+                noOfChildren: editNoOfChildren,
+                rate: editRate,
+                tentCount: editTentCount,
+              }
               : prev,
           );
           setTents((prev) =>
             prev.map((t) =>
               t.id === selectedTent.id
                 ? {
-                    ...t,
-                    images: updatedImages,
-                    noOfGuests: editNoOfGuests,
-                    noOfChildren: editNoOfChildren,
-                    rate: editRate,
-                    tentCount: editTentCount,
-                  }
+                  ...t,
+                  images: updatedImages,
+                  noOfGuests: editNoOfGuests,
+                  noOfChildren: editNoOfChildren,
+                  rate: editRate,
+                  tentCount: editTentCount,
+                }
                 : t,
             ),
           );
@@ -438,12 +392,12 @@ export default function AllTentsTable() {
           prev.map((t) =>
             t.id === selectedTent.id
               ? {
-                  ...t,
-                  noOfGuests: editNoOfGuests,
-                  noOfChildren: editNoOfChildren,
-                  rate: editRate,
-                  tentCount: editTentCount,
-                }
+                ...t,
+                noOfGuests: editNoOfGuests,
+                noOfChildren: editNoOfChildren,
+                rate: editRate,
+                tentCount: editTentCount,
+              }
               : t,
           ),
         );
@@ -541,35 +495,36 @@ export default function AllTentsTable() {
       `}</style>
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 className="text-xl font-semibold text-slate-800">All Tents</h2>
-        <button
-          onClick={() => (perms.canExport ? exportToExcel() : null)}
-          className={`inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
-            perms.canExport
-              ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-              : "bg-gray-300 cursor-not-allowed"
-          }`}
+        <ExportButton
+          data={tents}
+          dtRef={dtRef}
+          headers={[
+            "S.No",
+            "Tent Spot",
+            "Tent Type",
+            "No. of Guests",
+            "No. of Children",
+            "Tent ID",
+            "Rate (₹)",
+            "Tent Count",
+            "Images",
+            "Status"
+          ]}
+          mapRow={(tent: any) => [
+            tent.sno,
+            tent.tentSpotName,
+            tent.tentTypeName,
+            tent.noOfGuests,
+            tent.noOfChildren,
+            tent.tentId,
+            tent.rate,
+            tent.tentCount,
+            tent.images?.length || 0,
+            tent.isActive ? "Active" : "Inactive"
+          ]}
+          filename="Tents_Records.csv"
           disabled={!perms.canExport}
-          title={
-            perms.canExport
-              ? "Export to Excel"
-              : "You do not have permission to export data"
-          }
-        >
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export to Excel
-        </button>
+        />
       </div>
 
       <div
@@ -583,118 +538,11 @@ export default function AllTentsTable() {
           </div>
         )}
         <DataTable
-          ref={dtRef}
+
           data={tents}
           columns={columns}
-          className="display nowrap w-full border border-gray-400"
-          options={{
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            order: [[0, "asc"]],
-            searching: true,
-            paging: true,
-            info: true,
-            scrollX: true,
-            scrollY: "calc(100vh - 350px)",
-            scrollCollapse: true,
-            layout: {
-              topStart: "buttons",
-              topEnd: "search",
-              bottomStart: "pageLength",
-              bottomEnd: "paging",
-            },
-            buttons: [
-              {
-                extend: "colvis",
-                text: "Column Visibility",
-                collectionLayout: "fixed two-column",
-                collection: {
-                  appendTo: "body",
-                },
-              },
-            ],
-            columnControl: ["order"],
-            initComplete: function () {
-              const wrapper = (this as any).api().table().container();
-              const topRow = wrapper.querySelector(
-                ".dt-layout-row:first-child",
-              );
-              if (topRow && !topRow.querySelector(".reset-filters-btn")) {
-                const btn = document.createElement("button");
-                btn.className = "reset-filters-btn";
-                btn.textContent = "Reset Filters";
-                btn.style.cssText =
-                  "padding:6px 16px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:13px;font-weight:500;cursor:pointer;margin-left:8px;transition:all .15s ease;";
-                btn.onmouseenter = () => {
-                  btn.style.background = "#e2e8f0";
-                };
-                btn.onmouseleave = () => {
-                  btn.style.background = "#f8fafc";
-                };
-                btn.onclick = () => {
-                  const api = (this as any).api();
-                  const container = api.table().container();
+          dtRef={dtRef}
 
-                  // 1. Clear global search and column searches
-                  api.search("").columns().search("");
-
-                  // 2. Clear Column Control plugin filters (API method)
-                  if (api.columns().ccSearchClear) {
-                    (api.columns() as any).ccSearchClear();
-                  }
-
-                  // 3. Clear all inputs and trigger events to sync UI
-                  container.querySelectorAll("input").forEach((input: any) => {
-                    input.value = "";
-                    input.dispatchEvent(new Event("input", { bubbles: true }));
-                    input.dispatchEvent(new Event("change", { bubbles: true }));
-                  });
-
-                  // 4. Clear all selects and trigger events
-                  container
-                    .querySelectorAll("select")
-                    .forEach((select: any) => {
-                      if (select.options.length > 0) {
-                        select.selectedIndex = 0;
-                        select.dispatchEvent(
-                          new Event("change", { bubbles: true }),
-                        );
-                      }
-                    });
-
-                  // 5. Force remove active state from column header buttons
-                  container
-                    .querySelectorAll(".dtcc-button_active")
-                    .forEach((btn: any) => {
-                      btn.classList.remove("dtcc-button_active");
-                    });
-
-                  // 6. Draw once to sync everything
-                  api.draw();
-                };
-                topRow.appendChild(btn);
-              }
-            },
-            columnDefs: [
-              { targets: 0, width: "50px", className: "dt-center" }, // S.No
-              { targets: 1, width: "150px" }, // Tent Spot
-              { targets: 2, width: "150px" }, // Tent Type
-              { targets: 3, width: "80px" }, // No. of Guests
-              { targets: 4, width: "80px" }, // No. of Children
-              { targets: 5, width: "100px" }, // Tent ID
-              { targets: 6, width: "100px" }, // Rate
-              { targets: 7, width: "80px" }, // Tent Count
-              { targets: 8, width: "100px" }, // Images
-              { targets: 9, width: "80px" }, // Status
-              {
-                targets: 10,
-                width: "180px",
-                orderable: false,
-                searchable: false,
-              }, // Actions
-              { targets: "_all", visible: true },
-            ],
-          }}
         />
       </div>
 

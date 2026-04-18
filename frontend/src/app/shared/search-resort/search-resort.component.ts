@@ -33,7 +33,12 @@ export class SearchResortComponent implements OnInit {
     'Vanavihari Tents, Maredumilli',
     'Karthikavanam Tents, Valamuru',
   ];
-  trekLocations = ['Soft Trek','Medium/Hard Trek' ,'Very Hard Trek'];
+  trekLocations = ['Soft Trek', 'Medium/Hard Trek', 'Very Hard Trek'];
+  trekLocationMap: Record<string, string> = {
+    'Soft Trek': 'G.M. Valasa',
+    'Medium/Hard Trek': 'Nellore Base Point',
+    'Very Hard Trek': 'Nellore Tribal Belt',
+  };
 
   selectedResort: string;
   checkinDate: string;
@@ -92,6 +97,13 @@ export class SearchResortComponent implements OnInit {
     if (this.selectedType === 'tent') return this.tentLocations;
     if (this.selectedType === 'trek') return this.trekLocations;
     return [];
+  }
+
+  getLocationSubLabel(location: string): string {
+    if (this.selectedType !== 'trek') {
+      return '';
+    }
+    return this.trekLocationMap[location] || '';
   }
 
   selectLocation(location: string) {

@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class CancelRequestComponent {
   form: FormGroup;
   isModalVisible = false;
+  isDarkMode = false;
   reasons: string[] = [
     'Plans changed',
     'Personal reasons',
@@ -22,7 +23,7 @@ export class CancelRequestComponent {
     'Budget constraints',
     'Booking error',
     'Health concerns',
-    'Other (please specify)',
+    'Other',
   ];
   captchaResponse: string | null = null;
   isDialogOpen = true;
@@ -49,7 +50,23 @@ export class CancelRequestComponent {
 
     this.form = this.fb.group({
       reason: ['', Validators.required],
-      details: ['', Validators.required],
+      details: [''],
+    });
+
+    this.form.get('reason')?.valueChanges.subscribe((reason: string) => {
+      const detailsControl = this.form.get('details');
+      if (!detailsControl) {
+        return;
+      }
+
+      if (reason === 'Other') {
+        detailsControl.setValidators([Validators.required, Validators.minLength(5)]);
+      } else {
+        detailsControl.clearValidators();
+        detailsControl.setValue('');
+      }
+
+      detailsControl.updateValueAndValidity({ emitEvent: false });
     });
     this.currentBooking_id = localStorage.getItem('current_id');
     this.api_url = environment.API_URL;
@@ -70,6 +87,11 @@ export class CancelRequestComponent {
   }
 
   triggerModal() {
+    if (this.form.invalid || !this.captchaResponse) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.showLoader = true
     setTimeout(() => {
       this.showLoader = false
@@ -253,5 +275,9 @@ export class CancelRequestComponent {
 
   closeDialog() {
     this.isDialogOpen = false;
+  }
+
+  get isOtherReasonSelected(): boolean {
+    return this.form.get('reason')?.value === 'Other';
   }
 }

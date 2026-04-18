@@ -39,6 +39,8 @@
 .navbar {
   min-height: 10vh;
   height: auto;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   z-index: 10001;
   transition:
     transform 0.3s ease-in-out,
@@ -228,6 +230,29 @@
         color: $clr-primary-dark;
       }
     }
+  }
+}
+
+.header-side-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.header-main-logo {
+  width: clamp(120px, 20vw, 170px);
+  height: auto;
+  max-height: 66px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: clamp(100px, 32vw, 140px);
+    max-height: 52px;
   }
 }
 

@@ -120,7 +120,7 @@
                           spot.type?.includes("Trek")
                           ? "Trek Fee"
                           : "Entry Fee"
-                          }}: ₹{{ spot.breakdown.entry }}
+                          }}: ₹{{ spot.unitPrices.entry }} / person
                         </mat-hint>
 
                         <mat-error *ngIf="spot.counts.adults > 500">
@@ -260,7 +260,7 @@
                           " size="small">
                           <mat-option *ngFor="let n of [0, 1, 2, 3, 4, 5]" [value]="n">{{ n }}</mat-option>
                         </mat-select>
-                        <mat-hint class="px-0">Camera Fee: ₹{{ spot.breakdown.camera }}</mat-hint>
+                        <mat-hint class="px-0">Camera Fee: ₹{{ spot.unitPrices.camera }} / camera</mat-hint>
                       </mat-form-field>
                     </div>
 

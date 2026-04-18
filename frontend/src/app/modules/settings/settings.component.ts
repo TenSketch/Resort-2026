@@ -286,6 +286,7 @@ export class SettingsComponent implements OnInit {
   showConfirmation = false;
   updatedFields: any[] = [];
   lockedFields: Set<string> = new Set();
+  profileUpdateMessage = '';
 
   // ID card format hints for display in UI
   idCardFormats: { [key: string]: string } = {
@@ -481,6 +482,7 @@ export class SettingsComponent implements OnInit {
   }
 
   onSubmit() {
+    this.profileUpdateMessage = '';
     if (this.form.valid) {
       this.prepareConfirmation();
     } else {
@@ -529,6 +531,7 @@ export class SettingsComponent implements OnInit {
   confirmUpdate() {
     this.showLoader = true;
     this.showConfirmation = false;
+    this.profileUpdateMessage = '';
     
     const headers = {
       'token': this.authService.getAccessToken() ?? '',
@@ -545,6 +548,7 @@ export class SettingsComponent implements OnInit {
           this.showLoader = false;
           if (response.code == 3000 && (response.result.status === 'Success' || response.result.status === 'success')) {
             this.showSnackBar('Profile updated successfully!', 'success-snackbar');
+            this.profileUpdateMessage = 'Your account details were saved successfully.';
             
             // Lock fields immediately after success
             const fieldsToLock = ['full_name', 'mobile_number', 'email', 'dob', 'nationality', 'id_card_type', 'id_card_number'];
@@ -561,6 +565,7 @@ export class SettingsComponent implements OnInit {
           this.showLoader = false;
           console.error('Profile update error:', err);
           const msg = err.error?.result?.msg || 'Profile update failed. Please try again.';
+          this.profileUpdateMessage = '';
           this.showSnackBar(msg, 'error-snackbar');
         },
       });

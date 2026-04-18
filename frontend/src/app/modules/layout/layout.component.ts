@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
 import { AuthService } from '../../auth.service';
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
   accountusername: string = 'John Doe';
   isSidebarOpen: boolean = false;
   isSidebarCollapsed: boolean = false;
@@ -81,6 +81,10 @@ export class LayoutComponent implements OnInit {
     this.accountusername = this.userService.getFullUser();
     // this.getUserData()
     this.updateBodyClass();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   // getUserData() {
@@ -210,16 +214,9 @@ export class LayoutComponent implements OnInit {
     this.authService.buttonClick$.next();
     this.authService.removeRooms();
     this.router.navigate(['/resorts/rooms'], {
-      queryParams: { bookingTypeResort: this.selectedResort },
+      queryParams: { bookingTypeResort: 'Vanavihari, Maredumilli' },
       queryParamsHandling: 'merge',
     });
-    let status = localStorage.getItem('isSummary')
-    if (status == 'no') {
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-
-    }
   }
 
   triggerModal() {
@@ -272,13 +269,6 @@ export class LayoutComponent implements OnInit {
       queryParams: { bookingTypeResort: 'junglestar' },
       queryParamsHandling: 'merge',
     });
-    let status = localStorage.getItem('isSummary')
-    if (status == 'no') {
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-
-    }
   }
 
   goToKarthikavanam() {
@@ -292,12 +282,6 @@ export class LayoutComponent implements OnInit {
       queryParams: { bookingTypeResort: 'karthikavanam' },
       queryParamsHandling: 'merge',
     });
-    let status = localStorage.getItem('isSummary')
-    if (status == 'no') {
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-    }
   }
 
   goToTents() {

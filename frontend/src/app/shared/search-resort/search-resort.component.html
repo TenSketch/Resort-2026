@@ -73,7 +73,10 @@
         <div class="locations-list">
           <div class="location-item" *ngFor="let loc of currentLocations" (click)="selectLocation(loc)">
             <i class="fa-solid fa-location-dot loc-icon"></i>
-            <span class="loc-name">{{ loc }}</span>
+            <span class="loc-name">
+              {{ loc }}
+              <small class="d-block text-muted" *ngIf="getLocationSubLabel(loc)">{{ getLocationSubLabel(loc) }}</small>
+            </span>
             <i class="fa-solid fa-check select-icon"></i>
           </div>
         </div>

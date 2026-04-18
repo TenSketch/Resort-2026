@@ -40,14 +40,14 @@
                   </p>
                   <div class="small text-muted ms-2">
                     <div *ngIf="spot.counts?.adults > 0">
-                      <strong>Guests:</strong> {{ spot.counts.adults }} | ₹{{
-                      spot.breakdown?.entry || 0
-                      }}
+                      <strong>Guests:</strong> {{ spot.counts.adults }} | Entry Fee ₹{{
+                      spot.unitPrices?.entry || 0
+                      }} / person
                     </div>
                     <div *ngIf="spot.counts?.cameras > 0">
-                      <strong>Cameras:</strong> {{ spot.counts.cameras }} | ₹{{
-                      spot.breakdown?.camera || 0
-                      }}
+                      <strong>Cameras:</strong> {{ spot.counts.cameras }} | Camera Fee ₹{{
+                      spot.unitPrices?.camera || 0
+                      }} / camera
                     </div>
                   </div>
                   <hr class="my-2" />
